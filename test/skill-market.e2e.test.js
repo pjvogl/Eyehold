@@ -1,7 +1,7 @@
 /* node test/skill-market.e2e.test.js — the Skill Market end to end on the real sidecar (2026-09-29).
 
    Boots the REAL sidecar with test/_skill_market_fixture.js preloaded, which answers the market's own catalog URLs
-   on starnetos.com from this checkout's website/ folder (the exact bytes a deploy publishes). A mock OpenRouter
+   on eyehold.com from this checkout's website/ folder (the exact bytes a deploy publishes). A mock OpenRouter
    captures what the model is told. Proves, at the live seams:
      1. the catalog lists our originals as BUILT IN (bundled text == published version) and a market-only
         original as available
@@ -27,8 +27,8 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const HOST = '127.0.0.1';
 const PRELOAD = '--require ' + path.join(__dirname, '_skill_market_fixture.js').replace(/\\/g, '/');
-const TARGET = 'line-design';      // a market-only StarNet Original (needs the orchestrator)
-const TAMPERED = 'routine-craft';  // served with one extra line when STARNET_TEST_MARKET_TAMPER names it
+const TARGET = 'line-design';      // a market-only Eyehold Original (needs the orchestrator)
+const TAMPERED = 'routine-craft';  // served with one extra line when EYEHOLD_TEST_MARKET_TAMPER names it
 
 function startMock() {
   const state = { requests: [] };
@@ -81,7 +81,7 @@ function startMock() {
     const by = Object.fromEntries((m.entries || []).map(e => [e.slug, e]));
     A.eq(by['feed-watch'] && by['feed-watch'].status, 'bundled', 'a bundled original reads BUILT IN (our text is exactly the published version)');
     A.eq(by[TARGET] && by[TARGET].status, 'available', 'a market-only original is available to install');
-    A.eq(by[TARGET] && by[TARGET].shelf, 'originals', 'on the StarNet Originals shelf');
+    A.eq(by[TARGET] && by[TARGET].shelf, 'originals', 'on the Eyehold Originals shelf');
     A.ok(!(await library()).some(s => s.slug === TARGET), 'precondition: it is not in the library yet');
 
     // ---- 2. install ----
@@ -110,14 +110,14 @@ function startMock() {
     A.eq((await fixture.json('POST', '/api/skills/toggle', { slug: TARGET, enabled: true })).status, 200, 'back on for the steps below');
 
     // ---- 5. a download that differs from the catalog is refused ----
-    await fixture.restart({ STARNET_TEST_MARKET_TAMPER: TAMPERED });
+    await fixture.restart({ EYEHOLD_TEST_MARKET_TAMPER: TAMPERED });
     const bad = await fixture.json('POST', '/api/skill-market/install', { slug: TAMPERED });
     A.eq(bad.body.ok, false, 'a changed file is refused');
     A.ok(/doesn't match the catalog/.test(bad.body.error || ''), 'and says why: ' + bad.body.error);
     A.ok(!(await library()).some(s => s.slug === TAMPERED), 'nothing from it reached the library');
 
     // ---- 6. a forged catalog ----
-    await fixture.restart({ STARNET_TEST_MARKET_BADSIG: '1' });
+    await fixture.restart({ EYEHOLD_TEST_MARKET_BADSIG: '1' });
     m = await market();
     A.eq(m.ok, false, 'a catalog changed under its signature does not load');
     A.ok(/not trusted: its signature does not match/.test(m.error || ''), 'and the market says it was not trusted: ' + m.error);
@@ -130,8 +130,8 @@ function startMock() {
     const key = signing.generateKeyPair();
     const der = crypto.createPrivateKey(key.privateKeyPem).export({ format: 'der', type: 'pkcs8' }).toString('base64');
     await fixture.restart({
-      STARNET_TEST_MARKET_REVOKE: TARGET, STARNET_TEST_MARKET_KEY: der, SKYNET_SKILL_MARKET_PULL_MS: '1000',
-      STARNET_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
+      EYEHOLD_TEST_MARKET_REVOKE: TARGET, EYEHOLD_TEST_MARKET_KEY: der, SKYNET_SKILL_MARKET_PULL_MS: '1000',
+      EYEHOLD_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
     });
     // no market request from the test: only the station's own background check can find the pull
     const t0 = Date.now(); let off = false;

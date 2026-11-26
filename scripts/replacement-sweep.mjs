@@ -19,31 +19,31 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
-const DRY_RUN = argSet.has('--dry-run') || truthy(process.env.STARNET_REPLACEMENT_SWEEP_DRY_RUN);
-const SKIP_FAST = argSet.has('--skip-fast') || truthy(process.env.STARNET_REPLACEMENT_SWEEP_SKIP_FAST);
-const REQUIRE_LIVE = !argSet.has('--no-require-live') && !truthy(process.env.STARNET_REPLACEMENT_SWEEP_NO_REQUIRE_LIVE);
+const DRY_RUN = argSet.has('--dry-run') || truthy(process.env.EYEHOLD_REPLACEMENT_SWEEP_DRY_RUN);
+const SKIP_FAST = argSet.has('--skip-fast') || truthy(process.env.EYEHOLD_REPLACEMENT_SWEEP_SKIP_FAST);
+const REQUIRE_LIVE = !argSet.has('--no-require-live') && !truthy(process.env.EYEHOLD_REPLACEMENT_SWEEP_NO_REQUIRE_LIVE);
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_REPLACEMENT_SWEEP_DIR || join(ROOT, '.dogfood', 'replacement-sweep-' + STAMP));
-const LATEST = resolve(process.env.STARNET_REPLACEMENT_SWEEP_LATEST_DIR || join(ROOT, '.dogfood', 'replacement-sweep-latest'));
-const DOGFOOD = resolve(process.env.STARNET_REPLACEMENT_SWEEP_DOGFOOD_DIR || join(ROOT, '.dogfood'));
+const OUT = resolve(process.env.EYEHOLD_REPLACEMENT_SWEEP_DIR || join(ROOT, '.dogfood', 'replacement-sweep-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_REPLACEMENT_SWEEP_LATEST_DIR || join(ROOT, '.dogfood', 'replacement-sweep-latest'));
+const DOGFOOD = resolve(process.env.EYEHOLD_REPLACEMENT_SWEEP_DOGFOOD_DIR || join(ROOT, '.dogfood'));
 const NPM = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 const PROOFS = {
   t0: {
-    env: 'STARNET_T0_CLEAN_EVIDENCE',
-    schema: 'starnet.clean-install-proof.v1',
+    env: 'EYEHOLD_T0_CLEAN_EVIDENCE',
+    schema: 'eyehold.clean-install-proof.v1',
     description: 'T0 clean-machine install proof',
     evidenceFileName: 'clean-install-proof.json'
   },
   t3: {
-    env: 'STARNET_T3_WORKLOAD_EVIDENCE',
-    schema: 'starnet.t3-installed-workload-proof.v1',
+    env: 'EYEHOLD_T3_WORKLOAD_EVIDENCE',
+    schema: 'eyehold.t3-installed-workload-proof.v1',
     description: 'T3 installed workload proof',
     evidenceFileName: 'installed-workload-proof.json'
   },
   t4: {
-    env: 'STARNET_T4_UPDATE_PROOF',
-    schema: 'starnet.t4-update-delivery-proof.v1',
+    env: 'EYEHOLD_T4_UPDATE_PROOF',
+    schema: 'eyehold.t4-update-delivery-proof.v1',
     description: 'T4 update delivery proof',
     evidenceFileName: 'update-delivery-proof.json'
   }
@@ -81,10 +81,10 @@ function findInstaller(nsisDir) {
   }
 }
 function installerPath() {
-  const raw = process.env.STARNET_REPLACEMENT_SWEEP_INSTALLER_EXE
-    || process.env.STARNET_T4_INSTALLER_EXE
-    || process.env.STARNET_T3_INSTALLER_EXE
-    || process.env.STARNET_T0_INSTALLER_EXE
+  const raw = process.env.EYEHOLD_REPLACEMENT_SWEEP_INSTALLER_EXE
+    || process.env.EYEHOLD_T4_INSTALLER_EXE
+    || process.env.EYEHOLD_T3_INSTALLER_EXE
+    || process.env.EYEHOLD_T0_INSTALLER_EXE
     || '';
   if (raw) return resolve(raw);
   return findInstaller(join(ROOT, 'src-tauri', 'target', 'release', 'bundle', 'nsis'));
@@ -99,7 +99,7 @@ function proofOverride(id) {
   const spec = PROOFS[id];
   const upper = id.toUpperCase();
   const raw = process.env[spec.env]
-    || process.env['STARNET_REPLACEMENT_SWEEP_' + upper + '_EVIDENCE']
+    || process.env['EYEHOLD_REPLACEMENT_SWEEP_' + upper + '_EVIDENCE']
     || argValue('--' + id + '-evidence')
     || '';
   return raw ? resolve(raw) : '';
@@ -238,18 +238,18 @@ function processScanStep() {
   const res = spawnSync('tasklist', ['/FO', 'CSV', '/NH'], { encoding: 'utf8', windowsHide: true });
   if (res.status !== 0) return step('process-scan', 'No stale desktop smoke processes are visible', 'skip', 'tasklist was unavailable.');
   const suspicious = [];
-  const names = ['qemu-system-x86_64.exe', 'skynet-desktop.exe', 'starnet.exe', 'tauri.exe'];
+  const names = ['qemu-system-x86_64.exe', 'skynet-desktop.exe', 'eyehold.exe', 'tauri.exe'];
   for (const line of String(res.stdout || '').split(/\r?\n/)) {
     const m = line.match(/^"([^"]+)","([^"]+)"/);
     if (!m) continue;
     const proc = m[1].toLowerCase();
-    if (names.includes(proc) || proc.includes('starnet')) suspicious.push({ processName: m[1], pid: m[2] });
+    if (names.includes(proc) || proc.includes('eyehold')) suspicious.push({ processName: m[1], pid: m[2] });
   }
   return step(
     'process-scan',
     'No stale desktop smoke processes are visible',
     suspicious.length ? 'warn' : 'pass',
-    suspicious.length ? 'Desktop smoke processes are still visible; close them before packaging public evidence.' : 'No StarNet/QEMU/Tauri smoke process was visible.',
+    suspicious.length ? 'Desktop smoke processes are still visible; close them before packaging public evidence.' : 'No Eyehold/QEMU/Tauri smoke process was visible.',
     { suspicious }
   );
 }
@@ -272,7 +272,7 @@ function writeSummary(results, proofs, installer) {
   const replacementSweepReady = verdict === 'green';
   const nextAction = results.find(r => r.status === 'fail') || results.find(r => r.status === 'blocked') || null;
   const status = {
-    schema: 'starnet.replacement-sweep-status.v1',
+    schema: 'eyehold.replacement-sweep-status.v1',
     generatedAt: nowIso(),
     lane: 'replacement-sweep',
     scope: 'invited-beta-manual-distribution',
@@ -289,7 +289,7 @@ function writeSummary(results, proofs, installer) {
   };
   writeJson(join(OUT, 'replacement-sweep-status.json'), status);
 
-  let md = '# StarNet Replacement Sweep\n\n';
+  let md = '# Eyehold Replacement Sweep\n\n';
   md += '- Generated: `' + status.generatedAt + '`\n';
   md += '- Scope: `' + status.scope + '`\n';
   md += '- Verdict: `' + status.verdict + '`\n';
@@ -361,21 +361,21 @@ if (!SKIP_FAST) results.push(commandStep('test-fast', 'Full fast gate is green',
 else results.push(step('test-fast', 'Full fast gate is green', 'skip', 'Skipped by --skip-fast.'));
 
 results.push(commandStep('t0-clean-install', 'T0 clean install proof is green', 't0:clean-install:loop', ['cleanInstallProofReady'], {
-  STARNET_T0_CLEAN_EVIDENCE: proofs.t0.path,
-  STARNET_T0_INSTALLER_EXE: installer.path
+  EYEHOLD_T0_CLEAN_EVIDENCE: proofs.t0.path,
+  EYEHOLD_T0_INSTALLER_EXE: installer.path
 }));
 results.push(commandStep('t1-signing', 'T1 invited beta signing posture is green', 't1:signing:loop', ['invitedBetaReady'], {
-  STARNET_T1_INSTALLER_EXE: installer.path
+  EYEHOLD_T1_INSTALLER_EXE: installer.path
 }));
 results.push(commandStep('t2-state-safety', 'T2 state safety is green', 't2:state-safety:loop', ['stateSafetyReady']));
 results.push(commandStep('t3-release-smoke', 'T3 installed release smoke is green with live proof', 't3:release-smoke:loop', ['releaseSmokeReady'], {
-  STARNET_T3_WORKLOAD_EVIDENCE: proofs.t3.path,
-  STARNET_T3_INSTALLER_EXE: installer.path,
-  STARNET_T3_REQUIRE_LIVE: REQUIRE_LIVE ? '1' : ''
+  EYEHOLD_T3_WORKLOAD_EVIDENCE: proofs.t3.path,
+  EYEHOLD_T3_INSTALLER_EXE: installer.path,
+  EYEHOLD_T3_REQUIRE_LIVE: REQUIRE_LIVE ? '1' : ''
 }));
 results.push(commandStep('t4-update-delivery', 'T4 update delivery is green', 't4:update-delivery:loop', ['updateDeliveryReady'], {
-  STARNET_T4_UPDATE_PROOF: proofs.t4.path,
-  STARNET_T4_INSTALLER_EXE: installer.path
+  EYEHOLD_T4_UPDATE_PROOF: proofs.t4.path,
+  EYEHOLD_T4_INSTALLER_EXE: installer.path
 }));
 results.push(lintStep());
 results.push(processScanStep());

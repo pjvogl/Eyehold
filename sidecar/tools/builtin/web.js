@@ -42,7 +42,7 @@
   /* RAW-BODY CEILING, applied BEFORE anything parses the response.
      htmlToText is a chain of lazy `[\s\S]*?` replaces — quadratic in the input — and the clamp to
      FETCH_MAX_CHARS ran AFTER it. Measured on a page of repeated "<script>": 64KB -> 55ms, 256KB -> 880ms,
-     1MB -> 14.3 SECONDS of synchronous event-loop freeze, and it grows from there. StarNet is one process,
+     1MB -> 14.3 SECONDS of synchronous event-loop freeze, and it grows from there. Eyehold is one process,
      so that is the whole station stopped by a page the agent was asked to read — and web_fetch is
      read-only, no-consent, callable on any URL including one suggested by untrusted content.
      2MB leaves the extractor far more material than the 6k it will keep, while bounding the worst case to
@@ -856,7 +856,7 @@
     };
 
     /* ---------- web_request: call a third-party REST API with the Commander's key ----------
-       WHY THIS EXISTS: before it, nothing in StarNet could send a custom header. web_fetch's whole schema
+       WHY THIS EXISTS: before it, nothing in Eyehold could send a custom header. web_fetch's whole schema
        is {url}, so ANY authenticated API meant handing the agent a full shell (shell.exec + curl), which
        needs a placed workbench and is a far larger grant than "make one HTTPS call". This tool is the
        narrow capability that job actually needs.
@@ -894,7 +894,7 @@
       // A MODEL-PROVIDER key is never handed to a tool and KEYS refuses to store one, so pointing at KEYS here sent
       // agents to ask the Commander for "access" nobody can grant (2026-09-28: OpenRouter was already connected;
       // the agent wanted the raw key to chase a transparent background image_generate could not make yet).
-      if (r.reason === 'reserved') return name + ' is a model-provider key: StarNet never hands provider keys to tools and KEYS cannot store one, so do not ask the Commander for it. Use the built-in tools that already ride the station\'s connection instead: image_generate for images (transparent:true for a transparent background) and image_analyze to look at one.';
+      if (r.reason === 'reserved') return name + ' is a model-provider key: Eyehold never hands provider keys to tools and KEYS cannot store one, so do not ask the Commander for it. Use the built-in tools that already ride the station\'s connection instead: image_generate for images (transparent:true for a transparent background) and image_analyze to look at one.';
       return 'no enabled service key provides ' + name + ' — add it in TOOLSETS & CONNECTORS → KEYS';
     }
 
@@ -1041,7 +1041,7 @@
           // quotes/CRLF in a name or filename would break out of the Content-Disposition header line
           const cleanToken = (s, what) => { s = String(s); if (/[\r\n"]/.test(s)) throw new Error(what + ' must not contain quotes or newlines'); return s; };
           if (!nodeCrypto) throw new Error('multipart needs the Node host');
-          const boundary = '----StarNetPart' + nodeCrypto.randomBytes(16).toString('hex');
+          const boundary = '----EyeholdPart' + nodeCrypto.randomBytes(16).toString('hex');
           const chunks = [];
           for (const p of multipart) {
             if (!p || typeof p !== 'object' || !p.name) throw new Error('each multipart part needs a "name"');

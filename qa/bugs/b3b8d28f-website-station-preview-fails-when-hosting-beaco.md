@@ -10,10 +10,10 @@ lane: website-station-boot-0905
 fix: 27560918e
 origin: owner
 report: owner-supplied-screenshot-2026-09-05-website-station-boot
-affected: starnetos.com live preview observed 2026-09-05 in Chrome; exact deployed source revision unknown
+affected: eyehold.com live preview observed 2026-09-05 in Chrome; exact deployed source revision unknown
 family: deployment-integrity
 installer: not-applicable
-installerEvidence: Website-only repair; no desktop installer contains or serves starnetos.com.
+installerEvidence: Website-only repair; no desktop installer contains or serves eyehold.com.
 recovery: unconfirmed
 ---
 
@@ -21,7 +21,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-The starnetos.com live station is replaced by a full-screen `STATION FAILED TO BOOT` diagnostic that
+The eyehold.com live station is replaced by a full-screen `STATION FAILED TO BOOT` diagnostic that
 names Cloudflare's injected `beacon.min.js` as the script that did not load, so the station itself is
 not visible.
 
@@ -62,7 +62,7 @@ revision so returning visitors receive the complete current preview. Focused cov
   ],
   "displays": [
     {"target":"staged homepage iframe","state":"covered","test":"test/website-live-preview.test.js","scenario":"homepage targets the current cache-revisioned staged station document","gate":"fast"},
-    {"target":"production starnetos.com","state":"blocked","reason":"The source repair is not customer recovery; Cloudflare direct upload must deploy the merged staged tree and the owner must retest it."}
+    {"target":"production eyehold.com","state":"blocked","reason":"The source repair is not customer recovery; Cloudflare direct upload must deploy the merged staged tree and the owner must retest it."}
   ],
   "lifecycle": [
     {"target":"returning visitor cache/localStorage","state":"covered","test":"test/website-live-preview.test.js","scenario":"new demo revision refreshes an obsolete saved website preview exactly once","gate":"fast"},

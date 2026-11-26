@@ -1,4 +1,4 @@
-# Approved StarNet world upgrade — 2026-09-09
+# Approved Eyehold world upgrade — 2026-09-09
 
 The owner approved the exact preview at http://127.0.0.1:9207/. Visual baseline: ab146a0f93ec2915caf1cc423a0f7a585567e22e. The additional flight/inset/weave batch was canceled before any changes.
 

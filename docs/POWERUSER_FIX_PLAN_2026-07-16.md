@@ -1,4 +1,4 @@
-# StarNet power-user findings — complete fix plan
+# Eyehold power-user findings — complete fix plan
 
 Plan date: 2026-07-16
 Audit source: `75cad9e8`
@@ -8,7 +8,7 @@ Finding source: `docs/POWERUSER_AUDIT_2026-07-15.md`
 ## Objective
 
 Close all 14 newly confirmed power-user defects and the product gaps reconfirmed by the audit,
-without losing StarNet's truthful-telemetry, persistence, sandbox, or one-sidecar invariants.
+without losing Eyehold's truthful-telemetry, persistence, sandbox, or one-sidecar invariants.
 
 Completion is behavioral, not code-shaped: every original reproduction must pass in the live app,
 each defect must gain an EL-3 regression, restart-sensitive state must survive a real sidecar
@@ -56,9 +56,9 @@ Ownership:
 
 Implementation shape:
 
-- Replace “all `starnet.*` keys” collection with an explicit export allowlist or explicit secret
+- Replace “all `eyehold.*` keys” collection with an explicit export allowlist or explicit secret
   denylist backed by tests. Exclude all provider/BYOK/channel/OAuth/token/key material, including
-  scoped keys such as `starnet.byok.key.<provider>`.
+  scoped keys such as `eyehold.byok.key.<provider>`.
 - Add a bundle metadata field that states `secretsIncluded:false`; import remains compatible with
   older bundles but never writes excluded credential keys from an untrusted bundle without the
   existing consent/recovery boundary.
@@ -363,7 +363,7 @@ This is a genuine product decision checkpoint. Recommended direction for approva
 - a Tauri tray supervisor owns the one sidecar;
 - closing the window keeps the station running only when routines/channels/autonomy require it and
   makes that state explicit;
-- Quit StarNet stops the sidecar after a bounded drain;
+- Quit Eyehold stops the sidecar after a bounded drain;
 - launch-at-login is opt-in;
 - tray/status UI shows armed work and provides Open, Pause Automation, and Quit;
 - no hidden daemon and no claim of 24/7 work while the supervisor is absent.

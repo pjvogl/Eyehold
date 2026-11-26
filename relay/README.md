@@ -1,6 +1,6 @@
-# StarNet Remote relay
+# Eyehold Remote relay
 
-The switchboard between a phone and a home StarNet station. Both dial out to it over TLS; it forwards sealed
+The switchboard between a phone and a home Eyehold station. Both dial out to it over TLS; it forwards sealed
 frames between them. It holds no keys and cannot read anything that passes through (the channel is sealed end
 to end by `sidecar/remote/crypto.js` on the station and `relay/app/phone-client.js` on the phone).
 
@@ -10,5 +10,5 @@ to end by `sidecar/remote/crypto.js` on the station and `relay/app/phone-client.
   on secure pages.
 
 Run locally: `node relay/server.js` (port 8799, or `PORT=`). Point a station at it with
-`STARNET_REMOTE_RELAY=http://localhost:8799`. `http://localhost` counts as a secure page in desktop browsers,
+`EYEHOLD_REMOTE_RELAY=http://localhost:8799`. `http://localhost` counts as a secure page in desktop browsers,
 so the phone app works there for testing.

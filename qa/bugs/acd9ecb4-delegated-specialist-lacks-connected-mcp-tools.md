@@ -9,13 +9,13 @@ found: 2026-09-11
 lane: release-0112-finalprep-0911
 fix: 44c6b4952cd1e468f7caaf4d7ead804dc280cc40
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/13
+report: https://github.com/Eyehold/eyehold/issues/13
 affected: 0.11.1 on Windows
 family: delegated-capabilities
 installer: verified
 installerVersion: 0.11.1 private candidate 6e729e4cb
 installerSha256: 5baadbf8483e601db257f2b1ce8855fbc494add5db64493f501a3d93e717efeb
-installerEvidence: https://github.com/androoAGI/starnet/actions/runs/34569801784
+installerEvidence: https://github.com/Eyehold/eyehold/actions/runs/34569801784
 recovery: unconfirmed
 ---
 
@@ -31,7 +31,7 @@ Reported sequence: connect Close CRM through Abilities Discover with OAuth; gran
 
 ## Evidence
 
-[GitHub #13](https://github.com/androoAGI/starnet/issues/13), reported September 10, 2026 on Windows 0.11.1; read September 11. No attached diagnostics or follow-up comments.
+[GitHub #13](https://github.com/Eyehold/eyehold/issues/13), reported September 10, 2026 on Windows 0.11.1; read September 11. No attached diagnostics or follow-up comments.
 
 Investigation anchors: `sidecar/index.js:15046` distinguishes interactive and autonomous run surfaces; `sidecar/index.js:15875` projects run authority; `sidecar/index.js:16345` handles withheld connector tools. These are investigation entry points, not an established root cause. Direct-session connector tests do not prove delegated grant propagation.
 

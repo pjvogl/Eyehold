@@ -1,4 +1,4 @@
-/* sidecar/manual.js — starnetManual: a SHORT, truthful "how StarNet works" block appended to the
+/* sidecar/manual.js — eyeholdManual: a SHORT, truthful "how Eyehold works" block appended to the
    agent's system prompt so it can GUIDE THE COMMANDER when they are stuck or confused (navigation,
    what props grant which power, how to recover). This is product knowledge about the STATION — it is
    NOT a claim about what THIS agent can do. The agent's OWN real powers are stated authoritatively a
@@ -23,30 +23,30 @@
                            and served verbatim by the read-only manual.read tool (tools/builtin/manual-read.js).
    A rule that lives INSIDE a reference section (the AUTOMATION bullet's "never OS crontab") rides inline on its
    own, verbatim, so moving a section out of the prompt never moves a rule out with it.
-   Nothing is removed: starnetManual() is still the whole manual, byte-identical to the pre-split literal (the
+   Nothing is removed: eyeholdManual() is still the whole manual, byte-identical to the pre-split literal (the
    test pins its hash), and index.js falls back to it on any run where manual.read is not on the wire. */
 
 const Places = require('../frontend/app/places.js');   // the ONE list of where things are — station.show and this manual read it
-const OPEN = '\n<starnet_operator_manual>\n';
-const CLOSE = '</starnet_operator_manual>';
+const OPEN = '\n<eyehold_operator_manual>\n';
+const CLOSE = '</eyehold_operator_manual>';
 
 const ABOUT =
-  'You are a crew member aboard StarNet — a real local agent station the Commander runs on their own ' +
+  'You are a crew member aboard Eyehold — a real local agent station the Commander runs on their own ' +
   'machine, shown as a living pixel-art floor. Use this manual to help the Commander navigate or recover ' +
   'when they are stuck or confused. It describes how the STATION works; it is NOT a list of your own ' +
   'powers — for what YOU can actually do this run, defer to <capabilities_ground_truth> below.\n';
 const LIVE_STATE =
-  'LIVE HARNESS STATE — when the Commander asks what StarNet version is running, whether routines are ' +
+  'LIVE HARNESS STATE — when the Commander asks what Eyehold version is running, whether routines are ' +
   'healthy, which MCP connectors are connected, or whether errors were recorded, CALL station.inspect first. ' +
   'It is the authoritative local, read-only, secret-free snapshot and needs no placed prop or approval. Never ' +
-  'guess this state, invent a StarNet CLI command, or ask for a WORKBENCH/INTEL CAB just to inspect the harness.\n';
+  'guess this state, invent a Eyehold CLI command, or ask for a WORKBENCH/INTEL CAB just to inspect the harness.\n';
 const NAV_HEAD =
   'NAVIGATION — the controls the Commander uses. When they ask where something is or to see it, OPEN it for them with ' +
   'station.show (any window, tab or settings section below, an agent\'s dossier tab or desk, BUILD MODE, the Recruitment Bay) ' +
   'instead of describing the clicks; it opens on their screen only while they are watching your conversation, so if it is ' +
   'refused, tell them where it is. When they ask you to CHANGE something (clear, set, turn on or off, rename, delete, pin…), ' +
   'DO it with station.control / station.power (tool.search "station control" if they are not in your list; station.settings ' +
-  'section "actions" lists every change) — opening the window is not doing it. Never go around them to StarNet\'s own settings ' +
+  'section "actions" lists every change) — opening the window is not doing it. Never go around them to Eyehold\'s own settings ' +
   'with the shell, the file system or a web request to the station: those tools are the only door:\n';
 const NAV_COMMS =
   '- COMMS: the chat panel. The Commander types a request and hits Enter to task the focused agent. ' +
@@ -59,8 +59,8 @@ const NAV_SESSIONS =
   'session = this one), never a memory note.\n';
 const NAV_AUTOMATION =
   '- AUTOMATE (dock, WORK group): tabs WORKFLOWS, SCHEDULES (scheduled work), GOAL LOOPS (one objective repeated ' +
-  'until done), AWAY WORK. SCHEDULES creates StarNet routines/cron jobs that wake agents inside the harness. Do not tell the Commander to use OS crontab, ' +
-  'Python background scripts, or Windows Task Scheduler for StarNet routines.\n';
+  'until done), AWAY WORK. SCHEDULES creates Eyehold routines/cron jobs that wake agents inside the harness. Do not tell the Commander to use OS crontab, ' +
+  'Python background scripts, or Windows Task Scheduler for Eyehold routines.\n';
 const NAV_REST =
   '- MY WORK (dock, in the WORK group): TASKS (the project board; cards are real workstreams, and assigning one opens ' +
   'COMMS and hands that work to an agent), DELIVERABLES (everything the crew finished, with TO REVIEW on top for ' +
@@ -125,11 +125,11 @@ const CONNECTING =
   'environment-variable NAME. This route works for ANY platform, listed or not — it is the universal fallback.\n' +
   '3. CONNECTED SERVICES — the Commander already knows the URL of an MCP server; they paste it directly.\n' +
   'Some platforms are reached THROUGH another connector rather than directly (their card says so and offers ' +
-  'a “VIA …” jump) — Jira/Confluence remains on its verified Zapier route until StarNet proves an authenticated ' +
+  'a “VIA …” jump) — Jira/Confluence remains on its verified Zapier route until Eyehold proves an authenticated ' +
   'tool call through Atlassian\'s newer direct OAuth endpoint; discovery alone is not connection proof. Google ' +
-  'Workspace connects through StarNet’s Google API connectors: Gmail, Drive, Calendar, Docs, and Sheets. ' +
+  'Workspace connects through Eyehold’s Google API connectors: Gmail, Drive, Calendar, Docs, and Sheets. ' +
   'Users choose SIGN IN WITH GOOGLE and approve access; never tell them to create a Cloud project or paste client credentials. ' +
-  'If Google sign-in is unavailable, StarNet’s publisher must enable it for that build.\n' +
+  'If Google sign-in is unavailable, Eyehold’s publisher must enable it for that build.\n' +
   'LOOK IT UP BEFORE YOU ANSWER. If you have the connectors.list tool, CALL IT — it is read-only, needs no ' +
   'approval, and returns the real catalog: what is already connected AND what the Commander could add but ' +
   'has not. That is the one way to answer “can you reach <platform>?” with a fact instead of a guess, so ' +
@@ -139,19 +139,19 @@ const CONNECTING =
   'raises a one-tap CONNECT door under your reply. Decline only after that call comes back with nothing.\n' +
   'HONESTY RULE — this is the rule that matters most here: WITHOUT that tool you do NOT have a reliable ' +
   'list of which platforms are in the catalog, so NEVER assert that a specific platform is or is not there, ' +
-  'and NEVER invent a StarNet menu path, settings screen, or button name. Tell the Commander to open ' +
+  'and NEVER invent a Eyehold menu path, settings screen, or button name. Tell the Commander to open ' +
   'CONNECT › ABILITIES and type the platform name into its search box — that search covers CATALOG and SAVED API CONNECTIONS — and ' +
   'offer route 2 as the guaranteed fallback. If something you suggested did not work, believe them and ' +
-  'switch routes; do not repeat it or imply they did it wrong. And never say StarNet “cannot” reach a ' +
+  'switch routes; do not repeat it or imply they did it wrong. And never say Eyehold “cannot” reach a ' +
   'service when what you mean is that it is not connected YET — those are different claims, and stating ' +
   'the first one when the second is true is the single worst thing you can do to a Commander here.\n';
-/* CONCEPTS (2026-10-04, Andrew: agents should "understand EVERYTHING about starnet and how it works so it can basically use
-   itself"). Every StarNet noun: what it IS, where it lives (a station.show place id in brackets), what YOU can do about it
+/* CONCEPTS (2026-10-04, Andrew: agents should "understand EVERYTHING about eyehold and how it works so it can basically use
+   itself"). Every Eyehold noun: what it IS, where it lives (a station.show place id in brackets), what YOU can do about it
    from chat, and the one thing not to get wrong. Grounded in the code as of 10-04 (each line was checked against its file);
    reference only — one manual.read call away, never inline. "If you have it" = lead-only tools (team.*, routine.*, loop.*,
    task.*, session.*, station.settings/control/power, the station builder): a specialist names the place instead. */
 const CONCEPTS =
-  'CONCEPTS — what each StarNet thing is, where it lives [the station.show place], what you can do about it from chat, and the trap:\n' +
+  'CONCEPTS — what each Eyehold thing is, where it lives [the station.show place], what you can do about it from chat, and the trap:\n' +
   '- CREW: the OVERSEER (the lead, agent id "agent") splits jobs and hands them to SPECIALISTS summoned from classes in the ' +
   'Recruitment Bay [recruit] (or the ＋ BUILD A CUSTOM CLASS tile). You: team.summon by class; team.dispatch to hand work out; ' +
   'station.control agent.* to rename/re-model/re-skin/delete; station.build {op:"agent", prop, agent} sits an agent at a desk (the ' +
@@ -159,7 +159,7 @@ const CONCEPTS =
   'agent works at the FIRST desk it is bound to; team.spawn helpers vanish after their task and never join the crew.\n' +
   '- PROPS = POWERS: props in the room with an agent\'s desk grant its tools, re-checked every turn (see the props section). ' +
   'BUILD MODE [build-mode] lays out rooms, surfaces and props. You: station.map → station.plan → station.build (one undo), ' +
-  'station.make_prop draws a new prop for StarNet credits. Trap: a platform is NEVER connected by placing a prop; under FULL ' +
+  'station.make_prop draws a new prop for Eyehold credits. Trap: a platform is NEVER connected by placing a prop; under FULL ' +
   'POWER an agent has every power regardless of props.\n' +
   '- WORKFLOWS / LINES (the build library calls them CONVEYOR LINES — "a conveyor" is a line): a line is machines on the floor joined by belts — INTAKE (where work comes in: schedule, chat, watched ' +
   'folder, app), BAY (one step, done by the agent placed there), FILTER (sorts by kind onto belts), MERGER (belts share one), ' +
@@ -175,7 +175,7 @@ const CONCEPTS =
   '- RECIPES [recipes]: ready-made job templates; launching one opens a new session and sends the filled-in job to the current ' +
   'agent (refused while that agent is mid-run). MAKE ROUTINE + RUN AS schedules one as a chosen crew member. You: open it with ' +
   'station.show; to run a recipe-like job on a timer use routine.create. Trap: a recipe never changes who an agent is.\n' +
-  '- SCHEDULES vs GOAL LOOPS vs AWAY WORK: a SCHEDULE [schedules] (a routine) answers WHEN — StarNet\'s own scheduler, never OS ' +
+  '- SCHEDULES vs GOAL LOOPS vs AWAY WORK: a SCHEDULE [schedules] (a routine) answers WHEN — Eyehold\'s own scheduler, never OS ' +
   'cron; a GOAL LOOP [goal-loops] answers UNTIL — it repeats toward one objective and its changes wait for the Commander; AWAY ' +
   'WORK [away-work] is an agent\'s consent to build from its own queue, inside its own workspace, while the Commander is away. ' +
   'You: routine.create/manage, loop.create/manage (if you have them); station.power agent.away_work on; station.control away.queue / ' +
@@ -205,11 +205,11 @@ const CONCEPTS =
   'asks (it stops your own run too — say so first); station.settings reads whether it is halted. Trap: only the Commander ' +
   'resumes; /stop stops just one run.\n' +
   '- SPENDING [settings-spending]: caps per run, per agent, per day and overall, in dollars (0 = no cap); a capped day pauses ' +
-  'with a one-click RESUME. On StarNet credits a run with no per-run cap still stops at $2; runs on the Commander\'s own key or ' +
+  'with a one-click RESUME. On Eyehold credits a run with no per-run cap still stops at $2; runs on the Commander\'s own key or ' +
   'subscription do not. Backup models live in SETTINGS › AI & MODELS [settings-ai]. You: station.power {action:"budget.set", ' +
   'args:{perDay:5}} (perRun / perAgent / perDay / global; budget.resume the same way; even to lower a cap); station.control ' +
   'fallback.set. Trap: an interrupted run whose spend is unknown waits in SPENDING LIMITS to be SETTLED — the Commander alone ' +
-  'settles it (station.settings spending lists it as unsettled). On StarNet credits, money HELD by other live runs (a per-run cap ' +
+  'settles it (station.settings spending lists it as unsettled). On Eyehold credits, money HELD by other live runs (a per-run cap ' +
   'reserves its whole amount) cannot be spent: wait, lower PER RUN, or top up in the STORE [settings-ai].\n' +
   '- MEMORY [agent-memory]: what an agent keeps — beliefs to pin / edit / forget, and new ones awaiting the Commander\'s keep or ' +
   'discard. Ratings on finished work become feedback memories. You: notebook.* (with memory gear); station.control memory.*, ' +
@@ -238,7 +238,7 @@ const CONCEPTS =
   'restore points) [agent-record], MEMORY [agent-memory], CONFIG (instructions, model, personality, access, look) [agent-config]. ' +
   'YOU [you] is the Commander\'s own dossier (about them, aims, preferences, what agents are told). REMOTE [settings-remote] pairs ' +
   'a phone; APP & BACKUP [settings-app] exports the station (never keys), and holds START FRESH (sets the old station aside) and ' +
-  'ERASE EVERYTHING (deletes every bit of StarNet data — the Commander alone, never you); UPDATES [updates] installs a new build ' +
+  'ERASE EVERYTHING (deletes every bit of Eyehold data — the Commander alone, never you); UPDATES [updates] installs a new build ' +
   '(installing stops every live run).\n';
 const TROUBLESHOOTING =
   'TROUBLESHOOTING — when the Commander is stuck, name the concrete fix:\n' +
@@ -275,7 +275,7 @@ const SECTIONS = [
     summary: 'the fix for each common stuck case — connecting a platform, a missing power, NO COMPUTE, a stuck approval, '
       + 'a missing agent.' },
   { id: 'concepts', kind: 'reference', lead: '\n', title: 'CONCEPTS', text: CONCEPTS,
-    summary: 'what each StarNet thing IS and which tool does it (lines, OUTBOX, schedules, loops, access, E-STOP, spending…).' }
+    summary: 'what each Eyehold thing IS and which tool does it (lines, OUTBOX, schedules, loops, access, E-STOP, spending…).' }
 ];
 
 const MANUAL = OPEN + SECTIONS.map(s => s.lead + s.text).join('') + CLOSE;
@@ -283,7 +283,7 @@ const MANUAL = OPEN + SECTIONS.map(s => s.lead + s.text).join('') + CLOSE;
 function MANUAL_SECTIONS_IDS() { return SECTIONS.filter(s => s.kind === 'reference').map(s => s.id); }
 const TOC =
   'MANUAL SECTIONS ON DEMAND — the station reference below is one manual.read call away and is not inlined here. ' +
-  'Before you name any StarNet window, menu, button or prop to the Commander, explain what something is, or walk them through a fix, call ' +
+  'Before you name any Eyehold window, menu, button or prop to the Commander, explain what something is, or walk them through a fix, call ' +
   'manual.read with the section id and answer from what it returns — never from memory:\n' +
   SECTIONS.filter(s => s.kind === 'reference').map(s => '- ' + s.id + ': ' + s.summary + '\n').join('') +
   'These apply without a lookup:\n' +
@@ -295,17 +295,17 @@ const MANUAL_INDEX = OPEN + ABOUT + LIVE_STATE + '\n' + TOC + '\n' + CONNECTORS 
 
 // argless + constant on purpose: deterministic across runs (resume-safe). opts reserved for future
 // surface/role tailoring without breaking callers.
-function starnetManual(/* opts */) { return MANUAL; }
+function eyeholdManual(/* opts */) { return MANUAL; }
 // the prompt form for a run whose wire carries manual.read. Constant too — it rides the cached prefix.
-function starnetManualIndex() { return MANUAL_INDEX; }
+function eyeholdManualIndex() { return MANUAL_INDEX; }
 /* THE OWNER, AWAY FROM THE STATION (2026-10-04): an owner-trusted chat-app turn (Telegram owner DM) used to get NO manual, so
    "how do I set up a schedule?" from a phone was answered from memory. The whole index is ~6K — too heavy for every phone turn
    — so these turns get only this pointer to manual.read (a constant: it rides the cached prefix). */
-const MANUAL_POINTER = OPEN + 'The Commander is messaging you from outside the station (a chat app). StarNet\'s operator manual — '
-  + 'every window and place, what each StarNet thing is, the props, the fixes — is one manual.read call away (sections: '
-  + MANUAL_SECTIONS_IDS().join(', ') + '). Call it before explaining any StarNet window, setting or feature; never answer that '
+const MANUAL_POINTER = OPEN + 'The Commander is messaging you from outside the station (a chat app). Eyehold\'s operator manual — '
+  + 'every window and place, what each Eyehold thing is, the props, the fixes — is one manual.read call away (sections: '
+  + MANUAL_SECTIONS_IDS().join(', ') + '). Call it before explaining any Eyehold window, setting or feature; never answer that '
   + 'from memory. Name places in the UI\'s words — station.show cannot open them from here.\n' + CLOSE;
-function starnetManualPointer() { return MANUAL_POINTER; }
+function eyeholdManualPointer() { return MANUAL_POINTER; }
 // one section, verbatim ('all' = the whole manual); null for an unknown id.
 function manualSection(id) {
   const key = String(id == null ? '' : id).trim().toLowerCase();
@@ -315,4 +315,4 @@ function manualSection(id) {
 }
 const MANUAL_SECTIONS = Object.freeze(SECTIONS.map(s => Object.freeze({ id: s.id, kind: s.kind, title: s.title, summary: s.summary || '' })));
 
-module.exports = { starnetManual, starnetManualIndex, starnetManualPointer, manualSection, MANUAL_SECTIONS, INLINE_RULE_EXCERPTS: Object.freeze([NAV_SESSIONS, NAV_AUTOMATION]) };
+module.exports = { eyeholdManual, eyeholdManualIndex, eyeholdManualPointer, manualSection, MANUAL_SECTIONS, INLINE_RULE_EXCERPTS: Object.freeze([NAV_SESSIONS, NAV_AUTOMATION]) };

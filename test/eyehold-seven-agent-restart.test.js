@@ -15,7 +15,7 @@ const fixture=SidecarFixture.create({env:{SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET
 async function crew(){const r=await fixture.json('GET','/api/eyehold/crew');assert.equal(r.status,200);assert.equal(r.body.source,'server-roster');assert.deepEqual(r.body.agents.map(a=>a.agentId).sort(),[...ids].sort());for(const a of r.body.agents){assert.equal(a.model,'openai/gpt-4.1-mini');assert.equal(a.provider,'openrouter');assert(!('system' in a),'read-only crew API must omit prompts');}}
 async function run(){
  await fixture.start();
- assert.equal((await fixture.request('/api/eyehold/crew',{headers:{'X-StarNet-Token':''}})).status,403);
+ assert.equal((await fixture.request('/api/eyehold/crew',{headers:{'X-Eyehold-Token':''}})).status,403);
  const registered=await fixture.json('POST','/api/roster',{agents:roster,updatedAt:Date.now()});assert.equal(registered.body.ok,true);await crew();
  const blueprint=buildEyeholdStation(),station=WorldModel.deserialize(blueprint.doc);
  const home=station.roomById(blueprint.homeId);
@@ -23,7 +23,7 @@ async function run(){
  assert(station.assignDesk(homeDesk.id,'agent').ok);
  for(let i=0;i<blueprint.placed.length;i++)assert(station.assignDesk(blueprint.placed[i].deskId,ids[i+1]).ok);
  Workstreams.reset();const sessions=ids.map((agentId,i)=>Workstreams.create(['command','research','strategy','operations','engineering','quality','finance'][i],{agentId,activate:false}));
- const saved=await fixture.json('POST','/api/save',{schema:'starnet.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:names[0]},agents:roster.map(a=>({id:a.agentId,name:a.name,specialtyId:a.specialtyId})),station:station.serialize(),...Workstreams.serialize()});assert.equal(saved.body.ok,true);
+ const saved=await fixture.json('POST','/api/save',{schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:names[0]},agents:roster.map(a=>({id:a.agentId,name:a.name,specialtyId:a.specialtyId})),station:station.serialize(),...Workstreams.serialize()});assert.equal(saved.body.ok,true);
  await fixture.restart();
  // No re-registration: this reads the host's actual restored in-memory roster.
  await crew();

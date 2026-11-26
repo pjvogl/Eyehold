@@ -14,7 +14,7 @@ const { makeCrashLedger, DEFAULT_WINDOW_MS, DEFAULT_THRESHOLD } = require('../si
 const { writeFileDurable } = require('../sidecar/durable-write.js');
 const { makeProcessFaultHandler, healthLine } = require('../sidecar/process-fault.js');
 
-function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-crash-ledger-')); }
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-crash-ledger-')); }
 function ledger(dir, t, extra) {
   return makeCrashLedger(Object.assign({ fs, path, dir, now: () => t.v, writeDurable: writeFileDurable, note: (tag, e) => t.notes.push([tag, String(e && e.message || e)]) }, extra || {}));
 }

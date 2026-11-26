@@ -10,25 +10,25 @@
 > ANY item below, grep trunk to confirm it is still open. If it's already shipped, mark it
 > DONE here with the commit hash and move to the next item. (This exact failure — building
 > from a stale plan doc — has burned this project repeatedly; see memory
-> `full-release-polish-plan` and `starnet-strategic-audit-2026-07`.)
+> `full-release-polish-plan` and `eyehold-strategic-audit-2026-07`.)
 
 ## Standing protocol (every lane, every item)
 
-1. Invoke Skill `starnet-task-doctrine` before the first edit. It routes to the other laws.
+1. Invoke Skill `eyehold-task-doctrine` before the first edit. It routes to the other laws.
 2. One agent per worktree (`gen-trees\new-agent-tree.ps1 <name>`); never feature-edit the
    integration tree `C:\Users\<you>\Desktop\gen`.
 3. Implementation agents run on **Opus** (Andrew's directive, memory `delegate-coding-to-opus`).
-4. Green (`npm run test:fast`) + live-verified (starnet-verify) before merge; merge via
-   `starnet-merge-ritual`. Update this doc's STATUS lines as items land.
+4. Green (`npm run test:fast`) + live-verified (eyehold-verify) before merge; merge via
+   `eyehold-merge-ritual`. Update this doc's STATUS lines as items land.
 5. Truthful telemetry law overrides everything: the app never asserts state the harness
    can't prove.
 
 ## Priority stack — why this order
 
-The product thesis (memory `starnet-product-thesis`, `starnet-gtm-and-marketplace`) says the
+The product thesis (memory `eyehold-product-thesis`, `eyehold-gtm-and-marketplace`) says the
 moat is: beginners reach real value fast, the station is watchable/spectacular, and the
 pride loop runs on REAL work. The harness core is solid and beats the reference harness on the moat axes.
-What's between StarNet and users right now, in order: (0) trunk must be green, (1) shipped
+What's between Eyehold and users right now, in order: (0) trunk must be green, (1) shipped
 builds can't update — distribution is broken, (2) the growth engine (spectacle/shareability)
 has zero surface, (3) retention fast-follows, (4) breadth polish. That ordering is the
 judgment call this doc encodes.
@@ -57,7 +57,7 @@ noisy frame can't pin the Guardian RED forever. A spawn-task chip for this exist
 Nothing here is agent work; it is the accumulated "attended" debt, all of it quick:
 - **Attended playtest** (~10 min, `npm start`) — ship-readiness gate 5, explicitly deferred.
 - **Attended live-LLM beat checks** — two pending: First Pitch post-run beat
-  (memory `starnet-first-pitch`) and first-ten awakening/interview beats
+  (memory `eyehold-first-pitch`) and first-ten awakening/interview beats
   (memory `first-ten-onboarding-rebuild`). Watch one real run each; file anything off as a
   qa/ledger finding.
 - **Branch deletions** — the merged lane branches listed in memory `full-release-polish-plan`.
@@ -65,11 +65,11 @@ Nothing here is agent work; it is the accumulated "attended" debt, all of it qui
 ## P1 — Distribution: shipped builds must reach users and update  ·  the broken artery
 
 ### P1.1 — Decide + stand up the update host  ·  STATUS: OPEN (decision = Andrew, execution = lane)
-Ground truth (memory `desktop-bundles-frontend-directly`): `updates.starnet.app` does NOT
+Ground truth (memory `desktop-bundles-frontend-directly`): `updates.eyehold.app` does NOT
 resolve → the auto-updater has NEVER fired → every shipped install is frozen at its install
 version (the 0.1.2→0.1.5 rescue needed a manual robocopy hot-patch). v0.1.3 is signed and
 staged in `release/` waiting on this. Options, in Fable's recommended order:
-1. **Host the manifest for real** (any static host + DNS for updates.starnet.app; the pinned
+1. **Host the manifest for real** (any static host + DNS for updates.eyehold.app; the pinned
    config + `release/latest.json` already point at `/desktop/` there). Smallest change,
    unblocks the whole signed-update recipe that's already built.
 2. If DNS/hosting is genuinely blocked: repoint `tauri.conf.json` updater endpoint at a host
@@ -100,7 +100,7 @@ once postcard is merged and Andrew has reacted to it — his reaction should ste
 
 ## P3 — Retention fast-follows  ·  small, already-designed, high leverage
 
-### P3.1 — Re-summon signal  ·  STATUS: OPEN (fast-follow from memory `starnet-leveling-redesign`)
+### P3.1 — Re-summon signal  ·  STATUS: OPEN (fast-follow from memory `eyehold-leveling-redesign`)
 After a 👍-rated run, surface a lightweight "summon again" affordance tied to that agent +
 recipe. One shared post-run beat slot law applies (memory `comms-beat-rules`).
 

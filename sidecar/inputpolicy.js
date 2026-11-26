@@ -86,7 +86,7 @@ function makeRunAuthority(opts) {
   const surface = opts.surface === 'interactive' ? 'interactive' : 'autonomous';
   const isTask = !!opts.isTask;
   // `ownerTrusted` is minted only by an authenticated owner DM at the channel ingress. It grants that
-  // Commander the same tool authority as a watched StarNet session without changing the ordinary autonomous
+  // Commander the same tool authority as a watched Eyehold session without changing the ordinary autonomous
   // policy used by cron, delegated workers, other channels, or group messages.
   const ownerTrusted = !!opts.ownerTrusted;
   /* MASTER BYPASS (2026-08-05) — the Commander's explicit, persisted "FULL BYPASS" switch. When on, this run
@@ -361,7 +361,7 @@ function makeLoopbackListenerProbe(opts) {
     } else if (platform === 'linux' || platform === 'darwin') {
       exe = '/bin/sh';
       const script = 'owners="$(lsof -nP -t -iTCP:"$1" -sTCP:LISTEN 2>/dev/null || true)"; [ -n "$owners" ] || exit 3; for owner in $owners; do p="$owner"; i=0; owned=0; while [ "$p" -gt 0 ] 2>/dev/null && [ "$i" -lt 128 ]; do if [ "$p" = "$2" ]; then owned=1; break; fi; next="$(ps -o ppid= -p "$p" 2>/dev/null | tr -d " ")"; [ -n "$next" ] || break; [ "$next" = "$p" ] && break; p="$next"; i=$((i+1)); done; [ "$owned" = 1 ] || exit 3; done; exit 0';
-      args = ['-c', script, 'starnet-listener-probe', String(port), String(rootPid)];
+      args = ['-c', script, 'eyehold-listener-probe', String(port), String(rootPid)];
     } else return false;
     return new Promise(resolve => {
       // 12s, not 5s (measured 2026-09-29 on the Windows dev box: this PowerShell CIM + NetTCP walk took 2.4–4.6s

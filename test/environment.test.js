@@ -58,7 +58,7 @@ function makeFakeSpawn() {
         kill: () => ({ ok: true })
       };
       const env = makeEnvironmentManager({ spawn, fs, pathMod: path, root, bg, clock,
-        env: { PATH: 'safe-path', SKYNET_API_TOKEN: 'api-secret', STARNET_IPC_TOKEN: 'ipc-secret', OPENAI_API_KEY: 'provider-secret', TELEGRAM_BOT_TOKEN: 'channel-secret', STARNET_COMPUTER_DRIVER: '1', NODE_OPTIONS: '--require evil.js' },
+        env: { PATH: 'safe-path', SKYNET_API_TOKEN: 'api-secret', EYEHOLD_IPC_TOKEN: 'ipc-secret', OPENAI_API_KEY: 'provider-secret', TELEGRAM_BOT_TOKEN: 'channel-secret', EYEHOLD_COMPUTER_DRIVER: '1', NODE_OPTIONS: '--require evil.js' },
         config: { backend: 'local' } });
       A.eq(env.backendId, 'local', 'local backend selected');
       await env.execute({ agentId: 'a1', cmd: 'echo ok', timeoutMs: 1000 });
@@ -66,12 +66,12 @@ function makeFakeSpawn() {
       A.eq(spawn.calls[0].opts.shell, true, 'local uses shell:true');
       A.eq(spawn.calls[0].opts.cwd, path.join(root, 'a1'), 'local cwd is the per-agent workspace');
       A.eq(spawn.calls[0].opts.env.PATH, 'safe-path', 'safe build environment survives');
-      A.ok(!('SKYNET_API_TOKEN' in spawn.calls[0].opts.env) && !('STARNET_IPC_TOKEN' in spawn.calls[0].opts.env), 'sidecar API/IPC tokens never reach task children');
+      A.ok(!('SKYNET_API_TOKEN' in spawn.calls[0].opts.env) && !('EYEHOLD_IPC_TOKEN' in spawn.calls[0].opts.env), 'sidecar API/IPC tokens never reach task children');
       A.ok(!('OPENAI_API_KEY' in spawn.calls[0].opts.env) && !('TELEGRAM_BOT_TOKEN' in spawn.calls[0].opts.env), 'provider/channel secrets never reach task children');
       A.ok(!('NODE_OPTIONS' in spawn.calls[0].opts.env), 'ambient execution hooks never reach task children');
-      A.eq(spawn.calls[0].opts.env.STARNET_COMPUTER_DRIVER, '0', 'physical-input disable is pinned in task children');
-      A.eq(spawn.calls[0].opts.env.STARNET_BROWSER_HEADLESS, '1', 'headless browser mode is pinned in task children');
-      A.eq(spawn.calls[0].opts.env.STARNET_USER_CONTROL_MODE, 'preserve', 'user-control preservation mode is pinned');
+      A.eq(spawn.calls[0].opts.env.EYEHOLD_COMPUTER_DRIVER, '0', 'physical-input disable is pinned in task children');
+      A.eq(spawn.calls[0].opts.env.EYEHOLD_BROWSER_HEADLESS, '1', 'headless browser mode is pinned in task children');
+      A.eq(spawn.calls[0].opts.env.EYEHOLD_USER_CONTROL_MODE, 'preserve', 'user-control preservation mode is pinned');
       fs.mkdirSync(path.join(root, 'a1', 'sub'), { recursive: true });
       env.rememberCwd('a1', path.join(root, 'a1', 'sub'));
       A.eq(env.getCwd('a1'), path.join(root, 'a1', 'sub'), 'local persists in-jail cwd');
@@ -79,7 +79,7 @@ function makeFakeSpawn() {
       A.eq(env.getCwd('a1'), path.join(root, 'a1', 'sub'), 'local refuses out-of-jail cwd persistence');
       env.startBackground({ agentId: 'a1', cmd: 'npm run dev' });
       A.eq(bgCalls[0].cwd, path.join(root, 'a1', 'sub'), 'background local inherits backend cwd');
-      A.eq(bgCalls[0].env.STARNET_COMPUTER_DRIVER, '0', 'background processes receive the same safety pins');
+      A.eq(bgCalls[0].env.EYEHOLD_COMPUTER_DRIVER, '0', 'background processes receive the same safety pins');
       A.ok(!('SKYNET_API_TOKEN' in bgCalls[0].env), 'background processes receive no sidecar token');
     }
 
@@ -94,30 +94,30 @@ function makeFakeSpawn() {
       const env = makeEnvironmentManager({ spawn, fs, pathMod: path, root, clock, bg, config: {
         backend: 'docker',
         dockerBin: 'dockerx',
-        dockerImage: 'starnet-node:test',
+        dockerImage: 'eyehold-node:test',
         dockerNetwork: 'none',
         dockerCpus: '2',
         dockerMemory: '1g',
-        dockerExtraArgs: ['--hostname', 'starnet-test']
+        dockerExtraArgs: ['--hostname', 'eyehold-test']
       } });
       spawn.setNext('missing\n', 1);       // inspect: first use has no container
       spawn.setNext('container-id\n', 0);  // create
       spawn.setNext('container-name\n', 0);// start
-      spawn.setNext('starnet-ready', 0);   // startup probe
+      spawn.setNext('eyehold-ready', 0);   // startup probe
       spawn.setNext('/workspace\n', 0);    // command
       await env.execute({ agentId: 'a2', cmd: 'pwd', timeoutMs: 1000 });
       const c = spawn.calls.find(x => x.args && x.args[0] === 'create');
       A.eq(c.file, 'dockerx', 'docker backend invokes configured docker binary');
       A.ok(c.args.indexOf('create') >= 0 && c.args.indexOf('--rm') < 0, 'docker creates a durable named container');
-      A.ok(c.args.indexOf('--name') >= 0 && /^starnet-[a-f0-9]{8}-[a-f0-9]{8}-a2$/.test(c.args[c.args.indexOf('--name') + 1]), 'container identity is deterministic and scoped to workspace plus agent');
-      A.ok(c.args.indexOf('ai.starnet.managed=1') >= 0 && c.args.indexOf('ai.starnet.agent=a2') >= 0, 'container carries ownership labels');
+      A.ok(c.args.indexOf('--name') >= 0 && /^eyehold-[a-f0-9]{8}-[a-f0-9]{8}-a2$/.test(c.args[c.args.indexOf('--name') + 1]), 'container identity is deterministic and scoped to workspace plus agent');
+      A.ok(c.args.indexOf('ai.eyehold.managed=1') >= 0 && c.args.indexOf('ai.eyehold.agent=a2') >= 0, 'container carries ownership labels');
       A.ok(c.args.indexOf('--cap-drop') >= 0 && c.args.indexOf('ALL') >= 0, 'docker drops capabilities');
       A.ok(c.args.indexOf('no-new-privileges') >= 0, 'docker enables no-new-privileges');
       A.ok(c.args.indexOf('--network') >= 0 && c.args[c.args.indexOf('--network') + 1] === 'none', 'docker network policy is configurable');
-      A.ok(c.args.indexOf('--hostname') >= 0 && c.args[c.args.indexOf('--hostname') + 1] === 'starnet-test', 'docker extra args pass through as a JSON list');
+      A.ok(c.args.indexOf('--hostname') >= 0 && c.args[c.args.indexOf('--hostname') + 1] === 'eyehold-test', 'docker extra args pass through as a JSON list');
       A.ok(c.args.indexOf('--volume') >= 0 && /a2:\/workspace$/.test(c.args[c.args.indexOf('--volume') + 1].replace(/\\/g, '/')), 'docker bind-mounts the agent workspace');
       A.ok(c.args.indexOf('--workdir') >= 0 && c.args[c.args.indexOf('--workdir') + 1] === '/workspace', 'docker starts in container workspace');
-      A.ok(c.args.indexOf('starnet-node:test') >= 0, 'docker image is configurable');
+      A.ok(c.args.indexOf('eyehold-node:test') >= 0, 'docker image is configurable');
       const exec = spawn.calls.find(x => x.args && x.args[0] === 'exec' && x.args[x.args.length - 1] === 'pwd');
       A.ok(exec && exec.args.indexOf(c.args[c.args.indexOf('--name') + 1]) >= 0, 'command executes inside the named container');
       A.eq(env.describe().persistence.restartReuse, true, 'descriptor truthfully advertises restart reuse');
@@ -126,7 +126,7 @@ function makeFakeSpawn() {
       await env.execute({ agentId: 'a2', cmd: 'touch /usr/local/bin/example-package', timeoutMs: 1000 });
       spawn.setNext('found\n', 0);
       await env.execute({ agentId: 'a2', cmd: 'test -e /usr/local/bin/example-package', timeoutMs: 1000 });
-      const taskExecs = spawn.calls.filter(x => x.args && x.args[0] === 'exec' && x.args[x.args.length - 1].indexOf('starnet-ready') < 0);
+      const taskExecs = spawn.calls.filter(x => x.args && x.args[0] === 'exec' && x.args[x.args.length - 1].indexOf('eyehold-ready') < 0);
       const taskNames = taskExecs.map(x => x.args[x.args.indexOf('--workdir') + 2]);
       A.ok(taskNames.every(x => x === taskNames[0]), 'successive commands target the same writable container layer');
       A.eq(spawn.calls.filter(x => x.args && x.args[0] === 'create').length, 1, 'successive commands do not recreate the container');
@@ -137,12 +137,12 @@ function makeFakeSpawn() {
 
       // A fresh manager (sidecar restart) recovers cwd from host-owned state and reuses the labeled container.
       const spawn2 = makeFakeSpawn();
-      const label = c.args.find(x => /^ai\.starnet\.workspace=/.test(x)).split('=')[1];
+      const label = c.args.find(x => /^ai\.eyehold\.workspace=/.test(x)).split('=')[1];
       spawn2.setNext('true\t' + label + '\ta2\n', 0);
-      spawn2.setNext('starnet-ready', 0);
+      spawn2.setNext('eyehold-ready', 0);
       spawn2.setNext('still-here\n', 0);
       const restarted = makeEnvironmentManager({ spawn: spawn2, fs, pathMod: path, root, clock, bg, config: {
-        backend: 'docker', dockerBin: 'dockerx', dockerImage: 'starnet-node:test'
+        backend: 'docker', dockerBin: 'dockerx', dockerImage: 'eyehold-node:test'
       } });
       A.eq(restarted.getCwd('a2'), '/workspace/src', 'container cwd survives sidecar reconstruction');
       await restarted.execute({ agentId: 'a2', cmd: 'printf still-here', timeoutMs: 1000 });
@@ -165,7 +165,7 @@ function makeFakeSpawn() {
       A.eq(mcp.args[mcp.args.indexOf(c.args[c.args.indexOf('--name') + 1]) + 1], 'node', 'allowlisted command is exact argv after the owned container id');
       A.ok(mcp.args.indexOf('SERVICE_TOKEN') >= 0 && mcp.args.indexOf('connector-secret') < 0, 'connector secret travels by env name, never argv');
       A.eq(mcp.opts.env.SERVICE_TOKEN, 'connector-secret', 'docker client env carries the explicit connector secret');
-      A.eq(mcp.opts.env.STARNET_COMPUTER_DRIVER, '0', 'isolated MCP inherits the physical-input hard floor');
+      A.eq(mcp.opts.env.EYEHOLD_COMPUTER_DRIVER, '0', 'isolated MCP inherits the physical-input hard floor');
       A.eq(mcp.opts.shell, false, 'docker stdio broker explicitly disables shell parsing');
       A.throws(() => env.spawnStdio({ agentId: 'a2', command: 'node', cwd: '/etc' }), 'stdio MCP cwd cannot escape the mounted workspace');
 
@@ -204,7 +204,7 @@ function makeFakeSpawn() {
     // ---- SSH backend: strict owner configuration + push/run/pull for a non-bind workspace ----
     {
       const spawn = makeFakeSpawn();
-      const target = { configured: true, host: 'buildbox', user: 'andrew', port: 2222, remoteRoot: '/srv/starnet/a4' };
+      const target = { configured: true, host: 'buildbox', user: 'andrew', port: 2222, remoteRoot: '/srv/eyehold/a4' };
       const env = makeEnvironmentManager({ spawn, fs, pathMod: path, root, clock,
         env: { PATH: 'safe-path', OPENAI_API_KEY: 'ambient-secret' },
         serviceEnv: () => ({ REMOTE_API_KEY: 'explicit-service-secret' }),
@@ -218,9 +218,9 @@ function makeFakeSpawn() {
       A.eq(conflicts(null, { 'same.txt': 'local' }, { 'same.txt': 'remote' }), ['same.txt'], 'first sync refuses an ambiguous two-sided file instead of choosing a winner');
       A.eq(conflicts({ 'same.txt': 'base' }, { 'same.txt': 'local' }, { 'same.txt': 'remote' }), ['same.txt'], 'later sync detects two-sided divergence from its proven baseline');
       A.eq(conflicts({ 'same.txt': 'base' }, { 'same.txt': 'local' }, { 'same.txt': 'base' }), [], 'a one-sided change remains synchronizable');
-      const lostIdentity = env._backend._internals.parseJobLine('STARNET_JOB\tsshbg_deadbeef\t700\tlost\t\n', 'job');
+      const lostIdentity = env._backend._internals.parseJobLine('EYEHOLD_JOB\tsshbg_deadbeef\t700\tlost\t\n', 'job');
       A.ok(lostIdentity.lost && !lostIdentity.running, 'a reused/missing remote pid identity is LOST, never reported running');
-      spawn.setNext('starnet-ssh-ready', 0);
+      spawn.setNext('eyehold-ssh-ready', 0);
       const readyOne = env.ensureReady('a4');
       const readyTwo = env.ensureReady('a4');
       await Promise.all([readyOne, readyTwo]);
@@ -230,39 +230,39 @@ function makeFakeSpawn() {
       A.eq(probe.opts.shell, false, 'SSH client never runs through a local shell');
       A.ok(probe.args.indexOf('BatchMode=yes') >= 0 && probe.args.indexOf('StrictHostKeyChecking=yes') >= 0, 'SSH is batch-only and fail-closed on unknown host keys');
       A.ok(probe.args.indexOf('andrew@buildbox') >= 0 && probe.args.indexOf('2222') >= 0, 'SSH target uses validated user, host and port argv');
-      A.ok(probe.child.stdin.writes.join('').indexOf("mkdir -p '/srv/starnet/a4'") >= 0, 'remote readiness creates only the configured workspace');
+      A.ok(probe.child.stdin.writes.join('').indexOf("mkdir -p '/srv/eyehold/a4'") >= 0, 'remote readiness creates only the configured workspace');
 
-      env.rememberCwd('a4', '/srv/starnet/a4/src');
-      A.eq(env.getCwd('a4'), '/srv/starnet/a4/src', 'SSH remembers only an in-remote-root cwd');
+      env.rememberCwd('a4', '/srv/eyehold/a4/src');
+      A.eq(env.getCwd('a4'), '/srv/eyehold/a4/src', 'SSH remembers only an in-remote-root cwd');
       env.rememberCwd('a4', '/etc');
-      A.eq(env.getCwd('a4'), '/srv/starnet/a4/src', 'SSH refuses a cwd outside the configured remote root');
+      A.eq(env.getCwd('a4'), '/srv/eyehold/a4/src', 'SSH refuses a cwd outside the configured remote root');
 
       spawn.setNext('push-ok', 0);
-      spawn.setNext('STARNET_CHECKPOINT\tsshcp_aaaaaaaa\t' + 'a'.repeat(64) + '\t1024\n', 0);
+      spawn.setNext('EYEHOLD_CHECKPOINT\tsshcp_aaaaaaaa\t' + 'a'.repeat(64) + '\t1024\n', 0);
       spawn.setNext('remote-ok', 0);
-      spawn.setNext('starnet-sync-safe', 0);
+      spawn.setNext('eyehold-sync-safe', 0);
       spawn.setNext('pull-ok', 0);
       const result = await env.execute({ agentId: 'a4', cmd: 'echo remote', timeoutMs: 2000, surface: 'interactive' });
       A.eq(result.out.trim(), 'remote-ok', 'SSH returns the real remote command result');
       A.eq(result.remoteCheckpointId, 'sshcp_aaaaaaaa', 'foreground execution exposes the exact pre-command remote checkpoint');
       const scpCalls = spawn.calls.filter(x => x.file === 'scpx');
       A.eq(scpCalls.length, 2, 'remote command performs one push and one pull');
-      A.ok(scpCalls[0].args.indexOf('a4/.') >= 0 && scpCalls[0].args.some(x => /andrew@buildbox:\/srv\/starnet\/a4\/$/.test(x)), 'push copies the local agent workspace to the exact remote root');
-      A.ok(scpCalls[1].args.some(x => /andrew@buildbox:\/srv\/starnet\/a4\/\.$/.test(x)) && scpCalls[1].args.indexOf('a4') >= 0, 'pull returns remote outputs to the local agent workspace');
+      A.ok(scpCalls[0].args.indexOf('a4/.') >= 0 && scpCalls[0].args.some(x => /andrew@buildbox:\/srv\/eyehold\/a4\/$/.test(x)), 'push copies the local agent workspace to the exact remote root');
+      A.ok(scpCalls[1].args.some(x => /andrew@buildbox:\/srv\/eyehold\/a4\/\.$/.test(x)) && scpCalls[1].args.indexOf('a4') >= 0, 'pull returns remote outputs to the local agent workspace');
       A.ok(scpCalls.every(x => x.args.indexOf('StrictHostKeyChecking=yes') >= 0 && x.opts.shell === false), 'file sync keeps the same strict host-key and no-local-shell boundary');
       const remoteCall = spawn.calls.find(x => x.file === 'sshx' && x.child.stdin.writes.join('').indexOf('echo remote') >= 0);
       const remoteScript = remoteCall.child.stdin.writes.join('');
-      A.ok(remoteScript.indexOf('echo remote') >= 0 && remoteScript.indexOf("cd '/srv/starnet/a4/src'") >= 0, 'remote command runs inside the clamped cwd through stdin');
+      A.ok(remoteScript.indexOf('echo remote') >= 0 && remoteScript.indexOf("cd '/srv/eyehold/a4/src'") >= 0, 'remote command runs inside the clamped cwd through stdin');
       A.ok(remoteScript.indexOf("REMOTE_API_KEY='explicit-service-secret'") >= 0, 'explicit service key reaches the remote shell through stdin');
       A.ok(remoteCall.args.join(' ').indexOf('explicit-service-secret') < 0, 'service key never appears in SSH argv');
-      A.ok(remoteScript.indexOf("STARNET_COMPUTER_DRIVER='0'") >= 0, 'remote shell receives the physical-input hard floor');
+      A.ok(remoteScript.indexOf("EYEHOLD_COMPUTER_DRIVER='0'") >= 0, 'remote shell receives the physical-input hard floor');
       A.eq(env.describe('a4').sync.state, 'ready', 'descriptor reports the proven sync state');
 
-      spawn.setNext('STARNET_CHECKPOINT\tsshcp_aaaaaaaa\t' + 'a'.repeat(64) + '\t1024\t123\n', 0);
+      spawn.setNext('EYEHOLD_CHECKPOINT\tsshcp_aaaaaaaa\t' + 'a'.repeat(64) + '\t1024\t123\n', 0);
       const remotePoints = await env.listCheckpoints('a4');
       A.eq(remotePoints[0].id, 'sshcp_aaaaaaaa', 'remote checkpoint list returns only verified archive identities');
-      spawn.setNext('starnet-checkpoint-restored', 0);
-      spawn.setNext('starnet-sync-safe', 0);
+      spawn.setNext('eyehold-checkpoint-restored', 0);
+      spawn.setNext('eyehold-sync-safe', 0);
       spawn.setNext('pull-ok', 0);
       A.eq(await env.restoreCheckpoint('a4', 'sshcp_aaaaaaaa'), true, 'remote rewind verifies the archive then refreshes the local mirror');
 
@@ -271,13 +271,13 @@ function makeFakeSpawn() {
       let localLinkRefused = false; try { await env.syncWorkspace('a4', { direction: 'push' }); } catch (e) { localLinkRefused = /symbolic links/.test(String(e.message)); }
       A.ok(localLinkRefused, 'workspace push refuses a local symlink before scp can follow it');
       fs.unlinkSync(linkPath);
-      spawn.setNext('starnet-sync-symlink', 96);
+      spawn.setNext('eyehold-sync-symlink', 96);
       let remoteLinkRefused = false; try { await env.syncWorkspace('a4', { direction: 'pull' }); } catch (e) { remoteLinkRefused = /remote tree/.test(String(e.message)); }
       A.ok(remoteLinkRefused, 'workspace pull refuses a remote tree whose symlink boundary cannot be proven');
 
       const restartedCwd = makeEnvironmentManager({ spawn: makeFakeSpawn(), fs, pathMod: path, root, clock,
         sshConfig: () => target, config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
-      A.eq(restartedCwd.getCwd('a4'), '/srv/starnet/a4/src', 'SSH cwd survives sidecar restart through read-back-verified host state');
+      A.eq(restartedCwd.getCwd('a4'), '/srv/eyehold/a4/src', 'SSH cwd survives sidecar restart through read-back-verified host state');
       A.eq(restartedCwd.supports.persistentSession, true, 'SSH advertises restart continuity only after cwd and remote jobs are persistent');
 
       const rejectedFs = Object.create(fs);
@@ -288,25 +288,25 @@ function makeFakeSpawn() {
       const rejectedCwd = makeEnvironmentManager({ spawn: makeFakeSpawn(), fs: rejectedFs, pathMod: path, root, clock,
         sshConfig: () => target, config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
       let cwdWriteRejected = false;
-      try { rejectedCwd.rememberCwd('a5', '/srv/starnet/a4/rejected'); } catch (e) { cwdWriteRejected = /replace failure/.test(String(e && e.message)); }
+      try { rejectedCwd.rememberCwd('a5', '/srv/eyehold/a4/rejected'); } catch (e) { cwdWriteRejected = /replace failure/.test(String(e && e.message)); }
       A.ok(cwdWriteRejected, 'SSH cwd update reports a rejected durable replace');
-      A.eq(rejectedCwd.getCwd('a5'), '/srv/starnet/a4', 'a rejected SSH cwd update does not survive in memory');
+      A.eq(rejectedCwd.getCwd('a5'), '/srv/eyehold/a4', 'a rejected SSH cwd update does not survive in memory');
 
       spawn.setNext('push-ok', 0);
-      spawn.setNext('STARNET_JOB\tsshbg_aaaaaaaa\t700\trunning\t\n', 0);
-      const bg = await env.startBackground({ agentId: 'a4', cmd: 'node server.js', cwd: '/srv/starnet/a4/src' });
+      spawn.setNext('EYEHOLD_JOB\tsshbg_aaaaaaaa\t700\trunning\t\n', 0);
+      const bg = await env.startBackground({ agentId: 'a4', cmd: 'node server.js', cwd: '/srv/eyehold/a4/src' });
       A.ok(bg.ok && bg.reattachable && bg.bgId === 'sshbg_aaaaaaaa', 'SSH background start returns a reattachable remote identity');
       const bgStart = spawn.calls.find(x => x.file === 'sshx' && /base64 -d/.test(x.child.stdin.writes.join('')));
-      A.ok(bgStart && /\.starnet\/jobs\//.test(bgStart.child.stdin.writes.join('')) && /\/identity/.test(bgStart.child.stdin.writes.join('')), 'remote job metadata includes a process-identity proof under the configured remote workspace');
+      A.ok(bgStart && /\.eyehold\/jobs\//.test(bgStart.child.stdin.writes.join('')) && /\/identity/.test(bgStart.child.stdin.writes.join('')), 'remote job metadata includes a process-identity proof under the configured remote workspace');
       const spawnRestart = makeFakeSpawn();
-      spawnRestart.setNext('STARNET_JOB\tsshbg_aaaaaaaa\t700\trunning\t\nSTARNET_TAIL\nlistening\n', 0);
+      spawnRestart.setNext('EYEHOLD_JOB\tsshbg_aaaaaaaa\t700\trunning\t\nEYEHOLD_TAIL\nlistening\n', 0);
       const reattached = makeEnvironmentManager({ spawn: spawnRestart, fs, pathMod: path, root, clock,
         sshConfig: () => target, config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
       const liveJob = await reattached.statusBackground('a4', 'sshbg_aaaaaaaa');
       A.ok(liveJob && liveJob.running && /listening/.test(liveJob.tail), 'fresh sidecar reattaches to the remote pid and output tail');
 
       spawn.setNext('push-ok', 0);
-      spawn.setNext('STARNET_CHECKPOINT\tsshcp_bbbbbbbb\t' + 'b'.repeat(64) + '\t1024\n', 0);
+      spawn.setNext('EYEHOLD_CHECKPOINT\tsshcp_bbbbbbbb\t' + 'b'.repeat(64) + '\t1024\n', 0);
       spawn.setNext('ssh: Connection reset by peer', 255);
       spawn.setNext('ssh: connect refused', 255);
       let disconnectError = '';
@@ -337,14 +337,14 @@ function makeFakeSpawn() {
       const env = makeEnvironmentManager({ spawn, fs, pathMod: path, root, clock,
         sshConfig: id => targets[id] || null, sshAgentIds: () => ['a1', 'a2', 'ghost'],
         config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
-      spawn.setNext('STARNET_KILLED\t2\n', 0);
-      spawn.setNext('STARNET_KILLED\t2\n', 0);
+      spawn.setNext('EYEHOLD_KILLED\t2\n', 0);
+      spawn.setNext('EYEHOLD_KILLED\t2\n', 0);
       A.eq(await env.killAllBackground(), 4, 'station-wide reap sums the kills under every configured agent');
       const scripts = spawn.calls.map(c => c.child.stdin.writes.join(''));
       A.eq(spawn.calls.length, 2, 'one ssh reap per configured agent; the unconfigured roster id spawns nothing');
-      A.ok(scripts.some(s => s.indexOf("'/srv/one/.starnet/jobs'") >= 0) && scripts.some(s => s.indexOf("'/srv/two/.starnet/jobs'") >= 0), 'each reap runs under that agent\'s own remote root');
+      A.ok(scripts.some(s => s.indexOf("'/srv/one/.eyehold/jobs'") >= 0) && scripts.some(s => s.indexOf("'/srv/two/.eyehold/jobs'") >= 0), 'each reap runs under that agent\'s own remote root');
 
-      spawn.setNext('STARNET_KILLED\t1\n', 0);
+      spawn.setNext('EYEHOLD_KILLED\t1\n', 0);
       A.eq(await env.killAllBackground('a1'), 1, 'a per-agent reap still targets only that agent');
       A.ok(spawn.calls[2].child.stdin.writes.join('').indexOf('/srv/one/') >= 0 && spawn.calls.length === 3, 'per-agent reap ran once, on a1');
 
@@ -354,7 +354,7 @@ function makeFakeSpawn() {
         spawn: function (file, args, opts) { calls++; if (args.indexOf('box2') >= 0 || args.some(a => /box2/.test(String(a)))) throw new Error('spawn ssh ENOENT'); return spawn(file, args, opts); },
         sshConfig: id => targets[id] || null, sshAgentIds: () => ['a1', 'a2'],
         config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
-      spawn.setNext('STARNET_KILLED\t3\n', 0);
+      spawn.setNext('EYEHOLD_KILLED\t3\n', 0);
       let flakyErr = null, flakyN = null;
       try { flakyN = await flaky.killAllBackground(); } catch (e) { flakyErr = e; }
       A.eq(flakyErr, null, 'a transport failure on one host never rejects the station-wide reap');
@@ -410,7 +410,7 @@ function makeFakeSpawn() {
 
   /* ---- the child-env scrub must catch the GLUED secret spellings people actually have ----
      The `_` boundary meant STRIPE_APIKEY / GITHUB_PAT / FOO_ACCESSTOKEN never matched and rode straight
-     into every task child's env. StarNet's own KEYS vars always end in _API_KEY, which is why our fixtures
+     into every task child's env. Eyehold's own KEYS vars always end in _API_KEY, which is why our fixtures
      never showed it. ---- */
   {
     const { sanitizeChildEnv: scrub } = require('../sidecar/environment.js');

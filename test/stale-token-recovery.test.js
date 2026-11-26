@@ -29,11 +29,11 @@ const staleTokenRecovery = new Function(factorySrc + '\nreturn staleTokenRecover
 
 // The page the sidecar serves carries the token in EXACTLY this shape (sidecar/index.js serveStatic). Lock the
 // producer so a format change there cannot silently blind the recovery.
-A.ok(sidecar.includes("'<script>window.__STARNET_API_TOKEN__=' + JSON.stringify(API_TOKEN) + ';'"),
-  'serveStatic still injects window.__STARNET_API_TOKEN__=<json>; into the page');
+A.ok(sidecar.includes("'<script>window.__EYEHOLD_API_TOKEN__=' + JSON.stringify(API_TOKEN) + ';'"),
+  'serveStatic still injects window.__EYEHOLD_API_TOKEN__=<json>; into the page');
 A.ok(/res\.writeHead\(403\); res\.end\('forbidden token'\); return true;/.test(sidecar),
   "rejectBadApiToken still answers the stale-token case with the exact body 'forbidden token'");
-const pageWith = tok => '<html><head><script>window.__STARNET_API_TOKEN__=' + JSON.stringify(tok) + ';</script>\n</head><body></body></html>';
+const pageWith = tok => '<html><head><script>window.__EYEHOLD_API_TOKEN__=' + JSON.stringify(tok) + ';</script>\n</head><body></body></html>';
 
 function rig(opts) {
   opts = opts || {};
@@ -139,11 +139,11 @@ const forbiddenToken = () => new Response('forbidden token', { status: 403 });
   }
 
   // ---- wiring (source locks) ----
-  const wrapper = harness.slice(harness.indexOf("if (typeof window !== 'undefined' && window.fetch && !window.__STARNET_FETCH_HARDENED__)"));
+  const wrapper = harness.slice(harness.indexOf("if (typeof window !== 'undefined' && window.fetch && !window.__EYEHOLD_FETCH_HARDENED__)"));
   A.ok(/staleToken\.settle\(res, t, replayable \?/.test(wrapper), 'the global /api fetch wrapper routes every response through staleToken.settle');
-  A.ok(/setToken: t => \{ apiToken = t; try \{ window\.__STARNET_API_TOKEN__ = t;/.test(harness),
-    'adopting a token updates BOTH the cached header token and window.__STARNET_API_TOKEN__ (apiticket.js mints SSE/file/save tickets from it)');
-  A.ok(/canRefresh: \(\) => !DESKTOP && !\(typeof window !== 'undefined' && window\.__STARNET_API__\)/.test(harness),
+  A.ok(/setToken: t => \{ apiToken = t; try \{ window\.__EYEHOLD_API_TOKEN__ = t;/.test(harness),
+    'adopting a token updates BOTH the cached header token and window.__EYEHOLD_API_TOKEN__ (apiticket.js mints SSE/file/save tickets from it)');
+  A.ok(/canRefresh: \(\) => !DESKTOP && !\(typeof window !== 'undefined' && window\.__EYEHOLD_API__\)/.test(harness),
     'desktop never reads the page for a token (the shell keeps one token across respawns)');
   A.ok(/sessionStale: \(\) => sessionStale/.test(harness), 'Harness exposes sessionStale() for the surfaces');
 

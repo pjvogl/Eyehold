@@ -24,9 +24,9 @@ const RECOVERY_LOCK_MAX_RUN_MS = 8 * 60 * 1000;   // diagnostic age only; recove
 const MAX_RECOVERY_FILE_BYTES = 256 * 1024 * 1024;         // one file over 256 MiB cannot be safely buffered
 const MAX_RECOVERY_TOTAL_BYTES = 2 * 1024 * 1024 * 1024;   // 2 GiB aggregate source ceiling
 const SAVE_NAMES = ['agent.save.json', 'agent.save.json.bak'];
-const SKIP_TOP = new Set(['.browser-profile', '.starnet-workspace-owner.json.generations']);
+const SKIP_TOP = new Set(['.browser-profile', '.eyehold-workspace-owner.json.generations']);
 const SKIP_FILES = new Set([
-  '.starnet-workspace-owner.json', 'cron.lock', 'proc-ledger.json',
+  '.eyehold-workspace-owner.json', 'cron.lock', 'proc-ledger.json',
   '.migration-pending', '.migration-receipt.json', '.migrated'
 ]);
 let atomicSequence = 0;
@@ -67,7 +67,7 @@ function decodeSave(raw) {
   let envelope;
   try { envelope = JSON.parse(raw.toString('utf8')); } catch (_) { return null; }
   const doc = isObj(envelope && envelope.doc) ? envelope.doc : envelope;
-  if (!isObj(doc) || doc.schema !== 'starnet.save' || !isObj(doc.agent)) return null;
+  if (!isObj(doc) || doc.schema !== 'eyehold.save' || !isObj(doc.agent)) return null;
   return {
     stationName: String(doc.agent.name || doc.agent.id || 'Prior station').slice(0, 120),
     updatedAt: Math.max(0, Number(doc.updatedAt || envelope.updatedAt || envelope.savedAt) || 0),
@@ -262,7 +262,7 @@ function readLastResult(workspaceRoot, deps) {
    workspace looks exactly like a lost one — so every ad-hoc test sidecar (mkdtemp under os.tmpdir())
    silently copied the Commander's production station into its throwaway workspace the day v0.10.6 was
    installed locally. Rule: when the TARGET workspace root resolves under os.tmpdir() or under any
-   env-declared scratch root (STARNET_SCRATCH_ROOT / SKYNET_SCRATCH_ROOT, path-delimiter separated),
+   env-declared scratch root (EYEHOLD_SCRATCH_ROOT / SKYNET_SCRATCH_ROOT, path-delimiter separated),
    the auto branch is skipped with a reason. Explicit operator-driven recovery (a written request file,
    the CLI, disaster-recovery restore) is untouched: it never consults this. Returns null when the
    target is not scratch. */
@@ -272,7 +272,7 @@ function scratchRoots(o) {
   const env = o.env || process.env;
   const out = [];
   try { const t = typeof o.tmpdir === 'function' ? o.tmpdir() : osNative.tmpdir(); if (t) out.push(path.resolve(String(t))); } catch (_) {}
-  for (const k of ['STARNET_SCRATCH_ROOT', 'SKYNET_SCRATCH_ROOT']) {
+  for (const k of ['EYEHOLD_SCRATCH_ROOT', 'SKYNET_SCRATCH_ROOT']) {
     const v = env && env[k];
     if (!v) continue;
     for (const part of String(v).split(path.delimiter)) { if (part.trim()) out.push(path.resolve(part.trim())); }
@@ -344,7 +344,7 @@ function applyPendingRecovery(opts) {
   if (!attempt.ran) {
     return {
       ok: false, applied: false, lockUnavailable: true, code: 'RECOVERY_LOCK_UNAVAILABLE',
-      error: 'another StarNet process holds the workspace recovery lock'
+      error: 'another Eyehold process holds the workspace recovery lock'
     };
   }
   return attempt.result;
@@ -437,7 +437,7 @@ function recoveryReport(opts) {
     }
   }
   return {
-    schema: 'starnet.workspace-recovery-report',
+    schema: 'eyehold.workspace-recovery-report',
     version: 1,
     generatedAt: new Date(now()).toISOString(),
     platform,

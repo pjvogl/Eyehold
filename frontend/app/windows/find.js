@@ -1,6 +1,6 @@
-/* STARNET — windows/find.js : FIND (Ctrl+K) — one search for every place, agent and conversation in the station.
+/* EYEHOLD — windows/find.js : FIND (Ctrl+K) — one search for every place, agent and conversation in the station.
 
-   WHY (Andrew 2026-10-04: "WAAY easier to use and navigate"): StarNet has ~50 places behind a dock, menus, tabs and
+   WHY (Andrew 2026-10-04: "WAAY easier to use and navigate"): Eyehold has ~50 places behind a dock, menus, tabs and
    console rails, and the only searches lived INSIDE single windows. FIND searches all of it from one field and opens the
    result through the SAME door its button uses — Places.open (app/places.js), the opener the agent's station.show uses —
    so FIND, the agent and the manual can never name different places. No match is never a dead end: the last row hands

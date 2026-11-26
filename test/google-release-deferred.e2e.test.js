@@ -10,15 +10,15 @@ const { RELEASE_DEFERRED, isWorkspaceUrl } = require('../sidecar/mcp/google-clie
   assert.equal(RELEASE_DEFERRED, true);
   assert.equal(isWorkspaceUrl('https://gmail.googleapis.com.evil.invalid/x'), false);
   assert.equal(isWorkspaceUrl('https://www.googleapis.com/other/v1'), false);
-  const fixture = SidecarFixture.create({ prefix: 'starnet-google-deferred-', timeoutMs: 30000, env: {
-    STARNET_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-starnettest.apps.googleusercontent.com' } }),
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-google-deferred-', timeoutMs: 30000, env: {
+    EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-eyeholdtest.apps.googleusercontent.com' } }),
     NODE_OPTIONS: '--require=' + path.join(__dirname, 'fixtures/google-deferred-network.cjs').replace(/\\/g, '/')
   } });
   const configs = Object.entries(ENDPOINTS).filter(([id]) => id !== 'google-files').map(([id, url]) => ({ id, url, transport: 'http', oauth: true, enabled: true }));
   configs.push({ id: 'legacy-google', url: 'https://gmailmcp.googleapis.com/mcp/v1', transport: 'http', oauth: true, enabled: true });
   const state = { version: 2, configs, oauth: { clients: {}, byId: Object.fromEntries(configs.map(c => [c.id, {
     accessToken: 'DEFERRED_TEST_ACCESS', refreshToken: 'DEFERRED_TEST_REFRESH', expiresAt: 1,
-    tokenEndpoint: 'https://oauth2.googleapis.com/token', clientId: '123456-starnettest.apps.googleusercontent.com'
+    tokenEndpoint: 'https://oauth2.googleapis.com/token', clientId: '123456-eyeholdtest.apps.googleusercontent.com'
   }])) } };
   const statePath = path.join(fixture.workspace, 'connectors/state.json');
   fs.mkdirSync(path.dirname(statePath), { recursive: true });

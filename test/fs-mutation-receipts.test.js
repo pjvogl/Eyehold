@@ -11,7 +11,7 @@ const os = require('os');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 const { makeRegistry } = require('../sidecar/tools/registry.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-fs-receipt-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-fs-receipt-' + process.pid);
 const ctx = { agentId: 'ag' };
 const patchText = body => '*** Begin Patch\n' + body + '\n*** End Patch';
 const cloneFsp = overrides => Object.assign({}, fsp, overrides || {});

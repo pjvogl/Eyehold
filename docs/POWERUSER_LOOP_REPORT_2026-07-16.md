@@ -1,4 +1,4 @@
-# StarNet power-user break/fix loop — 2026-07-16
+# Eyehold power-user break/fix loop — 2026-07-16
 
 Candidate under audit: `d3dcd61435f5af2d5d4d9a7ed43a03609a793b3d`  
 Merge state: **isolated; not merged to `feat/harness-backend`**

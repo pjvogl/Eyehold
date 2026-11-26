@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// dev/trace-logo.mjs — trace the STARNET wordmark's OWN letterforms out of the master art into SVG.
+// dev/trace-logo.mjs — trace the EYEHOLD wordmark's OWN letterforms out of the master art into SVG.
 //
-// This is NOT a redraw. The redrawn `starnet-mark.svg` (00fca6e8) was REVERTED by Andrew (661ad745)
+// This is NOT a redraw. The redrawn `eyehold-mark.svg` (00fca6e8) was REVERTED by Andrew (661ad745)
 // because the brand IS this art — different letterforms are a different brand. Every coordinate this
-// script emits is derived from frontend/assets/brand/starnet-logo.png and nothing else.
+// script emits is derived from frontend/assets/brand/eyehold-logo.png and nothing else.
 //
 // WHY a trace at all: the master is a SPARSE ASCII-digit mosaic — only ~4.5% of its pixels clear
 // alpha 96, and a mid-height scanline is 2-8px strokes separated by 50-200px voids (the letters are
@@ -29,7 +29,7 @@
 //   node dev/trace-logo.mjs [out.svg] [--preset=mosaic|solid] [--fh=] [--sigma=] [--iso=]
 //                           [--eps=] [--smooth=] [--corner=] [--min-area=]
 // The preset defaults ARE the shipped asset — a bare run reproduces
-// frontend/assets/brand/starnet-wordmark.svg. Individual flags override the preset.
+// frontend/assets/brand/eyehold-wordmark.svg. Individual flags override the preset.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -42,7 +42,7 @@ const flag = (name, dflt) => {
   const hit = argv.find(a => a.startsWith(`--${name}=`));
   return hit ? Number(hit.split('=')[1]) : dflt;
 };
-const OUT = argv.find(a => !a.startsWith('--')) || path.join(REPO, 'frontend/assets/brand/starnet-wordmark.svg');
+const OUT = argv.find(a => !a.startsWith('--')) || path.join(REPO, 'frontend/assets/brand/eyehold-wordmark.svg');
 
 /* TWO RENDERING INTENTS, both traced from the same master, both legal (neither redraws anything).
    They are presets rather than loose flags because each is a tuned SET — mixing one's sigma with
@@ -206,7 +206,7 @@ const area = pts => {
 };
 
 // ---------- run ----------
-const master = toRGBA(decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/starnet-logo.png'))));
+const master = toRGBA(decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/eyehold-logo.png'))));
 const box = contentBBox(master);
 const art = crop(master, box);
 const FW = Math.round(art.width * FH / art.height);
@@ -222,9 +222,9 @@ const loops = stitch(isolines(field, FW, FH, ISO))
 const n = v => (Math.round(v * 100) / 100).toString();
 const d = loops.map(l => 'M' + l.map(p => `${n(p[0])} ${n(p[1])}`).join('L') + 'Z').join('');
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${FW} ${FH}" role="img" aria-label="STARNET">
-<title>STARNET</title>
-<!-- Traced from frontend/assets/brand/starnet-logo.png by dev/trace-logo.mjs, preset ${PRESET_NAME}
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${FW} ${FH}" role="img" aria-label="EYEHOLD">
+<title>EYEHOLD</title>
+<!-- Traced from frontend/assets/brand/eyehold-logo.png by dev/trace-logo.mjs, preset ${PRESET_NAME}
      (field ${FW}x${FH}, sigma ${SIGMA100}@100, iso ${ISO}, rdp ${EPS100}@100, smooth ${SMOOTH}).
      These are the master art's OWN forms recovered from its perceived-density field, not a redraw.
      Regenerate, never hand-edit; rerun the script if the master ever changes.

@@ -1,4 +1,4 @@
-# StarNet LAUNCH RUNBOOK — full public release (Windows + macOS)
+# Eyehold LAUNCH RUNBOOK — full public release (Windows + macOS)
 
 Read-mostly prep sweep, 2026-07-17, against trunk `feat/harness-backend` (worktree HEAD
 `26ad2a32`, shipped version `0.5.2` per `src-tauri/tauri.conf.json`). Every claim below was
@@ -10,18 +10,18 @@ re-proven with a command on this machine; nothing is copied from memory or plan 
 
 ### A1. Release pipeline machinery is built — but NOTHING is published
 - `node scripts/verify-update-host.mjs` (live): endpoint
-  `https://github.com/androoAGI/starnet-releases/releases/latest/download/latest.json`
+  `https://github.com/Eyehold/eyehold-releases/releases/latest/download/latest.json`
   → **HTTP 404 — FAIL**. The updater path is NOT live. The releases repo itself 404s
   unauthenticated (private or nonexistent).
 - `gh` CLI is **not installed** on this machine (bash + PowerShell both "command not found"),
-  so draft state on `starnet-releases` could not be inspected. Judged from the source repo
+  so draft state on `eyehold-releases` could not be inspected. Judged from the source repo
   instead:
-  - `git ls-remote --tags origin` (origin = `androoAGI/starnet`):
+  - `git ls-remote --tags origin` (origin = `Eyehold/eyehold`):
     remote tags stop at **v0.4.0**. Tags `v0.5.0`, `v0.5.1`, `v0.5.2` exist **locally only**.
   - `origin/feat/harness-backend` = `3e1802da` (the v0.4.0 commit); local trunk = `144c97b0`,
     hundreds of commits ahead. **The release train has never seen 0.5.x.**
 - Local staging IS done: `release/` in the integration tree holds
-  `StarNet_0.5.2_x64-setup.exe` + `.sig` + `latest.json` (version 0.5.2, pub_date
+  `Eyehold_0.5.2_x64-setup.exe` + `.sig` + `latest.json` (version 0.5.2, pub_date
   2026-07-17T00:39Z) — but that `latest.json` covers **platforms: [windows-x86_64] only**.
   Publishing it as-is would strand mac/linux updaters; `verify-update-host` hard-requires all
   5 platforms (`windows-x86_64, darwin-aarch64, darwin-x86_64, linux-x86_64,
@@ -30,7 +30,7 @@ re-proven with a command on this machine; nothing is copied from memory or plan 
 ### A2. Mac tooling parity is present in the pipeline (unproven end-to-end)
 - `.github/workflows/release-train.yml` matrix builds `darwin-arm64`
   (aarch64-apple-darwin) and `darwin-x64` (x86_64-apple-darwin) on `macos-latest`, packages
-  `*.app.tar.gz` + `.sig`, and stage-drafts to `androoAGI/starnet-releases`
+  `*.app.tar.gz` + `.sig`, and stage-drafts to `Eyehold/eyehold-releases`
   via secret `RELEASES_TOKEN` (fine-grained PAT, Contents:write).
 - `scripts/release-assemble-manifest.mjs` maps `*.app.tar.gz` → `darwin-aarch64` /
   `darwin-x86_64` (lines 40–41, 61, 99–100). Manifest tooling covers darwin fully.
@@ -64,7 +64,7 @@ re-proven with a command on this machine; nothing is copied from memory or plan 
 | codex / grok / kimi | OAuth sign-in — certify via the live app, not this script |
 
 ### A4. Key custody — keys exist; backup + rotation NOT done
-- `~/.tauri/starnet-updater.key` + `.key.pub` exist (this is the minisign-format Tauri
+- `~/.tauri/eyehold-updater.key` + `.key.pub` exist (this is the minisign-format Tauri
   updater key; `npm run release:verify-sig` verifies artifacts against the baked pubkey).
   It is the **single point of total loss** for the update channel — no evidence of any backup.
 - Dev OpenRouter key rotation (security audit 2026-07-02): **still open**. Evidence:
@@ -78,8 +78,8 @@ re-proven with a command on this machine; nothing is copied from memory or plan 
   owner SID ≠ the running user's SID AND the installed app's CDP listener owned by the running
   user), attended flags, and a real provider credential (never logged). Runbook in B4.
 - `scripts/t0-clean-install.mjs` (T0) currently exits BLOCKED at t0.3/t0.4: it wants
-  `STARNET_T0_CLEAN_EVIDENCE` (or `--evidence <path>`) pointing at a
-  `starnet.clean-install-proof.v1` JSON captured during a real outside install whose
+  `EYEHOLD_T0_CLEAN_EVIDENCE` (or `--evidence <path>`) pointing at a
+  `eyehold.clean-install-proof.v1` JSON captured during a real outside install whose
   `installer.sha256/bytes` match the current NSIS installer. Capture recipe in B7.
 - Attended playtest: **DONE** per Andrew 2026-07-15 ("ran perfectly for me as a user") —
   NEXT.md line 96, checked. Outside installs on other hardware (Win + Mac): **attested done**
@@ -111,17 +111,17 @@ npm run release:cut:dry   # sanity: cut machinery clean
 If NOT READY, burn down the named reasons first (`node scripts/qa/ledger.mjs --digest`).
 
 ### B2. Back up + rotate keys BEFORE anything becomes public (~20 min)
-1. Copy `C:\Users\<you>\.tauri\starnet-updater.key` (+ `.pub`) to **two offline locations**
+1. Copy `C:\Users\<you>\.tauri\eyehold-updater.key` (+ `.pub`) to **two offline locations**
    (USB + second medium). Read the copy back and byte-compare before trusting it
    (secret-durability law: never rely on a copy you haven't read back).
 2. Rotate the dev OpenRouter key at openrouter.ai (create new, update
    `memory/.openrouter-key` / wherever the live app key lives, revoke old). Open since 7/02.
 3. Rescope `RELEASES_TOKEN` (fine-grained PAT, Contents:write on
-   `androoAGI/starnet-releases` only) and confirm it's set as an Actions
-   secret on the `starnet` source repo.
+   `Eyehold/eyehold-releases` only) and confirm it's set as an Actions
+   secret on the `eyehold` source repo.
 
 ### B3. Push, train, publish — the actual release (~30 min attended + CI wait)
-1. Make `starnet-releases` exist and be **public** (it 404s today; a private repo breaks
+1. Make `eyehold-releases` exist and be **public** (it 404s today; a private repo breaks
    `releases/latest/download` for anonymous updaters).
 2. Push source + tag (tag push triggers the train; assemble hard-fails unless the tag is
    exactly `v0.5.2` matching `tauri.conf.json` — it is):
@@ -132,7 +132,7 @@ If NOT READY, burn down the named reasons first (`node scripts/qa/ledger.mjs --d
 3. Watch Actions → release-train: 5 legs (win, darwin-arm64, darwin-x64, AppImage, deb) +
    minisign verification in assemble + stage-draft. This is the FIRST train run since the
    2026-07-14 hardening — expect and budget for one red/re-run.
-4. Review the DRAFT on `starnet-releases` per `docs/RELEASE_RUNBOOK.md` §1.7 checklist —
+4. Review the DRAFT on `eyehold-releases` per `docs/RELEASE_RUNBOOK.md` §1.7 checklist —
    **all platforms' assets attached** (never publish a draft missing a platform), notes right,
    `latest.json` lists all 5 platforms.
 5. Click **Publish release** (the only human ship gate), then immediately:
@@ -142,24 +142,24 @@ If NOT READY, burn down the named reasons first (`node scripts/qa/ledger.mjs --d
 
 ### B4. W1 attended fresh-profile proof on this PC (~15–20 min)
 Cheapest honest path (NEXT.md line 100): second local Windows account.
-1. As andro: create a user, e.g. `net user starnetw1 <pw> /add` (Settings → Accounts works too).
-2. Sign in as `starnetw1`; install the exact published `StarNet_0.5.2_x64-setup.exe` there.
+1. As andro: create a user, e.g. `net user eyeholdw1 <pw> /add` (Settings → Accounts works too).
+2. Sign in as `eyeholdw1`; install the exact published `Eyehold_0.5.2_x64-setup.exe` there.
 3. Relaunch the installed app with CDP open:
    `$env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--remote-debugging-port=9333'` then start
-   StarNet (see `qa/installed/README.md`).
-4. Still as `starnetw1`, in a PowerShell in the repo (repo stays owned by andro — that
+   Eyehold (see `qa/installed/README.md`).
+4. Still as `eyeholdw1`, in a PowerShell in the repo (repo stays owned by andro — that
    ownership difference IS the isolation proof):
    ```powershell
    cd C:\Users\<you>\Desktop\gen
-   $env:STARNET_PRODUCT_PERFECT_CANDIDATE_SHA = '<exact v0.5.2 commit sha>'
-   $env:STARNET_FIRST_RUN_ARTIFACT = '<path to the installed StarNet.exe>'
-   $env:STARNET_FIRST_RUN_CDP_PORT = '9333'
-   $env:STARNET_FIRST_RUN_ISOLATION_AUTHORITY = 'separate-windows-user'
-   $env:STARNET_FIRST_RUN_FRESH_PROFILE = '1'
-   $env:STARNET_FIRST_RUN_ATTENDED = '1'
-   $env:STARNET_FIRST_RUN_PROVIDER = 'openrouter'
-   $env:STARNET_FIRST_RUN_MODEL = '<model id>'
-   $env:STARNET_FIRST_RUN_PROVIDER_SECRET = '<key — typed in this shell only, never logged>'
+   $env:EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA = '<exact v0.5.2 commit sha>'
+   $env:EYEHOLD_FIRST_RUN_ARTIFACT = '<path to the installed Eyehold.exe>'
+   $env:EYEHOLD_FIRST_RUN_CDP_PORT = '9333'
+   $env:EYEHOLD_FIRST_RUN_ISOLATION_AUTHORITY = 'separate-windows-user'
+   $env:EYEHOLD_FIRST_RUN_FRESH_PROFILE = '1'
+   $env:EYEHOLD_FIRST_RUN_ATTENDED = '1'
+   $env:EYEHOLD_FIRST_RUN_PROVIDER = 'openrouter'
+   $env:EYEHOLD_FIRST_RUN_MODEL = '<model id>'
+   $env:EYEHOLD_FIRST_RUN_PROVIDER_SECRET = '<key — typed in this shell only, never logged>'
    node scripts\qa\product-perfect\gates\wave-1-installed-first-run.mjs
    ```
    (The gate mints expected artifact sha/size itself and runs the link probe + journey;
@@ -175,7 +175,7 @@ arches ride B6; AppImage/.deb on any Linux box/VM. Today there are ZERO public u
 
 ### B6. Mac auto-update proof (~30 min on the Mac, attended)
 Run `docs/MAC_UPDATE_TEST.md` exactly. Attended steps on the Mac (no dev toolchain needed):
-1. Install version A (`StarNet_<A>_aarch64.dmg` or `_x64.dmg`) from the published release;
+1. Install version A (`Eyehold_<A>_aarch64.dmg` or `_x64.dmg`) from the published release;
    right-click → Open past Gatekeeper (unsigned build — expected).
 2. **Seed recognisable state**: complete onboarding, note the first agent's NAME, recruit one
    more agent or change the theme, note version in Settings → UPDATES.
@@ -191,18 +191,18 @@ is preparable from this machine — the run itself is the deliverable.
 
 ### B7. T0 clean-install evidence on the next outside install (~10 min during that install)
 On the outside machine, during the install, hand-capture
-`starnet-clean-install-proof.json`:
+`eyehold-clean-install-proof.json`:
 ```json
 {
-  "schema": "starnet.clean-install-proof.v1",
+  "schema": "eyehold.clean-install-proof.v1",
   "generatedAt": "<ISO time>",
   "machineKind": "physical-clean-windows | windows-sandbox | clean-vm",
   "cleanMachine": true,
   "installer": { "sha256": "<sha256 of the setup.exe>", "bytes": <size> },
-  "install": { "succeeded": true, "installLocation": "C:\\Program Files\\StarNet" },
+  "install": { "succeeded": true, "installLocation": "C:\\Program Files\\Eyehold" },
   "launch": {
     "succeeded": true,
-    "exePath": "<installed StarNet.exe>",
+    "exePath": "<installed Eyehold.exe>",
     "workspaceRoot": "C:\\Users\\<user>\\AppData\\Roaming\\ai.skynet.harness"
   },
   "notes": []
@@ -212,7 +212,7 @@ Rules enforced by the validator: `workspaceRoot` must be under AppData and NOT u
 install dir; no `smoke` install paths; installer hash/bytes must match the CURRENT local NSIS
 installer. Then on this machine:
 ```powershell
-npm run t0:clean-install -- --evidence C:\path\to\starnet-clean-install-proof.json
+npm run t0:clean-install -- --evidence C:\path\to\eyehold-clean-install-proof.json
 ```
 Exit 0 + `cleanInstallProofReady=true` closes T0.
 

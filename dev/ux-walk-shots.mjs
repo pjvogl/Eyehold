@@ -78,7 +78,7 @@ async function main() {
     mkdirSync(OUT, { recursive: true });
 
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.station.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));

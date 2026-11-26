@@ -1,4 +1,4 @@
-# StarNet approved prop art direction
+# Eyehold approved prop art direction
 
 **September 15 sharpness correction:** the owner explicitly rejected the blur in the previously accepted south workstation while praising the lighting. The accepted designs/cameras remain references; their tiny sheet exports are not immutable. The sharpness-restoration group replaces seven under-resolved views, including desk south, crate and chair, with generated fidelity restorations inside the same world bounds and footprints. All 184 sources now support the 6x camera without source enlargement. This establishes sampling coverage, not blanket camera or owner approval. The CRT and approved lighting profile are retained; one weaker command back-wall fixture fills a gap in Kepler.
 
@@ -10,7 +10,7 @@
 
 The owner explicitly approved the complete prop sheet: “that sprite sheet is exactly what I am going for.” This approval applies to its visual style. It does not assert that the individual assets are already cut out, mapped, animated, or integrated.
 
-**Master:** `frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png`
+**Master:** `frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png`
 
 **SHA-256:** `e68ef0d3711e9164a3aff5333b98522ed6fdcb4bc7654929e333cb2ff2b97ea9`
 
@@ -41,7 +41,7 @@ Avoid photographic microtexture, realistic fabric weave, dense scratches/rivets,
 
 ## Reusable generation preamble
 
-> Projection references: the accepted in-station crate, workstation and chair. Material/design reference: the StarNet full prop sheet. Preserve its painted industrial palette and readable detail, while matching the accepted anchors' floor axes, visible top planes, physical scale and contact. Use the supplied native geometry guide to preserve the footprint and facing. Make only the requested object or correction. Do not reinterpret it as a photographic product render. Return raster artwork with clean transparency. The output still requires visual review in its real station placement.
+> Projection references: the accepted in-station crate, workstation and chair. Material/design reference: the Eyehold full prop sheet. Preserve its painted industrial palette and readable detail, while matching the accepted anchors' floor axes, visible top planes, physical scale and contact. Use the supplied native geometry guide to preserve the footprint and facing. Make only the requested object or correction. Do not reinterpret it as a photographic product render. Return raster artwork with clean transparency. The output still requires visual review in its real station placement.
 
 ## Next production stages
 

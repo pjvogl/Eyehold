@@ -10,7 +10,7 @@ lane: release-0120-prep-0915
 fix:
 origin: customer
 report: support-2026-09-16-ollama-no-chat-post
-affected: StarNet 0.11.2 Windows; Ollama 0.5.7; qwen2.5:7b; loopback 127.0.0.1:11434
+affected: Eyehold 0.11.2 Windows; Ollama 0.5.7; qwen2.5:7b; loopback 127.0.0.1:11434
 family: local-provider-transport
 installer: unverified
 recovery: unconfirmed

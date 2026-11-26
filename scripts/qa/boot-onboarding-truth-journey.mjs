@@ -1,16 +1,16 @@
 // Live PL-03/PL-08 adversarial journey. Uses the repository's sanctioned CDP harness.
 // Run against a seeded station for reload mode, and a fresh onboard sidecar for custom mode:
-//   STARNET_URL=http://127.0.0.1:9132 node scripts/qa/boot-onboarding-truth-journey.mjs reload
-//   STARNET_URL=http://127.0.0.1:9133 node scripts/qa/boot-onboarding-truth-journey.mjs custom
+//   EYEHOLD_URL=http://127.0.0.1:9132 node scripts/qa/boot-onboarding-truth-journey.mjs reload
+//   EYEHOLD_URL=http://127.0.0.1:9133 node scripts/qa/boot-onboarding-truth-journey.mjs custom
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { launchChrome, connectCDP, evalJS, collectDiagnostics, sleep } from '../lib/cdp.mjs';
 
 const mode = process.argv[2] || 'reload';
-const url = process.env.STARNET_URL || 'http://127.0.0.1:9132';
-const cdpPort = Number(process.env.STARNET_CDP_PORT || 9812);
-const profileDir = mkdtempSync(join(tmpdir(), 'starnet-boot-truth-'));
+const url = process.env.EYEHOLD_URL || 'http://127.0.0.1:9132';
+const cdpPort = Number(process.env.EYEHOLD_CDP_PORT || 9812);
+const profileDir = mkdtempSync(join(tmpdir(), 'eyehold-boot-truth-'));
 const { proc } = launchChrome({ cdpPort, win: '1440,900', profileDir });
 let cdp;
 const receipts = [], failures = [];

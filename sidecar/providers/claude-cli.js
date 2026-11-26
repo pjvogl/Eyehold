@@ -6,9 +6,9 @@
    really exited with a result — the station never animates a brain that is not running.
 
    CAPABILITY BOUNDARY. The CLI is an agent with its own tools (Bash, Edit, MCP connectors…). Letting it use them
-   would bypass StarNet's capability gate and consent broker, so the child is started with NO tools at all:
+   would bypass Eyehold's capability gate and consent broker, so the child is started with NO tools at all:
    `--tools ""`, an empty `--strict-mcp-config`, no skills/slash commands, no setting sources, no session file.
-   StarNet's own tools are described in the system prompt, and the model requests them with
+   Eyehold's own tools are described in the system prompt, and the model requests them with
    <tool_call>{"name":…,"arguments":{…}}</tool_call> blocks. This adapter turns those blocks into the ordinary
    tool_start/tool_args/tool_done events, so loop.js executes them through the same gate as every other provider.
 
@@ -77,7 +77,7 @@
      in its place: the model is told a picture was there, never handed a description of one it did not get. */
   const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
   const MAX_IMAGES = 20;   // the newest are sent; the loop already ages old screenshots out (TOOL_IMAGE_KEEP)
-  const IMAGE_MARK = '\u0000starnet-image-';
+  const IMAGE_MARK = '\u0000eyehold-image-';
   function imageBlockOf(p) {
     let s = p && p.type === 'image_url' ? (p.image_url && (p.image_url.url != null ? p.image_url.url : p.image_url)) : null;
     if (p && p.type === 'image' && p.source && typeof p.source === 'object') {
@@ -133,7 +133,7 @@
        file as-is, with none of the JSON escaping that broke big writes. <tool_call> blocks are still understood. */
     return [
       '# Tools',
-      'You cannot execute anything yourself; StarNet runs tools for you. To call tools, end your reply with a block exactly like:',
+      'You cannot execute anything yourself; Eyehold runs tools for you. To call tools, end your reply with a block exactly like:',
       '<function_calls>',
       '<invoke name="TOOL_NAME">',
       '<parameter name="PARAM_NAME">value</parameter>',
@@ -220,7 +220,7 @@
     if (!images.length) return prompt;
     const first = Math.max(0, images.length - MAX_IMAGES);
     const blocks = [];
-    const text = prompt.input.replace(/\u0000starnet-image-(\d+)\u0000/g, (_, k) => {
+    const text = prompt.input.replace(/\u0000eyehold-image-(\d+)\u0000/g, (_, k) => {
       const idx = Number(k);
       if (idx < first) return '[earlier image no longer attached]';
       const n = idx - first + 1;
@@ -458,7 +458,7 @@
       return '';
     }
     function command() {
-      const configured = String(opts.bin || env.STARNET_CLAUDE_BIN || '').trim();
+      const configured = String(opts.bin || env.EYEHOLD_CLAUDE_BIN || '').trim();
       let bin = configured || which('claude');
       if (!bin && platform === 'win32' && env.USERPROFILE) {
         const native = path.join(env.USERPROFILE, '.local', 'bin', 'claude.exe');
@@ -500,8 +500,8 @@
       e.code = 'provider_not_configured';
       return e;
     }
-    /* The CLI gets the station-free env (child-env.js: no STARNET_/SKYNET_ secrets, no station-held key values),
-       and its own memory stays out of the turn: auto-memory would inject the CLI user's notes into a StarNet agent. */
+    /* The CLI gets the station-free env (child-env.js: no EYEHOLD_/SKYNET_ secrets, no station-held key values),
+       and its own memory stays out of the turn: auto-memory would inject the CLI user's notes into a Eyehold agent. */
     function childEnv() {
       const out = childEnvLib.stationChildEnv(env);
       delete out.CLAUDECODE;               // a sidecar started from inside a Claude Code session is not a nested session
@@ -632,7 +632,7 @@
       if (!cmd) throw notInstalled();
       const prompt = buildPrompt(req.messages, req.tools, req.cacheSystemPrefix);
       const turn = ++seq;
-      const sysFile = path.join(os.tmpdir(), 'starnet-claude-cli-' + process.pid + '-' + turn + '-' + require('crypto').randomBytes(6).toString('hex') + '.txt');
+      const sysFile = path.join(os.tmpdir(), 'eyehold-claude-cli-' + process.pid + '-' + turn + '-' + require('crypto').randomBytes(6).toString('hex') + '.txt');
       const args = cmd.pre.concat(['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages'], NO_TOOLS_ARGS);
       if (prompt.streamJson) args.push('--input-format', 'stream-json');   // the turn carries images (see IMAGES)
       if (req.model) args.push('--model', String(req.model));

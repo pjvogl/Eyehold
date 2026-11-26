@@ -139,7 +139,7 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
   A.eq(refusedSsh && refusedSsh.requested, 'ssh', 'remote-ssh without ssh refuses the same way');
   A.eq(noDocker.describeAgent('remote').backendMatched, false, 'remote-ssh mismatch is reported');
 
-  const allowRouter = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear', env: { STARNET_SANDBOX_FALLBACK: 'allow' } });
+  const allowRouter = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear', env: { EYEHOLD_SANDBOX_FALLBACK: 'allow' } });
   A.eq((await allowRouter.execute({ agentId: 'safe', cmd: 'x' })).backend, 'local', 'allow policy runs the command locally');
   A.eq(allowRouter.describeAgent('safe').backendMatched, false, 'allow policy still reports backendMatched:false');
   A.eq(allowRouter.describeAgent('safe').refusing, false, 'allow policy is not refusing');

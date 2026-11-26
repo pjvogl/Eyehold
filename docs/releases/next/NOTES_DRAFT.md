@@ -1,4 +1,4 @@
-# StarNet — next release (draft)
+# Eyehold — next release (draft)
 
 DRAFT started 2026-09-27 for the release after v0.12.5. Not a release. Add one bullet per user-visible trunk
 merge as it lands; `release:bump` overwrites `RELEASE_NOTES.md` with a scaffold, so paste the final text from here.

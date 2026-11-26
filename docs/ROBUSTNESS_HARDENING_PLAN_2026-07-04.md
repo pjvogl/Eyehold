@@ -53,7 +53,7 @@ Small, independent, high-value diffs. One branch, one merge.
    results (match loop.js semantics).
    *Done =* test: 5 fs_write calls, same path, different long content — none blocked.
 
-Gate: `npm run test:fast` + live checks above. Merge via starnet-merge-ritual.
+Gate: `npm run test:fast` + live checks above. Merge via eyehold-merge-ritual.
 
 ---
 
@@ -125,7 +125,7 @@ Gate: test:fast + the two mock-server live checks. Note in report which items we
 6. Small sweep: conveyor `mbuf` clear on junction change; roster-change map sweep
    (heatByAgent/deskProg/xpByAgent/...); boot-seq null guards; spotify poll try/catch;
    `PropSprites` typeof guard at world.js:4608; API-base prefix consistency (routing/connectors
-   vs `__STARNET_API__`).
+   vs `__EYEHOLD_API__`).
 
 ## Phase 4 — Lane D: routes & event-loop hygiene (AFTER C merges)
 
@@ -182,7 +182,7 @@ Gate: test:fast + the two mock-server live checks. Note in report which items we
 
 - Doctrine applies: re-grep the finding before building it; smallest verifiable slice; commit
   pathspecs only; live-app proof per the *Done =* line; `npm run test:fast` green; merge via
-  `starnet-merge-ritual`; report what was and was NOT live-verified.
+  `eyehold-merge-ritual`; report what was and was NOT live-verified.
 - New tests: prefer unit tests for the pure fixes (errno kinds, readBody decode, loop-guard
   sig, cron-lock pid) — they're regression armor for exactly the classes that recur.
 

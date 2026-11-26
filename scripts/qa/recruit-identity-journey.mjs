@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const PORT = process.env.SKYNET_PORT || '8787';
-const CDP_PORT = Number(process.env.STARNET_CDP_PORT || 9762);
+const CDP_PORT = Number(process.env.EYEHOLD_CDP_PORT || 9762);
 const profileDir = mkdtempSync(join(tmpdir(), 'recruit-identity-'));
 const { proc } = launchChrome({ cdpPort: CDP_PORT, profileDir });
 const failures = [];

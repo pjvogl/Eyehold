@@ -1,4 +1,4 @@
-/* node test/routine-tools.test.js -- agent-facing StarNet ROUTINES tools.
+/* node test/routine-tools.test.js -- agent-facing Eyehold ROUTINES tools.
    Locks the bugfix for "cron" requests: the lead gets a real routine.create tool, it routes research/news
    routines to a research specialist, writes through the injected cron creator, and arms the scheduler by default. */
 'use strict';

@@ -1,4 +1,4 @@
-/* STARNET — workshopstore.js : the AWAY-WORKSHOP return surface (lane W3, frontend).
+/* EYEHOLD — workshopstore.js : the AWAY-WORKSHOP return surface (lane W3, frontend).
 
    The Commander switched an agent's "build things while I'm away" grant on; while they were gone an
    autonomous shift built a deliverable in that agent's jailed sandbox and wrote a manifest. This store
@@ -12,7 +12,7 @@
 
    DELIVERY REVEAL (2026-07-16, per Andrew): a finished build must GREET the Commander, not hide as an
    unread rail row with a one-line stub ("it puts it all on me to prompt and figure out what it even
-   is"). When a deliverable lands — live push, attach poll, or genuine return — StarNet OPENS the
+   is"). When a deliverable lands — live push, attach poll, or genuine return — Eyehold OPENS the
    deliverable's OWN session and presents the full return card there (what it built, the honest
    verification line, the summary, the files, the Open-it link, and the decide row). The card still
    renders ONLY inside its own session — never into a random feed — and the reveal stands down (unread
@@ -44,7 +44,7 @@
    this store talks to the real sidecar only — no dev stub. */
 'use strict';
 const WorkshopStore = (() => {
-  const KEY = 'starnet.workshop.v1';
+  const KEY = 'eyehold.workshop.v1';
   const ATTACH_DELAY_MS = 1800;   // let the floor + COMMS settle before the return beat (mirrors ReturnStore)
   let state = null;               // { v:1, later:{runId:true}, seen:[runId] } — session-scoped anti-nag
   let fired = false;              // one auto-poll per page session
@@ -291,7 +291,7 @@ const WorkshopStore = (() => {
   // W7 — OS launch is intentionally unavailable: neither loopback API possession nor
   // renderer IPC proves a fresh human gesture. The caller presents manual-open guidance.
   async function openFile(agentId, runId, relPath) {
-    return { ok: false, error: 'Open this file manually; StarNet cannot launch desktop applications from a run.' };
+    return { ok: false, error: 'Open this file manually; Eyehold cannot launch desktop applications from a run.' };
   }
 
   // the sensible default Keep destination (the Commander's Desktop, when the desktop shell knows it).

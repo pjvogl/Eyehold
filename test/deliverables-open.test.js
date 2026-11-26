@@ -50,8 +50,8 @@ function clickFor(row, preview) {
   try {
     const calls = [];
     global.window = {
-      __STARNET_API__: 'http://127.0.0.1:61661',
-      __STARNET_API_TOKEN__: 'launch-token',
+      __EYEHOLD_API__: 'http://127.0.0.1:61661',
+      __EYEHOLD_API_TOKEN__: 'launch-token',
       __TAURI__: { core: { invoke: async (name, args) => { calls.push({ name, args }); } } },
       getSelection: () => '',
       crypto: require('node:crypto').webcrypto
@@ -65,7 +65,7 @@ function clickFor(row, preview) {
     }, { innerHTML: 'untouched' });
     await D.handleOpenClick(run.event, run.rows);
     A.eq(calls, [{
-      name: 'starnet_open_artifact',
+      name: 'eyehold_open_artifact',
       args: { path: 'reports/final.md', agentId: 'agent' }
     }], 'one library click hands the exact run artifact identity to the native host');
     A.ok(run.event.prevented && run.event.stopped, 'desktop OPEN cannot fall through into a second navigation');

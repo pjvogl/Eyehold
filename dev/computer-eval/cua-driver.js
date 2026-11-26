@@ -1,7 +1,7 @@
 'use strict';
 
 // Evaluation-only adapter. Not registered in the shipping sidecar. The caller must
-// already hold StarNet's Full Power authority; production consent is not replaced.
+// already hold Eyehold's Full Power authority; production consent is not replaced.
 const { spawn, execFile } = require('node:child_process');
 const { randomUUID } = require('node:crypto');
 const { makeMcpClient } = require('../../sidecar/mcp/client.js');
@@ -23,8 +23,8 @@ function unwrap(result) {
 async function connect({ binary, fullPower, timeoutMs = 20000 }) {
   if (fullPower !== true) throw new Error('Evaluation launcher requires explicit Full Power');
   const env = childEnv();
-  const socket = process.platform === 'win32' ? '\\\\.\\pipe\\starnet-cua-eval-' + randomUUID() : require('node:path').join(require('node:os').tmpdir(), 'sn-' + randomUUID() + '.sock');
-  const session = 'starnet-eval-' + randomUUID();
+  const socket = process.platform === 'win32' ? '\\\\.\\pipe\\eyehold-cua-eval-' + randomUUID() : require('node:path').join(require('node:os').tmpdir(), 'sn-' + randomUUID() + '.sock');
+  const session = 'eyehold-eval-' + randomUUID();
   const errors = [];
   const start = (args) => {
     const child = spawn(binary, args, { env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });

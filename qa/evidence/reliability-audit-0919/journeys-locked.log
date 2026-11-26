@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.3 qa:journeys
+> eyehold-harness@0.12.3 qa:journeys
 > node scripts/qa/journeys.mjs
 
 provider: controllable journey mock on http://127.0.0.1:56067/api/v1

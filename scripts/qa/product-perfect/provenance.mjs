@@ -16,7 +16,7 @@ export const KINDS = Object.freeze({
 
 export const OFFICIAL_EVIDENCE_SCHEMA = 1;
 
-const VERIFIED_OFFICIAL = Symbol('starnet.verifiedOfficialEvidence');
+const VERIFIED_OFFICIAL = Symbol('eyehold.verifiedOfficialEvidence');
 const SHA40 = /^[0-9a-f]{40}$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 

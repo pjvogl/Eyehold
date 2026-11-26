@@ -26,7 +26,7 @@ async function withPreset(presetId, agentIds, answer, fn) {
   });
   await new Promise(resolve=>provider.listen(0,'127.0.0.1',resolve));
   const fixture=SidecarFixture.create({prefix:presetId+'-example-',timeoutMs:30000,env:{
-    SKYNET_OPENROUTER_KEY:'',STARNET_OPENROUTER_KEY:'',SKYNET_DEFAULT_MODEL:'',STARNET_DEFAULT_MODEL:'',
+    SKYNET_OPENROUTER_KEY:'',EYEHOLD_OPENROUTER_KEY:'',SKYNET_DEFAULT_MODEL:'',EYEHOLD_DEFAULT_MODEL:'',
     CUSTOM_OPENAI_BASE_URL:'http://127.0.0.1:'+provider.address().port+'/v1',CUSTOM_OPENAI_KEY:'local-example-fixture'
   }});
   try {

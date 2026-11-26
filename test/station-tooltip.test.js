@@ -1,6 +1,6 @@
 'use strict';
 
-/* station-tooltip.test.js — the OS never paints StarNet's UI.
+/* station-tooltip.test.js — the OS never paints Eyehold's UI.
  *
  * Companion to control-floor-theming.test.js. That one keeps the browser from painting our CONTROLS;
  * this one keeps it from painting our DIALOGS and our TOOLTIPS — the other two surfaces the user agent

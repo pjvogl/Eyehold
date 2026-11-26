@@ -125,7 +125,7 @@ const ROUTES = {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
   BASE = base;
-  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-gauntlet-'));
+  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-gauntlet-'));
   const downloadDir = path.join(profileDir, 'agent-downloads');
   const driver = T.makeCdpDriver({
     chrome, forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir, timeoutMs: 20000, downloadDir
@@ -305,7 +305,7 @@ const ROUTES = {
       if (!fullPath) {
         console.log('   (no full Chrome on this box — cross-origin frame READ not covered)');
       } else {
-        const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-gauntlet-oopif-'));
+        const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-gauntlet-oopif-'));
         const d2 = T.makeCdpDriver({ chrome: fullPath, forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir2, timeoutMs: 20000 });
         d2.allowLocal(base);
         d2.allowLocal(base.replace('127.0.0.1', 'localhost'));
@@ -439,7 +439,7 @@ const ROUTES = {
         'the adopted tab was SHIMMED before its own script ran');
       A.eq(await driver.testEval('(()=>{const d=Object.getOwnPropertyDescriptor(Document.prototype,"exitPointerLock");return !!d&&d.writable===false&&d.configurable===false})()'), true,
         'and the installed lock override is immutable, not a page-supplied writable value');
-      A.eq((await driver.testEval('Object.getOwnPropertyNames(window).filter(x=>/STARNET/.test(x))')).length, 0,
+      A.eq((await driver.testEval('Object.getOwnPropertyNames(window).filter(x=>/EYEHOLD/.test(x))')).length, 0,
         'the page realm exposes no stable product-named automation marker');
       await driver.selectTab(0);
 
@@ -457,7 +457,7 @@ const ROUTES = {
        shimmed). A page that re-aims its link or form from its own listener must still land in THIS tab - the shim
        cancels the event before the page sees it and loads the destination itself (review, 10-07). */
     {
-      const dir3 = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-gauntlet-blocked-'));
+      const dir3 = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-gauntlet-blocked-'));
       const d3 = T.makeCdpDriver({ chrome, forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir3, timeoutMs: 20000, adoptPopups: false });
       d3.allowLocal(base);
       const pageTargets = async () => (await (await fetch('http://127.0.0.1:' + d3.attachedPort() + '/json/list')).json()).filter(t => t && t.type === 'page');

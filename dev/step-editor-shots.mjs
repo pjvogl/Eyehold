@@ -86,7 +86,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.station.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -231,8 +231,8 @@ async function main() {
     await evalJS(cdp, `(() => { Build.close(); return 'closed'; })()`);   // close REFIT -> world rederives -> plan POSTs
     await sleep(2500);
     const wire = await evalJS(cdp, `(async () => {
-      const h = {}; const tok = window.__STARNET_API_TOKEN__ || '';
-      if (tok) h['X-StarNet-Token'] = String(tok);
+      const h = {}; const tok = window.__EYEHOLD_API_TOKEN__ || '';
+      if (tok) h['X-Eyehold-Token'] = String(tok);
       const r = await fetch('/api/routing/chain?agentId=' + encodeURIComponent(${JSON.stringify(researcherAgent)}) + '&tag=general', { cache: 'no-store', headers: h });
       return JSON.stringify(await r.json());
     })()`);

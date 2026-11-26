@@ -8,7 +8,7 @@
   },
   "race": {
     "chosen": {
-      "provider": "starnet",
+      "provider": "eyehold",
       "model": "anthropic/test-model"
     },
     "after": {

@@ -7,7 +7,7 @@ const A = require('./_assert.js');
 const { makeSegmentedTranscriptIo } = require('../sidecar/transcript-history.js');
 const { makeTranscriptStore } = require('../sidecar/transcriptstore.js');
 
-function temp(name) { return fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-' + name + '-')); }
+function temp(name) { return fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-' + name + '-')); }
 function remove(dir) { fs.rmSync(dir, { recursive: true, force: true }); }
 function ioAt(base, extra) {
   return makeSegmentedTranscriptIo(Object.assign({

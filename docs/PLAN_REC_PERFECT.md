@@ -1,6 +1,6 @@
 # PLAN — Recommendation Perfection Campaign (W3 → W1 → W2)
 
-**Mandate (Andrew, 2026-08-05):** the recommendation system is StarNet's differentiator —
+**Mandate (Andrew, 2026-08-05):** the recommendation system is Eyehold's differentiator —
 "the absolute best recommendations that use the context from memory… the most perfect
 standard possible," across every recommendation surface. Builds on the merged spine
 (`docs/PLAN_RECOMMENDATION_SPINE.md`) and quality loop (`docs/PLAN_REC_QUALITY_LOOP.md`).

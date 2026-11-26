@@ -29,7 +29,7 @@ global.localStorage = {
 };
 // a PRIOR SESSION's persisted ledger (the pre-2026-07-14 bug): both pending runs already "seen", one later'd.
 const STALE = JSON.stringify({ v: 1, later: { 'run-A': true }, seen: ['run-A', 'run-B'] });
-mem.set('starnet.workshop.v1', STALE);
+mem.set('eyehold.workshop.v1', STALE);
 
 let pending = [
   { runId: 'run-A', title: 'older build', files: [] },
@@ -188,7 +188,7 @@ const { WorkshopStore } = require('../frontend/app/workshopstore.js');
     'the builtAt-stamped session still lands unread (or revealed) — honesty never mutes delivery');
 
   /* ---------- B4. the ledger never persists (the 2026-07-14 root regression) ---------- */
-  A.eq(mem.get('starnet.workshop.v1'), STALE, 'no session state was written back to localStorage — the ledger is in-memory only');
+  A.eq(mem.get('eyehold.workshop.v1'), STALE, 'no session state was written back to localStorage — the ledger is in-memory only');
 
   /* ---------- C. source-guards for the browser-only wiring (not node-loadable) ---------- */
   const chatSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/chat.js'), 'utf8');

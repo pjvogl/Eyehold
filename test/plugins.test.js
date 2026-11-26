@@ -16,7 +16,7 @@ const crypto = require('node:crypto');
 const { makeHooks } = require('../sidecar/hooks.js');
 const { makePluginLoader } = require('../sidecar/plugins.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-plugins-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-plugins-' + process.pid);
 const PLUGINS = path.join(DIR, 'plugins');
 const ALLOW = path.join(DIR, 'plugins-allowed.json');
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');

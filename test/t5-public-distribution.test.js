@@ -17,13 +17,13 @@ const APP_VERSION = TAURI_CONF.version;
 // never restore the upstream update channel just to make a unit fixture green.
 // No requests are made to this reserved .invalid host.
 const LATEST_JSON_URL = 'https://eyeholddistribution.invalid/releases/latest/download/latest.json';
-const INSTALLER_URL = LATEST_JSON_URL.replace(/\/releases\/latest\/download\/latest\.json$/, '/releases/download/v' + APP_VERSION + '/StarNet_' + APP_VERSION + '_x64-setup.exe');
+const INSTALLER_URL = LATEST_JSON_URL.replace(/\/releases\/latest\/download\/latest\.json$/, '/releases/download/v' + APP_VERSION + '/Eyehold_' + APP_VERSION + '_x64-setup.exe');
 
 function cleanEnv(extra) {
   const env = Object.assign({}, process.env);
-  delete env.STARNET_T5_DISTRIBUTION_EVIDENCE;
-  delete env.STARNET_T5_MANIFEST;
-  delete env.STARNET_T5_INSTALLER_EXE;
+  delete env.EYEHOLD_T5_DISTRIBUTION_EVIDENCE;
+  delete env.EYEHOLD_T5_MANIFEST;
+  delete env.EYEHOLD_T5_INSTALLER_EXE;
   Object.assign(env, extra || {});
   return env;
 }
@@ -49,7 +49,7 @@ function artifactsOf(hash, bytes) {
 }
 function proof(hash, bytes, version, overrides) {
   const doc = {
-    schema: 'starnet.t5-public-distribution-proof.v1',
+    schema: 'eyehold.t5-public-distribution-proof.v1',
     generatedAt: new Date().toISOString(),
     release: {
       version,
@@ -81,7 +81,7 @@ function proof(hash, bytes, version, overrides) {
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 't5-public-distribution-'));
 try {
   const fixtureRoot = path.join(tmp, 'fixture-repo');
-  for (const relative of ['scripts/t5-public-distribution.mjs', 'scripts/lib/release-installer.mjs', 'docs/STARNET_T5_PUBLIC_DISTRIBUTION.md']) {
+  for (const relative of ['scripts/t5-public-distribution.mjs', 'scripts/lib/release-installer.mjs', 'docs/EYEHOLD_T5_PUBLIC_DISTRIBUTION.md']) {
     const dest = path.join(fixtureRoot, relative);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(path.join(ROOT, relative), dest);
@@ -92,7 +92,7 @@ try {
   const configFile = path.join(fixtureRoot, 'src-tauri/tauri.conf.json');
   writeJson(configFile, fixtureConfig);
   script = path.join(fixtureRoot, 'scripts/t5-public-distribution.mjs');
-  const installer = path.join(tmp, 'StarNet_' + APP_VERSION + '_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_' + APP_VERSION + '_x64-setup.exe');
   fs.writeFileSync(installer, 'fake installer');
   fs.writeFileSync(installer + '.sig', 'fake-updater-signature');
   const hash = hashFile(installer);
@@ -123,13 +123,13 @@ try {
   writeJson(t3, status('green', 'releaseSmokeReady', true, Object.assign({ generatedAt: currentGateStamp }, currentInstaller)));
   writeJson(t4, status('green', 'updateDeliveryReady', true, Object.assign({ generatedAt: currentGateStamp }, currentInstaller)));
   const baseEnv = {
-    STARNET_T5_INSTALLER_EXE: installer,
-    STARNET_T5_MANIFEST: manifest,
-    STARNET_T5_T0_STATUS: t0,
-    STARNET_T5_T1_STATUS: t1,
-    STARNET_T5_T2_STATUS: t2,
-    STARNET_T5_T3_STATUS: t3,
-    STARNET_T5_T4_STATUS: t4
+    EYEHOLD_T5_INSTALLER_EXE: installer,
+    EYEHOLD_T5_MANIFEST: manifest,
+    EYEHOLD_T5_T0_STATUS: t0,
+    EYEHOLD_T5_T1_STATUS: t1,
+    EYEHOLD_T5_T2_STATUS: t2,
+    EYEHOLD_T5_T3_STATUS: t3,
+    EYEHOLD_T5_T4_STATUS: t4
   };
 
   {
@@ -139,8 +139,8 @@ try {
     writeJson(goodProof, proof(hash, bytes, APP_VERSION));
     const out = path.join(tmp, 'stale-sig-out');
     const res = run(['--distribution-evidence', goodProof], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'stale-sig-latest')
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'stale-sig-latest')
     }));
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
@@ -155,8 +155,8 @@ try {
   {
     const out = path.join(tmp, 'blocked-proof-out');
     const res = run(['--loop=2'], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'blocked-proof-latest')
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'blocked-proof-latest')
     }));
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
@@ -171,8 +171,8 @@ try {
     writeJson(goodProof, proof(hash, bytes, APP_VERSION));
     const out = path.join(tmp, 'blocked-t1-out');
     const res = run(['--distribution-evidence', goodProof], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'blocked-t1-latest')
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'blocked-t1-latest')
     }));
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
@@ -188,8 +188,8 @@ try {
     }));
     const out = path.join(tmp, 'red-out');
     const res = run(['--distribution-evidence', badProof], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'red-latest')
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'red-latest')
     }));
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
@@ -203,12 +203,12 @@ try {
     const out = path.join(tmp, 'green-out');
     const latest = path.join(tmp, 'green-latest');
     const res = run(['--loop=2', '--distribution-evidence=' + goodProof], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: latest
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: latest
     }));
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
-    assert.equal(got.schema, 'starnet.t5-public-distribution-status.v1');
+    assert.equal(got.schema, 'eyehold.t5-public-distribution-status.v1');
     assert.equal(got.verdict, 'green');
     assert.equal(got.publicDistributionReady, true);
     assert.equal(got.nextAction, null);
@@ -223,8 +223,8 @@ try {
     writeJson(configFile, fixtureConfig);
     const out = path.join(tmp, 'disabled-updater-out');
     const res = run(['--distribution-evidence', path.join(tmp, 'good-proof.json')], Object.assign({}, baseEnv, {
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'disabled-updater-latest')
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'disabled-updater-latest')
     }));
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
     assert.equal(res.status, 2);
@@ -255,10 +255,10 @@ try {
     writeJson(s4, Object.assign(status('green', 'updateDeliveryReady', true, { generatedAt: staleStamp }), artifactsOf(staleHash, 4242)));
     const out = path.join(tmp, 'stale-prereq-out');
     const res = run(['--distribution-evidence', path.join(tmp, 'good-proof-for-stale-sig.json')], Object.assign({}, baseEnv, {
-      STARNET_T5_T0_STATUS: s0, STARNET_T5_T1_STATUS: s1, STARNET_T5_T2_STATUS: s2,
-      STARNET_T5_T3_STATUS: s3, STARNET_T5_T4_STATUS: s4,
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'stale-prereq-latest')
+      EYEHOLD_T5_T0_STATUS: s0, EYEHOLD_T5_T1_STATUS: s1, EYEHOLD_T5_T2_STATUS: s2,
+      EYEHOLD_T5_T3_STATUS: s3, EYEHOLD_T5_T4_STATUS: s4,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'stale-prereq-latest')
     }));
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
     const pre = got.results.find(r => r.id === 't5.1-prerequisite-gates');
@@ -276,9 +276,9 @@ try {
     writeJson(g0, Object.assign(status('green', 'cleanInstallProofReady', true, { generatedAt: new Date().toISOString() }), artifactsOf(cur, fs.statSync(installer).size)));
     const out2 = path.join(tmp, 'fresh-prereq-out');
     run(['--distribution-evidence', path.join(tmp, 'good-proof-for-stale-sig.json')], Object.assign({}, baseEnv, {
-      STARNET_T5_T0_STATUS: g0,
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out2,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'fresh-prereq-latest')
+      EYEHOLD_T5_T0_STATUS: g0,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out2,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'fresh-prereq-latest')
     }));
     const got2 = JSON.parse(fs.readFileSync(path.join(out2, 't5-public-distribution-status.json'), 'utf8'));
     const pre2 = got2.results.find(r => r.id === 't5.1-prerequisite-gates');
@@ -292,9 +292,9 @@ try {
     writeJson(unboundT1, status('green', 'publicReleaseReady', true, { generatedAt: new Date().toISOString() }));
     const out = path.join(tmp, 'unbound-prereq-out');
     run(['--distribution-evidence', path.join(tmp, 'good-proof-for-stale-sig.json')], Object.assign({}, baseEnv, {
-      STARNET_T5_T1_STATUS: unboundT1,
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'unbound-prereq-latest')
+      EYEHOLD_T5_T1_STATUS: unboundT1,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'unbound-prereq-latest')
     }));
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
     const pre = got.results.find(r => r.id === 't5.1-prerequisite-gates');
@@ -307,9 +307,9 @@ try {
     writeJson(oldT2, status('green', 'stateSafetyReady', true, { generatedAt: '2000-01-01T00:00:00.000Z' }));
     const out = path.join(tmp, 'old-prereq-out');
     run(['--distribution-evidence', path.join(tmp, 'good-proof-for-stale-sig.json')], Object.assign({}, baseEnv, {
-      STARNET_T5_T2_STATUS: oldT2,
-      STARNET_T5_PUBLIC_DISTRIBUTION_DIR: out,
-      STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'old-prereq-latest')
+      EYEHOLD_T5_T2_STATUS: oldT2,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR: out,
+      EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR: path.join(tmp, 'old-prereq-latest')
     }));
     const got = JSON.parse(fs.readFileSync(path.join(out, 't5-public-distribution-status.json'), 'utf8'));
     const pre = got.results.find(r => r.id === 't5.1-prerequisite-gates');

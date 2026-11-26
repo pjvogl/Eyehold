@@ -16,7 +16,7 @@ The docs closest to "how the thing is shaped." Still dated in spirit, but these 
 durable structure rather than a one-time task.
 
 - **BRAIN.md** — 5-minute orientation for any session opening the repo; the fastest on-ramp to
-  StarNet's core concept (local-first AI-agent harness rendered as a pixel-art station).
+  Eyehold's core concept (local-first AI-agent harness rendered as a pixel-art station).
 - **HARNESS_ARCHITECTURE.md** — engineering reference for the sidecar/backend: the target
   module map and the event contract each build step works toward.
 - **harness-runtime-spec.md** — the build spec for the sidecar runtime, layered on the frozen
@@ -63,15 +63,15 @@ Subsystem / feature plans:
   `CONVEYOR_PIPELINE_PLAN.md`, `CONVEYOR_PHASE_B_STATE.md`.
 - ref-parity program (design + loop workflow): `REF_HARNESS_INTEGRATION_PLAN.md`,
   `REF_HARNESS_PARITY_PLAN.md`, `REF_HARNESS_PARITY_LOOP_WORKFLOW.md`,
-  `STARNET_REF_REPLACEMENT_LOOPS.md`, `STARNET_REF_REPLACEMENT_PHASE2.md`,
-  `STARNET_REF_REPLACEMENT_PHASE3.md`, `STARNET_REF_REPLACEMENT_PHASE3_SEAL.md`,
-  `STARNET_REF_REPLACEMENT_PHASE4.md`.
+  `EYEHOLD_REF_REPLACEMENT_LOOPS.md`, `EYEHOLD_REF_REPLACEMENT_PHASE2.md`,
+  `EYEHOLD_REF_REPLACEMENT_PHASE3.md`, `EYEHOLD_REF_REPLACEMENT_PHASE3_SEAL.md`,
+  `EYEHOLD_REF_REPLACEMENT_PHASE4.md`.
 - Hardening / release-train plans: `ROBUSTNESS_HARDENING_PLAN_2026-07-04.md`,
   `INSTALLER_REBUILD_0.1.0_PLAN.md`, `RELEASE_TRAIN_BUILD_PLAN_2026-07-06.md`,
   `FULL_RELEASE_POLISH_PLAN.md`, `POLISH_SPRINT_2026-07-06.md`, `ROADMAP_2026-07-04_BRUTAL.md`,
   `FABLE_MARCHING_ORDERS_2026-07-03.md`, `AWAY_WORKSHOP_PLAN.md`.
-- Session/loop & task packs: `STARNET_SESSION_LOOPS_1_6.md`, `STARNET_BUG_FINDING_LOOPS.md`,
-  `STARNET_DOGFOOD_TASK_PACK.md`, `STARNET_PHASE5_REF_WORKLOADS.md`.
+- Session/loop & task packs: `EYEHOLD_SESSION_LOOPS_1_6.md`, `EYEHOLD_BUG_FINDING_LOOPS.md`,
+  `EYEHOLD_DOGFOOD_TASK_PACK.md`, `EYEHOLD_PHASE5_REF_WORKLOADS.md`.
 
 ## Audits & QA reports (dated, historical)
 
@@ -86,11 +86,11 @@ reasoned, never as the current state.
 - Hardening trackers (fix logs with threat models / adversarial tests):
   `SECURITY_HARDENING.md`, `PERSISTENCE_HARDENING.md`,
   `LAUNCH_HARDENING_CHECKLIST_2026-07-04.md`.
-- Phase-proof evidence, baselines & templates: `STARNET_PHASE4_BASELINE.md`,
-  `STARNET_PHASE4_REF_BASELINE.md`, `STARNET_PHASE4_ATTENDED_EVIDENCE_TEMPLATE.md`,
-  `STARNET_PHASE5_EVIDENCE_TEMPLATE.md`, `STARNET_T0_CLEAN_INSTALL_PROOF.md`,
-  `STARNET_T1_SIGNING_LOOP.md`, `STARNET_T3_RELEASE_SMOKE.md`, `STARNET_T4_UPDATE_DELIVERY.md`,
-  `STARNET_T5_PUBLIC_DISTRIBUTION.md`, `PLAYTEST_SCRIPT_GATE5.md`, `GATE_HANDOFF.md`.
+- Phase-proof evidence, baselines & templates: `EYEHOLD_PHASE4_BASELINE.md`,
+  `EYEHOLD_PHASE4_REF_BASELINE.md`, `EYEHOLD_PHASE4_ATTENDED_EVIDENCE_TEMPLATE.md`,
+  `EYEHOLD_PHASE5_EVIDENCE_TEMPLATE.md`, `EYEHOLD_T0_CLEAN_INSTALL_PROOF.md`,
+  `EYEHOLD_T1_SIGNING_LOOP.md`, `EYEHOLD_T3_RELEASE_SMOKE.md`, `EYEHOLD_T4_UPDATE_DELIVERY.md`,
+  `EYEHOLD_T5_PUBLIC_DISTRIBUTION.md`, `PLAYTEST_SCRIPT_GATE5.md`, `GATE_HANDOFF.md`.
 - Contract requests: `SKILL_EVENTS_CONTRACT_REQUEST.md`.
 
 ## Release / runbooks
@@ -100,5 +100,5 @@ Operational procedures for cutting and shipping a build.
 - **RELEASE_RUNBOOK.md** — the solo release procedure, step-by-step commands and clicks.
 - **LAUNCH_CHECKLIST.md** — one-page status tracker of public-facing artifacts and release-day
   readiness.
-- **STARNET_UPDATES.md** — how the Tauri signed-update mechanism works and the user update loop.
+- **EYEHOLD_UPDATES.md** — how the Tauri signed-update mechanism works and the user update loop.
 - `LAUNCH_CHECKLIST.md`, `INSTALLER_REBUILD_0.1.0_PLAN.md` also touch release readiness.

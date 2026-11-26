@@ -18,7 +18,7 @@
  * GET /api/cron / Workstreams globals). It is the same class of coverage the project already accepts
  * as `perfected` evidence for the shared window-chrome entries (scripts/qa/terminal-resize-journey.mjs).
  *
- * LAWS (Charter Part 5 + StarNet task doctrine):
+ * LAWS (Charter Part 5 + Eyehold task doctrine):
  *   - ZERO PAID CALLS: the only provider is a local quick-mock (streams a canned reply). A RECIPES
  *     RUN NOW dispatches a real kind:'task' workstream; its run completes against the mock.
  *   - NO-FAKE-GREEN: a setup that cannot run exits BLOCKED (2), never a silent pass.
@@ -367,7 +367,7 @@ async function main() {
     if (await isUp(APP_URL)) { console.error(`BLOCKED: work-journey port :${PORT} already has a server; set SKYNET_WORK_PORT to a free port`); return finish(2); }
     mock = await startQuickMock(DEFAULT_MODEL);
     process.env.SKYNET_OPENROUTER_BASE = mock.base;
-    process.env.STARNET_OPENROUTER_BASE = mock.base;
+    process.env.EYEHOLD_OPENROUTER_BASE = mock.base;
     console.log(`provider: quick-mock on ${mock.base}`);
     console.log(`sidecar: booting SEEDED SKYNET_DEV on :${PORT} (model=${DEFAULT_MODEL}) ...`);
     materializeSeedWorkspace(SCRATCH);

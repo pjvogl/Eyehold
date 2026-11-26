@@ -17,11 +17,11 @@ function boot(port, workspaces, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        STARNET_PORT: String(port),
-        STARNET_WORKSPACES: workspaces,
+        EYEHOLD_PORT: String(port),
+        EYEHOLD_WORKSPACES: workspaces,
         // the token-gated-POST probe below uses /api/budget/resume{day}; shipped pool defaults are UNGOVERNED
         // (2026-07-23 budget-legibility pass — resume on an ungoverned scope 409s), so govern the day pool here.
-        STARNET_BUDGET_PER_DAY: '40'
+        EYEHOLD_BUDGET_PER_DAY: '40'
       }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -54,12 +54,12 @@ function boot(port, workspaces, attemptsLeft) {
 }
 
 function extractBootToken(html) {
-  const m = String(html || '').match(/window\.__STARNET_API_TOKEN__\s*=\s*"([^"]+)"/);
+  const m = String(html || '').match(/window\.__EYEHOLD_API_TOKEN__\s*=\s*"([^"]+)"/);
   return m ? m[1] : '';
 }
 
 (async () => {
-  const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-bootsec-'));
+  const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-bootsec-'));
   const booted = await boot(8880 + (process.pid % 40), ws, 20);
   const { child, port } = booted;
   const B = 'http://' + HOST + ':' + port;
@@ -74,7 +74,7 @@ function extractBootToken(html) {
     const activeFileUrl = B + '/api/file?agent=agent&path=' + encodeURIComponent('deliverable.html');
     const unauthActiveFile = await fetch(activeFileUrl, { headers: { Origin: B } });
     A.eq(unauthActiveFile.status, 403, 'same-origin active deliverable cannot be read without the API token');
-    const activeFile = await fetch(activeFileUrl, { headers: { Origin: B, 'X-StarNet-Token': browserToken } });
+    const activeFile = await fetch(activeFileUrl, { headers: { Origin: B, 'X-Eyehold-Token': browserToken } });
     A.eq(activeFile.status, 200, 'tokened active deliverable can still be downloaded');
     A.ok(/^attachment\b/.test(activeFile.headers.get('content-disposition') || ''), 'script-capable deliverable is forced to attachment');
     A.ok(/sandbox/.test(activeFile.headers.get('content-security-policy') || ''), 'script-capable deliverable carries sandbox CSP');
@@ -93,7 +93,7 @@ function extractBootToken(html) {
 
     const tokenedSession = await fetch(B + '/api/session', {
       method: 'POST',
-      headers: { Origin: B, 'X-StarNet-Token': browserToken }
+      headers: { Origin: B, 'X-Eyehold-Token': browserToken }
     });
     A.eq(tokenedSession.status, 200, 'POST /api/session with token succeeds');
     const tokenedSessionBody = await tokenedSession.json().catch(() => ({}));
@@ -106,20 +106,20 @@ function extractBootToken(html) {
     A.eq(unauthSave.status, 403, 'sensitive save GET without token is refused');
 
     const browserBudget = await fetch(B + '/api/budget/status', {
-      headers: { Origin: B, 'X-StarNet-Token': browserToken }
+      headers: { Origin: B, 'X-Eyehold-Token': browserToken }
     });
     A.eq(browserBudget.status, 200, 'trusted browser flow can read budget with the boot token');
 
     const browserResume = await fetch(B + '/api/budget/resume', {
       method: 'POST',
-      headers: { Origin: B, 'X-StarNet-Token': browserToken, 'Content-Type': 'application/json' },
+      headers: { Origin: B, 'X-Eyehold-Token': browserToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({ scope: 'day' })
     });
     A.eq(browserResume.status, 200, 'trusted browser flow can perform token-gated POSTs');
 
     const tauriOrigin = 'http://tauri.localhost';
     const tauriBudget = await fetch(B + '/api/budget/status', {
-      headers: { Origin: tauriOrigin, 'X-StarNet-Token': browserToken }
+      headers: { Origin: tauriOrigin, 'X-Eyehold-Token': browserToken }
     });
     A.eq(tauriBudget.status, 200, 'Tauri trusted flow can read token-gated GETs');
 

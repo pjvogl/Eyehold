@@ -22,7 +22,7 @@ give the user total freedom with it: tweak it, run it once, or put it on a sched
 ## Current state (mapped 2026-07-02)
 
 - `frontend/app/recipes.js` — schema `{id,name,emoji,tagline,blurb,accent,tags,params,task,custom}`,
-  10 builtins, custom store in `localStorage.starnet.recipes.v1`, `fillTask()` token substitution.
+  10 builtins, custom store in `localStorage.eyehold.recipes.v1`, `fillTask()` token substitution.
 - Launch path: `app.js launchRecipe()` → new workstream → `Chat.send(directive,{isTask:true})`.
 - Marketplace UI: `frontend/app/marketplace.js:303–380` (RECIPES tab roster + dossier + launch).
 - Cron: `sidecar/cron.js` + `POST /api/cron` — full scheduler (interval/once/5-field, tz). **Zero wiring to recipes.**

@@ -1,7 +1,7 @@
 {
   "tool": "built-in image_gen",
   "prompt": "docs/station-remaster/scale-calibration/entire-sheet.prompt.txt",
-  "output": "frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png",
+  "output": "frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png",
   "width": 1536,
   "height": 1024,
   "hasAlpha": true,

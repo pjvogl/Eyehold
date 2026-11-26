@@ -6,11 +6,11 @@ const os = require('node:os');
 const path = require('node:path');
 const { makeComputerControl } = require('../sidecar/computer-control.js');
 function setup(t, extra = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-computer-test-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-computer-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   let stored; let stopped = 0;
   const api = makeComputerControl({ root, platform: 'win32', arch: 'x64', desktopShell: true,
-    env: { STARNET_COMPUTER_DRIVER: '1' }, load: () => stored, save: (_, value) => { stored = value; },
+    env: { EYEHOLD_COMPUTER_DRIVER: '1' }, load: () => stored, save: (_, value) => { stored = value; },
     onChange: () => { stopped++; }, ...extra });
   return { api, root, get stopped() { return stopped; } };
 }
@@ -21,7 +21,7 @@ test('classic remains default, off persists and closes active CUA sessions', asy
   await f.api.select('win32'); assert.equal(f.api.available(), true);
 });
 test('missing CUA cannot be selected or advertised as available', async t => {
-  const { api } = setup(t, { env: { STARNET_COMPUTER_DRIVER: 'cua' } });
+  const { api } = setup(t, { env: { EYEHOLD_COMPUTER_DRIVER: 'cua' } });
   assert.equal(api.available(), false); assert.equal(api.status().installed, false);
   await assert.rejects(api.select('win32'), /launch environment/);
 });

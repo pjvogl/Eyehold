@@ -55,7 +55,7 @@ const { normalizeContract } = require('../sidecar/task-postconditions.js');
 
   // ---- the contract is EXACTLY what the sidecar accepts ----
   const pcs = R.postconditionsFor(r, { client: 'acme' });
-  A.eq(pcs.schemaVersion, 'starnet.task-postconditions.v1', 'schema marker');
+  A.eq(pcs.schemaVersion, 'eyehold.task-postconditions.v1', 'schema marker');
   A.eq(pcs.authority, 'commander', 'authority is the Commander (never the model)');
   A.eq(pcs.requirements.map(q => q.id), ['sop-1', 'sop-2', 'sop-3', 'sop-4', 'sop-5'], 'stable row ids');
   A.eq(pcs.requirements[0], { id: 'sop-1', type: 'artifact_exists', path: 'out/acme-invoice.md' }, 'exists row filled');

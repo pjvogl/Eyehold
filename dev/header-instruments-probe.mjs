@@ -7,13 +7,13 @@ import {spawn} from 'node:child_process';
 import http from 'node:http';
 import {findChrome,connectCDP,evalJS,capture,sleep} from '../scripts/lib/cdp.mjs';
 import {materializeSeedWorkspace,bootSeededSidecar,waitUp,waitDevReady} from '../scripts/lib/seed.mjs';
-const out='.worldshots/header-instruments', scratch=mkdtempSync(join(tmpdir(),'starnet-header-')), ws=join(scratch,'ws');
+const out='.worldshots/header-instruments', scratch=mkdtempSync(join(tmpdir(),'eyehold-header-')), ws=join(scratch,'ws');
 mkdirSync(out,{recursive:true});materializeSeedWorkspace(ws,'test/model');
 const report={checks:[],exceptions:[]};let side,chrome,cdp;
 const mock=http.createServer((req,res)=>{res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({data:[{id:'test/model',context_length:32000,pricing:{prompt:'0',completion:'0'},supported_parameters:['tools']}]}));});
 await new Promise(r=>mock.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+mock.address().port+'/api/v1';
-const boot=()=>bootSeededSidecar({port:9490,model:'test/model',scratchDir:ws,key:'sk-or-ui-fixture',env:{SKYNET_OPENROUTER_BASE:base,STARNET_OPENROUTER_BASE:base}});
+const boot=()=>bootSeededSidecar({port:9490,model:'test/model',scratchDir:ws,key:'sk-or-ui-fixture',env:{SKYNET_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_BASE:base}});
 const run=s=>evalJS(cdp,s);
 async function until(s){for(let i=0;i<150;i++){if(await run(s))return;await sleep(200);}throw Error('Timed out: '+s);}
 async function check(name,s){assert.ok(await run(s),name);report.checks.push(name);}

@@ -163,7 +163,7 @@
         state: item.state, evidence: (Array.isArray(item.evidence) ? item.evidence : []).slice(0, 20).map(x => str(x).slice(0, 40))
       });
     }
-    const contract = src.contract && src.contract.schemaVersion === 'starnet.task-postconditions.v1'
+    const contract = src.contract && src.contract.schemaVersion === 'eyehold.task-postconditions.v1'
       && src.contract.authority === 'commander' && Array.isArray(src.contract.requirements)
       ? {
           schemaVersion: src.contract.schemaVersion, authority: 'commander',
@@ -186,7 +186,7 @@
     if (!hostAssessed) completionVerdict = 'not_assessed';
     else if (completionVerdict === 'completed_verified' && !structurallyVerified) completionVerdict = 'verification_required';
     const out = {
-      schemaVersion: 'starnet.completion-evidence.v1',
+      schemaVersion: 'eyehold.completion-evidence.v1',
       completionVerdict,
       effectVerdict: allowedEffects.has(src.effectVerdict) ? src.effectVerdict : 'no_observed_effects',
       effects

@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.hermes-campaign-queue.v1",
+  "schema": "eyehold.hermes-campaign-queue.v1",
   "reference": {
     "version": "0.21.1",
     "commit": "2237be355906fbe6065ce1815711eee52b2d646e"
@@ -79,21 +79,21 @@
   "trials": [
     {
       "scenario": "json-constraints",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "json-constraints",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "json-constraints",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -121,21 +121,21 @@
     },
     {
       "scenario": "out-of-order-workers",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "out-of-order-workers",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "out-of-order-workers",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -163,21 +163,21 @@
     },
     {
       "scenario": "repair-without-mutation-replay",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "repair-without-mutation-replay",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "repair-without-mutation-replay",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -205,21 +205,21 @@
     },
     {
       "scenario": "failed-check-repair-recheck",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "failed-check-repair-recheck",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "failed-check-repair-recheck",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -247,21 +247,21 @@
     },
     {
       "scenario": "large-output-tail",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "large-output-tail",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "large-output-tail",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -289,21 +289,21 @@
     },
     {
       "scenario": "partial-provider-disconnect",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "partial-provider-disconnect",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "partial-provider-disconnect",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -331,21 +331,21 @@
     },
     {
       "scenario": "duplicate-submission",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "duplicate-submission",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "duplicate-submission",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -373,21 +373,21 @@
     },
     {
       "scenario": "restart-after-mutation",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "restart-after-mutation",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "restart-after-mutation",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -415,21 +415,21 @@
     },
     {
       "scenario": "project-resume",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "project-resume",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "project-resume",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -457,21 +457,21 @@
     },
     {
       "scenario": "wide-report-copy",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "wide-report-copy",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "wide-report-copy",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -499,21 +499,21 @@
     },
     {
       "scenario": "artifact-open-revise",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "artifact-open-revise",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "artifact-open-revise",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null
@@ -541,21 +541,21 @@
     },
     {
       "scenario": "blocked-schedule-recovery",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 1,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "blocked-schedule-recovery",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 2,
       "status": "not_run",
       "evidence": null
     },
     {
       "scenario": "blocked-schedule-recovery",
-      "harness": "starnet",
+      "harness": "eyehold",
       "attempt": 3,
       "status": "not_run",
       "evidence": null

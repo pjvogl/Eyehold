@@ -91,7 +91,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
 
 // A pinned checkout must be able to read Guardian's explicitly supplied operational ledger.
 {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-golden-ledger-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-golden-ledger-'));
   const findingsDir = path.join(dir, 'findings');
   const knownFile = path.join(dir, 'KNOWN_ISSUES.md');
   fs.mkdirSync(findingsDir);
@@ -110,7 +110,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
 // Source lock the composition root: the immutable pin cannot infer ignored operational files.
 {
   const guardian = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'qa', 'guardian.mjs'), 'utf8');
-  A.ok(/STARNET_QA_FINDINGS_DIR/.test(guardian) && /STARNET_QA_KNOWN_FILE/.test(guardian),
+  A.ok(/EYEHOLD_QA_FINDINGS_DIR/.test(guardian) && /EYEHOLD_QA_KNOWN_FILE/.test(guardian),
     'Guardian passes operational findings + known-issues paths into the pinned golden gate');
 }
 

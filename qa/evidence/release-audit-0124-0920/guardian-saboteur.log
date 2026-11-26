@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 qa:saboteur
+> eyehold-harness@0.12.4 qa:saboteur
 > node scripts/qa/saboteur.mjs
 
 SABOTEUR GREEN — 523 attacks passed across 238 literal API routes (seed 3179050267)

@@ -1,7 +1,7 @@
 > Historical working draft, superseded by the final v0.12.5 RELEASE_NOTES.md (the owner chose 0.12.5 over the 0.13.0 suggested below).
 > The notes audit, heads-up list and validation record are in PREPARATION.md beside this file.
 
-# StarNet — next release (draft)
+# Eyehold — next release (draft)
 
 DRAFT started 2026-09-24 from every trunk merge since v0.12.4 (`f00aa04df`). Not a release. `release:bump`
 overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here. Pick the version at the cut
@@ -18,7 +18,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
   after a restart and no longer overwrite each other's receipts.
 - **Google Workspace early access.** Calendar, Docs, Sheets, Drive and Gmail connect now as early access. Google
   shows an "unverified app" warning at sign-in and caps use at 100 users until verification completes. Gmail
-  and Drive data never goes to StarNet Managed models.
+  and Drive data never goes to Eyehold Managed models.
 - **Live model status.** COMMS shows when a model call is slow or retrying, and why, from the engine's own
   events. Long streaming replies from the local `/v1` endpoint keep the connection alive.
 - **Spend safety.** A $25/day soft spend rail on metered runs (one-click RESUME, editable, 0 turns it off). Runs
@@ -29,7 +29,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
 - **Coding tools.** `fs.edit` refuses ambiguous edits, `fs.read` can number lines, search respects
   `.gitignore` and uses ripgrep when installed, and `shell.exec` accepts timeouts up to 10 minutes.
 - **Windows command exit codes are reported correctly.** Before this, a failing command could report exit 0.
-- **Headless CLI.** `starnet run | status | doctor | init` drives a station from a terminal.
+- **Headless CLI.** `eyehold run | status | doctor | init` drives a station from a terminal.
 - **Memory.** Lessons and facts can be scoped to a project, and recall can use embeddings from a configured
   provider.
 - **DaVinci Resolve edit bay** on the STUDIO prop (live control needs Resolve Studio). Seven hosted MCP
@@ -62,7 +62,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
 - Slack and Matrix bot tokens are kept in the OS keychain on desktop, like Telegram and Discord.
 - Webhook, watched-folder, forwarded and attached content never gets an agent's Full Access (also after a crash
   and resume). Connector tool descriptions are shown to the model as the server's words, not instructions.
-- Commands and helpers StarNet starts no longer inherit its stored keys and tokens.
+- Commands and helpers Eyehold starts no longer inherit its stored keys and tokens.
 - **Heads-up:** installed plugins ask for approval once more, because approval now covers every file in the
   plugin's folder and is re-checked while it runs.
 - Discord, Slack, Matrix and Signal bots need the same one-time owner pairing code as Telegram before they take

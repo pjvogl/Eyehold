@@ -1,8 +1,8 @@
-/* StarNet autonomy posture: the sidecar owns the setting. Browser storage is a
+/* Eyehold autonomy posture: the sidecar owns the setting. Browser storage is a
    last-confirmed cache, never permission to overwrite the server on page load. */
 'use strict';
 const AutonomyStore = (() => {
-  const KEY = 'starnet.autonomy.v1';
+  const KEY = 'eyehold.autonomy.v1';
   let state = null, loaded = false, error = '', pending = 0, epoch = 0;
   let tail = Promise.resolve();
   const listeners = new Set();

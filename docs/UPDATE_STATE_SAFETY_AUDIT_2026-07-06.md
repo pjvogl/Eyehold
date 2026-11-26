@@ -35,7 +35,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   (missing agents, identity merges), invisible hot-patches (UI froze at 6/28 for a week).
 - Fix: on startup BEFORE window creation, compare app version to a stored marker; on change,
   purge `EBWebView\Default\{Cache, Code Cache, GPUCache, Dawn*Cache}` — PRESERVE Local
-  Storage/IndexedDB/cookies (the world save lives in Local Storage `starnet.save`).
+  Storage/IndexedDB/cookies (the world save lives in Local Storage `eyehold.save`).
 - Status: **task chip already spawned** (worktree lane).
 
 ### P0.2 — Durable-mirror sync fails silently; stale mirror = latent data loss
@@ -60,7 +60,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   P0.1 interplay): v6-only fields ride along unread, doc gets re-stamped v5, and on re-upgrade
   the hybrid doc can break v6 assumptions. Silent contamination, brutal to debug.
 - Fix: `Save.load()` must refuse `doc.version > CURRENT` (leave the stored doc UNTOUCHED, show
-  an honest "save was written by a newer StarNet — update the app" gate); reconcile must
+  an honest "save was written by a newer Eyehold — update the app" gate); reconcile must
   re-validate after adoption and never hand back an unmigrated doc. Add the same check to
   `backup.js` import (`validate()` at backup.js:99-104 ignores backup version today).
 
@@ -88,7 +88,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   unknown to the harness — roster out of sync") in COMMS/run output instead of impersonating.
 
 ### P1.3 — Update installs kill the app with no save flush
-- Seam: `src-tauri/src/main.rs:1053-1093` (`starnet_update_install` → download_and_install →
+- Seam: `src-tauri/src/main.rs:1053-1093` (`eyehold_update_install` → download_and_install →
   NSIS `CheckIfAppIsRunning` terminates the app); `frontend/app/updates.js` install flow never
   flushes `CloudSave.pending` or waits for the beacon.
 - Failure: the last ~1.2s debounce window of world changes (and any in-flight sidecar write) is
@@ -106,7 +106,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   Run in `test:fast` for the store layer + a CDP-driven variant in the release train.
 
 ### P1.5 — Unreproducible release binaries can reach users
-- Evidence: `StarNet_0.2.3/0.2.4_x64-setup.exe` were built tonight from the integration tree
+- Evidence: `Eyehold_0.2.3/0.2.4_x64-setup.exe` were built tonight from the integration tree
   with the version bumped-then-reverted — no tag, no commit (only v0.2.0-v0.2.2 exist). The
   release train's tag/version gate (`release-train.yml:262-279`) is solid but only guards the
   CI path; locally-built installers bypass everything, and the exe embeds whatever the working
@@ -128,7 +128,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   do), and no test fails on a renamed/removed field. Add a contract-snapshot test (additive-only
   gate) so a rename in shared/ breaks CI, not users. (Owner: cortex-memory workstream.)
 - **P2.3 localStorage feature stores have versioned KEY NAMES but no internal shape guards** —
-  ~15 `starnet.*.v1` stores parse-or-null with no `_version` field; a shape change would
+  ~15 `eyehold.*.v1` stores parse-or-null with no `_version` field; a shape change would
   silently mis-read old data. Adopt a tiny shared load helper (`_version` + tolerant defaults).
 - **P2.4 Cron jobs / allowlist reshape-on-write drops unknown fields** (same class as P1.1,
   lower blast radius): `cron-store.js` re-emits known fields only.
@@ -136,10 +136,10 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   `ai.skynet.harness` (installer.nsi:2992-3008) = world save + webview profile. Unchecked by
   default and update-mode never deletes (solid), but the label should spell out "deletes your
   station, agents and history" — one careless click is total loss. Consider auto-exporting a
-  `starnet-backup` file to Desktop before honoring it.
+  `eyehold-backup` file to Desktop before honoring it.
 - **P2.6 Legacy dual data roots** — the TRUE root is `%APPDATA%\ai.skynet.harness\workspaces`
   (Rust shell passes it; `startup.log` proves). Stale hot-patch-era roots
-  (`%LOCALAPPDATA%\StarNet\workspaces`) still exist on dev machines and confuse forensics;
+  (`%LOCALAPPDATA%\Eyehold\workspaces`) still exist on dev machines and confuse forensics;
   migration is copy-if-missing (`main.rs:360-397`, safe), but drop a `MOVED.txt` marker into
   legacy roots after migration so nobody (human or agent) reads stale state as truth again.
 
@@ -153,7 +153,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   single canonical root passed to the sidecar via env (`main.rs:360-397,615,1131-1134`).
 - Frontend save: lossless v1→v5 migration ladder + one-time pre-migrate backup
   (`save.js:14-61`); corrupt JSON → null → first-run path never clobbers the stored raw doc;
-  `skynet.*`→`starnet.*` rename migration is idempotent and keeps old keys as rollback.
+  `skynet.*`→`eyehold.*` rename migration is idempotent and keeps old keys as rollback.
 - Sidecar durable writes: `.bak` snapshot before overwrite, temp+fsync+atomic rename,
   refuse-to-mutate-unreadable, per-key mutex (`durable-store.js:49-175`); savestore updatedAt
   anti-clobber (`savestore.js:145-171`); roster POST strict-validated against empty-wipe;
@@ -162,7 +162,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
 
 ## Execution
 
-Lanes staged as task chips (each = one worktree agent, merge via starnet-merge-ritual,
+Lanes staged as task chips (each = one worktree agent, merge via eyehold-merge-ritual,
 `npm run test:fast` green before merge):
 
 1. **P0.1** webview cache purge on version change (chip spawned earlier tonight).

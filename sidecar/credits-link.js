@@ -1,4 +1,4 @@
-/* sidecar/credits-link.js — device pairing client for StarNet Cloud + the durable link-config store.
+/* sidecar/credits-link.js — device pairing client for Eyehold Cloud + the durable link-config store.
 
    Slice 2 of the subscriptions plan: turn a static CREDITS_ACCOUNT env var into a real, user-driven LINK
    STATION flow. This module owns two things and NOTHING else (no billing, no admission — that stays in
@@ -22,7 +22,7 @@
         The device token is a bearer credential that SPENDS MONEY, so on the desktop it belongs in the OS
         keychain, not in a file. The desktop adopts it: Rust reads credits.json, stores the token under
         keychain account "credits:device", strips `deviceToken` from the file, and injects it back at every
-        sidecar spawn as STARNET_CREDITS_TOKEN. So `deviceToken` in the file is TRANSIENT on desktop —
+        sidecar spawn as EYEHOLD_CREDITS_TOKEN. So `deviceToken` in the file is TRANSIENT on desktop —
         present between the link and the adoption moments later, absent afterwards.
         Precedence in loadSavedSync: file token (fresh link, pre-adoption) -> this process's freshly linked
         session token -> injected env token (adopted at launch). The session token MUST beat envToken after a
@@ -30,7 +30,7 @@
         A bare/dev sidecar has no keychain and no injector, so the file keeps the token exactly as before —
         this is additive and never breaks a non-desktop deploy.
 
-   HONESTY LAW: when STARNET_CLOUD_URL is unset, configured() is false — start() refuses, the /api/credits/*
+   HONESTY LAW: when EYEHOLD_CLOUD_URL is unset, configured() is false — start() refuses, the /api/credits/*
    link routes 404, and the STORE shows no LINK card. Pure/injected IO (fetch, fs, fsp, path, clock) so the
    whole flow is unit-testable offline (see test/credits-link.test.js). */
 'use strict';
@@ -45,11 +45,11 @@
   function trimSlash(u) { return str(u).replace(/\/+$/, ''); }
 
   /* deps: {
-       cloudUrl,                 // STARNET_CLOUD_URL (empty => inert, everything 404s)
+       cloudUrl,                 // EYEHOLD_CLOUD_URL (empty => inert, everything 404s)
        fetch, fsp, fs, pathMod,  // injected IO
        dir,                      // WORKSPACES/.secrets — where credits.json lives
        now,                      // () => ms wall clock
-       envToken                  // STARNET_CREDITS_TOKEN — desktop-injected from the OS keychain (see header)
+       envToken                  // EYEHOLD_CREDITS_TOKEN — desktop-injected from the OS keychain (see header)
      } */
   function makeCreditsLink(deps) {
     deps = deps || {};
@@ -130,7 +130,7 @@
       const ticket = ++generation;
       transition('pairing_started');
       pending.clear();
-      const payload = { deviceName: str(deviceName) || 'StarNet Station' };
+      const payload = { deviceName: str(deviceName) || 'Eyehold Station' };
       let j;
       try { j = await postJson('/v1/link/start', payload); }
       catch (e) {
@@ -190,7 +190,7 @@
     // within seconds — it moves deviceToken into the OS keychain and STRIPS it from the file — but the
     // running sidecar was spawned BEFORE the link, so its envToken is empty. Without this memory the very
     // next request resolved no token and no base URL: model catalog "offline", WAKE refused, until a full
-    // app restart re-spawned the sidecar with STARNET_CREDITS_TOKEN (2026-08-22, the first-run reports).
+    // app restart re-spawned the sidecar with EYEHOLD_CREDITS_TOKEN (2026-08-22, the first-run reports).
     // Cleared by an unlink; replaced by a fresh link. The keychain copy is the durable home; this is only
     // the live process keeping what it already proved.
     let sessionToken = '';

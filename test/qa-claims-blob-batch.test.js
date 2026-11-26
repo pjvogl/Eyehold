@@ -5,7 +5,7 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cryp
 const {execFileSync}=require('node:child_process'),A=require('./_assert');
 (async()=>{
  const {buildReleaseSurface,MARKETED_DOCS}=await import(process.env.CLAIMS_TEST_SOURCE ? require('node:url').pathToFileURL(path.resolve(process.env.CLAIMS_TEST_SOURCE)).href : '../scripts/qa/product-perfect/claims.mjs');
- const dir=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-claims-batch-'));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-claims-batch-'));
  const git=(...args)=>execFileSync('git',args,{cwd:dir,windowsHide:true,stdio:['ignore','pipe','pipe'],maxBuffer:1024*1024}).toString('utf8').trim();
  try {
   git('init','--quiet');git('config','core.autocrlf','false');

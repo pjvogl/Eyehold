@@ -41,7 +41,7 @@ function clampText(text, max) {
 }
 
 function secretFreeEnv(platform) {
-  const env = { STARNET_CODE_WORKER: '1', NODE_OPTIONS: '', PATH: '' };
+  const env = { EYEHOLD_CODE_WORKER: '1', NODE_OPTIONS: '', PATH: '' };
   if (platform === 'win32') {
     // Node is already running; these values support ordinary runtime initialization only.
     if (process.env.SYSTEMROOT) env.SYSTEMROOT = process.env.SYSTEMROOT;

@@ -34,8 +34,8 @@ const row = (o) => Object.assign({
   runId: 'r' + (++k), agentId: 'agent', reason: 'done', title: 'Weekly invoice', streamId: 'ws-1', ts: now - (100 - k) * 60000,
   model: 'm1', usd: 0.02, turns: 3,
   toolTrace: [{ callId: 'a', name: 'fs_write' }, { callId: 'b', name: 'mcp__gmail__send_email' }],
-  completionEvidence: { schemaVersion: 'starnet.completion-evidence.v1', completionVerdict: 'completed_verified', effectVerdict: 'mechanically_verified', effects: [], evidence: [],
-    contract: { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'sop-1', type: 'artifact_exists', path: 'out/a.md' }] },
+  completionEvidence: { schemaVersion: 'eyehold.completion-evidence.v1', completionVerdict: 'completed_verified', effectVerdict: 'mechanically_verified', effects: [], evidence: [],
+    contract: { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'sop-1', type: 'artifact_exists', path: 'out/a.md' }] },
     checks: [{ id: 'sop-1', type: 'artifact_exists', status: 'passed', code: 'artifact_exists' }] }
 }, o || {});
 
@@ -44,8 +44,8 @@ const row = (o) => Object.assign({
   const rows = [
     row({ recipeId: 'steady-recipe' }), row({ recipeId: 'steady-recipe' }), row({ recipeId: 'steady-recipe' }),
     row({ recipeId: 'drifting-recipe' }), row({ recipeId: 'drifting-recipe' }), row({ recipeId: 'drifting-recipe' }),
-    row({ recipeId: 'drifting-recipe', model: 'm2', completionEvidence: { schemaVersion: 'starnet.completion-evidence.v1', completionVerdict: 'incomplete', effectVerdict: 'judgment_required', effects: [], evidence: [],
-      contract: { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'sop-1', type: 'artifact_exists', path: 'out/a.md' }] },
+    row({ recipeId: 'drifting-recipe', model: 'm2', completionEvidence: { schemaVersion: 'eyehold.completion-evidence.v1', completionVerdict: 'incomplete', effectVerdict: 'judgment_required', effects: [], evidence: [],
+      contract: { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'sop-1', type: 'artifact_exists', path: 'out/a.md' }] },
       checks: [{ id: 'sop-1', type: 'artifact_exists', status: 'failed', code: 'artifact_not_produced_by_run' }] } }),
     row({ recipeId: '' })   // a non-recipe run: ignored
   ];
@@ -54,7 +54,7 @@ const row = (o) => Object.assign({
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const get = (u, h) => fetch(B + u, { headers: Object.assign({ 'X-StarNet-Token': token, Origin: B }, h || {}) });
+    const get = (u, h) => fetch(B + u, { headers: Object.assign({ 'X-Eyehold-Token': token, Origin: B }, h || {}) });
     const noTok = await fetch(B + '/api/recipes/drift');
     A.ok(noTok.status === 401 || noTok.status === 403, 'the drift route is token-gated like /api/runs (' + noTok.status + ')');
     const all = await (await get('/api/recipes/drift')).json();

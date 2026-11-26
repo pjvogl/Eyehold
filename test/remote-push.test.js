@@ -1,4 +1,4 @@
-/* node test/remote-push.test.js — StarNet Remote phase 4: the station's own Web Push.
+/* node test/remote-push.test.js — Eyehold Remote phase 4: the station's own Web Push.
    The payload must be readable ONLY by the phone that subscribed (RFC 8291 aes128gcm, checked here by decrypting
    it the way a browser does), the VAPID token must verify against the key the phone subscribed with (RFC 8292),
    and a subscription the push service dropped (404/410) must be forgotten. No network: fetch is captured. */
@@ -40,7 +40,7 @@ function decrypt(body, ua) {
   const sent = [];
   let reply = 201;
   const fakeFetch = async (url, o) => { sent.push({ url, o }); return { status: reply }; };
-  const push = makePush({ fs, path, file, now: () => t, fetch: fakeFetch, subject: 'https://starnetos.com' });
+  const push = makePush({ fs, path, file, now: () => t, fetch: fakeFetch, subject: 'https://eyehold.com' });
 
   // 1. the push key
   const pub = push.publicKey();
@@ -85,7 +85,7 @@ function decrypt(body, ua) {
   const [h, c, s] = m[1].split('.');
   const claims = JSON.parse(unb64u(c).toString());
   A.eq(claims.aud, 'https://web.push.apple.com', 'the audience is the push service origin');
-  A.eq(claims.sub, 'https://starnetos.com', 'a contact subject');
+  A.eq(claims.sub, 'https://eyehold.com', 'a contact subject');
   A.ok(claims.exp > t / 1000 && claims.exp <= t / 1000 + 24 * 3600, 'expires within a day');
   const key = crypto.createPublicKey({ key: { kty: 'EC', crv: 'P-256', x: b64u(unb64u(pub).subarray(1, 33)), y: b64u(unb64u(pub).subarray(33, 65)) }, format: 'jwk' });
   A.ok(crypto.verify('sha256', Buffer.from(h + '.' + c), { key, dsaEncoding: 'ieee-p1363' }, unb64u(s)), 'the token verifies against the station push key (ES256)');

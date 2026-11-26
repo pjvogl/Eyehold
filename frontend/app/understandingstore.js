@@ -1,4 +1,4 @@
-/* STARNET — understandingstore.js : the live wiring around the pure understanding engine (understanding.js).
+/* EYEHOLD — understandingstore.js : the live wiring around the pure understanding engine (understanding.js).
 
    The browser half of the "how well the station understands its Commander" read-model, modelled on
    goalstore.js / dossierstore.js: a READ-ONLY citizen of the event spine (subscribes to agent.run.end,
@@ -13,7 +13,7 @@
    injection edge); the engine stays clock-pure. node-exportable for its test. */
 'use strict';
 const UnderstandingStore = (() => {
-  const KEY = 'starnet.understanding.v1';
+  const KEY = 'eyehold.understanding.v1';
   const CORROB_CLAMP = 6;   // signed per-dim corroboration is bounded (±): a run of 👍 can warm a dim, a run of
                             // 👎 can drain it, but neither can pin the model forever — beliefs stay the substrate.
   let bound = false;

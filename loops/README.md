@@ -1,4 +1,4 @@
-# StarNet 24/7 loop suite — the machine that keeps the machine improving
+# Eyehold 24/7 loop suite — the machine that keeps the machine improving
 
 Each loop is a self-contained prompt file. Launch one per Claude Code session with `/loop`:
 

@@ -14,7 +14,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), APP = process.argv[3] || 'focus-timer', CDP_PORT = 9493;
 const out = '.worldshots/apps-auto';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-auto-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-auto-'));
 const MARK = 'AUTO ' + Date.now().toString(36).toUpperCase();
 let chrome, cdp, failed = 0;
 const facts = {};

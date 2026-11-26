@@ -9,7 +9,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const SCHEMA = 'starnet.qa.overnight-reliability.v1';
+const SCHEMA = 'eyehold.qa.overnight-reliability.v1';
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const iso = ms => new Date(ms).toISOString();
 
@@ -72,10 +72,10 @@ function safeEnvironment(cycle, probeId) {
     if (/(?:^|_)(?:API_?)?KEY$|TOKEN|SECRET|PASSWORD|PRIVATE_KEY|CREDENTIAL/i.test(key)) continue;
     env[key] = value;
   }
-  env.STARNET_SOAK_CYCLE = String(cycle);
-  env.STARNET_SOAK_PROBE = probeId;
+  env.EYEHOLD_SOAK_CYCLE = String(cycle);
+  env.EYEHOLD_SOAK_PROBE = probeId;
   env.SKYNET_CRON_ARMED = '0';
-  env.STARNET_CRON_ARMED = '0';
+  env.EYEHOLD_CRON_ARMED = '0';
   return env;
 }
 

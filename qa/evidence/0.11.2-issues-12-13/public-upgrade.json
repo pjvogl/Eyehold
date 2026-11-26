@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.public-upgrade-continuity.v1",
+  "schema": "eyehold.public-upgrade-continuity.v1",
   "at": "2026-09-11T06:27:24.415Z",
   "mode": "manual-nsis-reinstall",
   "candidateSource": "6e729e4cb2ca151f2ca7f280d500c86393bf0046",

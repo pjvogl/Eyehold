@@ -1,6 +1,6 @@
 # Final support intake for 0.12.0
 
-Reviewed September 16, 2026, after the earlier preparation snapshot. Gmail became available in this task, superseding the earlier note that private inbox access was unavailable. The scoped search for StarNet messages after September 11 (excluding sent, drafts, spam and trash) returned 11 inbound messages across nine threads, all after the September 11 20:16 UTC publication of 0.11.2. Public repository issues were refreshed as well. The new comment on issue #17 discusses setup guidance; it does not provide a latency retest or confirm recovery.
+Reviewed September 16, 2026, after the earlier preparation snapshot. Gmail became available in this task, superseding the earlier note that private inbox access was unavailable. The scoped search for Eyehold messages after September 11 (excluding sent, drafts, spam and trash) returned 11 inbound messages across nine threads, all after the September 11 20:16 UTC publication of 0.11.2. Public repository issues were refreshed as well. The new comment on issue #17 discusses setup guidance; it does not provide a latency retest or confirm recovery.
 
 No support messages, refunds, account changes or issue-closing actions were performed. Customer identifiers and private diagnostics are excluded from this document. Source inclusion, installer verification and customer recovery remain distinct outcomes.
 

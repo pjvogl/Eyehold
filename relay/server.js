@@ -1,4 +1,4 @@
-/* relay/server.js — StarNet Remote relay: the switchboard between a phone and a home station.
+/* relay/server.js — Eyehold Remote relay: the switchboard between a phone and a home station.
 
    WHAT IT IS. A station behind a home router can't accept connections, and a phone browser can only use
    WebCrypto on an HTTPS page. So both dial OUT to this relay over TLS, and it connects them. That's all.
@@ -18,7 +18,7 @@
 
    WIRE (JSON text frames)
      station  <- { t:'challenge', nonce }
-     station  -> { t:'auth', pub, sig }                 sig = ECDSA-P256-SHA256("starnet-relay/1|" + nonce), DER, base64url
+     station  -> { t:'auth', pub, sig }                 sig = ECDSA-P256-SHA256("eyehold-relay/1|" + nonce), DER, base64url
      station  <- { t:'ready', rid }
      station  -> { t:'tokens', hashes:[b64u sha256] }   the paired phones' relay tokens (replaces the list)
      station  <- { t:'open', conn, paired }             a phone connected
@@ -37,7 +37,7 @@ const fs = require('fs');
 const path = require('path');
 const { makeWsServer } = require('./ws-lite.js');
 
-const LABEL = 'starnet-relay/1';
+const LABEL = 'eyehold-relay/1';
 const MAX_MSG = 1024 * 1024;            // a station frame (a 180 KB conversation, a 256 KB chunk, sealed + base64) stays well under this…
 const MAX_PHONE_MSG = 256 * 1024;        // …a phone only ever sends small requests
 const MAX_PREAUTH_MSG = 16 * 1024;     // …and before a station has proven its key it may send only a small auth message

@@ -1,4 +1,4 @@
-/* STARNET — marketplace.js : THE RECRUITMENT BAY — a premium "personnel registry" of agent classes.
+/* EYEHOLD — marketplace.js : THE RECRUITMENT BAY — a premium "personnel registry" of agent classes.
 
    Renders the Specialties catalog (built-ins + the Commander's saved customs) as a roster of engraved
    class SEALS (a challenge-coin per class, drawn by classicons.js — NEVER a character skin; the skin is
@@ -111,14 +111,14 @@ const Marketplace = (() => {
   // EVERY reason string must read as natural English after the shared “because …” framing (Recommend.whyLine).
   // “because matches your focus on code” was not a sentence — the leading “it” is what makes it one.
   const BECAUSE = { code: 'it matches your focus on code', research: 'it matches your focus on research', general: 'it fits your day-to-day ops' };
-  const ACK_KEY = 'starnet.profile.ack.v1';
+  const ACK_KEY = 'eyehold.profile.ack.v1';
   /* The cold-start row's rotation seed: a REAL count of how many times this Commander has opened the recipes
      tab, persisted so it survives a reload. With 12 browse buckets and a 3-card shelf, a fixed spread would
      show the same three corners of the library forever and the other nine would only ever be found by
      browsing. This ONLY selects which bucket the varied lineup starts from — it is not a ranking signal, it
      asserts nothing about the recipes it picks, and the shelf is labelled as a varied lineup rather than as
      popular or recommended, so rotating it stays inside the truthful-telemetry law. */
-  const VISITS_KEY = 'starnet.recipes.visits.v1';
+  const VISITS_KEY = 'eyehold.recipes.visits.v1';
   function recipeVisits() { try { return parseInt(localStorage.getItem(VISITS_KEY), 10) || 0; } catch (_) { return 0; } }
   function bumpRecipeVisits() {
     try { const n = recipeVisits() + 1; localStorage.setItem(VISITS_KEY, String(n)); return n; } catch (_) { return 0; }
@@ -808,7 +808,7 @@ const Marketplace = (() => {
   // second copy of the console. Hidden the moment it's acked; the panel below remains the place to pause or wipe.
   function consentStripHTML() {
     const ps = profileApi(); if (!ps || !ps.summary || !ps.summary()) return '';
-    return '<div class="mkt-consent-strip">◉ STARNET keeps a local preference profile. When Scout drafts a new option, a bounded summary is sent only to your configured model. ' +
+    return '<div class="mkt-consent-strip">◉ EYEHOLD keeps a local preference profile. When Scout drafts a new option, a bounded summary is sent only to your configured model. ' +
       'Pause or wipe it anytime in STATION FAMILIARITY below. <button class="bb sm mkt-fam-ack">GOT IT</button></div>';
   }
 
@@ -1296,7 +1296,7 @@ const Marketplace = (() => {
         '<span class="mkt-fam-v">' + v + '%</span></div>';
     }).join('');
     const consent = !acked()
-      ? '<div class="mkt-fam-consent">STARNET learns what you work on to tailor these picks. The profile is stored locally; bounded summaries are sent to your configured model only when it drafts a recommendation. ' +
+      ? '<div class="mkt-fam-consent">EYEHOLD learns what you work on to tailor these picks. The profile is stored locally; bounded summaries are sent to your configured model only when it drafts a recommendation. ' +
         'Pause or wipe it anytime, right here. <button class="bb sm mkt-fam-ack">GOT IT</button></div>' : '';
     const acts = '<div class="mkt-fam-acts">' +
         '<span class="mkt-fam-priv">◇ local-first · pause stops browser and sidecar personalization</span>' +
@@ -2509,7 +2509,7 @@ const Marketplace = (() => {
      note, no crash. This is the seed of the open-core marketplace unit — a clean portable format, no network. */
   function safeFilename(name) {
     const base = String(name || 'recipe').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    return (base || 'recipe') + '.starnet-recipe.json';
+    return (base || 'recipe') + '.eyehold-recipe.json';
   }
   function downloadRecipeFile(obj) {
     try {
@@ -2553,14 +2553,14 @@ const Marketplace = (() => {
 
   /* ---------- IMPORT AGENT — the Hermes / OpenClaw migration flow ----------
      A one-click path for a Commander arriving from OpenClaw or hermes-agent: detect installs (or pick a folder),
-     preview exactly what the scan found, then RECRUIT mints a StarNet agent with the persona/orders/memory
+     preview exactly what the scan found, then RECRUIT mints a Eyehold agent with the persona/orders/memory
      pre-filled. Every field shown comes straight from /api/harness/scan — nothing is invented (truthful telemetry).
      Keys are NEVER read or transferred; the preview says so and ABILITIES › SAVED API CONNECTIONS is where the Commander re-enters them.
      Backend routes (built in parallel this session): POST /api/harness/detect, POST /api/harness/scan. The folder
      fallback reuses the existing POST /api/projects/pickfolder. If a route is missing the flow degrades to an honest
      empty/error state — it never fakes a detection or a scan. */
   const up = s => String(s == null ? '' : s).toUpperCase();
-  // Is this scan's provider a StarNet provider id we can actually pin to? ModelDock.labels.normProvider maps every
+  // Is this scan's provider a Eyehold provider id we can actually pin to? ModelDock.labels.normProvider maps every
   // known alias to its canonical id and buckets anything unknown into 'openrouter' — so 'openrouter' only counts
   // when the raw string literally names it, otherwise an unknown provider would be silently mis-pinned. Returns the
   // canonical id or null (→ no pin; the station's default model runs instead). No ModelDock → null (honest: can't verify).
@@ -3319,7 +3319,7 @@ const Marketplace = (() => {
     const rows = editParams.map(paramRowHTML).join('');
     return '<div class="mkt-r-params" id="mkt-r-params">' + rows + '</div>' +
       '<button type="button" class="bb xs mkt-r-padd">＋ ADD FILL-IN</button>' +
-      '<span class="mkt-hint mkt-r-phint"> — or leave empty and STARNET derives them from the {tokens} in your directive.</span>';
+      '<span class="mkt-hint mkt-r-phint"> — or leave empty and EYEHOLD derives them from the {tokens} in your directive.</span>';
   }
   // SOP acceptance rows: one typed check per row. The TYPE picks which second box applies (path / command) and
   // whether a third (text / sha256) exists — the same swap-a-box discipline the fill-in grid uses for 'pick one'.

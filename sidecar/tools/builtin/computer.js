@@ -19,9 +19,9 @@
   const ACTIONS = ['screenshot', 'move', 'click', 'double_click', 'drag', 'scroll', 'type', 'key', 'hotkey', 'wait'];
   // Keyboard input lands in whatever window has FOCUS — these are the actions the focus-truth guard covers.
   const KEYBOARD_ACTIONS = ['type', 'key', 'hotkey'];
-  // The harness's own window (desktop shell exe or a browser tab titled STARNET). Typing into it is never the
+  // The harness's own window (desktop shell exe or a browser tab titled EYEHOLD). Typing into it is never the
   // intent — it means the target app lost focus (the 2026-07-08 "typed the song into its own chat box" incident).
-  const SELF_WINDOW_RE = /starnet/i;
+  const SELF_WINDOW_RE = /eyehold/i;
   const DESTRUCTIVE_HOTKEYS = [
     'ctrl+alt+delete',
     'ctrl+shift+esc',
@@ -72,7 +72,7 @@
   }
   // FOCUS-TRUTH GUARD: keyboard input is only delivered when we can prove (or the driver cannot know) which
   // window will receive it. Returns a human-readable foreground note for the tool result; throws when input
-  // must NOT be sent: foreground is StarNet's own window, or it doesn't match the model's declared expectApp.
+  // must NOT be sent: foreground is Eyehold's own window, or it doesn't match the model's declared expectApp.
   async function checkFocus(driver, action) {
     if (KEYBOARD_ACTIONS.indexOf(action.action) < 0) return '';
     if (typeof driver.foreground !== 'function') {
@@ -82,7 +82,7 @@
     const fg = (await driver.foreground()) || {};
     const title = String(fg.title || ''), proc = String(fg.process || '');
     if (SELF_WINDOW_RE.test(title) || SELF_WINDOW_RE.test(proc)) {
-      throw new Error('refused: the foreground window is StarNet itself ("' + (title || proc) + '") — the target app lost focus, so input was NOT sent; re-focus the target app (click it) before typing');
+      throw new Error('refused: the foreground window is Eyehold itself ("' + (title || proc) + '") — the target app lost focus, so input was NOT sent; re-focus the target app (click it) before typing');
     }
     if (action.expectApp) {
       const want = action.expectApp.toLowerCase();
@@ -94,17 +94,17 @@
   }
   function win32DriverRequested(env) {
     env = env || process.env;
-    return /^(1|true|win32|windows)$/i.test(String(env.STARNET_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || ''));
+    return /^(1|true|win32|windows)$/i.test(String(env.EYEHOLD_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || ''));
   }
   // Was the driver explicitly DISABLED? Lets a desktop-shell run opt back out (e.g. QA)
   // without unsetting the shell marker.
   function win32DriverDisabled(env) {
     env = env || process.env;
-    return /^(0|false|off|none)$/i.test(String(env.STARNET_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || ''));
+    return /^(0|false|off|none)$/i.test(String(env.EYEHOLD_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || ''));
   }
   function underDesktopShell(env) {
     env = env || process.env;
-    return /^(1|true|yes|on)$/i.test(String(env.STARNET_DESKTOP_SHELL || env.SKYNET_DESKTOP_SHELL || ''));
+    return /^(1|true|yes|on)$/i.test(String(env.EYEHOLD_DESKTOP_SHELL || env.SKYNET_DESKTOP_SHELL || ''));
   }
   // Environment selection is only ONE half of the authority check. Presence under the
   // desktop shell used to auto-enable physical input for every task; that was unsafe.
@@ -119,7 +119,7 @@
     return d || makeInertDriver('computer-use unavailable: native desktop control needs Windows');
   }
 
-  // Fail-closed driver injected into every ordinary StarNet run. It throws instead of
+  // Fail-closed driver injected into every ordinary Eyehold run. It throws instead of
   // returning success, so telemetry never claims an input action that policy prevented.
   function makeInertDriver(reason) {
     const why = reason || 'physical input is disabled for agent runs';

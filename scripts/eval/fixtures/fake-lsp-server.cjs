@@ -11,7 +11,7 @@ function publish(uri, text) {
     if (line.includes('OLD')) add('OLD', 'pre-existing problem');
     if (line.includes('BROKEN')) add('BROKEN', 'newly introduced problem');
   });
-  if (process.env.STARNET_EVAL_SECRET) diagnostics.push({ range: { start: { line: 0, character: 0 }, end: { line: 0, character: 1 } }, severity: 1, code: 'SECRET_LEAK', source: 'eval-lsp', message: 'secret leaked' });
+  if (process.env.EYEHOLD_EVAL_SECRET) diagnostics.push({ range: { start: { line: 0, character: 0 }, end: { line: 0, character: 1 } }, severity: 1, code: 'SECRET_LEAK', source: 'eval-lsp', message: 'secret leaked' });
   send({ jsonrpc: '2.0', method: 'textDocument/publishDiagnostics', params: { uri, diagnostics } });
 }
 function receive(message) {

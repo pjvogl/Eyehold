@@ -89,7 +89,7 @@ lastNudge.onPick({ value: 'bottle' });
 A.eq(mintCalls.length, 1, 'BOTTLE IT derives a proposal via Recipes.mintFromRun');
 A.eq(mintCalls[0].opts.runId, 'run-A', 'the proposal carries the bottled run id');
 A.eq(h.opened().length, 1, 'BOTTLE IT opens the R2 editor pre-filled');
-A.ok(/"run-A":"bottled"/.test(mem['starnet.bottle.v1'] || ''), 'the bottled decision is persisted (never re-offered)');
+A.ok(/"run-A":"bottled"/.test(mem['eyehold.bottle.v1'] || ''), 'the bottled decision is persisted (never re-offered)');
 // the same run never offers again (decided).
 lastNudge = null;
 BottleStore.onVerdict('run-A', 'great', 'agent'); flush();
@@ -113,7 +113,7 @@ h = initStore(() => info({ directive: 'do X' }));
 BottleStore.onVerdict('run-E', 'great', 'agent'); flush();
 A.ok(lastNudge, 'a qualifying run offers');
 lastNudge.onPick({ value: 'dismiss' });
-A.ok(/"run-E":"dismissed"/.test(mem['starnet.bottle.v1'] || ''), 'a dismissal is persisted');
+A.ok(/"run-E":"dismissed"/.test(mem['eyehold.bottle.v1'] || ''), 'a dismissal is persisted');
 lastNudge = null;
 BottleStore.onVerdict('run-E', 'great', 'agent'); flush();
 A.eq(lastNudge, null, 'a dismissed run is never re-offered in the same session');
@@ -128,14 +128,14 @@ h = initStore(() => info({ directive: 'do Y' }));
 rateLive = true;   // a rate/turn-in control is live in the feed
 BottleStore.onVerdict('run-F', 'great', 'agent'); flush();
 A.eq(lastNudge, null, 'a busy beat slot defers the offer (no stacked ask)');
-A.ok(!/run-F/.test(mem['starnet.bottle.v1'] || ''), 'a deferred run is not yet decided (it can still offer once the slot frees)');
+A.ok(!/run-F/.test(mem['eyehold.bottle.v1'] || ''), 'a deferred run is not yet decided (it can still offer once the slot frees)');
 rateLive = false;   // slot frees → the queued retry now offers
 flush();
 A.ok(lastNudge, 'once the slot frees, the deferred offer fires');
 
 // 3f. reset() clears the denylist — a fresh hero re-earns every offer.
 BottleStore.reset();
-A.eq(mem['starnet.bottle.v1'], undefined, 'reset() drops the persisted denylist key');
+A.eq(mem['eyehold.bottle.v1'], undefined, 'reset() drops the persisted denylist key');
 
 global.setTimeout = realSetTimeout;
 A.report('bottlestore.test');

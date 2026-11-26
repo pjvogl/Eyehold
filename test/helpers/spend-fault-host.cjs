@@ -11,4 +11,4 @@ function fault(file,flags) {
 }
 fs.openSync=function(file,flags,...args){fault(file,flags);return originalOpen(file,flags,...args);};
 fs.readFileSync=function(file,...args){fault(file,'r');return originalRead(file,...args);};
-require(process.env.STARNET_SPEND_INSTALLED_ENTRY || '../../sidecar/index.js');
+require(process.env.EYEHOLD_SPEND_INSTALLED_ENTRY || '../../sidecar/index.js');

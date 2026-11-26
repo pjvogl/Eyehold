@@ -138,7 +138,7 @@
         d: {
           token: token,
           intents: intents,
-          properties: { os: process.platform || 'linux', browser: 'starnet', device: 'starnet' }
+          properties: { os: process.platform || 'linux', browser: 'eyehold', device: 'eyehold' }
         }
       });
     }

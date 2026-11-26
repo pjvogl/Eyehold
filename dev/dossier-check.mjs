@@ -63,7 +63,7 @@ async function main() {
     await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never reached game');
     await sleep(2000);
-    await evalJS(cdp, `(() => { const K='starnet.station.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
+    await evalJS(cdp, `(() => { const K='eyehold.station.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never came back');
     await sleep(2000);
     mkdirSync(OUT, { recursive: true });

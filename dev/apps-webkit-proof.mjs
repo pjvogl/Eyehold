@@ -27,8 +27,8 @@ const PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>WebKit Tes
 <input id="t" class="sn-input" placeholder="type"><button id="save" class="sn-btn primary">SAVE</button>
 <div id="shown" class="sn-hint">nothing saved</div><a id="out" href="https://example.com/apps-webkit-proof">an outside link</a>
 </div></div><script>
-starnet.store.get('note').then((v) => { if (v) document.getElementById('shown').textContent = 'saved: ' + v; });
-document.getElementById('save').addEventListener('click', async () => { await starnet.store.set('note', document.getElementById('t').value); document.getElementById('shown').textContent = 'saved: ' + (await starnet.store.get('note')); });
+eyehold.store.get('note').then((v) => { if (v) document.getElementById('shown').textContent = 'saved: ' + v; });
+document.getElementById('save').addEventListener('click', async () => { await eyehold.store.set('note', document.getElementById('t').value); document.getElementById('shown').textContent = 'saved: ' + (await eyehold.store.get('note')); });
 </script></body></html>`;
 
 const browser = await webkit.launch();
@@ -83,7 +83,7 @@ try {
   const appFrame = async () => { for (let i = 0; i < 40; i++) { const f = page.frames().find((x) => /\/app-ui\//.test(x.url())); if (f) { try { if (await f.evaluate(() => /WebKit Test/.test(document.body.innerText))) return f; } catch (_) { /* reloading */ } } await sleep(500); } return null; };
   let fr = await appFrame();
   check('the app page renders in a sandboxed WebKit frame', !!fr);
-  check('the station kit is in the frame (bridge + glass classes)', !!fr && await fr.evaluate(() => !!(window.starnet && window.starnet.__kit) && getComputedStyle(document.querySelector('.sn-panel')).borderTopStyle === 'solid'));
+  check('the station kit is in the frame (bridge + glass classes)', !!fr && await fr.evaluate(() => !!(window.eyehold && window.eyehold.__kit) && getComputedStyle(document.querySelector('.sn-panel')).borderTopStyle === 'solid'));
   await fr.fill('#t', 'hello from webkit');
   await fr.click('#save');
   await sleep(1500);

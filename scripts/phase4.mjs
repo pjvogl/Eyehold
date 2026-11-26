@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// phase4.mjs - StarNet the reference harness cutover qualification loop.
+// phase4.mjs - Eyehold the reference harness cutover qualification loop.
 
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -11,15 +11,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_PHASE4_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_PHASE4_LOOPS || 3) || 3) : 1;
 const WANT_LIVE = argSet.has('--live');
 const REQUIRE_GREEN = argSet.has('--require-green');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE4_DIR || join(ROOT, '.dogfood', 'phase4-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE4_DIR || join(ROOT, '.dogfood', 'phase4-' + STAMP));
 const LATEST = join(ROOT, '.dogfood', 'phase4-latest');
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
-const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.STARNET_PHASE4_STEP_TIMEOUT_MS || 1200000);
+const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.EYEHOLD_PHASE4_STEP_TIMEOUT_MS || 1200000);
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function mdEscape(s) {
@@ -83,7 +83,7 @@ async function commandStep(step, loop) {
 }
 
 function checkRefBaseline(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_PHASE4_REF_BASELINE.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_PHASE4_REF_BASELINE.md');
   const text = readText(file);
   const required = ['real paid model call', 'task loop', 'file deliverables', 'shell', 'restart', 'spend', 'cancellation'];
   const missing = required.filter(term => text.toLowerCase().indexOf(term) < 0);
@@ -117,9 +117,9 @@ function checkSameWorkTrial(loop) {
   const health = dogfoodAutomatedHealth();
   if (health.status !== 'pass') {
     return {
-      id: '4.2-starnet-same-work-trial',
+      id: '4.2-eyehold-same-work-trial',
       phase: '4.2',
-      title: 'StarNet same-work trial through gamified UI',
+      title: 'Eyehold same-work trial through gamified UI',
       loop,
       status: 'fail',
       required: true,
@@ -138,9 +138,9 @@ function checkSameWorkTrial(loop) {
     && Array.isArray(trial.artifactPaths) && trial.artifactPaths.length
     && Array.isArray(trial.ledgerRows) && trial.ledgerRows.length;
   return {
-    id: '4.2-starnet-same-work-trial',
+    id: '4.2-eyehold-same-work-trial',
     phase: '4.2',
-    title: 'StarNet same-work trial through gamified UI',
+    title: 'Eyehold same-work trial through gamified UI',
     loop,
     status: enoughEvidence ? 'pass' : 'blocked',
     required: true,
@@ -235,7 +235,7 @@ function liveCommands() {
       blocked: true,
       required: true,
       class: 'live-provider',
-      reason: 'No live key found. Set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY.'
+      reason: 'No live key found. Set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY.'
     }];
   }
   return [
@@ -266,7 +266,7 @@ function liveCommands() {
 
 async function runOnce(loop) {
   const results = [];
-  const nonLiveEnv = withoutLiveProviderEnv({ STARNET_SKIP_PHASE4_BASELINE: '1' });
+  const nonLiveEnv = withoutLiveProviderEnv({ EYEHOLD_SKIP_PHASE4_BASELINE: '1' });
 
   const seal = await commandStep({
     id: '4.0-phase3-seal',
@@ -360,7 +360,7 @@ function writeSummary(allResults, loopsRun) {
   };
   writeFileSync(join(OUT, 'phase4-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Phase 4 Cutover Evidence\n\n';
+  let md = '# Eyehold Phase 4 Cutover Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + verdict + '`\n';
   md += '- Loops run: `' + loopsRun + '`\n';
@@ -375,7 +375,7 @@ function writeSummary(allResults, loopsRun) {
   md += 'Run `npm.cmd run phase4:loop` after each fix or evidence update. The loop stops when it is green, red, or stably blocked on external live/attended/decision evidence.\n\n';
   md += '## Next Action\n\n';
   const next = latest.find(r => r.status === 'fail' || r.status === 'blocked');
-  if (!next) md += 'P4 is green. StarNet has replacement qualification evidence and a recorded decision.\n';
+  if (!next) md += 'P4 is green. Eyehold has replacement qualification evidence and a recorded decision.\n';
   else md += 'Work the first non-pass item: `' + next.id + '` - ' + (next.reason || next.title) + '\n';
   writeFileSync(join(OUT, 'summary.md'), md);
   copyLatest();

@@ -52,8 +52,8 @@ async function awayReadFailure() {
 async function liveRoutine() {
   const base='http://127.0.0.1:19427';
   const html=await(await fetch(base)).text();
-  const token=html.match(/window\.__STARNET_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
-  const j=await(await fetch(base+'/api/cron',{headers:{'X-StarNet-Token':token}})).json();
+  const token=html.match(/window\.__EYEHOLD_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
+  const j=await(await fetch(base+'/api/cron',{headers:{'X-Eyehold-Token':token}})).json();
   const job=j.jobs.find(x=>x.name==='Audit follow-up enabled');assert.ok(job);
   const source=read('sidecar/index.js');
   const code=source.slice(source.indexOf('function cronReturnsToSession('),source.indexOf('async function deliverCronResult('));

@@ -96,7 +96,7 @@ try {
   assert.equal(receipt.steps.defaultPosture.initiative, 'propose'); assert.equal(receipt.steps.defaultPosture.actsUnattended, false);
 
   // STEP 2 — the real interview (the deferred-interview door runs the same runLeadMeeting the awakening uses).
-  await ev(`localStorage.setItem('starnet.interview.deferred.v1','1')`);
+  await ev(`localStorage.setItem('eyehold.interview.deferred.v1','1')`);
   await cdp.send('Page.reload'); assert(await waitDevReady(cdp, evalJS, { url }), 'reload failed');
   await until(`[...document.querySelectorAll('button')].some(b => /do it now/i.test(b.textContent))`, 'deferred interview offer did not appear', 320);
   await ev(`[...document.querySelectorAll('button')].find(b => /do it now/i.test(b.textContent)).click()`);

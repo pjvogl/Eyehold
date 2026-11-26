@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// audit.mjs — assertion-driven behavioral + truthfulness auditor for StarNet.  (`npm run audit`)
+// audit.mjs — assertion-driven behavioral + truthfulness auditor for Eyehold.  (`npm run audit`)
 //
 // Where `npm run shoot` proves the UI LOOKS right (frames a human/agent reads), this proves the
 // floor BEHAVES right and the numbers don't lie — fully automatically, PASS/FAIL, no eyeballing.
@@ -39,7 +39,7 @@ const KEEP = process.argv.includes('--keep');
 const SCRATCH = join(OUT_DIR, '_seed-workspace');
 const PROFILE = join(OUT_DIR, '_profile');
 // A FRESH BROWSER PER RUN (2026-09-23). The seed workspace was re-materialized every run but the Chrome
-// profile was not: its localStorage kept the previous run's `starnet.save`, and because the audit closes
+// profile was not: its localStorage kept the previous run's `eyehold.save`, and because the audit closes
 // Chrome before the last autosave is acknowledged, that save is `_saveDirty`. cloudsave.reconcile() rightly
 // treats a dirty cache as unsent offline edits and pushes it OVER the fresh seed, so every Guardian hour
 // inherited the last hour's placed dish until prop-place had nowhere left to click ("had 4"). Wipe it, and
@@ -220,7 +220,7 @@ const heroCapTypes = (cdp) => evalJS(cdp, "(typeof World!=='undefined'&&World.he
 async function assertFloorInvariants(cdp, A, prefix, list) {
   const escaped = (list || []).filter((b) => b.zone && b.inOwnZone === false);   // only bodies that HAVE a zone may violate it
   A.ok(`${prefix}/zoned-bodies-contained`, escaped.length === 0, escaped.length ? escaped.map((b) => `${b.name}@(${b.tile.x},${b.tile.y})`).join('; ') : `${list.length} bodies, none roaming outside its zone`);
-  const gaze = await evalJS(cdp, 'window.__STARNET_GAZE_PROOF__?.exercise()').catch(() => null);
+  const gaze = await evalJS(cdp, 'window.__EYEHOLD_GAZE_PROOF__?.exercise()').catch(() => null);
   A.ok(`${prefix}/awareness-gaze-only`, !!gaze && gaze.violations.length === 0,
     gaze ? `${gaze.calls} gaze calls (${gaze.forced} exercised), ${gaze.violations.length} movement mutations` : 'gaze instrumentation unavailable');
 }
@@ -519,12 +519,12 @@ async function runApprovalScenario() {
   const APROFILE = join(OUT_DIR, '_approval-profile');
   const A = makeAsserter();
   let mock = null, side = null, proc = null, cdp = null;
-  const savedBase = process.env.SKYNET_OPENROUTER_BASE, savedBase2 = process.env.STARNET_OPENROUTER_BASE;
+  const savedBase = process.env.SKYNET_OPENROUTER_BASE, savedBase2 = process.env.EYEHOLD_OPENROUTER_BASE;
   try {
     if (await isUp(AURL)) throw new Error(`approval port :${APORT} already in use; set SKYNET_AUDIT_APPROVAL_PORT to a free port`);
     mock = await startToolMock(DEFAULT_MODEL);
     process.env.SKYNET_OPENROUTER_BASE = mock.base;
-    process.env.STARNET_OPENROUTER_BASE = mock.base;
+    process.env.EYEHOLD_OPENROUTER_BASE = mock.base;
     console.log(`\nscenario: tool-run-with-approval (dedicated NON-full-access sidecar on :${APORT})`);
     materializeSeedWorkspace(ASCRATCH);
     // KEY: interactive consent surface. Background minters opted out (deterministic instrument — the quest-refresh
@@ -615,7 +615,7 @@ async function runApprovalScenario() {
     try { mock && mock.server && mock.server.close(); } catch {}
     // restore the shared mock base so nothing downstream is affected.
     if (savedBase === undefined) delete process.env.SKYNET_OPENROUTER_BASE; else process.env.SKYNET_OPENROUTER_BASE = savedBase;
-    if (savedBase2 === undefined) delete process.env.STARNET_OPENROUTER_BASE; else process.env.STARNET_OPENROUTER_BASE = savedBase2;
+    if (savedBase2 === undefined) delete process.env.EYEHOLD_OPENROUTER_BASE; else process.env.EYEHOLD_OPENROUTER_BASE = savedBase2;
     if (!KEEP) { try { rmSync(ASCRATCH, { recursive: true, force: true }); } catch {} try { rmSync(APROFILE, { recursive: true, force: true }); } catch {} }
   }
 }
@@ -631,7 +631,7 @@ async function main() {
     if (!LIVE_PROVIDER) {
       mock = await startMockOpenRouter(DEFAULT_MODEL);
       process.env.SKYNET_OPENROUTER_BASE = mock.base;
-      process.env.STARNET_OPENROUTER_BASE = mock.base;
+      process.env.EYEHOLD_OPENROUTER_BASE = mock.base;
       console.log(`provider: deterministic audit mock on ${mock.base}`);
     }
     console.log(`sidecar: booting SEEDED SKYNET_DEV on :${PORT} (model=${DEFAULT_MODEL}) ...`);
@@ -700,7 +700,7 @@ async function main() {
       }
     }
     report.console = diag.consoleMsgs.slice(0, 30);
-    report.gazeProof = await evalJS(cdp, 'window.__STARNET_GAZE_PROOF__?.read()').catch(() => null);
+    report.gazeProof = await evalJS(cdp, 'window.__EYEHOLD_GAZE_PROOF__?.read()').catch(() => null);
     report.gazeErrors = gazeErrors;
     if (gazeErrors.length) exitCode = 3;
     report.exceptions = diag.exceptions.slice(0, 20);

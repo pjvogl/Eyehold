@@ -14,7 +14,7 @@ async function sprites(){
 }
 (async()=>{
   const renderer=await sprites(),floor=await loadImage(at('frontend/assets/industrial/remaster/floors/plate.png'));
-  const sheet=createCanvas(1280,870),g=sheet.getContext('2d');g.fillStyle='#10191a';g.fillRect(0,0,1280,870);g.fillStyle='#d3b775';g.font='22px sans-serif';g.fillText('STARNET · AUTHORED FURNITURE MOTION · 4 PX / WORLD PX',20,35);
+  const sheet=createCanvas(1280,870),g=sheet.getContext('2d');g.fillStyle='#10191a';g.fillRect(0,0,1280,870);g.fillStyle='#d3b775';g.font='22px sans-serif';g.fillText('EYEHOLD · AUTHORED FURNITURE MOTION · 4 PX / WORLD PX',20,35);
   const receipts=[];
   for(const [col,id]of Configs.ids.entries()){
     const c=Configs.get(id),im=await loadImage(at('frontend/'+Configs.sourceRoot+c.image)),f=fit(c.bounds,im.width,im.height),box={...f,x:f.x+20,y:f.y+26};

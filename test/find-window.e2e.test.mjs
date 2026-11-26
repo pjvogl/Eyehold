@@ -46,7 +46,7 @@ const KEY = k => `(() => { const f = document.querySelector('.find-win .fnd-fiel
 const ROWS = `(() => [...document.querySelectorAll('.find-win .fnd-row')].map(r => ({ name: (r.querySelector('.fnd-n') || {}).textContent, on: r.classList.contains('on') })))()`;
 
 const shotDir = process.env.SKYNET_SHOT_DIR || tmpdir();
-const root = mkdtempSync(join(tmpdir(), 'starnet-find-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-find-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');

@@ -33,7 +33,7 @@ async function main() {
       if (await evalJS(cdp, `typeof Build === 'object' && !!(Build.__test__ && Build.__test__.station())`)) break;
       await sleep(500);
     }
-    out.dev = await evalJS(cdp, `!!(window.__STARNET_DEV__ && Build.__test__)`);
+    out.dev = await evalJS(cdp, `!!(window.__EYEHOLD_DEV__ && Build.__test__)`);
     if (!out.dev) throw new Error('dev hooks absent — the probe needs ?dev=1');
 
     await evalJS(cdp, `Build.open()`);

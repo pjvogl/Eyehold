@@ -5,8 +5,8 @@
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{spawn}=require('node:child_process');
 const {bootToken,sseQuery}=require('./_httpToken.js');
 const {lineDecoder}=require('./_eyehold-lines.js');
-const key=process.env.SKYNET_OPENROUTER_KEY||process.env.STARNET_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
-const model=process.env.EYEHOLD_DELEGATION_MODEL||process.env.STARNET_SMOKE_MODEL||'openai/gpt-4.1-mini';
+const key=process.env.SKYNET_OPENROUTER_KEY||process.env.EYEHOLD_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
+const model=process.env.EYEHOLD_DELEGATION_MODEL||process.env.EYEHOLD_SMOKE_MODEL||'openai/gpt-4.1-mini';
 if(!key){console.error('Missing real provider key');process.exit(2);}
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-live-delegate-'));
 const port=12000+Math.floor(Math.random()*20000);
@@ -17,7 +17,7 @@ const wait=async()=>{for(let i=0;i<50;i++){try{const r=await fetch(base+'/api/he
 let sseController;
 async function run(){
  await wait();const token=await bootToken(base,base);
- const headers={'Content-Type':'application/json','X-StarNet-Token':token,Origin:base};
+ const headers={'Content-Type':'application/json','X-Eyehold-Token':token,Origin:base};
  const roster=await fetch(base+'/api/roster',{method:'POST',headers,body:JSON.stringify({agents:[
   {agentId:'agent',name:'THE EYE',model,provider:'openrouter',system:'You are The Eye, supervisor. Delegate the requested assignment to BOTH RAVEN COURT (research session) and DEEPFORGE (engineering session) using team_dispatch with workers. The session property is mandatory for each worker. Do not claim a result unless its worker run completed.'},
   {agentId:'deepforge',name:'DEEPFORGE',model,provider:'openrouter',specialtyId:'eyehold-forge',system:'Deepforge engineer. Answer the delegated technical task concisely; check the research context provided by the lead.'},

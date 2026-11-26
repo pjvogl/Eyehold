@@ -34,8 +34,8 @@ function boot(port, workspaces, attemptsLeft) {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
         SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces,
-        OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', STARNET_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
         SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0'   // no aux passes: this suite is about the gate, not the forks
       }),
       stdio: ['ignore', 'pipe', 'pipe']
@@ -104,7 +104,7 @@ function seedSkills(ws) {
 
   const api = async (route, init) => {
     const headers = Object.assign({ 'Content-Type': 'application/json' }, (init && init.headers) || {});
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const r = await fetch(B + route, Object.assign({ cache: 'no-store' }, init || {}, { headers }));
     const body = await r.json().catch(() => null);
     return { status: r.status, body };

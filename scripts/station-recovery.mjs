@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Offline whole-station backup/inspect/restore CLI. Stop StarNet before backup or restore.
+// Offline whole-station backup/inspect/restore CLI. Stop Eyehold before backup or restore.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +9,7 @@ const Recovery = require('../sidecar/station-recovery.js');
 
 function usage(code = 1) {
   const msg = [
-    'StarNet station recovery (offline — stop StarNet first)',
+    'Eyehold station recovery (offline — stop Eyehold first)',
     '',
     'Backup:',
     '  node scripts/station-recovery.mjs backup --workspace <WORKSPACES> --output <file> [--browser-state <backup.json>] [--app-version <v>] [--mutation <id>]',
@@ -47,7 +47,7 @@ function browserStoreFrom(file) {
   const doc = readJson(path.resolve(String(file)));
   if (doc && doc.store && typeof doc.store === 'object') return doc.store;
   if (doc && typeof doc === 'object' && !Array.isArray(doc)) return doc;
-  throw new Error('browser state must be an object or a StarNet browser backup with {store}');
+  throw new Error('browser state must be an object or a Eyehold browser backup with {store}');
 }
 function printReport(doc) { console.log(JSON.stringify(doc, null, 2)); }
 
@@ -80,13 +80,13 @@ try {
     const file = required(a.bundle, 'bundle');
     const target = required(a.target, 'target');
     const bundle = Recovery.readBundle(file);
-    const browserOutput = path.resolve(String(a['browser-output'] || path.join(path.dirname(target), 'starnet-browser-restore.json')));
+    const browserOutput = path.resolve(String(a['browser-output'] || path.join(path.dirname(target), 'eyehold-browser-restore.json')));
     const browserWithinTarget = path.relative(target, browserOutput);
     if (browserWithinTarget === '' || (!path.isAbsolute(browserWithinTarget) && browserWithinTarget !== '..' && !browserWithinTarget.startsWith('..' + path.sep))) {
       throw new Error('browser output must be outside the workspace target: ' + browserOutput);
     }
     const browserStore = Object.fromEntries(bundle.browser.map(row => [row.key, row.value]));
-    const browserPayload = JSON.stringify({ schema: 'starnet.backup', version: 1, app: 'starnet', exportedAt: bundle.createdAt, agentName: 'restored-station', secretsIncluded: false, secretPolicy: 'credentials-excluded', store: browserStore, notebook: null }, null, 2) + '\n';
+    const browserPayload = JSON.stringify({ schema: 'eyehold.backup', version: 1, app: 'eyehold', exportedAt: bundle.createdAt, agentName: 'restored-station', secretsIncluded: false, secretPolicy: 'credentials-excluded', store: browserStore, notebook: null }, null, 2) + '\n';
     const browserStage = browserOutput + '.restore-stage-' + process.pid + '-' + Date.now();
     const browserRollback = browserOutput + '.restore-rollback-' + process.pid + '-' + Date.now();
     let browserActivated = false;
@@ -112,7 +112,7 @@ try {
         }
       });
       if (browserMoved && fs.existsSync(browserRollback)) fs.unlinkSync(browserRollback);
-      printReport({ ok: true, action: 'restore', receipt, browserImport: { file: browserOutput, instruction: 'Open StarNet and choose RESTORE BACKUP to import this browser-owned state.' } });
+      printReport({ ok: true, action: 'restore', receipt, browserImport: { file: browserOutput, instruction: 'Open Eyehold and choose RESTORE BACKUP to import this browser-owned state.' } });
     } catch (e) {
       if (browserActivated && fs.existsSync(browserOutput)) fs.unlinkSync(browserOutput);
       if (browserMoved && fs.existsSync(browserRollback)) fs.renameSync(browserRollback, browserOutput);

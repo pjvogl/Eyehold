@@ -179,7 +179,7 @@ const { GoalStore } = require('../frontend/app/goalstore.js');
   A.ok(GoalStore.activeGoal(), 'a goal exists before reset');
   GoalStore.reset();
   A.eq(GoalStore.activeGoal(), null, 'reset clears every goal tree (a new Commander inherits nothing)');
-  A.eq(mem['starnet.goals.v1'], undefined, 'reset removes the own localStorage key');
+  A.eq(mem['eyehold.goals.v1'], undefined, 'reset removes the own localStorage key');
 
   /* ============================ 7. PERSISTENCE ROUND-TRIP (survives a re-init) ============================ */
 
@@ -433,9 +433,9 @@ const { GoalStore } = require('../frontend/app/goalstore.js');
   const exported = JSON.parse(GoalStore.exportJourney());
   A.eq(exported.goals[0].outcomeEvidence, film.outcomeEvidence, 'export preserves the final outcome evidence');
   A.eq(exported.ideas[0].id, ideaId, 'export includes the original possibility');
-  const retained = JSON.parse(mem['starnet.goals.v1']);
+  const retained = JSON.parse(mem['eyehold.goals.v1']);
   retained.goals = Array.from({ length: 26 }, (_, i) => ({ ...retained.goals[0], id: 'kept_' + i, createdAt: i }));
-  mem['starnet.goals.v1'] = JSON.stringify(retained); GoalStore.init({ now: () => ++clock });
+  mem['eyehold.goals.v1'] = JSON.stringify(retained); GoalStore.init({ now: () => ++clock });
   A.eq(GoalStore.listGoals().length, 26, 'growing a journey never evicts earlier completed chapters');
   const beforeSuggestion = GoalStore.exportJourney(), beforeLaunches = launches.length;
   let planningRequest;

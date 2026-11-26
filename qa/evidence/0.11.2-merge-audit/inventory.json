@@ -153,7 +153,7 @@
     },
     {
       "sha": "c8ecf001323e709cb543019ffe5737cca20dba55",
-      "subject": "merge: synchronize creation interface with current StarNet"
+      "subject": "merge: synchronize creation interface with current Eyehold"
     },
     {
       "sha": "a5cc394eff48ead2b46aac2637c15de0096904b4",
@@ -185,7 +185,7 @@
     },
     {
       "sha": "25f6c8191d9e0a55d778e8ed6ccb1fdb36301f44",
-      "subject": "merge: synchronize adversarial audit with current StarNet"
+      "subject": "merge: synchronize adversarial audit with current Eyehold"
     },
     {
       "sha": "50f30cec772a56b121cefecf54bed998316e32f4",
@@ -193,11 +193,11 @@
     },
     {
       "sha": "3bd3001cab4d940cb0bc225b364e313c0eda8930",
-      "subject": "merge: strengthen StarNet reliability and report output"
+      "subject": "merge: strengthen Eyehold reliability and report output"
     },
     {
       "sha": "79fea7e8d19aefd91421452066750c114649433e",
-      "subject": "merge: synchronize Hermes improvements with current StarNet"
+      "subject": "merge: synchronize Hermes improvements with current Eyehold"
     },
     {
       "sha": "710d611f6123f07c1dc9a8d1112c6ff9a7008cc1",
@@ -14730,31 +14730,31 @@
       "family": "QA records"
     },
     {
-      "path": "qa/audits/hermes-stress-2026-09-10/starnet-json_object-after.json",
+      "path": "qa/audits/hermes-stress-2026-09-10/eyehold-json_object-after.json",
       "added": 36,
       "removed": 0,
       "family": "QA records"
     },
     {
-      "path": "qa/audits/hermes-stress-2026-09-10/starnet-json_schema-after.json",
+      "path": "qa/audits/hermes-stress-2026-09-10/eyehold-json_schema-after.json",
       "added": 36,
       "removed": 0,
       "family": "QA records"
     },
     {
-      "path": "qa/audits/hermes-stress-2026-09-10/starnet-partial-after.json",
+      "path": "qa/audits/hermes-stress-2026-09-10/eyehold-partial-after.json",
       "added": 170,
       "removed": 0,
       "family": "QA records"
     },
     {
-      "path": "qa/audits/hermes-stress-2026-09-10/starnet-partial.json",
+      "path": "qa/audits/hermes-stress-2026-09-10/eyehold-partial.json",
       "added": 170,
       "removed": 0,
       "family": "QA records"
     },
     {
-      "path": "qa/audits/hermes-stress-2026-09-10/starnet-schema-live-after.json",
+      "path": "qa/audits/hermes-stress-2026-09-10/eyehold-schema-live-after.json",
       "added": 101,
       "removed": 0,
       "family": "QA records"
@@ -15378,7 +15378,7 @@
       "family": "tests"
     },
     {
-      "path": "test/genesis-starnet-link.test.js",
+      "path": "test/genesis-eyehold-link.test.js",
       "added": 1,
       "removed": 1,
       "family": "tests"

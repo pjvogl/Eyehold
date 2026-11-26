@@ -1,13 +1,13 @@
-# Skill-building parity plan — the reference harness capability, StarNet visibility
+# Skill-building parity plan — the reference harness capability, Eyehold visibility
 
-Date: 2026-07-02. Grounded in a dual code audit (StarNet trunk + harness-ref), not plan docs.
+Date: 2026-07-02. Grounded in a dual code audit (Eyehold trunk + harness-ref), not plan docs.
 
 ## Diagnosis (why it FEELS like agents don't build skills)
 
 The backend already replicates the reference harness's skill machinery almost 1:1 — the gap is **visibility
 and breadth**, not machinery:
 
-| the reference harness mechanism | StarNet equivalent | Status |
+| the reference harness mechanism | Eyehold equivalent | Status |
 |---|---|---|
 | `skill_view` / `skills_list` (lazy bodies) | `skill.view` / `skill.list` (sidecar/tools/builtin/skills.js) | EXISTS |
 | `skill_manage` create/edit/patch/delete + support files | `skill.manage` + package store (skillstore.js, skills/package.js) | EXISTS |

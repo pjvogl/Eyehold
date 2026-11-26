@@ -1,4 +1,4 @@
-/* STARNET — stepin.js : STEP-IN, the Commander takes an agent's browser (2026-09-29).
+/* EYEHOLD — stepin.js : STEP-IN, the Commander takes an agent's browser (2026-09-29).
 
    An agent browsing on its own hits a login, a 2FA code or a CAPTCHA and calls browser.need_human. Its run parks
    on the sidecar's handoff host (own id, own 30-minute wait) and a `browser.handoff` event arrives here over the
@@ -31,7 +31,7 @@ const StepIn = (() => {
   const seen = new Set(); // handoff ids already announced (one toast per handoff)
   let view = null;        // the mounted view { host, … } or null
 
-  const base = () => (typeof window !== 'undefined' ? String(window.__STARNET_API__ || '') : '');
+  const base = () => (typeof window !== 'undefined' ? String(window.__EYEHOLD_API__ || '') : '');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function getJson(path, signal) {
     return fetch(base() + path, { cache: 'no-store', signal }).then(async r => { let j = null; try { j = await r.json(); } catch (_) {} return { status: r.status, body: j || {} }; });

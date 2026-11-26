@@ -174,7 +174,7 @@ function makeCompletionEvidence(options) {
       else effectVerdict = 'mechanically_verified';
     }
     const out = {
-      schemaVersion: 'starnet.completion-evidence.v1',
+      schemaVersion: 'eyehold.completion-evidence.v1',
       // Load-bearing: evidence about effects is not automatically evidence that the user's requested outcome
       // was correct, complete, or observed. Only a typed task/postcondition contract may change this later.
       completionVerdict: assessment ? assessment.completionVerdict : 'not_assessed',

@@ -18,7 +18,7 @@ const K = require('../sidecar/servicekeys.js');
 
 // stand-in for the host's real reserved set (every model-provider keyEnv + its scoped forms)
 const RESERVED = new Set(['OPENROUTER_API_KEY', 'ANTHROPIC_API_KEY', 'OPENAI_API_KEY',
-  'STARNET_OPENROUTER_API_KEY', 'SKYNET_OPENROUTER_API_KEY']);
+  'EYEHOLD_OPENROUTER_API_KEY', 'SKYNET_OPENROUTER_API_KEY']);
 
 A.ok(C.PLATFORMS.length >= 15, 'the directory is seeded (' + C.PLATFORMS.length + ' platforms)');
 

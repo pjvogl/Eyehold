@@ -8,7 +8,7 @@ that the real-world goal has been achieved.
 
 1. Create a goal with a success condition and at least one actionable step, or add a
    success condition to an existing plan. Choose which active goal to focus on.
-2. Ask StarNet to help, or perform the action yourself and report what happened.
+2. Ask Eyehold to help, or perform the action yourself and report what happened.
 3. Track goal metrics and inspect the evidence behind earned Commander points.
 4. Get next-step recommendations informed by goal criteria, metrics, prior results,
    and blocker feedback. Defer, mark blocked, request a smaller step, or resume a quest.

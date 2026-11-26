@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Short-Form Script"
   category: "Writing"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

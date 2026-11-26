@@ -1,8 +1,8 @@
-# Industrial crew inside StarNet
+# Industrial crew inside Eyehold
 
 Open `http://127.0.0.1:18814/agent-station-demo.html?propSet=projection` with this worktree's `node dev/seed.js --keep` server.
 
-This is the full StarNet application, with its real seeded roster, movement, collision, furniture, camera and lighting. NOVA wears Ultron; four ordinary development specialists wear Skeleton, Plague Doctor, Secret Agent and Void Wizard. No work events are fabricated. This page creates missing demo specialists in this worktree's development scratch save only.
+This is the full Eyehold application, with its real seeded roster, movement, collision, furniture, camera and lighting. NOVA wears Ultron; four ordinary development specialists wear Skeleton, Plague Doctor, Secret Agent and Void Wizard. No work events are fabricated. This page creates missing demo specialists in this worktree's development scratch save only.
 
 The demo has its own sprite manifest and renderer copy. The production entry page and original skin PNGs are unchanged. All 795 generated frames are mechanically placed on 144px transparent canvases with a stable per-direction standing anchor. Walking selects the eight animation frames, excluding the extra reference pose. Furniture uses the final seated pose, rather than repeatedly playing the sit-down transition. North-facing typing is available when the actual station state requests it. Idle and sit-down source sequences remain available in the separate frame review.
 

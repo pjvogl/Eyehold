@@ -137,5 +137,5 @@ Grounding rule (contextpack law): a minted quest must cite which dossier/memory 
 - **Lane 5 (after 3+4):** generative minting cadence + guardrails (E).
 - **At merge:** request `quest.*` additive events from the events owner; wire celebrate() to them later.
 
-Gate: `npm run test:fast` green + live-app proof per starnet-verify (mint→see row→attest→confirm→celebrate,
+Gate: `npm run test:fast` green + live-app proof per eyehold-verify (mint→see row→attest→confirm→celebrate,
 plus a work-quest completing with the log CLOSED and celebrating within 1s).

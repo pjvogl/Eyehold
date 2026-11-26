@@ -1,11 +1,11 @@
-# Using StarNet from your editor (ACP)
+# Using Eyehold from your editor (ACP)
 
-StarNet speaks **ACP** — the [Agent Client Protocol](https://agentclientprotocol.com), the same protocol Zed
-uses to talk to external coding agents. Point an ACP-capable editor at StarNet and you drive your *real*
+Eyehold speaks **ACP** — the [Agent Client Protocol](https://agentclientprotocol.com), the same protocol Zed
+uses to talk to external coding agents. Point an ACP-capable editor at Eyehold and you drive your *real*
 station agents from inside your codebase: the same tools, the same consent gates, the same spend caps, and the
 same station floor lighting up while it works.
 
-This is the third way into StarNet, alongside the station window and the messaging channels:
+This is the third way into Eyehold, alongside the station window and the messaging channels:
 
 | Surface | What it is | Where |
 |---|---|---|
@@ -13,11 +13,11 @@ This is the third way into StarNet, alongside the station window and the messagi
 | Messaging channels | Telegram / Discord / Slack / Matrix / Signal | CHANNELS panel |
 | **ACP (this doc)** | **your editor** | `npm run acp:serve` |
 | MCP bridge | observe/message a station from another agent | `npm run mcp:serve` — see below |
-| OpenAI-compatible API | another harness drives StarNet over HTTP | [`OPENAI_COMPAT.md`](OPENAI_COMPAT.md) |
+| OpenAI-compatible API | another harness drives Eyehold over HTTP | [`OPENAI_COMPAT.md`](OPENAI_COMPAT.md) |
 
 ## Setup
 
-**StarNet must already be running** (`npm start`). The bridge is a thin client: it does not host agents, it
+**Eyehold must already be running** (`npm start`). The bridge is a thin client: it does not host agents, it
 drives the station you already have. One sidecar owns a workspace — the bridge never touches your stores
 directly, it calls the running station over loopback.
 
@@ -26,7 +26,7 @@ Register the agent with your editor. In Zed, `settings.json`:
 ```json
 {
   "agent_servers": {
-    "StarNet": {
+    "Eyehold": {
       "command": "npm",
       "args": ["run", "-s", "acp:serve"],
       "env": {}
@@ -39,10 +39,10 @@ Register the agent with your editor. In Zed, `settings.json`:
 different working directory, use an absolute path instead:
 
 ```json
-{ "command": "node", "args": ["C:/path/to/starnet/sidecar/acp/serve.js"] }
+{ "command": "node", "args": ["C:/path/to/eyehold/sidecar/acp/serve.js"] }
 ```
 
-Then open the agent panel in your editor and pick **StarNet**.
+Then open the agent panel in your editor and pick **Eyehold**.
 
 ### If your station is not on the default port
 
@@ -54,13 +54,13 @@ node sidecar/acp/serve.js --port=8788 --host=127.0.0.1
 
 | Flag | Env | Default |
 |---|---|---|
-| `--port=` | `STARNET_PORT` | `8787` |
-| `--host=` | `STARNET_HOST` | `127.0.0.1` |
-| `--token=` | `STARNET_TOKEN` / `STARNET_API_TOKEN` | discovered automatically |
+| `--port=` | `EYEHOLD_PORT` | `8787` |
+| `--host=` | `EYEHOLD_HOST` | `127.0.0.1` |
+| `--token=` | `EYEHOLD_TOKEN` / `EYEHOLD_API_TOKEN` | discovered automatically |
 
 You normally do **not** set a token. The station mints a fresh API token per launch and injects it into the
 page it serves; the bridge reads it the same way the browser does. Set one explicitly only if you run the
-station with a fixed `STARNET_API_TOKEN`.
+station with a fixed `EYEHOLD_API_TOKEN`.
 
 ## What you get in the editor
 
@@ -73,7 +73,7 @@ station with a fixed `STARNET_API_TOKEN`.
   not happen. Nothing is pre-approved for the editor that would not be pre-approved in the station.
 - **Cancel.** Stopping the turn in your editor really aborts the run (it does not keep spending in the
   background).
-- **A visible station.** An ACP run is a normal StarNet run: the floor animates, the transcript lands, spend
+- **A visible station.** An ACP run is a normal Eyehold run: the floor animates, the transcript lands, spend
   is metered against your caps, and the run appears in the station's own history.
 
 ### Capabilities an editor session has
@@ -87,15 +87,15 @@ folder-trust prompt the station uses, surfaced as an approval card.
 These are real gaps, listed so you are not surprised by them:
 
 - **OpenRouter only, for now.** The bridge asks the station which model to run headless, and that resolution is
-  the same one the station's other headless host uses: provider `openrouter` plus `STARNET_DEFAULT_MODEL`. If
-  your station is set up on Codex/Grok/Kimi only, the bridge reports *"StarNet has no runnable model
+  the same one the station's other headless host uses: provider `openrouter` plus `EYEHOLD_DEFAULT_MODEL`. If
+  your station is set up on Codex/Grok/Kimi only, the bridge reports *"Eyehold has no runnable model
   configured"* rather than guessing — set an OpenRouter key and a default model to use ACP today.
 - **No image attachments.** The bridge does not advertise the ACP image capability, so a well-behaved editor
   will not offer to attach one. If a client sends one anyway, the turn tells the model that N images were
   attached and could not be delivered, rather than silently answering about text it never saw.
 - **A very large prompt is truncated at 200k characters**, and the turn says so — it does not quietly drop the
   second half.
-- **No thought stream.** StarNet's event contract reports *that* a model is reasoning, not the reasoning text
+- **No thought stream.** Eyehold's event contract reports *that* a model is reasoning, not the reasoning text
   (deliberately — a thinking delta must never be emitted as normal output). So there is nothing to show in an
   editor's "thinking" pane, and the bridge advertises none.
 - **No diff previews on edits.** An edit is reported with the tool's own result summary rather than a
@@ -117,9 +117,9 @@ corrupt it). Check your editor's agent log.
 
 | What you see | What it means |
 |---|---|
-| `StarNet is not running (or its API token could not be read)` | the station is not up on that host/port, or the port is wrong |
-| `StarNet has no runnable model configured` | set an **OpenRouter** key and a default model (see the limits above) |
-| `StarNet rejected this bridge's API token` | the station restarted and minted a new token — restart the agent in your editor so it re-reads it |
+| `Eyehold is not running (or its API token could not be read)` | the station is not up on that host/port, or the port is wrong |
+| `Eyehold has no runnable model configured` | set an **OpenRouter** key and a default model (see the limits above) |
+| `Eyehold rejected this bridge's API token` | the station restarted and minted a new token — restart the agent in your editor so it re-reads it |
 | `(stopped: this run hit a spend cap …)` | MISSION CONTROL → BUDGET |
 | `(stopped: reached the step limit for one turn …)` | send `continue` |
 
@@ -127,7 +127,7 @@ corrupt it). Check your editor's agent log.
 
 Both are stdio JSON-RPC bridges to a running station, and they do different jobs:
 
-- **ACP (`acp:serve`)** — *your editor drives a StarNet agent.* Full agent runs with tools, streaming, and
+- **ACP (`acp:serve`)** — *your editor drives a Eyehold agent.* Full agent runs with tools, streaming, and
   approval cards.
 - **MCP (`mcp:serve`)** — *another agent observes and messages a station.* It reads run history, transcripts,
   channels, and live events, and can answer permission prompts. It deliberately runs **no** agent turns.
@@ -136,7 +136,7 @@ Use ACP to work. Use MCP to watch.
 
 ## Implementation notes
 
-- `sidecar/acp/core.js` — the pure protocol core: JSON-RPC dispatch, session lifecycle, the StarNet-event →
+- `sidecar/acp/core.js` — the pure protocol core: JSON-RPC dispatch, session lifecycle, the Eyehold-event →
   `session/update` mapping, tool classification, the permission round-trip, stop-reason mapping. No I/O.
 - `sidecar/acp/serve.js` — the ambient edge: stdio framing, token discovery, and streaming `POST /api/run`.
 - `GET /api/runtime/agent` — the small read the bridge uses to learn which provider/model the station would

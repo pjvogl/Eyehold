@@ -15,10 +15,10 @@ const lint = path.join(ROOT, 'scripts', 'lint-evidence-secrets.mjs');
 function cleanEnv(extra) {
   const env = Object.assign({}, process.env, extra || {});
   delete env.SKYNET_OPENROUTER_KEY;
-  delete env.STARNET_OPENROUTER_KEY;
+  delete env.EYEHOLD_OPENROUTER_KEY;
   delete env.OPENROUTER_API_KEY;
   delete env.SKYNET_AUDIT_LIVE_PROVIDER;
-  delete env.STARNET_T3_REQUIRE_LIVE;
+  delete env.EYEHOLD_T3_REQUIRE_LIVE;
   return env;
 }
 function run(args, env) {
@@ -43,15 +43,15 @@ function t0Status(hash, bytes) {
   };
 }
 function t2Status() {
-  return { schema: 'starnet.t2-state-safety-status.v1', verdict: 'green', stateSafetyReady: true };
+  return { schema: 'eyehold.t2-state-safety-status.v1', verdict: 'green', stateSafetyReady: true };
 }
 function proof(hash, bytes, overrides) {
   return Object.assign({
-    schema: 'starnet.t3-installed-workload-proof.v1',
+    schema: 'eyehold.t3-installed-workload-proof.v1',
     generatedAt: new Date().toISOString(),
     sourceMachine: { os: 'Windows 11 Test VM', machineKind: 'windows-sandbox' },
     installer: { sha256: hash, bytes },
-    installedApp: { source: 'nsis-installed', launched: true, usableHarness: true, observedWindowTitle: 'StarNet' },
+    installedApp: { source: 'nsis-installed', launched: true, usableHarness: true, observedWindowTitle: 'Eyehold' },
     workload: {
       completed: true,
       durationMs: 42000,
@@ -71,7 +71,7 @@ function proof(hash, bytes, overrides) {
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 't3-release-smoke-'));
 try {
-  const installer = path.join(tmp, 'StarNet_0.1.0_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_0.1.0_x64-setup.exe');
   fs.writeFileSync(installer, 'fake installer');
   const hash = hashFile(installer);
   const bytes = fs.statSync(installer).size;
@@ -83,11 +83,11 @@ try {
   {
     const out = path.join(tmp, 'blocked-out');
     const res = run(['--loop=2'], {
-      STARNET_T3_INSTALLER_EXE: installer,
-      STARNET_T3_T0_STATUS: t0,
-      STARNET_T3_T2_STATUS: t2,
-      STARNET_T3_RELEASE_SMOKE_DIR: out,
-      STARNET_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'blocked-latest')
+      EYEHOLD_T3_INSTALLER_EXE: installer,
+      EYEHOLD_T3_T0_STATUS: t0,
+      EYEHOLD_T3_T2_STATUS: t2,
+      EYEHOLD_T3_RELEASE_SMOKE_DIR: out,
+      EYEHOLD_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'blocked-latest')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't3-release-smoke-status.json'), 'utf8'));
@@ -101,11 +101,11 @@ try {
     writeJson(bad, proof('00' + hash.slice(2), bytes));
     const out = path.join(tmp, 'red-out');
     const res = run(['--workload-evidence', bad], {
-      STARNET_T3_INSTALLER_EXE: installer,
-      STARNET_T3_T0_STATUS: t0,
-      STARNET_T3_T2_STATUS: t2,
-      STARNET_T3_RELEASE_SMOKE_DIR: out,
-      STARNET_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'red-latest')
+      EYEHOLD_T3_INSTALLER_EXE: installer,
+      EYEHOLD_T3_T0_STATUS: t0,
+      EYEHOLD_T3_T2_STATUS: t2,
+      EYEHOLD_T3_RELEASE_SMOKE_DIR: out,
+      EYEHOLD_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'red-latest')
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't3-release-smoke-status.json'), 'utf8'));
@@ -119,15 +119,15 @@ try {
     const out = path.join(tmp, 'green-out');
     const latest = path.join(tmp, 'green-latest');
     const res = run(['--loop=2', '--workload-evidence=' + good], {
-      STARNET_T3_INSTALLER_EXE: installer,
-      STARNET_T3_T0_STATUS: t0,
-      STARNET_T3_T2_STATUS: t2,
-      STARNET_T3_RELEASE_SMOKE_DIR: out,
-      STARNET_T3_RELEASE_SMOKE_LATEST_DIR: latest
+      EYEHOLD_T3_INSTALLER_EXE: installer,
+      EYEHOLD_T3_T0_STATUS: t0,
+      EYEHOLD_T3_T2_STATUS: t2,
+      EYEHOLD_T3_RELEASE_SMOKE_DIR: out,
+      EYEHOLD_T3_RELEASE_SMOKE_LATEST_DIR: latest
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't3-release-smoke-status.json'), 'utf8'));
-    assert.equal(status.schema, 'starnet.t3-release-smoke-status.v1');
+    assert.equal(status.schema, 'eyehold.t3-release-smoke-status.v1');
     assert.equal(status.verdict, 'green');
     assert.equal(status.releaseSmokeReady, true);
     assert.equal(status.nextAction, null);
@@ -144,11 +144,11 @@ try {
     writeJson(noPaid, doc);
     const out = path.join(tmp, 'live-required-out');
     const res = run(['--require-live', '--workload-evidence', noPaid], {
-      STARNET_T3_INSTALLER_EXE: installer,
-      STARNET_T3_T0_STATUS: t0,
-      STARNET_T3_T2_STATUS: t2,
-      STARNET_T3_RELEASE_SMOKE_DIR: out,
-      STARNET_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'live-required-latest')
+      EYEHOLD_T3_INSTALLER_EXE: installer,
+      EYEHOLD_T3_T0_STATUS: t0,
+      EYEHOLD_T3_T2_STATUS: t2,
+      EYEHOLD_T3_RELEASE_SMOKE_DIR: out,
+      EYEHOLD_T3_RELEASE_SMOKE_LATEST_DIR: path.join(tmp, 'live-required-latest')
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't3-release-smoke-status.json'), 'utf8'));

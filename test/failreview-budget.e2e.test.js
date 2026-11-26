@@ -77,7 +77,7 @@ async function settle(state) { let last = -1, since = Date.now(); const until = 
 (async () => {
   const mock = await startMock();
   const fixture = SidecarFixture.create({ prefix: 'sk-capreview-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1', SKYNET_BUDGET_PER_RUN: '1' } });
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1', SKYNET_BUDGET_PER_RUN: '1' } });
   await fixture.start();
   try {
     const reviews = () => mock.state.calls.filter(c => c.failReview).length;

@@ -2,7 +2,7 @@
 
 Open http://127.0.0.1:9199/ in a browser. Glass is now the default presentation from the first paint. `?glass=1` remains compatible; `?glass=0` is an explicit diagnostic fallback.
 
-This isolated branch is the glass interface merge candidate for the real StarNet frontend and sidecar, not an installed release. Its save lives in `dev/.scratch-workspace`. No production station data or provider keys were copied.
+This isolated branch is the glass interface merge candidate for the real Eyehold frontend and sidecar, not an installed release. Its save lives in `dev/.scratch-workspace`. No production station data or provider keys were copied.
 
 ## Try it
 
@@ -174,11 +174,11 @@ Live proof: toggle computed border-width 0px both closed and open, with a compac
 
 readability (21), comms-responsive-text (5), control-floor-theming (125), website-app-sync (8) and diff whitespace checks passed. Website mirror synchronized. Full fast was not repeated for this CSS refinement; its previously recorded release-manifest failures remain unresolved. Real model execution and installed builds were not verified; no merge or release.
 
-## CREW glass material and StarNet subscription door - 2026-09-09
+## CREW glass material and Eyehold subscription door - 2026-09-09
 
 Owner correction: the model popup still looked flat and the OpenRouter-key warning was obsolete. The popup now uses exactly CREW's --gd-face, --gd-edge and --gd-shadow; its heading matches the rail's illuminated strip. Search, model rows, reasoning controls and footer actions carry the same glass face and inset light. Selected/hovered model rows use CREW's --gd-hover gradient. The compact bottom toggle stays borderless.
 
-Removed the shared picker-only missing-key notice, amber chip treatment and their unused credential helpers. Replaced its footer Settings action with STARNET SUBSCRIPTION, pointing to the public https://www.starnetos.com/pricing page verified during this pass. This is a navigation action, not a claimed account status or a provider switch. Existing provider/model selection, credential checks in the harness, catalog reconciliation and runtime errors remain authoritative. Browser activation preserves the native secure new-tab link; desktop activation uses the existing open_external_url bridge and reports launch failures with the public URL.
+Removed the shared picker-only missing-key notice, amber chip treatment and their unused credential helpers. Replaced its footer Settings action with EYEHOLD SUBSCRIPTION, pointing to the public https://www.eyehold.com/pricing page verified during this pass. This is a navigation action, not a claimed account status or a provider switch. Existing provider/model selection, credential checks in the harness, catalog reconciliation and runtime errors remain authoritative. Browser activation preserves the native secure new-tab link; desktop activation uses the existing open_external_url bridge and reports launch failures with the public URL.
 
 Live proof:
 - Popup and CREW background values matched exactly, including the 165-degree gradient and theme-colored translucent base. Selected model and selected CREW row both resolved to the same 120-degree highlight.
@@ -199,7 +199,7 @@ readability (21), control-floor-theming (125), website-app-sync (8) and diff whi
 
 ## Model menu hierarchy polish - 2026-09-09
 
-Reduced the model header to one row: current model first in station-style uppercase, provider metadata aligned right. Removed the redundant rule above the model list. Per-model reasoning tags now appear on selection, hover or keyboard focus, with their space reserved to prevent label movement. Footer actions size to their contents. Glass surfaces, reasoning track, readable type sizes and the StarNet subscription action are preserved.
+Reduced the model header to one row: current model first in station-style uppercase, provider metadata aligned right. Removed the redundant rule above the model list. Per-model reasoning tags now appear on selection, hover or keyboard focus, with their space reserved to prevent label movement. Footer actions size to their contents. Glass surfaces, reasoning track, readable type sizes and the Eyehold subscription action are preserved.
 
 Live proof: header height reduced from 64.4px to 42.5px, client/scroll width both 348px. Subscription action client/scroll width both 162px (previously 255px). Model popup client/scroll width both 348px. Hovering the Sonnet row revealed its MIN tag at opacity .8 while the actual selected reasoning remained MIN. Final model claude haiku latest, 484px rail, empty draft and subscription destination preserved. Browser warning/error log empty; final menu open for review.
 
@@ -276,7 +276,7 @@ Owner requested the PIN A WIDGET affordance match the newer glass identity. Both
 Live proof on the real seeded :9199 app at 1049x912, with the owner's red theme and 302px COMMS rail:
 - Both empty-rail triggers measured 119.41x28px, with 14px labels and 11px plus strokes. The bottom navigation remained in place.
 - Top and bottom pickers opened beside their own triggers. The library measured 340px overall, with equal 338px client/scroll widths and 9px backdrop blur. All three category labels fit; their client/scroll widths matched. Search used 16px type and returned the honest No matching widgets state.
-- Your widgets and Pinned showed their real empty states. Connected apps showed the real StarNet source. Opened its unsaved setup form: all inputs used 16px type, the select retained its chevron, and the scrollable form had equal 308px client/scroll widths. The final heading measured 18px with .5px tracking, zero padding and no decorative rule.
+- Your widgets and Pinned showed their real empty states. Connected apps showed the real Eyehold source. Opened its unsaved setup form: all inputs used 16px type, the select retained its chevron, and the scrollable form had equal 308px client/scroll widths. The final heading measured 18px with .5px tracking, zero padding and no decorative rule.
 - Escape from the form closed the top picker and returned focus to its trigger with aria-expanded=false. The X did the same for the bottom trigger. Tab from the last preset wrapped to the close control. Browser warning/error log was empty.
 - Left the bottom picker open on Your widgets for review. No widget was created, fetched, pinned, deleted or connected. Populated widget readouts, external account flows, reduced-motion OS behavior and installed-desktop execution were not exercised.
 

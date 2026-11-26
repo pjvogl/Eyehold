@@ -67,8 +67,8 @@ async function extract(cell){
     count:records.filter(r=>r.output).length,requestedCount:map.count,partitionRepair:'Native F industrial_partition:e has opposite west via viewAt mirror fallback (propsprites.js:11062); source pair duplicated visually. New AI-authored opposite source substitutes e; original retained as w.',
     longtableRepair:'Dedicated bare east table replaces initial baked-chair assembly. Source override supplies bare same-style top/legs.',
     repairProvenance:{
-      partition:{prompt:docs+'/partition-opposite.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png',secondaryReference:map.source},
-      longtable:{prompt:docs+'/longtable-e.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png',secondaryReference:'docs/station-remaster/approved-sheet/storage/repair-sheet-source.png',matchingCell:'top row far right bare longtable'}
+      partition:{prompt:docs+'/partition-opposite.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png',secondaryReference:map.source},
+      longtable:{prompt:docs+'/longtable-e.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png',secondaryReference:'docs/station-remaster/approved-sheet/storage/repair-sheet-source.png',matchingCell:'top row far right bare longtable'}
     },
     integrationNotes:[
       'Uniform fits are measured, not resized to match native bounds. Partition-e repair has a broader aspect than the native narrow 8x44 envelope, so it draws shorter than partition-w at equal width; do not stretch silently.',

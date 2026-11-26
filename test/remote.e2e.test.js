@@ -1,4 +1,4 @@
-/* node test/remote.e2e.test.js — StarNet Remote phase 1 against a REAL booted sidecar.
+/* node test/remote.e2e.test.js — Eyehold Remote phase 1 against a REAL booted sidecar.
 
    A mock provider plays the model (zero spend). The phone is relay/app/phone-client.js, the WebCrypto-only
    client a phone browser runs. What this proves, in order:
@@ -91,11 +91,11 @@ function startMockModel() {
   const llm = await startMockModel();
   const lanPort = await freePort();
   const fx = new SidecarFixture({ prefix: 'sn-remote-e2e-', timeoutMs: 15000, env: {
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-remote-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-remote-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    STARNET_REMOTE_PORT: String(lanPort), STARNET_REMOTE_LAN: '1', STARNET_REMOTE_RELAY: 'off',
-    STARNET_REMOTE_PUSH_HOSTS: '127.0.0.1'
+    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-remote-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-remote-fake',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_REMOTE_PORT: String(lanPort), EYEHOLD_REMOTE_LAN: '1', EYEHOLD_REMOTE_RELAY: 'off',
+    EYEHOLD_REMOTE_PUSH_HOSTS: '127.0.0.1'
   } });
   const lan = 'http://' + HOST + ':' + lanPort;
   let client = null;
@@ -207,7 +207,7 @@ function startMockModel() {
     A.eq((await client.call('approvals')).data.length, 0, 'nothing left waiting');
 
     // 9. session parity with the desk
-    const saved = await fx.json('POST', '/api/save', { schema: 'starnet.save', version: 6, agent: { id: 'agent', name: 'ULTRON', createdAt: 1 },
+    const saved = await fx.json('POST', '/api/save', { schema: 'eyehold.save', version: 6, agent: { id: 'agent', name: 'ULTRON', createdAt: 1 },
       workstreams: [
         { id: 'ws_desk_launch', title: 'Launch plan', agentId: 'forge', conversationMode: 'direct', lane: 'active', kind: 'chat', archived: false, lastActiveAt: Date.now() - 5000,
           history: [{ role: 'user', content: 'remember the code word is HELIX' }, { role: 'assistant', content: 'Noted. The code word is HELIX.' }] },

@@ -607,13 +607,13 @@ A.ok(/Object\.assign\(\{\}, editing \|\| \{\}/.test(createSeg), 'editing starts 
 
 /* ---------- S3c. TIER->MODEL: settings persist the map + resolveTierModel consults it ---------- */
 // the seam is now filled: resolveTierModel reads a persisted tier->model map (a pinned tier wins; else base model).
-A.ok(/TIER_MODELS_KEY = 'starnet\.tierModels\.v1'/.test(app), 'app.js defines the tier->model store key');
+A.ok(/TIER_MODELS_KEY = 'eyehold\.tierModels\.v1'/.test(app), 'app.js defines the tier->model store key');
 const rtm = app.slice(app.indexOf('function resolveTierModel('), app.indexOf('function resolveTierModel(') + 400);
 A.ok(/tierModelMap\(\)\[tier\]/.test(rtm), 'resolveTierModel consults the persisted tier->model map (the S1 seam is filled)');
 A.ok(/return baseModel \|\|/.test(rtm), 'an unpinned tier still falls back to the base/station-default model (default unchanged)');
 // the SETTINGS MODELS section adds the CLASS TIER MODELS mapping + wires it to the SAME localStorage key.
 A.ok(/CLASS TIER MODELS/.test(sui), 'SETTINGS surfaces a CLASS TIER MODELS mapping');
-A.ok(/TIER_MODELS_KEY = 'starnet\.tierModels\.v1'/.test(sui), 'the settings writer uses the SAME key app.js reads (no new plumbing)');
+A.ok(/TIER_MODELS_KEY = 'eyehold\.tierModels\.v1'/.test(sui), 'the settings writer uses the SAME key app.js reads (no new plumbing)');
 A.ok(/function wireTierModels\(body\)/.test(sui) && /wireTierModels\(host\)/.test(sui), 'the tier-model picker is wired into buildSettings');
 // Tier choices follow the active provider. The fallback chain retains its OpenRouter accessor.
 A.ok(/Harness\.api\.get\('\/api\/models\/' \+ encodeURIComponent\(provider\)/.test(sui.slice(sui.indexOf('function wireTierModels'))), 'the tier-model selects use the active provider catalog');

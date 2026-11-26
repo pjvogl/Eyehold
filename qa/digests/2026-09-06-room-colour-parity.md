@@ -22,6 +22,6 @@ LOW -> MEDIUM -> HIGH -> LOW preserves the same grade with the selected control 
 
 Focused checks passed: simulation-lighting 84 assertions, custom-phosphor 36 assertions, room-lighting-settings, syntax and diff checks. Full merge-gate results are recorded below when complete. Exact installed-artifact verification belongs to the release task's rebuild; it must select LOW for the owner's reference comparison, preserve the custom UI colour, and verify the computed station grade after reload. Existing user-selected brightness levels are deliberately preserved by the code.
 
-Release coordination: `Prepare StarNet 0.11.0 update` was informed of the defect, exact CSS rule and brightness difference and asked to include the merged fix before the next installer. No installed data or executable was modified by this lane.
+Release coordination: `Prepare Eyehold 0.11.0 update` was informed of the defect, exact CSS rule and brightness difference and asked to include the merged fix before the next installer. No installed data or executable was modified by this lane.
 
 Branch gate: `npm run test:fast` completed all 727 steps, exit 0, at source/claims HEAD `67db050e3`. Log: `.worldshots/room-colour-fast.log`. Subsequent lane changes only record this proof and close the source bug; installed verification and owner recovery remain pending.

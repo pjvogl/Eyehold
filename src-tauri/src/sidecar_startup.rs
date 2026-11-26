@@ -97,7 +97,7 @@ mod tests {
     #[test]
     fn spawn_failure_leaves_no_untracked_child() {
         let slot = Mutex::new(None);
-        assert!(spawn(&mut Command::new("starnet-missing-runtime-test"), &slot).is_err());
+        assert!(spawn(&mut Command::new("eyehold-missing-runtime-test"), &slot).is_err());
         assert!(slot.lock().unwrap().is_none());
     }
 }

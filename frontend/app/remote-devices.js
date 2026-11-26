@@ -1,4 +1,4 @@
-/* STARNET — remote-devices.js : SETTINGS › REMOTE, the desk side of StarNet Remote.
+/* EYEHOLD — remote-devices.js : SETTINGS › REMOTE, the desk side of Eyehold Remote.
 
    Switch Remote on, pair a phone with a QR code, see which phones are paired and connected, remove one.
    Everything shown is read from GET /api/remote (the sidecar's real state): the relay line says ONLINE only
@@ -117,7 +117,7 @@
         '<div class="rmt-pair">' +
           (qr ? '<div class="rmt-qr" role="img" aria-label="Pairing code for your phone">' + qr + '</div>' : '') +
           '<div class="rmt-pair-text">' +
-            '<p class="set-about">Scan this with your phone’s camera. It opens StarNet Remote and pairs this one phone. On an iPhone it first shows you how to put StarNet on your Home Screen, so it works like an app.</p>' +
+            '<p class="set-about">Scan this with your phone’s camera. It opens Eyehold Remote and pairs this one phone. On an iPhone it first shows you how to put Eyehold on your Home Screen, so it works like an app.</p>' +
             '<p class="set-about">Station code: <b>' + esc(p.fingerprint) + '</b> — your phone will show the same.</p>' +
             '<p class="set-about dim" id="rmt-exp"></p>' +
             '<div class="set-save"><button class="bb xs" type="button" id="rmt-copy">COPY LINK</button><button class="bb xs" type="button" id="rmt-cancel">CANCEL</button></div>' +

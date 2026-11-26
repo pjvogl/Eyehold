@@ -95,7 +95,7 @@ A.eq(clean.completionEvidence().completionVerdict, 'not_assessed', 'missing comp
 const completionEvents = [];
 const completionState = makeRunExecutionState({ completion: {
   observe: event => completionEvents.push(event),
-  snapshot: () => ({ schemaVersion: 'starnet.completion-evidence.v1', completionVerdict: 'not_assessed', effectVerdict: 'unverified_effects', effects: [], evidence: [] })
+  snapshot: () => ({ schemaVersion: 'eyehold.completion-evidence.v1', completionVerdict: 'not_assessed', effectVerdict: 'unverified_effects', effects: [], evidence: [] })
 } });
 completionState.observeCompletion({ callId: 'c', name: 'fs.write' });
 A.eq(completionEvents.map(x => x.callId), ['c'], 'run state owns completion evidence observation lifecycle');

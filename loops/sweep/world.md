@@ -10,7 +10,7 @@ where "the app lies" is most visible.
 COMMS surfaces · theming and skins · `frontend/app/lifecycle.js` · `fullscreen.js` ·
 `leftrail.js` · `dockglow.js` · `crtlab.js`
 
-**Read `.claude/skills/starnet-frontend-law` before touching anything here.** Those laws are
+**Read `.claude/skills/eyehold-frontend-law` before touching anything here.** Those laws are
 LOCKED and violating one in passing is worse than the bug you came to fix.
 
 ## The failure states to walk

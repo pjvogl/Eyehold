@@ -1,4 +1,4 @@
-/* STARNET — resummonstore.js : P3.1 "RUN THIS AGAIN?" — the re-summon signal.
+/* EYEHOLD — resummonstore.js : P3.1 "RUN THIS AGAIN?" — the re-summon signal.
 
    Retention fast-follow: right after the Commander rated the hero's work 👍 on a real interactive run, the station
    offers ONCE, lightly, to run that same shape of work again — tied to the SAME agent and the run's directive. One
@@ -24,7 +24,7 @@
    pre-fill (select agent + seed composer) is deps injected by app.js. */
 'use strict';
 const ResummonStore = (() => {
-  const KEY = 'starnet.resummon.v1';      // the per-run decision denylist (re-summoned/dismissed) — self-persisted
+  const KEY = 'eyehold.resummon.v1';      // the per-run decision denylist (re-summoned/dismissed) — self-persisted
   const RETRY_MS = 7000;                  // blocked-offer retry cadence (bounded), cloned from bottlestore/away-digest
   const SETTLE_MS = 900;                  // let the rate control vanish before the offer slots in (bottlestore SETTLE)
   const MAX_DECIDED = 200;                // cap the persisted ledger (FIFO) so a long-lived station can't grow it forever

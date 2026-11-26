@@ -80,7 +80,7 @@ function requiresApiToken(req) {
 
 function headerToken(req) {
   const h = (req && req.headers) || {};
-  return String(h['x-starnet-token'] || h['x-skynet-token'] || '');   // dual-accept the legacy header name
+  return String(h['x-eyehold-token'] || h['x-skynet-token'] || '');   // dual-accept the legacy header name
 }
 // constant-time compare; false on any length mismatch / empty (never throws).
 function constTimeEq(a, b) {

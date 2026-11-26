@@ -14,7 +14,7 @@ refresh is attempted. Saved rows explain the suspension and still allow removal.
 The build staging step omits the Google Desktop registration even if CI supplies it,
 and clears stale staged metadata. Availability is source-controlled; there is no
 product environment switch. Test-only preload injection continues exercising the
-future OAuth implementation. StarNet billing account login is a separate flow and
+future OAuth implementation. Eyehold billing account login is a separate flow and
 is outside this change.
 
 Verification: `test/google-release-deferred.e2e.test.js` exercises the real sidecar

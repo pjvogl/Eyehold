@@ -1,7 +1,7 @@
 'use strict';
-/* Real sidecar proof that RESTRICTED Google data never reaches StarNet Managed (the credits relay):
+/* Real sidecar proof that RESTRICTED Google data never reaches Eyehold Managed (the credits relay):
    a live Gmail connector (synthetic Google) is offered to an own-key run and returns mail content; on a
-   StarNet Managed run the same agent is NOT offered Gmail tools, and the replayed Gmail result arrives at
+   Eyehold Managed run the same agent is NOT offered Gmail tools, and the replayed Gmail result arrives at
    the relay as the withheld notice — never the mail body. No real Google account, cloud or model is used.
    The same proof runs for Gmail over an APP PASSWORD (IMAP, no OAuth) against a fake local IMAP server
    (test/helpers/fake-gmail.js, routed in by test/fixtures/gmail-imap-preload.cjs). */
@@ -48,11 +48,11 @@ let nextTool = GMAIL_READ;                                       // which tool t
   const cloud = 'http://127.0.0.1:' + server.address().port;
   const fakeImap = await startFakeImap({ user: 'me@example.com', pass: IMAP_PASS });
   const fixture = new SidecarFixture({ prefix: 'google-relay-guard-', timeoutMs: 30000, env: {
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_CLOUD_URL: cloud, STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
     OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', SKYNET_AUX_BUDGET: '0', SKYNET_FULL_ACCESS: '1',
-    STARNET_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-starnettest.apps.googleusercontent.com' } }),
-    STARNET_TEST_FAKE_IMAP_PORT: String(fakeImap.port),
+    EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-eyeholdtest.apps.googleusercontent.com' } }),
+    EYEHOLD_TEST_FAKE_IMAP_PORT: String(fakeImap.port),
     NODE_OPTIONS: '--require=' + path.join(__dirname, 'fixtures/google-signin-preload.cjs').replace(/\\/g, '/') +
       ' --require=' + path.join(__dirname, 'fixtures/gmail-imap-preload.cjs').replace(/\\/g, '/')
   } });
@@ -65,7 +65,7 @@ let nextTool = GMAIL_READ;                                       // which tool t
     configs: [{ id: 'gmail', label: 'Gmail', url: ENDPOINTS.gmail, transport: 'http', oauth: true, enabled: true, googleApi: true },
       { id: 'gmail-app-password', label: 'Gmail (app password)', url: imapGmail.ENDPOINT, transport: 'http', enabled: true, token: 'me@example.com:' + IMAP_PASS }],
     oauth: { clients: {}, byId: { gmail: { accessToken: 'GOOGLE_ACCESS_TEST', refreshToken: 'GOOGLE_REFRESH_TEST', expiresAt: Date.now() + 3600e3,
-      tokenEndpoint: 'https://oauth2.googleapis.com/token', clientId: '123456-starnettest.apps.googleusercontent.com',
+      tokenEndpoint: 'https://oauth2.googleapis.com/token', clientId: '123456-eyeholdtest.apps.googleusercontent.com',
       scope: 'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose' } } } }));
   const run = async (provider, messages, extra) => {
     const r = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({
@@ -99,7 +99,7 @@ let nextTool = GMAIL_READ;                                       // which tool t
     assert.ok(result && result.payload.ok, 'Gmail read_message ran: ' + JSON.stringify(result && result.payload).slice(0, 200));
     assert.ok(custom.some(b => JSON.stringify(b.messages).includes(MAIL)), 'the own-key provider received the mail (the user chose it)');
 
-    // 2. StarNet Managed run carrying that history: no Gmail tools, and the mail body is withheld
+    // 2. Eyehold Managed run carrying that history: no Gmail tools, and the mail body is withheld
     const history = [
       { role: 'user', content: 'Read my latest mail' },
       { role: 'assistant', content: '', tool_calls: [{ id: 'mail1', type: 'function', function: { name: GMAIL_READ, arguments: '{"messageId":"message-1"}' } }] },
@@ -107,17 +107,17 @@ let nextTool = GMAIL_READ;                                       // which tool t
       { role: 'user', content: 'Now summarize it' }
     ];
     const before = relay.length;
-    const managed = await run('starnet', history);
+    const managed = await run('eyehold', history);
     assert.equal(managed.filter(e => e.name === 'agent.run.end').at(-1)?.payload.reason, 'done', JSON.stringify(managed.filter(e => /error/.test(e.name))));
     const sent = relay.slice(before).filter(b => Array.isArray(b.messages));
     assert.ok(sent.length > 0, 'the managed run reached the relay');
     for (const b of sent) {
-      assert.ok(!names(b).some(n => /^mcp__gmail__/.test(n)), 'StarNet Managed is never offered Gmail tools');
-      assert.ok(!JSON.stringify(b).includes(MAIL), 'the mail body never reaches the StarNet relay');
+      assert.ok(!names(b).some(n => /^mcp__gmail__/.test(n)), 'Eyehold Managed is never offered Gmail tools');
+      assert.ok(!JSON.stringify(b).includes(MAIL), 'the mail body never reaches the Eyehold relay');
     }
-    assert.ok(sent.some(b => JSON.stringify(b.messages).includes('never sent to StarNet Managed')), 'the relay sees the withheld notice in its place');
+    assert.ok(sent.some(b => JSON.stringify(b.messages).includes('never sent to Eyehold Managed')), 'the relay sees the withheld notice in its place');
 
-    // 3. the same proof for Gmail over an APP PASSWORD (IMAP): own-key reads mail, StarNet Managed never sees it
+    // 3. the same proof for Gmail over an APP PASSWORD (IMAP): own-key reads mail, Eyehold Managed never sees it
     nextTool = IMAP_LIST;
     const ownImap = await run('custom', [{ role: 'user', content: 'List my inbox' }], { baseUrl: cloud + '/custom/v1', key: 'fixture-custom-key' });
     assert.ok(custom.some(b => names(b).includes(IMAP_LIST)), 'an own-key run is offered app-password Gmail');
@@ -132,16 +132,16 @@ let nextTool = GMAIL_READ;                                       // which tool t
       { role: 'user', content: 'Now summarize it' }
     ];
     const beforeImap = relay.length;
-    const managedImap = await run('starnet', imapHistory);
+    const managedImap = await run('eyehold', imapHistory);
     assert.equal(managedImap.filter(e => e.name === 'agent.run.end').at(-1)?.payload.reason, 'done', JSON.stringify(managedImap.filter(e => /error/.test(e.name))));
     const sentImap = relay.slice(beforeImap).filter(b => Array.isArray(b.messages));
     assert.ok(sentImap.length > 0, 'the managed run reached the relay');
     for (const b of sentImap) {
-      assert.ok(!names(b).some(n => /^mcp__gmail-app-password__/.test(n)), 'StarNet Managed is never offered app-password Gmail tools');
-      assert.ok(!JSON.stringify(b).includes(IMAP_MAIL), 'IMAP mail content never reaches the StarNet relay');
-      assert.ok(!JSON.stringify(b).includes(IMAP_PASS), 'the app password never reaches the StarNet relay');
+      assert.ok(!names(b).some(n => /^mcp__gmail-app-password__/.test(n)), 'Eyehold Managed is never offered app-password Gmail tools');
+      assert.ok(!JSON.stringify(b).includes(IMAP_MAIL), 'IMAP mail content never reaches the Eyehold relay');
+      assert.ok(!JSON.stringify(b).includes(IMAP_PASS), 'the app password never reaches the Eyehold relay');
     }
-    assert.ok(sentImap.some(b => JSON.stringify(b.messages).includes('never sent to StarNet Managed')), 'the relay sees the withheld notice in its place');
-    console.log('google-relay-guard.e2e: PASS (own-key run reads Gmail; StarNet Managed gets no Gmail tools and only the withheld notice; same for app-password Gmail over IMAP)');
+    assert.ok(sentImap.some(b => JSON.stringify(b.messages).includes('never sent to Eyehold Managed')), 'the relay sees the withheld notice in its place');
+    console.log('google-relay-guard.e2e: PASS (own-key run reads Gmail; Eyehold Managed gets no Gmail tools and only the withheld notice; same for app-password Gmail over IMAP)');
   } finally { await fakeImap.close(); await fixture.dispose(); server.closeAllConnections(); await new Promise(r => server.close(r)); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

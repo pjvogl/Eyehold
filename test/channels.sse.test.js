@@ -229,7 +229,7 @@ A.eq(runTeeView('agent.reasoning', { agentId: 'a1', runId: 'r1', on: true }), nu
     const emitted = []; let snapshots = 0;
     let lastSseEventAt = 0, fnow = 0;
     const apiUrl = x => x, fetchSnapshot = () => { snapshots++; };
-    const window = { __STARNET_API_TOKEN__: '' };
+    const window = { __EYEHOLD_API_TOKEN__: '' };
     const ApiTicket = { sseUrl: q => '/api/channels/events?' + q + '&ticket=T' + (++minted) };   // app/apiticket.js stand-in
     let minted = 0;
     const performance = { now: () => 0 };

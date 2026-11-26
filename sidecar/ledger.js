@@ -144,7 +144,7 @@
        (insights.js honors it) while /api/budget's spentToday + lifetime and the budget governor's day and
        global pools counted the full figure — and that phantom spend then BLOCKED a later real BYOK run with
        reason 'budget' and a CAP HIT note naming money nobody spent. The contract was already written down
-       in docs/STARNET_REF_REPLACEMENT_LOOPS.md: exclude unmetered rows from metered USD aggregates while
+       in docs/EYEHOLD_REF_REPLACEMENT_LOOPS.md: exclude unmetered rows from metered USD aggregates while
        still counting runs and tokens. count()/all() are deliberately untouched — the run HAPPENED. */
     function metered(r) { return !(r && r.unmetered); }
     function sum(pred) { let t = 0; for (let i = 0; i < rows.length; i++) { const r = rows[i]; if (!metered(r)) continue; if (!pred || pred(r)) t += num(r.usd); } return t; }

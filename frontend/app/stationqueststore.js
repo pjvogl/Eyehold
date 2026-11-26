@@ -1,4 +1,4 @@
-/* STARNET — stationqueststore.js : the live wiring around the pure StationQuests engine (G1b).
+/* EYEHOLD — stationqueststore.js : the live wiring around the pure StationQuests engine (G1b).
 
    The killer generator, wired to real signals. It owns everything the pure engine can't touch:
      • the SIGNAL — subscribes to `agent.tool_call` on U.bus (harness.js re-emits every hero tool step;
@@ -22,7 +22,7 @@
    on the floor, plus the shared celebration — never points. */
 'use strict';
 const StationQuestStore = (() => {
-  const KEY = 'starnet.stationquests.v1';
+  const KEY = 'eyehold.stationquests.v1';
   let state = null;
   let bound = false;
 
@@ -198,7 +198,7 @@ const StationQuestStore = (() => {
     sync();
   }
 
-  // a NEW AGENT starts with no station-quest history (own key — Save.clear() only wipes starnet.save; mirrors
+  // a NEW AGENT starts with no station-quest history (own key — Save.clear() only wipes eyehold.save; mirrors
   // QuestStateStore.reset / CuriosityStore.reset). The next init() hydrates clean.
   function reset() { state = null; try { localStorage.removeItem(KEY); } catch (_) {} }
 

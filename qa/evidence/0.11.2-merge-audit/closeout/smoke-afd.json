@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.soak-receipt.v1",
+  "schema": "eyehold.soak-receipt.v1",
   "verdict": "PASS",
   "failedRules": [],
   "sidecarHead": "afd1da77fb4a489151b45b5a6c53e60ada4ca1f4",
@@ -32,7 +32,7 @@
     "mockCalls": 258,
     "mockSlowCalls": 0,
     "cronEvents": 57,
-    "workspace": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-soak-cbnCAm",
+    "workspace": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-soak-cbnCAm",
     "auxPasses": "disabled (SKYNET_AUX_BUDGET=0)",
     "accountingInput": "C:\\Users\\andro\\gen-trees\\release-0112-audit-0910\\.dogfood\\release-0112-closeout\\frozen-smoke\\accounting-input.json",
     "forensics": {

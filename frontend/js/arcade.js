@@ -1,4 +1,4 @@
-/* STARNET — arcade.js : "BREACH PROTOCOL" — the playable arcade cabinet.
+/* EYEHOLD — arcade.js : "BREACH PROTOCOL" — the playable arcade cabinet.
    Clicking an arcade cabinet in the quarters opens a real game: a phosphor
    Space-Invaders descendant where rogue scraper-bots besiege the station and
    the Commander mans the point-defense turret. Renders into a low-res canvas
@@ -16,8 +16,8 @@ const ARCADE = (() => {
      unreadable. Fix: give the canvas S x more device pixels and scale the draw transform,
      so every glyph rasterizes at 16 device px while ALL draw code keeps logical coords. */
   const S = 2;
-  const HI_KEY = 'starnet_arcade_hi';
-  const SCORES_KEY = 'starnet_arcade_scores';
+  const HI_KEY = 'eyehold_arcade_hi';
+  const SCORES_KEY = 'eyehold_arcade_scores';
   let cv = null, ctx = null, raf = 0, mounted = false, hidden = false;
   let last = 0, acc = 0, frameN = 0;
   let keys = {}, kd = null, ku = null;

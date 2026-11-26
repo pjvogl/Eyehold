@@ -6,16 +6,16 @@ const os = require('node:os');
 const path = require('node:path');
 const Recovery = require('../sidecar/workspace-recovery.js');
 
-const home = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-workspace-recovery-'));
+const home = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-workspace-recovery-'));
 const current = path.join(home, 'Library', 'Application Support', 'ai.skynet.harness', 'workspaces');
-const legacyA = path.join(home, '.local', 'share', 'StarNet', 'workspaces');
+const legacyA = path.join(home, '.local', 'share', 'Eyehold', 'workspaces');
 const legacyB = path.join(home, '.local', 'share', 'Skynet', 'workspaces');
 
 function save(name, updatedAt, marker) {
   return {
     version: 1, agentId: 'agent', updatedAt, savedAt: updatedAt,
     doc: {
-      schema: 'starnet.save', version: 5, updatedAt,
+      schema: 'eyehold.save', version: 5, updatedAt,
       agent: { id: 'agent', name }, station: { rooms: [{ id: marker }], props: [] },
       workstreams: [{ id: 'general', history: [{ role: 'user', content: marker }] }]
     }
@@ -32,15 +32,15 @@ try {
   write(current, '.migrated', '1');
   write(legacyA, 'agent.save.json', save('NOVA', 1000, 'legacy-a'));
   write(legacyA, 'agent/report.md', 'source must stay byte-exact');
-  write(legacyA, '.starnet-workspace-owner.json', JSON.stringify({ pid: 999999 }));
+  write(legacyA, '.eyehold-workspace-owner.json', JSON.stringify({ pid: 999999 }));
 
   const one = Recovery.inspectCandidates({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB] });
   A.eq(one.recoverableCount, 1, 'one valid stranded station is recoverable');
   A.eq(one.automaticCandidateId, one.candidates[0].id, 'one valid root is an unambiguous automatic candidate');
   A.ok(one.candidates[0].displayRoot.startsWith('~'), 'candidate path redacts the user home');
   A.eq(one.candidates[0].stationName, 'NOVA', 'candidate names the station from the valid save envelope');
-  A.eq(Recovery._internals.displayPath('D:\\Profiles\\StarNet\\workspaces', 'C:\\Users\\Ada', require('node:path').win32, 'win32'),
-    '[local-data]/StarNet/workspaces', 'a custom data shelf outside the home is never disclosed as an absolute path');
+  A.eq(Recovery._internals.displayPath('D:\\Profiles\\Eyehold\\workspaces', 'C:\\Users\\Ada', require('node:path').win32, 'win32'),
+    '[local-data]/Eyehold/workspaces', 'a custom data shelf outside the home is never disclosed as an absolute path');
 
   const report = Recovery.recoveryReport({ fs, path, platform: 'darwin', arch: 'x64', home, workspaceRoot: current, candidateRoots: [legacyA], inspection: one, publicLineage: { evidence: [] } });
   const reportRaw = JSON.stringify(report);
@@ -56,8 +56,8 @@ try {
   A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.agent.name, 'NOVA', 'selected station is active');
   A.eq(fs.readFileSync(path.join(current, 'agent', 'report.md'), 'utf8'), 'source must stay byte-exact', 'complete selected generation is active');
   A.eq(Recovery._internals.sha256(fs.readFileSync(path.join(legacyA, 'agent.save.json'))), sourceHash, 'legacy source remains byte-exact');
-  A.eq(fs.existsSync(path.join(legacyA, '.starnet-workspace-owner.json')), true, 'source is not cleaned or mutated');
-  A.eq(fs.existsSync(path.join(current, '.starnet-workspace-owner.json')), false, 'stale runtime ownership is not copied into the active generation');
+  A.eq(fs.existsSync(path.join(legacyA, '.eyehold-workspace-owner.json')), true, 'source is not cleaned or mutated');
+  A.eq(fs.existsSync(path.join(current, '.eyehold-workspace-owner.json')), false, 'stale runtime ownership is not copied into the active generation');
   A.ok(fs.readdirSync(path.dirname(current)).some(name => name.startsWith('workspaces.recovery-rollback-')), 'prior current generation is retained as rollback');
   A.eq(Recovery.readRootCandidate(current, { fs, path }).stationName, 'NOVA', 'fresh store boot can read the recovered canonical save');
   fs.writeFileSync(Recovery._internals.lastResultFile(current, path), JSON.stringify({ ok: false, error: 'rename failed at ' + legacyA }));
@@ -145,10 +145,10 @@ try {
 
   // ---- SCRATCH-TARGET GUARD (2026-08-19/20 incident): auto recovery must never heal a REAL station INTO a temp
   // workspace. Real filesystem: a fake "real" home holding one unambiguous station + a target under os.tmpdir().
-  const realHome = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-fake-real-home-'));
-  const tmpTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-scratch-target-')) + path.sep + 'workspaces';
+  const realHome = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-fake-real-home-'));
+  const tmpTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-scratch-target-')) + path.sep + 'workspaces';
   try {
-    const realRoot = path.join(realHome, '.local', 'share', 'StarNet', 'workspaces');
+    const realRoot = path.join(realHome, '.local', 'share', 'Eyehold', 'workspaces');
     write(realRoot, 'agent.save.json', save('ANDREWS-REAL-STATION', 5000, 'real-station'));
     write(realRoot, 'agent/secret-report.md', 'production bytes');
     const realBytes = fs.readFileSync(path.join(realRoot, 'agent.save.json'));
@@ -172,8 +172,8 @@ try {
     const envScratch = fs.mkdtempSync(path.join(realHome, 'ci-scratch-'));
     const envTarget = path.join(envScratch, 'ws');
     const viaEnv = Recovery.applyPendingRecovery({ fs, path, platform: 'linux', home: realHome, workspaceRoot: envTarget, candidateRoots: [realRoot], auto: true, now: () => 6100,
-      tmpdir: () => path.join(realHome, 'not-tmp'), env: { STARNET_SCRATCH_ROOT: envScratch } });
-    A.eq(viaEnv.autoSkipped, true, 'STARNET_SCRATCH_ROOT declares a scratch root the guard honors');
+      tmpdir: () => path.join(realHome, 'not-tmp'), env: { EYEHOLD_SCRATCH_ROOT: envScratch } });
+    A.eq(viaEnv.autoSkipped, true, 'EYEHOLD_SCRATCH_ROOT declares a scratch root the guard honors');
     A.eq(fs.existsSync(path.join(envTarget, 'agent.save.json')), false, 'env-declared scratch target never ingests either');
     // (c) a NON-scratch target keeps the existing auto-heal behavior unchanged
     const realTarget = path.join(realHome, 'Library', 'Application Support', 'ai.skynet.harness', 'workspaces');
@@ -182,7 +182,7 @@ try {
     A.eq(healed.applied, true, 'a non-scratch target still auto-heals one unambiguous station');
     A.eq(JSON.parse(fs.readFileSync(path.join(realTarget, 'agent.save.json'), 'utf8')).doc.agent.name, 'ANDREWS-REAL-STATION', 'non-scratch auto-heal content intact');
     // (d) an EXPLICIT operator request into a tmpdir target is NOT blocked (the guard is auto-only)
-    const explicitTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-explicit-target-')) + path.sep + 'workspaces';
+    const explicitTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-explicit-target-')) + path.sep + 'workspaces';
     write(explicitTarget, '.migrated', '1');
     const insp = Recovery.inspectCandidates({ fs, path, platform: 'linux', home: realHome, workspaceRoot: explicitTarget, candidateRoots: [realRoot] });
     Recovery.requestRecovery({ fs, path, platform: 'linux', home: realHome, workspaceRoot: explicitTarget, candidateRoots: [realRoot], inspection: insp, candidateId: insp.automaticCandidateId });
@@ -191,8 +191,8 @@ try {
     fs.rmSync(path.dirname(explicitTarget), { recursive: true, force: true });
     // (e) the predicate itself, cross-platform: case-insensitive on win32, prefix-safe (no /tmpx vs /tmp false positive)
     const w = require('node:path').win32;
-    A.ok(Recovery.scratchTargetReason({ path: w, platform: 'win32', workspaceRoot: 'C:\\Users\\A\\AppData\\Local\\Temp\\starnet-x\\StarNet\\workspaces', tmpdir: () => 'c:\\users\\a\\appdata\\local\\temp', env: {} }), 'win32: case-insensitive prefix under tmpdir is scratch');
-    A.eq(Recovery.scratchTargetReason({ path: w, platform: 'win32', workspaceRoot: 'C:\\Users\\A\\AppData\\Local\\StarNet\\workspaces', tmpdir: () => 'C:\\Users\\A\\AppData\\Local\\Temp', env: {} }), null, 'win32: the real LOCALAPPDATA root is NOT scratch');
+    A.ok(Recovery.scratchTargetReason({ path: w, platform: 'win32', workspaceRoot: 'C:\\Users\\A\\AppData\\Local\\Temp\\eyehold-x\\Eyehold\\workspaces', tmpdir: () => 'c:\\users\\a\\appdata\\local\\temp', env: {} }), 'win32: case-insensitive prefix under tmpdir is scratch');
+    A.eq(Recovery.scratchTargetReason({ path: w, platform: 'win32', workspaceRoot: 'C:\\Users\\A\\AppData\\Local\\Eyehold\\workspaces', tmpdir: () => 'C:\\Users\\A\\AppData\\Local\\Temp', env: {} }), null, 'win32: the real LOCALAPPDATA root is NOT scratch');
     const px = require('node:path').posix;
     A.eq(Recovery.scratchTargetReason({ path: px, platform: 'linux', workspaceRoot: '/tmpx/ws', tmpdir: () => '/tmp', env: {} }), null, 'posix: /tmpx is not under /tmp (no string-prefix false positive)');
     A.ok(Recovery.scratchTargetReason({ path: px, platform: 'linux', workspaceRoot: '/tmp', tmpdir: () => '/tmp', env: {} }), 'posix: the tmpdir itself counts as scratch');

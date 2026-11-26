@@ -84,7 +84,7 @@
   requestAnimationFrame(drawSpeechStudy);
   const timer=setInterval(async()=>{
     if(++tries>180){clearInterval(timer);panel.querySelector('#agent-demo-status').textContent='Station did not finish loading.';return;}
-    if(!window.__STARNET_DEV__||typeof App==='undefined'||!App.currentAgent()||!World.dbg()||!SPRITES.ready)return;
+    if(!window.__EYEHOLD_DEV__||typeof App==='undefined'||!App.currentAgent()||!World.dbg()||!SPRITES.ready)return;
     clearInterval(timer);
     try{
       const response=await fetch('agent-demo/catalog.json',{cache:'no-store'});if(!response.ok)throw Error('Catalog unavailable');catalogSkins=(await response.json()).skins;

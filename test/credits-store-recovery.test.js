@@ -106,7 +106,7 @@ function fixture({ native, get, post } = {}) {
 
   // The first-run switch-account button must honor the same unlink acknowledgment as STORE.
   const app = fs.readFileSync(require.resolve('../frontend/app/app.js'), 'utf8');
-  const switchStart = app.indexOf('  async function switchStarnetAccount()');
+  const switchStart = app.indexOf('  async function switchEyeholdAccount()');
   const switchEnd = app.indexOf('  // Mint a pairing code', switchStart);
   assert.ok(switchStart >= 0 && switchEnd > switchStart);
   for (const nativeFailure of [false, true]) {
@@ -114,12 +114,12 @@ function fixture({ native, get, post } = {}) {
       { ok: true, j: { ok: true, unlinked: false } }, { ok: true, j: { ok: true, unlinked: true } }]) {
       let starts = 0;
       const status = { textContent: '' }; const button = { disabled: false, classList: { add() {} } };
-      const context = vm.createContext({ SFX: { click() {} }, stopStarnetLinkPoll() {}, stopStarnetBalancePoll() {},
-        _starnetStatusSeq: 0, el: id => id === 'starnet-status' ? status : button,
+      const context = vm.createContext({ SFX: { click() {} }, stopEyeholdLinkPoll() {}, stopEyeholdBalancePoll() {},
+        _eyeholdStatusSeq: 0, el: id => id === 'eyehold-status' ? status : button,
         window: { __TAURI__: { core: { invoke: async () => { if (nativeFailure) throw new Error('keychain'); } } } },
         Harness: { api: { post: async () => response }, refreshCreditsConfigured: async () => {} },
-        startStarnetLink: () => { starts++; } });
-      vm.runInContext(app.slice(switchStart, switchEnd) + '\nthis.switchAccount = switchStarnetAccount;', context);
+        startEyeholdLink: () => { starts++; } });
+      vm.runInContext(app.slice(switchStart, switchEnd) + '\nthis.switchAccount = switchEyeholdAccount;', context);
       await context.switchAccount();
       const success = !nativeFailure && response.ok && response.j.ok === true && response.j.unlinked === true;
       assert.equal(starts, success ? 1 : 0, 'pairing starts only after proven unlink');

@@ -1,4 +1,4 @@
-/* STARNET — nightnudge.js : the LIVE-SESSION unseen-drafts nudge (Night Shift visibility, 2026-07-13).
+/* EYEHOLD — nightnudge.js : the LIVE-SESSION unseen-drafts nudge (Night Shift visibility, 2026-07-13).
 
    THE GAP IT CLOSES: the MORNING REPORT (nightreportstore.js) only fires on app-CLOSURE absence (its localStorage
    heartbeat). But the night-shift driver's away detection is SERVER-side (lastUserActivityAt) — so an app left OPEN
@@ -17,7 +17,7 @@
        route → no nudge, never a fake one). */
 'use strict';
 const NightDraftNudge = (() => {
-  const KEY = 'starnet.nightdrafts.seen.v1';   // durable lastSeenDraftAt (our OWN key — never races the report's)
+  const KEY = 'eyehold.nightdrafts.seen.v1';   // durable lastSeenDraftAt (our OWN key — never races the report's)
   const MIN_UNSEEN = 2;          // N: a single draft is a weak nudge; 2+ is "the night shift left N drafts"
   const DELAY_MS = 6000;         // let the floor + COMMS + the MORNING REPORT (which may mark drafts seen) settle first
   const POLL_MS = 60000;         // re-check cadence while the app is open (idiom: nightreportstore's heartbeat interval)

@@ -92,7 +92,7 @@ async function until(fixture, predicate, label, timeoutMs) {
 (async () => {
   const provider = await startProvider();
   const fixture = SidecarFixture.create({
-    prefix: 'starnet-loop-endurance-',
+    prefix: 'eyehold-loop-endurance-',
     timeoutMs: 12000,
     env: {
       SKYNET_OPENROUTER_BASE: provider.baseUrl,

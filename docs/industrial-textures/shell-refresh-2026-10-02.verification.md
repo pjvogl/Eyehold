@@ -21,6 +21,6 @@ Candidate artwork/source commit: `fc9cad7c7`. Seeded app: `node dev/seed.js --ke
 - The first partial gate was stopped to sync the newly merged interface before integration.
 - Full combined `npm run test:fast` attempt: exited 124 at the mandatory 1,200,000 ms timeout after `shell.fg-ledger.test` passed and while `shell.process-tree.test` was running. No assertion failure was reported. Log: `dev/shell-refresh-combined-fast.log`.
 - Full combined retry: exited 124 at the same unchanged timeout after `website-deploy-staging.test` passed and while the website asset mirror check was running. No assertion failure was reported. Log: `dev/shell-refresh-combined-fast-retry.log`.
-- The complete gate is **not green**. Per AGENTS.md and starnet-merge-ritual, this branch has **not been merged**. Implemented files and the live local preview remain in `agent/shell-refresh-1002` for review. The full test gate timing out is the remaining integration blocker.
+- The complete gate is **not green**. Per AGENTS.md and eyehold-merge-ritual, this branch has **not been merged**. Implemented files and the live local preview remain in `agent/shell-refresh-1002` for review. The full test gate timing out is the remaining integration blocker.
 
 Original output PNGs are retained unchanged. This is an implementation review, not owner acceptance of the art direction.

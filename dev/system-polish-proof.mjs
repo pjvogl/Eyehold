@@ -25,7 +25,7 @@ async function navigate(method, params) {
 try{
   materializeSeedWorkspace(fixture.workspace,'test/model');await fixture.start();
   const port=await allocatePort();
-  browser=launchChrome({cdpPort:port,profileDir:fs.mkdtempSync(path.join(os.tmpdir(),'starnet-polish-proof-'))});
+  browser=launchChrome({cdpPort:port,profileDir:fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-polish-proof-'))});
   cdp=await connectCDP(port);await cdp.send('Runtime.enable');await cdp.send('Page.enable');
   const diagnostics=collectDiagnostics(cdp);
   await navigate('Page.navigate',{url:fixture.baseUrl});
@@ -44,7 +44,7 @@ try{
     while(AutonomyStore.status().pending)await new Promise(r=>setTimeout(r,25));
     const saved={local:AutonomyStore.get(),text:document.querySelector('#auto-desc').textContent,backend:await(await original('/api/autonomy/posture')).json()};
     // A stale browser cache must never overwrite the durable server setting.
-    localStorage.setItem('starnet.autonomy.v1',JSON.stringify({initiative:'free',reach:'reach',leashPerDay:12}));
+    localStorage.setItem('eyehold.autonomy.v1',JSON.stringify({initiative:'free',reach:'reach',leashPerDay:12}));
     return {pending,failed,saved};
   })()`);
   assert.equal(autonomy.pending.disabled,true);assert.match(autonomy.pending.text,/Confirming/);

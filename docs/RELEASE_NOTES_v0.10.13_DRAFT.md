@@ -1,4 +1,4 @@
-# StarNet v0.10.13
+# Eyehold v0.10.13
 
 This is the full release list for the 214 commits shipped since v0.10.12. It is a large feature-and-reliability update, not a narrowly scoped hotfix.
 
@@ -59,7 +59,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 
 ## Billing, providers, and tool execution
 
-- Bring-your-own-key runs on a linked station no longer require StarNet credits and are never charged against the StarNet wallet.
+- Bring-your-own-key runs on a linked station no longer require Eyehold credits and are never charged against the Eyehold wallet.
 - Managed runs that cross a reservation now settle the real spend at that reservation instead of being refused after the work already happened.
 - Billing leak-guard replays settle against the remembered real spend on every exit path.
 - Gemini 3 thought signatures are preserved when function calls are replayed.
@@ -71,7 +71,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Short verification reads run to completion instead of being mistaken for truncated output.
 - Tight output budgets retain the do-not-repeat instruction and no longer grow while trying to explain their own truncation.
 - Ollama receives a realistic cold-start window for local models that take longer than 30 seconds to load.
-- An MCP server's own tools named `resources` or `prompts` are no longer shadowed by StarNet's auxiliary browsing definitions.
+- An MCP server's own tools named `resources` or `prompts` are no longer shadowed by Eyehold's auxiliary browsing definitions.
 - A clean but unexpected exit from an MCP stdio server is treated as a transport failure rather than a healthy idle state.
 - LSP startup can retry after a spawn failure.
 - Skill-exchange handlers return a real 400 for malformed JSON instead of leaving the socket hanging.
@@ -147,7 +147,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Starting a new Commander clears the saved tutorial completion marker and re-arms the tour, coachmarks, and FIRST STEPS guidance.
 - The unreachable-station screen distinguishes a stale-window save refusal (`SAVE-403`) from a lost save request (`SAVE-NET`).
 - Recovery diagnosis is copyable from the unreachable screen, making a screenshot useful for support.
-- The connect screen includes an in-app route to use a different StarNet account.
+- The connect screen includes an in-app route to use a different Eyehold account.
 - Stage dragging releases on window mouse-up, blur, and pointer cancellation instead of remaining stuck to the cursor.
 - A stale snapshot can no longer relight a run that already ended.
 - COMMS composer listeners no longer stack when repeatedly entering the same session.
@@ -168,4 +168,4 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Apple Silicon and Intel macOS artifacts were signed, notarized, and accepted by Gatekeeper; the Intel package also completed installed launch/recovery acceptance.
 - The hosted updater manifest and every Windows, Apple Silicon, and Intel asset were verified after publication.
 
-Already running StarNet? Update from inside the app. Your crew, sessions, keys, and station remain in place.
+Already running Eyehold? Update from inside the app. Your crew, sessions, keys, and station remain in place.

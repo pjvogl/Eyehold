@@ -1,6 +1,6 @@
 /* sidecar/plugin-surface.js — what a plugin's WINDOW touches on the sidecar (plugin extensions phase 1, 2026-09-29).
 
-   A plugin screen is the plugin's own HTML, opened inside a real StarNet window (frontend/app/pluginhost.js). This
+   A plugin screen is the plugin's own HTML, opened inside a real Eyehold window (frontend/app/pluginhost.js). This
    module serves those files and the plugin's private key/value store. It is deliberately the SAME shape as
    /workshop-run/ (the one other place the station runs pages it did not write):
 
@@ -15,8 +15,8 @@
      allow-same-origin. The page runs, but it can never read the app's DOM, the injected API token, or call /api/*
      with credentials. Everything it may do to the station goes through the host bridge, where the host names the
      plugin (the page never gets to say which plugin it is).
-   · THE KIT: every HTML page is served with starnet-kit.css + starnet-kit.js injected at the top of <head> —
-     the glass tokens and components, and the `starnet` bridge. The CSS sits in `@layer starnet`, so anything the
+   · THE KIT: every HTML page is served with eyehold-kit.css + eyehold-kit.js injected at the top of <head> —
+     the glass tokens and components, and the `eyehold` bridge. The CSS sits in `@layer eyehold`, so anything the
      author writes wins: the kit is the default look, never a cage.
 
    Pure: fs/path/clock/apitickets/loader are injected; no ambient state beyond what a factory call creates. */
@@ -25,9 +25,9 @@ const { note } = require('./failopen.js');   // a failed stream teardown is note
 
 const PREFIX = '/plugin-ui/';
 const KIT_FILES = Object.freeze({
-  '_starnet/kit.css': 'plugin-kit/kit.css',
-  '_starnet/kit.js': 'plugin-kit/kit.js',
-  '_starnet/vt323.woff2': 'assets/fonts/vt323.woff2'
+  '_eyehold/kit.css': 'plugin-kit/kit.css',
+  '_eyehold/kit.js': 'plugin-kit/kit.js',
+  '_eyehold/vt323.woff2': 'assets/fonts/vt323.woff2'
 });
 const DIGEST_RX = /^[0-9a-f]{64}$/;
 const HTML_RX = /\.html?$/i;
@@ -46,8 +46,8 @@ const { relPathOk } = require('./plugins.js')._internals;
 function injectKit(html, rel) {
   const depth = String(rel || '').split('/').length - 1;
   const up = depth > 0 ? '../'.repeat(depth) : '';
-  const tags = '<link rel="stylesheet" href="' + up + '_starnet/kit.css">' +
-    '<script src="' + up + '_starnet/kit.js"></script>';
+  const tags = '<link rel="stylesheet" href="' + up + '_eyehold/kit.css">' +
+    '<script src="' + up + '_eyehold/kit.js"></script>';
   const s = String(html || '');
   const head = /<head(\s[^>]*)?>/i.exec(s);
   if (head) return s.slice(0, head.index + head[0].length) + tags + s.slice(head.index + head[0].length);

@@ -24,7 +24,7 @@ const wantTrace = process.argv.includes('--trace');
 const shots = process.argv.includes('--shots');
 const after = arg('--after', ''), before = arg('--before', '');
 const W = 1600, H = 900;
-const OUT = join(tmpdir(), 'starnet-perf-comms');
+const OUT = join(tmpdir(), 'eyehold-perf-comms');
 mkdirSync(OUT, { recursive: true });
 const APP_URL = `http://127.0.0.1:${port}/`;
 

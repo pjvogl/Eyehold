@@ -149,7 +149,7 @@ function probe(current, legacy) {
 }
 let chrome, cdp, profile, failed = false;
 try {
-  const port = await freePort(); profile = mkdtempSync(join(tmpdir(), 'starnet-connection-render-'));
+  const port = await freePort(); profile = mkdtempSync(join(tmpdir(), 'eyehold-connection-render-'));
   chrome = spawn(findChrome(), ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--mute-audio',
     '--remote-debugging-port='+port, '--user-data-dir='+profile, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
@@ -166,7 +166,7 @@ finally {
   try { cdp?.ws.close(); } catch {} await stop(chrome);
   if (profile) {
     const rel = relative(resolve(tmpdir()), resolve(profile));
-    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('starnet-connection-render-'), 'cleanup stays inside unique test temp directory');
+    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-connection-render-'), 'cleanup stays inside unique test temp directory');
     // Windows may release child-process file handles shortly after parent exit.
     // Retry only transient deletion errors, and still fail if cleanup stays locked.
     for (let attempt = 0; attempt < 50; attempt++) try { rmSync(profile, { recursive: true, force: true }); break; }

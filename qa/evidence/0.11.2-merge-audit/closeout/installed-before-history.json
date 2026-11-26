@@ -130,7 +130,7 @@
   ],
   "workstream": {
     "id": "ws_mtw2kgvjl70b",
-    "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC",
+    "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC",
     "lastRunOk": true,
     "runIds": [
       "22477b46-eb33-437c-8ca8-2715fbf61235"
@@ -138,7 +138,7 @@
     "history": [
       {
         "role": "user",
-        "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
+        "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
         "ts": 1789077529726,
         "sourceRunId": "22477b46-eb33-437c-8ca8-2715fbf61235"
       },

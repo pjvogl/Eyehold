@@ -1,4 +1,4 @@
-/* STARNET — threadstore.js : the live wiring around the NS-6 THREAD turn-in (the frontend hop that makes the
+/* EYEHOLD — threadstore.js : the live wiring around the NS-6 THREAD turn-in (the frontend hop that makes the
    thread ledger real).
 
    The sidecar MINES a finished task run for "threads" — ideas the Commander floated but never acted on, each
@@ -17,7 +17,7 @@
      slot at the LOWEST priority — memory > study > arc > trust > thread) lives in chat.js. */
 'use strict';
 const ThreadStore = (() => {
-  const KEY = 'starnet.threadturnin.v1';
+  const KEY = 'eyehold.threadturnin.v1';
   const SESSION_CAP = 1;        // at most ONE thread turn-in card SHOWN per session (anti-nag; mirrors study's trim)
   const IGNORE_LIMIT = 2;       // ignore a mined idea this many times → stop offering it (stop-forever, client-side)
   const RESOLVED_CAP = 300;     // decided-proposal fingerprints (FIFO) — a kept/discarded idea never re-offers here

@@ -48,11 +48,11 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq xvfb > /dev/null
           CHROME=$(command -v google-chrome || command -v google-chrome-stable)
           # CI containers cannot use Chrome's sandbox (a real desktop's installed Chrome can): same wrapper as fast-gate
-          WRAP=/usr/local/bin/starnet-ci-chrome
+          WRAP=/usr/local/bin/eyehold-ci-chrome
           printf '#!/bin/sh\nexec %s --no-sandbox --disable-dev-shm-usage "$@"\n' "$CHROME" | sudo tee "$WRAP" > /dev/null
           sudo chmod +x "$WRAP"
           echo "SKYNET_CHROME=$WRAP" >> "$GITHUB_ENV"
-          echo "STARNET_CHROME=$WRAP" >> "$GITHUB_ENV"
+          echo "EYEHOLD_CHROME=$WRAP" >> "$GITHUB_ENV"
           echo "apparmor_restrict_unprivileged_userns=$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null || echo n/a)"
           "$CHROME" --version
 

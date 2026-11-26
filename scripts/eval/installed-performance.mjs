@@ -6,7 +6,7 @@ import { dirname, join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { startFixtureMcpServer } from './campaign/fixture-host.mjs';
-import { desktopStartupLogMark, installedDesktopStartupLog, startStarNetDriver, waitInstalledDesktopPort } from './campaign/drivers.mjs';
+import { desktopStartupLogMark, installedDesktopStartupLog, startEyeholdDriver, waitInstalledDesktopPort } from './campaign/drivers.mjs';
 import { validateManifest } from './bind.mjs';
 import { makeReceipt } from './comparison.mjs';
 import { gradeParityTrajectory, validateParityFixtures } from './independent-grader.mjs';
@@ -94,7 +94,7 @@ async function main() {
   const fixtureServer = await startFixtureMcpServer(); let driver = null;
   const artifactSamples = [];
   try {
-    driver = await startStarNetDriver({ desktopExecutable: executable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs });
+    driver = await startEyeholdDriver({ desktopExecutable: executable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs });
     for (let index = 0; index < samples; index++) {
       const root = mkdtempSync(join(outputDir, `installed-artifact-a${index + 1}-`)), state = fixtureServer.activate(fixture, root);
       try {
@@ -108,7 +108,7 @@ async function main() {
   } finally { if (driver) await driver.close(); await fixtureServer.close(); }
 
   const result = {
-    schemaVersion: 'starnet.eval.installed-performance.v1', pass: coldSamples.length === samples && artifactSamples.length === samples,
+    schemaVersion: 'eyehold.eval.installed-performance.v1', pass: coldSamples.length === samples && artifactSamples.length === samples,
     scope: 'installed Windows desktop cold start plus installed-runtime provider-backed useful artifact', samples,
     measurements: {
       desktopProcessToHealthAndStationMs: performanceStats(coldSamples.map(row => row.ms)),

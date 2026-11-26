@@ -1,7 +1,7 @@
-# SELF-DRIVING STARNET — the polish build plan (2026-10-04)
+# SELF-DRIVING EYEHOLD — the polish build plan (2026-10-04)
 
-Andrew 10-04: *"focused on polishing everything within starnet as a whole … WAAY easier to use and navigate … the agents
-[should] understand EVERYTHING about starnet and how it works so it can basically use itself instead of the user having to
+Andrew 10-04: *"focused on polishing everything within eyehold as a whole … WAAY easier to use and navigate … the agents
+[should] understand EVERYTHING about eyehold and how it works so it can basically use itself instead of the user having to
 navigate and do everything … 100% full freedom with the harness."*
 
 Grounded on trunk `707dcaf5e` by three read-only audits (agent self-knowledge, agent control coverage, UI navigation).
@@ -15,7 +15,7 @@ right tab — only from the run they are watching. Manual NAVIGATION tells agent
 manual's stale "APPROVALS hotspot / Alt+A" (approvals live in COMMS). Unit 273 + e2e ALL PASS.
 
 ## Lane 2 — the agent knows everything  ✅ BUILT (on demand, inline prompt got SHORTER)
-`manual.read` section **concepts** (~8K, reference only): every StarNet thing — what it is, its place id, the tool or
+`manual.read` section **concepts** (~8K, reference only): every Eyehold thing — what it is, its place id, the tool or
 station.control action that does it, the trap — grounded line by line in the code. NAVIGATION's **EVERY PLACE** list is
 generated from PLACES. A Telegram owner DM gets a ~480-char pointer to manual.read (never the 6K index, never nothing).
 Stale text fixed: the dossier SKILLS tab. Drift test `test/manual-concepts.test.js`: every [place], tool, action and
@@ -58,7 +58,7 @@ Order: 2 → 3 → 4 → 5 (2 makes every later lane's agent smarter; 4 reuses L
 ## Lane 6 — the trunk since 10-04, taught (2026-10-08)
 A read-only audit of 207 trunk commits found 12 user-facing features the agent did not know. CONCEPTS now covers desk
 seats (station.build op agent; WHO SITS HERE), SETTLE (Commander only, and station.settings spending shows `unsettled`),
-held StarNet credits, routine keys + toolsets, station.status, connector SIGN IN (Commander only), browser.reset, HINTS
+held Eyehold credits, routine keys + toolsets, station.status, connector SIGN IN (Commander only), browser.reset, HINTS
 (look.set), START FRESH / ERASE EVERYTHING (Commander only — no agent route exists, on purpose), updates stop live runs,
 and "a conveyor is a line". FIND/station.show place descriptions carry credits, settle, hints, reset browser and erase.
 

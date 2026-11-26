@@ -1,7 +1,7 @@
 /* node test/station-default-wire.test.js — issue #24: "Follow station default" must follow the STATION, not the
    last pinned agent that was focused. focusAgent writes the focused agent's wire into the one global Harness wire
-   every COMMS run reads; an unpinned agent used to keep whatever pin was there, so a specialist summoned on StarNet
-   credits and later un-pinned kept sending runs as `starnet` — refused at 0s with "Out of managed credit" on a funded
+   every COMMS run reads; an unpinned agent used to keep whatever pin was there, so a specialist summoned on Eyehold
+   credits and later un-pinned kept sending runs as `eyehold` — refused at 0s with "Out of managed credit" on a funded
    OpenRouter station. app.js is not node-loadable, so the wire helpers are lifted from source and run against a fake
    roster, and the call sites that must use them are locked against the source. */
 'use strict';
@@ -28,13 +28,13 @@ function world(agentsList) {
 }
 
 const hero = { id: 'agent', model: 'openai/gpt-6-astra-pro', provider: 'openrouter', reasoningEffort: 'medium' };
-const pinned = { id: 'chief', model: 'anthropic/claude-sonnet-5', provider: 'starnet', reasoningEffort: 'high' };
+const pinned = { id: 'chief', model: 'anthropic/claude-sonnet-5', provider: 'eyehold', reasoningEffort: 'high' };
 const unpinned = { id: 'researcher', model: null, provider: null, reasoningEffort: null };
 const w = world([hero, pinned, unpinned]);
 
-// the reporter's sequence: focus a starnet-pinned specialist, then an unpinned one
+// the reporter's sequence: focus a eyehold-pinned specialist, then an unpinned one
 w.applyWire(w.focusWire(pinned));
-A.eq(w.state.prov, 'starnet', 'a pinned agent still runs on its own pin');
+A.eq(w.state.prov, 'eyehold', 'a pinned agent still runs on its own pin');
 A.eq(w.state.model, 'anthropic/claude-sonnet-5', 'a pinned agent still runs on its own model');
 w.applyWire(w.focusWire(unpinned));
 A.eq(w.state.prov, 'openrouter', 'an unpinned agent follows the station provider, not the last pin focused (#24)');
@@ -45,14 +45,14 @@ A.eq(w.state.effort, 'medium', 'an unpinned agent follows the station reasoning 
 w.applyWire(w.focusWire(pinned));
 pinned.model = null; pinned.provider = null; pinned.reasoningEffort = null;
 w.applyWire(w.focusWire(pinned));
-A.eq(w.state.prov, 'openrouter', 'FOLLOW STATION DEFAULT on the focused agent drops its starnet pin immediately');
+A.eq(w.state.prov, 'openrouter', 'FOLLOW STATION DEFAULT on the focused agent drops its eyehold pin immediately');
 
 // a pinned model with no provider takes the station provider, never a stale global
 const legacy = { id: 'old', model: 'openai/gpt-4o-mini', provider: null };
 A.eq(w.focusWire(legacy).provider, 'openrouter', 'a legacy pin without a provider rides the station provider');
 
 // saves written while a pinned agent was focused carried its provider as the top-level `prov`
-A.eq(w.savedStationProv({ prov: 'starnet', agent: { provider: 'openrouter' } }), 'openrouter', 'a poisoned save resumes on the hero\'s provider');
+A.eq(w.savedStationProv({ prov: 'eyehold', agent: { provider: 'openrouter' } }), 'openrouter', 'a poisoned save resumes on the hero\'s provider');
 A.eq(w.savedStationProv({ prov: 'codex', agent: {} }), 'codex', 'an older save without a hero provider still resumes on its top-level prov');
 A.eq(w.savedStationProv(null), '', 'no save → no provider');
 
@@ -67,17 +67,17 @@ A.eq((appjs.match(/Harness\.setProv\(saved\.prov\)/g) || []).length, 0, 'no resu
 A.eq((appjs.match(/Harness\.setProv\(savedStationProv\(saved\)\)/g) || []).length, 3, 'all three resume paths restore the station provider');
 
 // SETTINGS -> PROVIDERS moves the station default (the Overseer's pin), so unpinned agents follow the switch instead
-// of the provider the station just left (a StarNet-credits station switched to a BYOK key kept sending `starnet`).
+// of the provider the station just left (a Eyehold-credits station switched to a BYOK key kept sending `eyehold`).
 {
   const calls = [];
   const src2 = ['stationDefaultWire', 'focusWire', 'setStationProvider'].map(lift).join('\n');
   const roster = new Map([
-    ['agent', { id: 'agent', model: 'anthropic/claude-sonnet-5', provider: 'starnet', reasoningEffort: 'medium' }],
+    ['agent', { id: 'agent', model: 'anthropic/claude-sonnet-5', provider: 'eyehold', reasoningEffort: 'medium' }],
     ['scout', { id: 'scout', model: null, provider: null, reasoningEffort: null }]
   ]);
   const f = new Function('agents', 'normalizeProviderId', 'pushRoster', 'persist', src2 + '\nreturn { focusWire, setStationProvider };')(
     roster, p => String(p).trim().toLowerCase(), () => calls.push('roster'), () => calls.push('persist'));
-  A.eq(f.focusWire(roster.get('scout')).provider, 'starnet', 'before the switch an unpinned agent follows the Overseer');
+  A.eq(f.focusWire(roster.get('scout')).provider, 'eyehold', 'before the switch an unpinned agent follows the Overseer');
   A.eq(f.setStationProvider('openrouter'), true, 'the Settings pick moves the station default');
   A.eq(f.focusWire(roster.get('scout')).provider, 'openrouter', 'an unpinned agent follows the Settings switch, not the provider the station left');
   A.eq(f.focusWire(roster.get('scout')).model, 'anthropic/claude-sonnet-5', 'the station model is kept (the dock reconciles an invalid one)');

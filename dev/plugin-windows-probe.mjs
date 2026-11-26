@@ -16,7 +16,7 @@ import { materializeSeedWorkspace, bootSeededSidecar, waitUp, waitDevReady } fro
 
 const PORT = 9492, CDP_PORT = 9493;
 const out = '.worldshots/plugin-windows';
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-plugin-windows-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-plugin-windows-'));
 const ws = join(scratch, 'ws');
 for (const d of ['home', 'appdata', 'local']) mkdirSync(join(scratch, d), { recursive: true });
 mkdirSync(out, { recursive: true });
@@ -30,7 +30,7 @@ const WEATHER_HTML = '<!doctype html><html><head><meta charset="utf-8"><title>We
   + '<div><h4 class="sn-sect">▮ Next hours</h4><ul class="sn-list"><li class="sn-item"><span class="dot ok"></span><span class="t">09:00 · clear</span><span>16°</span></li>'
   + '<li class="sn-item"><span class="dot warn"></span><span class="t">15:00 · clouds</span><span>18°</span></li></ul></div>'
   + '<div class="sn-row-flex"><button class="sn-btn primary" id="r">REFRESH</button></div></div>'
-  + '<script>document.getElementById("r").onclick=()=>starnet.ui.toast("Refreshed");</script></body></html>';
+  + '<script>document.getElementById("r").onclick=()=>eyehold.ui.toast("Refreshed");</script></body></html>';
 // The mock model: serves the catalog, and on a chat turn calls the plugin's add_note tool IF the run offers it
 // (that offer is the proof the placed terminal projected the plugin's tools), then answers after the tool result.
 const modelLog = { turns: 0, offered: [], toolResult: '' };
@@ -89,9 +89,9 @@ const mock = http.createServer((req, res) => {
 await new Promise((r) => mock.listen(0, '127.0.0.1', r));
 const base = 'http://127.0.0.1:' + mock.address().port + '/api/v1';
 const iso = {
-  SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base,
+  SKYNET_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base,
   APPDATA: join(scratch, 'appdata'), LOCALAPPDATA: join(scratch, 'local'), USERPROFILE: join(scratch, 'home'), HOME: join(scratch, 'home'),
-  XDG_DATA_HOME: join(scratch, 'local'), HERMES_HOME: join(scratch, 'hermes'), STARNET_PROJECT_DISCOVERY_ROOTS: join(scratch, 'home')
+  XDG_DATA_HOME: join(scratch, 'local'), HERMES_HOME: join(scratch, 'hermes'), EYEHOLD_PROJECT_DISCOVERY_ROOTS: join(scratch, 'home')
 };
 
 const run = (s) => evalJS(cdp, s);
@@ -168,8 +168,8 @@ try {
     process.exit(0);
   }
   // ---- 2. inside the frame: the kit loaded, themed, and the bridge answers ----
-  await frameUntil(`typeof starnet === 'object' && document.readyState === 'complete'`);
-  await frameUntil(`starnet.ready.then(i => !!(i && i.plugin && i.plugin.id === 'pr-radar'))`);
+  await frameUntil(`typeof eyehold === 'object' && document.readyState === 'complete'`);
+  await frameUntil(`eyehold.ready.then(i => !!(i && i.plugin && i.plugin.id === 'pr-radar'))`);
   await check('the bridge says hello with the RIGHT plugin (named by the host, not the page)', true);
   const phParent = await run(`getComputedStyle(document.body).getPropertyValue('--ph').trim()`);
   await frameUntil(`getComputedStyle(document.documentElement).getPropertyValue('--ph').trim() === ${JSON.stringify(phParent)}`);
@@ -186,7 +186,7 @@ try {
 
   // ---- 3. the store round-trips through the host, and survives on disk ----
   await run(`(()=>{ window.__pluginToasts=[]; const o=StationUI.notify; StationUI.notify=function(text, cls, cat, opts){ window.__pluginToasts.push({ text, transient: !!(opts && opts.transient) }); return o.apply(this, arguments); }; return true; })()`);
-  const stored = await frameEval(`(async()=>{ await starnet.store.set('probe',{n:42}); return (await starnet.store.get('probe')).n; })()`);
+  const stored = await frameEval(`(async()=>{ await eyehold.store.set('probe',{n:42}); return (await eyehold.store.get('probe')).n; })()`);
   await check('store.set → store.get round-trips through the host', stored === 42);
   await frameEval(`(async()=>{ const i=document.getElementById('note'); i.value='Ship plugin windows'; document.getElementById('add').requestSubmit(); await new Promise(r=>setTimeout(r,600)); return true; })()`);
   await frameUntil(`document.querySelectorAll('#list .sn-item').length === 1`);
@@ -195,7 +195,7 @@ try {
   await until(`(window.__pluginToasts || []).some(t => /^PR Radar: Note saved/.test(t.text) && t.transient)`, 40);
   await check('a plugin toast reaches the station, prefixed with the plugin name, and stays out of the notification history', await run(`!StationUI.h.store.notifs.some(n => /^PR Radar:/.test(n.txt))`));
   await frameUntil(`/^\\d+$/.test(document.getElementById('stat-calls').textContent)`, 60);
-  await check('the window reaches its own backend (starnet.backend.call → api.handle, in the plugin process)', true);
+  await check('the window reaches its own backend (eyehold.backend.call → api.handle, in the plugin process)', true);
   await sleep(300);
   report.facts.shot2 = await capture(cdp, out, '02-note-saved');
 
@@ -222,20 +222,20 @@ try {
   //      APPS instead (dev/apps-*-proof.mjs). Plugins remain the Commander's own power-user path.
 
   // ---- 4. the page CANNOT reach the station ----
-  await check('no API token in the frame', await frameEval(`typeof window.__STARNET_API_TOKEN__ === 'undefined'`));
+  await check('no API token in the frame', await frameEval(`typeof window.__EYEHOLD_API_TOKEN__ === 'undefined'`));
   await check('the frame cannot read the station page', await frameEval(`(()=>{ try { return !window.parent.document; } catch (e) { return true; } })()`));
   await check('the frame is an opaque origin', await frameEval(`origin === 'null'`));
   const apiTry = await frameEval(`fetch('http://127.0.0.1:${PORT}/api/plugins').then(r=>'status '+r.status, e=>'blocked: '+e.name)`);
   report.facts.apiFromFrame = apiTry;
   await check('a direct /api call from the frame is refused', /blocked|status 403/.test(apiTry));
-  const other = await frameEval(`starnet.call('store.get',{key:'probe',id:'someone-else'}).then(v=>JSON.stringify(v))`);
+  const other = await frameEval(`eyehold.call('store.get',{key:'probe',id:'someone-else'}).then(v=>JSON.stringify(v))`);
   await check('the page cannot name a different plugin (the host always uses its own)', other === JSON.stringify({ n: 42 }));
   const noNonce = await frameEval(`new Promise((res) => { let got = false; const h = (ev) => { if (ev.data && ev.data.re === 9999) got = true; }; addEventListener('message', h); parent.postMessage({ __sn: 1, id: 9999, m: 'store.keys', a: {} }, '*'); setTimeout(() => { removeEventListener('message', h); res(got); }, 800); })`);
   await check('a message WITHOUT the frame nonce is never answered (a page this frame navigated to cannot use the bridge)', noNonce === false);
   await check('the frame is labelled for assistive tech with aria-label, never title= (the station tooltip would park over the plugin)', await run(`(()=>{ const f=document.querySelector('iframe.plugin-frame[data-plugin="pr-radar"]'); return !f.hasAttribute('title') && !f.hasAttribute('data-tip') && /PR Radar/.test(f.getAttribute('aria-label')||''); })()`));
-  const unknown = await frameEval(`starnet.call('fs.read',{path:'C:/'}).then(()=>'answered',e=>e.message)`);
+  const unknown = await frameEval(`eyehold.call('fs.read',{path:'C:/'}).then(()=>'answered',e=>e.message)`);
   await check('an unknown bridge call is refused', /unknown call/.test(unknown));
-  const badLink = await frameEval(`starnet.ui.openLink('file:///C:/Windows').then(()=>'opened',e=>e.message)`);
+  const badLink = await frameEval(`eyehold.ui.openLink('file:///C:/Windows').then(()=>'opened',e=>e.message)`);
   await check('a non-https link is refused', /https/.test(badLink));
 
   // ---- 5. the KIT tab, then a theme change repaints the plugin with the station ----

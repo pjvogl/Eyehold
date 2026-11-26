@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://starnet.local/schemas/eval-trajectory-v1.json",
-  "title": "StarNet redacted agent trajectory v1",
+  "$id": "https://eyehold.local/schemas/eval-trajectory-v1.json",
+  "title": "Eyehold redacted agent trajectory v1",
   "type": "object",
   "additionalProperties": true,
   "required": ["schemaVersion", "taskId", "events"],
   "properties": {
-    "schemaVersion": { "const": "starnet.eval.trajectory.v1" },
+    "schemaVersion": { "const": "eyehold.eval.trajectory.v1" },
     "taskId": { "type": "string", "minLength": 1 },
     "attempt": { "type": "integer", "minimum": 1 },
     "runId": { "type": "string" },

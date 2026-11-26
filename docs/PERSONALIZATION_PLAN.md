@@ -20,7 +20,7 @@ The panel validated the instinct and sharpened it with two reframes that the moa
 
 ## 2. Principles (non-negotiable)
 
-- **Local-first, provably.** The profile lives in `localStorage` (`starnet.save`) / per-agent JSON. No central server. The trust promise is architectural, not policy: *"your profile, 0 bytes sent."*
+- **Local-first, provably.** The profile lives in `localStorage` (`eyehold.save`) / per-agent JSON. No central server. The trust promise is architectural, not policy: *"your profile, 0 bytes sent."*
 - **Glass box.** One screen shows everything the harness has learned, each row with its provenance; the user can edit, forget, pause, and export. Cloud assistants can't match this.
 - **Every recommendation explains itself.** A deterministic "because you…" line on every card, sourced from the signal that actually dominated the score — never an LLM guess, always present.
 - **Honest about confidence.** Cold-start says so ("calibrating"), exactly like the existing Confidence% meter. Never fabricate a number the data hasn't earned.
@@ -80,7 +80,7 @@ The panel's code read found the substrate is ~70% there and **the single best si
 - **`learningEnabled` flag** — a single boolean the store checks before folding anything (a local do-not-track). Pause = stop folding; the existing data stays until forgotten.
 - **"Everything I've learned about you" panel** — renders the whole profile slice verbatim, each row with provenance (which signal, when, how many samples), with inline **edit / forget / export / wipe**.
 - **Because-line on every recommendation.**
-- **Consent beat at onboarding** — one optional line: *"STARNET can learn what you work on (locally, never sent anywhere) to tailor your suggestions. [Enable] [Not now]"* → sets `learningEnabled`.
+- **Consent beat at onboarding** — one optional line: *"EYEHOLD can learn what you work on (locally, never sent anywhere) to tailor your suggestions. [Enable] [Not now]"* → sets `learningEnabled`.
 - **Anti-overreach rules:** only reflect back what's observable (never "I noticed you're job-hunting"); durable facts go through Keep/Edit/Discard; never quote raw history back in a recommendation.
 
 ---

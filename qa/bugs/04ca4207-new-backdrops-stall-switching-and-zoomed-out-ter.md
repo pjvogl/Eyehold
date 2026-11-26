@@ -9,7 +9,7 @@ found: 2026-09-11
 lane: agent/backdrop-performance-0910
 fix: 2c041bbe69124eda1f60a6eb5a11cc44676028cb
 origin: owner
-report: Owner reports the new backdrops make StarNet laggy
+report: Owner reports the new backdrops make Eyehold laggy
 affected: a625182bd; exact owner artifact not supplied
 family: backdrop-performance
 installer: verified

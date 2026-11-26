@@ -34,7 +34,7 @@ macos-keychain (macos-latest)	Set up job	2026-09-20T07:24:40.9647660Z Complete j
 macos-keychain (macos-latest)	Run actions/checkout@v4	﻿2026-09-20T07:24:41.0146350Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0157470Z ##[group]Run actions/checkout@v4
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0158040Z with:
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0158460Z   repository: androoAGI/starnet
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0158460Z   repository: Eyehold/eyehold
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0162390Z   token: ***
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0162790Z   ssh-strict: true
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0163110Z   ssh-user: git
@@ -49,21 +49,21 @@ macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.016743
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0167800Z   set-safe-directory: true
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0168940Z   allow-unsafe-pr-checkout: false
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0170710Z env:
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0171160Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0171160Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.0171540Z ##[endgroup]
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3640310Z Syncing repository: androoAGI/starnet
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3640310Z Syncing repository: Eyehold/eyehold
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3644280Z ##[group]Getting Git version info
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3645920Z Working directory is '/Users/runner/work/starnet/starnet'
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3645920Z Working directory is '/Users/runner/work/eyehold/eyehold'
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.3648690Z [command]/opt/homebrew/bin/git version
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4189820Z git version 2.55.0
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4204560Z ##[endgroup]
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4215470Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/07a3b47a-814a-4a23-b877-1eea4b8a5f95/.gitconfig'
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4225290Z Temporarily overriding HOME='/Users/runner/work/_temp/07a3b47a-814a-4a23-b877-1eea4b8a5f95' before making global git config changes
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4229950Z Adding repository directory to the temporary git global config as a safe directory
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4232740Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/starnet/starnet
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4352410Z Deleting the contents of '/Users/runner/work/starnet/starnet'
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4232740Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/eyehold/eyehold
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4352410Z Deleting the contents of '/Users/runner/work/eyehold/eyehold'
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4355960Z ##[group]Initializing the repository
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4359430Z [command]/opt/homebrew/bin/git init /Users/runner/work/starnet/starnet
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4359430Z [command]/opt/homebrew/bin/git init /Users/runner/work/eyehold/eyehold
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4701290Z hint: Using 'master' as the name for the initial branch. This default branch name
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4703650Z hint: will change to "main" in Git 3.0. To configure the initial branch name
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4705940Z hint: to use in all of your new repositories, which will suppress this warning,
@@ -77,8 +77,8 @@ macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.471402
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4714540Z hint: 	git branch -m <name>
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4715100Z hint:
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4715780Z hint: Disable this message with "git config set advice.defaultBranchName false"
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4716860Z Initialized empty Git repository in /Users/runner/work/starnet/starnet/.git/
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4718870Z [command]/opt/homebrew/bin/git remote add origin https://github.com/androoAGI/starnet
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4716860Z Initialized empty Git repository in /Users/runner/work/eyehold/eyehold/.git/
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4718870Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Eyehold/eyehold
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4858430Z ##[endgroup]
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4859350Z ##[group]Disabling automatic garbage collection
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.4860320Z [command]/opt/homebrew/bin/git config --local gc.auto 0
@@ -94,7 +94,7 @@ macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.917145
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.9470720Z ##[endgroup]
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.9480810Z ##[group]Fetching the repository
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:24:41.9482630Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c7d042dec22556519c2f52eed2e01e13429714dd:refs/remotes/origin/agent/release-audit-0124-0920
-macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:25:20.6315030Z From https://github.com/androoAGI/starnet
+macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:25:20.6315030Z From https://github.com/Eyehold/eyehold
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:25:20.6317580Z  * [new ref]           c7d042dec22556519c2f52eed2e01e13429714dd -> origin/agent/release-audit-0124-0920
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:25:20.6336850Z ##[endgroup]
 macos-keychain (macos-latest)	Run actions/checkout@v4	2026-09-20T07:25:20.6338940Z ##[group]Determining the checkout info
@@ -238,7 +238,7 @@ macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5950
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5950900Z   check-latest: false
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5952790Z   token: ***
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5952930Z env:
-macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5953140Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5953140Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.5953380Z ##[endgroup]
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.7955330Z Found in cache @ /Users/runner/hostedtoolcache/node/22.23.2/arm64
 macos-keychain (macos-latest)	Run actions/setup-node@v4	2026-09-20T07:25:44.7959480Z (node:3031) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
@@ -252,7 +252,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	﻿2026-09-20T07
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4987270Z with:
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4987450Z   toolchain: stable
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4987640Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4987830Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4987830Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.4988040Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5042710Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5087180Z ##[group]Run if [[ -z $toolchain ]]; then
@@ -275,7 +275,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5108370Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338160Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338440Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338610Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338610Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338790Z   toolchain: stable
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5338950Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5640140Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=59]
@@ -286,7 +286,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5665120Z ^[[36;1mecho "downgrade=" >> $GITHUB_OUTPUT^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5696810Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697110Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697280Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697280Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697520Z   targets: 
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697660Z   components: 
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5697860Z ##[endgroup]
@@ -296,7 +296,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5918100Z ^[[36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5949210Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5949470Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5949640Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5949640Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.5949840Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6174400Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=27]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6180390Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
@@ -307,7 +307,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6208200Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6241310Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6241600Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6241820Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6241820Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6242100Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6242370Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6439140Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=25]
@@ -318,7 +318,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6477720Z ^[[36;1mrustup toolchain install stable --profile minimal --no-self-update^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6511530Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6511880Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6512080Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6512080Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6512380Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6512600Z   RUSTUP_PERMIT_COPY_RENAME: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:45.6512800Z ##[endgroup]
@@ -334,7 +334,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1351520Z ^[[36;1mrustup default stable^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1383120Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1383410Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1383580Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1383580Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1383830Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1384060Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1683700Z info: using existing install for stable-aarch64-apple-darwin
@@ -350,7 +350,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.1995890Z ^[[36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2027720Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2028000Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2028170Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2028170Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2028400Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.2028600Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3161500Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=120]
@@ -361,7 +361,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3212440Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3272930Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3273200Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3273380Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3273380Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3273590Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3273800Z ##[endgroup]
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3512660Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=34]
@@ -372,7 +372,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3534280Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3571800Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3572100Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3572290Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3572290Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3572600Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3572810Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3573010Z ##[endgroup]
@@ -391,7 +391,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3866560Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3900210Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3900480Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3900680Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3900680Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3900890Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3901100Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.3901280Z   CARGO_TERM_COLOR: always
@@ -405,7 +405,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4793450Z ^[[36;1mfi^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4825540Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4825860Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4826020Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4826020Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4826260Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4826490Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.4826730Z   CARGO_TERM_COLOR: always
@@ -416,7 +416,7 @@ macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5325580Z ^[[36;1mrustc +stable --version --verbose^[[0m
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5356960Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5357250Z env:
-macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5357430Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5357430Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5357660Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5357860Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:25:46.5358060Z   CARGO_TERM_COLOR: always
@@ -433,7 +433,7 @@ macos-keychain (macos-latest)	Compile production credential code in lightweight 
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5897640Z ^[[36;1mcargo build --locked --manifest-path test/native-connector-keychain/Cargo.toml^[[0m
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931090Z shell: /bin/bash -e {0}
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931310Z env:
-macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931530Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931530Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931750Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5931960Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:46.5932150Z   CARGO_TERM_COLOR: always
@@ -472,10 +472,10 @@ macos-keychain (macos-latest)	Compile production credential code in lightweight 
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:54.8908600Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:55.0257780Z ^[[1m^[[92m   Compiling^[[0m uuid v1.23.3
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:55.4093540Z ^[[1m^[[92m   Compiling^[[0m keyring v3.6.3
-macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:56.1217630Z ^[[1m^[[92m   Compiling^[[0m starnet-connector-keychain-acceptance v0.1.0 (/Users/runner/work/starnet/starnet/test/native-connector-keychain)
+macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:56.1217630Z ^[[1m^[[92m   Compiling^[[0m eyehold-connector-keychain-acceptance v0.1.0 (/Users/runner/work/eyehold/eyehold/test/native-connector-keychain)
 macos-keychain (macos-latest)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:25:56.3553410Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 9.69s
-macos-keychain (macos-latest)	Configure disposable keychain	﻿2026-09-20T07:25:56.3747930Z ##[group]Run keychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"
-macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3748490Z ^[[36;1mkeychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"^[[0m
+macos-keychain (macos-latest)	Configure disposable keychain	﻿2026-09-20T07:25:56.3747930Z ##[group]Run keychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"
+macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3748490Z ^[[36;1mkeychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"^[[0m
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3749040Z ^[[36;1msecurity create-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3749470Z ^[[36;1msecurity set-keychain-settings -lut 21600 "$keychain"^[[0m
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3749830Z ^[[36;1msecurity list-keychains -d user -s "$keychain"^[[0m
@@ -483,20 +483,20 @@ macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3750620Z ^[[36;1msecurity unlock-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3791540Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3791950Z env:
-macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3792250Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3792250Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3793000Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3793330Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3793660Z   CARGO_TERM_COLOR: always
 macos-keychain (macos-latest)	Configure disposable keychain	2026-09-20T07:25:56.3793920Z ##[endgroup]
-macos-keychain (macos-latest)	Native migration and process restart recovery	﻿2026-09-20T07:25:56.5376700Z ##[group]Run binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
-macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5377590Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance^[[0m
+macos-keychain (macos-latest)	Native migration and process restart recovery	﻿2026-09-20T07:25:56.5376700Z ##[group]Run binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
+macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5377590Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance^[[0m
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5378110Z ^[[36;1m"$binary" migrate^[[0m
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5378380Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5378680Z ^[[36;1m"$binary" malformed^[[0m
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5378930Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5429810Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5430720Z env:
-macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5431510Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5431510Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5432250Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5432930Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.5433790Z   CARGO_TERM_COLOR: always
@@ -505,16 +505,16 @@ macos-keychain (macos-latest)	Native migration and process restart recovery	2026
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.7950830Z PASS native-key vault recover: encrypted main/backup, exact recovery, failed writes preserve originals
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.8196750Z PASS malformed key preserved; original key restored
 macos-keychain (macos-latest)	Native migration and process restart recovery	2026-09-20T07:25:56.8619440Z PASS native-key vault recover: encrypted main/backup, exact recovery, failed writes preserve originals
-macos-keychain (macos-latest)	Locked keychain and recovery	﻿2026-09-20T07:25:56.8716100Z ##[group]Run binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
-macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8716920Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance^[[0m
-macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8717440Z ^[[36;1mkeychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"^[[0m
+macos-keychain (macos-latest)	Locked keychain and recovery	﻿2026-09-20T07:25:56.8716100Z ##[group]Run binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
+macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8716920Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance^[[0m
+macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8717440Z ^[[36;1mkeychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"^[[0m
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8717800Z ^[[36;1msecurity lock-keychain "$keychain"^[[0m
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8718180Z ^[[36;1m"$binary" unavailable^[[0m
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8718510Z ^[[36;1msecurity unlock-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8718880Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8750280Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8750720Z env:
-macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8750960Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8750960Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8751270Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8763890Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Locked keychain and recovery	2026-09-20T07:25:56.8764180Z   CARGO_TERM_COLOR: always
@@ -525,7 +525,7 @@ macos-keychain (macos-latest)	Vault fault and removal regressions	﻿2026-09-20T
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4223780Z ^[[36;1mnode test/connector-vault.test.js^[[0m
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4263910Z shell: /bin/bash -e {0}
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4264210Z env:
-macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4264400Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4264400Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4264620Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4264840Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-latest)	Vault fault and removal regressions	2026-09-20T07:25:57.4265020Z   CARGO_TERM_COLOR: always
@@ -542,7 +542,7 @@ macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8763860Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/28ac417b-5e7c-422f-bfba-5f7d782365e4/.gitconfig'
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8772320Z Temporarily overriding HOME='/Users/runner/work/_temp/28ac417b-5e7c-422f-bfba-5f7d782365e4' before making global git config changes
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8774760Z Adding repository directory to the temporary git global config as a safe directory
-macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8777080Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/starnet/starnet
+macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8777080Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/eyehold/eyehold
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8855000Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:57.8927270Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
 macos-keychain (macos-latest)	Post Run actions/checkout@v4	2026-09-20T07:25:58.0156050Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
@@ -589,7 +589,7 @@ macos-keychain (macos-15-intel)	Set up job	2026-09-20T07:24:00.6561560Z Complete
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	﻿2026-09-20T07:24:01.0896270Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.0942970Z ##[group]Run actions/checkout@v4
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.0947230Z with:
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.0949770Z   repository: androoAGI/starnet
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.0949770Z   repository: Eyehold/eyehold
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1167310Z   token: ***
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1170290Z   ssh-strict: true
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1172980Z   ssh-user: git
@@ -604,21 +604,21 @@ macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1193
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1196630Z   set-safe-directory: true
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1199520Z   allow-unsafe-pr-checkout: false
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1204280Z env:
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1206930Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1206930Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:01.1210770Z ##[endgroup]
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1561000Z Syncing repository: androoAGI/starnet
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1561000Z Syncing repository: Eyehold/eyehold
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1569630Z ##[group]Getting Git version info
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1574260Z Working directory is '/Users/runner/work/starnet/starnet'
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1574260Z Working directory is '/Users/runner/work/eyehold/eyehold'
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.1582050Z [command]/usr/local/bin/git version
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2207320Z git version 2.55.0
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2278010Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2304460Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/ff9f0ceb-68e5-4799-833d-6fb5abf139aa/.gitconfig'
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2340250Z Temporarily overriding HOME='/Users/runner/work/_temp/ff9f0ceb-68e5-4799-833d-6fb5abf139aa' before making global git config changes
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2352970Z Adding repository directory to the temporary git global config as a safe directory
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2361550Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/starnet/starnet
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2628630Z Deleting the contents of '/Users/runner/work/starnet/starnet'
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2361550Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/eyehold/eyehold
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2628630Z Deleting the contents of '/Users/runner/work/eyehold/eyehold'
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2643080Z ##[group]Initializing the repository
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2654400Z [command]/usr/local/bin/git init /Users/runner/work/starnet/starnet
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.2654400Z [command]/usr/local/bin/git init /Users/runner/work/eyehold/eyehold
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3356060Z hint: Using 'master' as the name for the initial branch. This default branch name
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3369940Z hint: will change to "main" in Git 3.0. To configure the initial branch name
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3378030Z hint: to use in all of your new repositories, which will suppress this warning,
@@ -632,8 +632,8 @@ macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3413
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3417840Z hint: 	git branch -m <name>
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3422570Z hint:
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3427440Z hint: Disable this message with "git config set advice.defaultBranchName false"
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3435030Z Initialized empty Git repository in /Users/runner/work/starnet/starnet/.git/
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3446480Z [command]/usr/local/bin/git remote add origin https://github.com/androoAGI/starnet
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3435030Z Initialized empty Git repository in /Users/runner/work/eyehold/eyehold/.git/
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3446480Z [command]/usr/local/bin/git remote add origin https://github.com/Eyehold/eyehold
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3703400Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3708480Z ##[group]Disabling automatic garbage collection
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:02.3713340Z [command]/usr/local/bin/git config --local gc.auto 0
@@ -649,7 +649,7 @@ macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:03.4781
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:03.4805810Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:03.4810920Z ##[group]Fetching the repository
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:03.4819560Z [command]/usr/local/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c7d042dec22556519c2f52eed2e01e13429714dd:refs/remotes/origin/agent/release-audit-0124-0920
-macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:50.4769940Z From https://github.com/androoAGI/starnet
+macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:50.4769940Z From https://github.com/Eyehold/eyehold
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:50.4773800Z  * [new ref]           c7d042dec22556519c2f52eed2e01e13429714dd -> origin/agent/release-audit-0124-0920
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:50.4780630Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run actions/checkout@v4	2026-09-20T07:24:50.4784190Z ##[group]Determining the checkout info
@@ -844,7 +844,7 @@ macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.69
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6925470Z   check-latest: false
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6936320Z   token: ***
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6937790Z env:
-macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6939280Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6939280Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:04.6942050Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:05.3290170Z Found in cache @ /Users/runner/hostedtoolcache/node/22.23.2/x64
 macos-keychain (macos-15-intel)	Run actions/setup-node@v4	2026-09-20T07:26:05.3306760Z (node:22437) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
@@ -858,7 +858,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	﻿2026-09-20T
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5449990Z with:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5451570Z   toolchain: stable
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5452280Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5453060Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5453060Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5454210Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5693280Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5888430Z ##[group]Run if [[ -z $toolchain ]]; then
@@ -881,7 +881,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.5919190Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6261940Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6263280Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6263940Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6263940Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6264980Z   toolchain: stable
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.6265940Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8127560Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=242]
@@ -892,7 +892,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8227150Z ^[[36;1mecho "downgrade=" >> $GITHUB_OUTPUT^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8365200Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8366410Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8367180Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8367180Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8368130Z   targets: 
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8368860Z   components: 
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:08.8369660Z ##[endgroup]
@@ -902,7 +902,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0614830Z ^[[36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0732610Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0733740Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0734400Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0734400Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.0735230Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1053280Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=89]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1063230Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
@@ -913,7 +913,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1149400Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1290870Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1291700Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1292300Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1292300Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1292970Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.1293650Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2132240Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=106]
@@ -924,7 +924,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2685910Z ^[[36;1mrustup toolchain install stable --profile minimal --no-self-update^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2856310Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2857480Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2858210Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2858210Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2859190Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2860130Z   RUSTUP_PERMIT_COPY_RENAME: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:09.2861050Z ##[endgroup]
@@ -947,7 +947,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5192690Z ^[[36;1mrustup default stable^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5346330Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5347630Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5348520Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5348520Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5349580Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.5350550Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.6153420Z info: using existing install for stable-x86_64-apple-darwin
@@ -963,7 +963,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7159990Z ^[[36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7304350Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7305610Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7306420Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7306420Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7307500Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:32.7308510Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0191940Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=311]
@@ -974,7 +974,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0268210Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0362100Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0362990Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0363540Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0363540Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0364250Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0365060Z ##[endgroup]
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0785150Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=58]
@@ -985,7 +985,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.0861250Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1039750Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1041030Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1042010Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1042010Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1043480Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1044440Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1045240Z ##[endgroup]
@@ -1004,7 +1004,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1551390Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1695830Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1696800Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1697370Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1697370Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1698100Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1698840Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.1699610Z   CARGO_TERM_COLOR: always
@@ -1018,7 +1018,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4473550Z ^[[36;1mfi^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4618840Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4620540Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4621490Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4621490Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4622680Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4623880Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.4624750Z   CARGO_TERM_COLOR: always
@@ -1029,7 +1029,7 @@ macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6201640Z ^[[36;1mrustc +stable --version --verbose^[[0m
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6345680Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6347700Z env:
-macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6349290Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6349290Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6350440Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6351430Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Run dtolnay/rust-toolchain@stable	2026-09-20T07:26:33.6352500Z   CARGO_TERM_COLOR: always
@@ -1046,7 +1046,7 @@ macos-keychain (macos-15-intel)	Compile production credential code in lightweigh
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8413880Z ^[[36;1mcargo build --locked --manifest-path test/native-connector-keychain/Cargo.toml^[[0m
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8567950Z shell: /bin/bash -e {0}
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8568940Z env:
-macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8569770Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8569770Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8572120Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8573170Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:33.8574150Z   CARGO_TERM_COLOR: always
@@ -1085,10 +1085,10 @@ macos-keychain (macos-15-intel)	Compile production credential code in lightweigh
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:55.8966850Z ^[[1m^[[92m   Compiling^[[0m uuid v1.23.3
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:26:56.7446370Z ^[[1m^[[92m   Compiling^[[0m security-framework v3.7.0
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:27:02.1878460Z ^[[1m^[[92m   Compiling^[[0m keyring v3.6.3
-macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:27:08.4233320Z ^[[1m^[[92m   Compiling^[[0m starnet-connector-keychain-acceptance v0.1.0 (/Users/runner/work/starnet/starnet/test/native-connector-keychain)
+macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:27:08.4233320Z ^[[1m^[[92m   Compiling^[[0m eyehold-connector-keychain-acceptance v0.1.0 (/Users/runner/work/eyehold/eyehold/test/native-connector-keychain)
 macos-keychain (macos-15-intel)	Compile production credential code in lightweight acceptance harness	2026-09-20T07:27:09.3664070Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 35.38s
-macos-keychain (macos-15-intel)	Configure disposable keychain	﻿2026-09-20T07:27:09.4197600Z ##[group]Run keychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"
-macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4199680Z ^[[36;1mkeychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"^[[0m
+macos-keychain (macos-15-intel)	Configure disposable keychain	﻿2026-09-20T07:27:09.4197600Z ##[group]Run keychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"
+macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4199680Z ^[[36;1mkeychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"^[[0m
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4201400Z ^[[36;1msecurity create-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4203750Z ^[[36;1msecurity set-keychain-settings -lut 21600 "$keychain"^[[0m
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4208700Z ^[[36;1msecurity list-keychains -d user -s "$keychain"^[[0m
@@ -1096,20 +1096,20 @@ macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:0
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4211820Z ^[[36;1msecurity unlock-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4363220Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4365010Z env:
-macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4365830Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4365830Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4366850Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4367880Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4368740Z   CARGO_TERM_COLOR: always
 macos-keychain (macos-15-intel)	Configure disposable keychain	2026-09-20T07:27:09.4369640Z ##[endgroup]
-macos-keychain (macos-15-intel)	Native migration and process restart recovery	﻿2026-09-20T07:27:09.7020810Z ##[group]Run binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
-macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7029190Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance^[[0m
+macos-keychain (macos-15-intel)	Native migration and process restart recovery	﻿2026-09-20T07:27:09.7020810Z ##[group]Run binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
+macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7029190Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance^[[0m
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7031170Z ^[[36;1m"$binary" migrate^[[0m
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7032110Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7032990Z ^[[36;1m"$binary" malformed^[[0m
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7034050Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7166250Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7167450Z env:
-macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7168360Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7168360Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7169290Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7170280Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:09.7171080Z   CARGO_TERM_COLOR: always
@@ -1118,16 +1118,16 @@ macos-keychain (macos-15-intel)	Native migration and process restart recovery	20
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:10.4675610Z PASS native-key vault recover: encrypted main/backup, exact recovery, failed writes preserve originals
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:10.5554020Z PASS malformed key preserved; original key restored
 macos-keychain (macos-15-intel)	Native migration and process restart recovery	2026-09-20T07:27:10.7355540Z PASS native-key vault recover: encrypted main/backup, exact recovery, failed writes preserve originals
-macos-keychain (macos-15-intel)	Locked keychain and recovery	﻿2026-09-20T07:27:10.7835660Z ##[group]Run binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
-macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7838770Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance^[[0m
-macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7842310Z ^[[36;1mkeychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"^[[0m
+macos-keychain (macos-15-intel)	Locked keychain and recovery	﻿2026-09-20T07:27:10.7835660Z ##[group]Run binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
+macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7838770Z ^[[36;1mbinary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance^[[0m
+macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7842310Z ^[[36;1mkeychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"^[[0m
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7843730Z ^[[36;1msecurity lock-keychain "$keychain"^[[0m
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7844790Z ^[[36;1m"$binary" unavailable^[[0m
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7845970Z ^[[36;1msecurity unlock-keychain -p synthetic-ci-only "$keychain"^[[0m
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7847310Z ^[[36;1m"$binary" recover^[[0m
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7992740Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7994000Z env:
-macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7994770Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7994770Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7995720Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7996610Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Locked keychain and recovery	2026-09-20T07:27:10.7997470Z   CARGO_TERM_COLOR: always
@@ -1138,7 +1138,7 @@ macos-keychain (macos-15-intel)	Vault fault and removal regressions	﻿2026-09-2
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.1918020Z ^[[36;1mnode test/connector-vault.test.js^[[0m
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2059920Z shell: /bin/bash -e {0}
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2060890Z env:
-macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2061730Z   STARNET_DISPOSABLE_KEYCHAIN: 1
+macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2061730Z   EYEHOLD_DISPOSABLE_KEYCHAIN: 1
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2062770Z   CARGO_HOME: /Users/runner/.cargo
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2063820Z   CARGO_INCREMENTAL: 0
 macos-keychain (macos-15-intel)	Vault fault and removal regressions	2026-09-20T07:27:11.2064690Z   CARGO_TERM_COLOR: always
@@ -1155,7 +1155,7 @@ macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4297460Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/ac411d3a-5ceb-4464-b385-30ce62951b29/.gitconfig'
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4592210Z Temporarily overriding HOME='/Users/runner/work/_temp/ac411d3a-5ceb-4464-b385-30ce62951b29' before making global git config changes
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4597540Z Adding repository directory to the temporary git global config as a safe directory
-macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4602250Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/starnet/starnet
+macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4602250Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/eyehold/eyehold
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4616720Z [command]/usr/local/bin/git config --local --name-only --get-regexp core\.sshCommand
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.4645290Z [command]/usr/local/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
 macos-keychain (macos-15-intel)	Post Run actions/checkout@v4	2026-09-20T07:27:12.7848930Z [command]/usr/local/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader

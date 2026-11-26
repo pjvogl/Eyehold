@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dogfood.mjs - StarNet daily-driver evidence runner.
+// dogfood.mjs - Eyehold daily-driver evidence runner.
 //
 // This runner does not claim that headless tests equal a human UI dogfood pass.
 // It gathers the cheap, repeatable proof for the Phase 3.1 pack and marks the
@@ -14,22 +14,22 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = new Set(process.argv.slice(2));
 const WANT_LIVE = args.has('--live');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_DOGFOOD_DIR || join(ROOT, '.dogfood', 'dogfood-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_DOGFOOD_DIR || join(ROOT, '.dogfood', 'dogfood-' + STAMP));
 const LATEST = join(ROOT, '.dogfood', 'dogfood-latest');
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
-const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.STARNET_DOGFOOD_STEP_TIMEOUT_MS || 900000);
+const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.EYEHOLD_DOGFOOD_STEP_TIMEOUT_MS || 900000);
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function hasEnvKey() {
-  return !!String(process.env.SKYNET_OPENROUTER_KEY || process.env.STARNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
+  return !!String(process.env.SKYNET_OPENROUTER_KEY || process.env.EYEHOLD_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
 }
 function liveEnv() {
-  const key = String(process.env.SKYNET_OPENROUTER_KEY || process.env.STARNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
+  const key = String(process.env.SKYNET_OPENROUTER_KEY || process.env.EYEHOLD_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
   const env = Object.assign({}, process.env);
   if (key) {
     env.SKYNET_OPENROUTER_KEY = key;
-    env.STARNET_OPENROUTER_KEY = key;
+    env.EYEHOLD_OPENROUTER_KEY = key;
   }
   env.SKYNET_AUDIT_LIVE_PROVIDER = '1';
   return env;
@@ -114,7 +114,7 @@ function writeSummary(results) {
   };
   writeFileSync(join(OUT, 'dogfood-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Dogfood Evidence\n\n';
+  let md = '# Eyehold Dogfood Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + json.verdict + '`\n';
   md += '- Live key present: `' + json.liveKeyPresent + '`\n\n';
@@ -144,7 +144,7 @@ function writeSummary(results) {
 
 async function main() {
   ensureDir(OUT);
-  const noKeyReason = 'No live key found. Set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY.';
+  const noKeyReason = 'No live key found. Set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY.';
   const steps = [
     {
       id: 'live-smoke',
@@ -224,7 +224,7 @@ async function main() {
       required: true,
       skip: true,
       blocked: true,
-      reason: 'Needs an attended browser/desktop session with screenshots, run ids, transcript ids, artifact paths, and ledger rows from docs/STARNET_DOGFOOD_TASK_PACK.md.',
+      reason: 'Needs an attended browser/desktop session with screenshots, run ids, transcript ids, artifact paths, and ledger rows from docs/EYEHOLD_DOGFOOD_TASK_PACK.md.',
       class: 'attended-proof'
     },
     {

@@ -16,7 +16,7 @@ const fixtureSource = realSource.replace('const EYEHOLD_UPDATES_ENABLED = false;
 function makeCase(opts) {
   const o = opts || {};
   const calls = [];
-  const store = new Map([['starnet.save', '{"version":5,"updatedAt":99}']]);
+  const store = new Map([['eyehold.save', '{"version":5,"updatedAt":99}']]);
   let installCalls = 0;
   let cancelCalls = 0;
   let preparedFrozen = false;
@@ -27,9 +27,9 @@ function makeCase(opts) {
   const invoke = async (cmd, args) => {
     calls.push(cmd);
     if (cmd === 'open_external_url') { opened.push(args && args.url); return {}; }
-    if (cmd === 'starnet_update_status') return { desktop: true, currentVersion: '1.0.0', pending: null };
-    if (cmd === 'starnet_update_check') return { available: true, checkedAt: 10, update: { version: '2.0.0', body: '' } };
-    if (cmd === 'starnet_update_install') { installCalls++; if (o.installFails) throw new Error('native failed'); return {}; }
+    if (cmd === 'eyehold_update_status') return { desktop: true, currentVersion: '1.0.0', pending: null };
+    if (cmd === 'eyehold_update_check') return { available: true, checkedAt: 10, update: { version: '2.0.0', body: '' } };
+    if (cmd === 'eyehold_update_install') { installCalls++; if (o.installFails) throw new Error('native failed'); return {}; }
     return {};
   };
   const fetch = async (url, init) => {
@@ -38,7 +38,7 @@ function makeCase(opts) {
       const sent = JSON.parse(init.body);
       prepareCalls++;
       prepareForce.push(sent.force === true);
-      A.eq(sent.browserStore['starnet.save'], store.get('starnet.save'), 'prepare carries browser-owned save bytes');
+      A.eq(sent.browserStore['eyehold.save'], store.get('eyehold.save'), 'prepare carries browser-owned save bytes');
       if (o.prepareBody && !(o.prepareBodyOnce && prepareCalls > 1)) return { ok: false, status: 409, json: async () => o.prepareBody };
       if (o.prepareFails) return { ok: false, status: 409, json: async () => ({ ok: false, code: 'UPDATE_SNAPSHOT_FAILED' }) };
       preparedFrozen = true;
@@ -103,7 +103,7 @@ async function ready(c) { await c.updates.init(); await c.updates.check(true, 't
     const c = makeCase({});
     await ready(c); await c.updates.install();
     A.eq(c.installCalls(), 1, 'native installer runs after a verified receipt');
-    const order = ['save', 'roster', '/api/update/prepare', 'starnet_update_install'].map(x => c.calls.indexOf(x));
+    const order = ['save', 'roster', '/api/update/prepare', 'eyehold_update_install'].map(x => c.calls.indexOf(x));
     A.ok(order.every((n, i) => n >= 0 && (i === 0 || n > order[i - 1])), 'drain, receipt, and native install occur in strict order');
   }
   {

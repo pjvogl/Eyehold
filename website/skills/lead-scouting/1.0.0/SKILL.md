@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Lead Scouting"
   category: "Research"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

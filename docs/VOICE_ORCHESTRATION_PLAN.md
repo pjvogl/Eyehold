@@ -2,19 +2,19 @@
 
 Andrew, on testing the built-in live voice: *"I asked the agent to create a new session and delegate
 the agent to do work and it did not create any new session… the whole point of voice mode is for users
-to turn it on and have their agent do anything they want in StarNet, orchestrate multiple sessions or
+to turn it on and have their agent do anything they want in Eyehold, orchestrate multiple sessions or
 create them, delegate work to other agents, report back when work is done."*
 
 He is right, and it is missing rather than broken.
 
 ## Why nothing happened
 
-The three tools (`get_starnet_status`, `start_starnet_task`, `interrupt_starnet_task`) live in
+The three tools (`get_eyehold_status`, `start_eyehold_task`, `interrupt_eyehold_task`) live in
 `sidecar/realtime-voice.js` and were only ever reachable on the **provider-native realtime path**,
 which was retired on 2026-07-30 in favour of one built-in engine for every station.
 
 On the built-in path the transcript goes to `Chat.send()` — an ordinary agent run. So the agent gets
-whatever tools it normally has and **nothing that knows about StarNet's own structure**. There is no
+whatever tools it normally has and **nothing that knows about Eyehold's own structure**. There is no
 voice-specific tool layer on this path at all.
 
 Even the retired three were thin: status, start, interrupt. Nothing for *create a session*, *switch
@@ -70,7 +70,7 @@ finished run is precisely the lie this product forbids.
   cheerful confirmation for work that did not happen is the failure mode that cost this feature its
   credibility once already.
 - A spoken task must remain indistinguishable downstream from a typed one: same approvals, same
-  ledger, same visible transcript (`Chat.sendOrQueue`, as `start_starnet_task` already did).
+  ledger, same visible transcript (`Chat.sendOrQueue`, as `start_eyehold_task` already did).
 
 ## Live finding (Andrew, 2026-07-30): delegation cannot target a session
 
@@ -165,5 +165,5 @@ in `test/station-tools.test.js` now enforces it.
 (no node_modules) the Kokoro engine cannot load, and the old fallthrough made live voice speak with the
 keyed provider's identity while the picker adjusted an engine that was not there. Every catalogue voice
 now carries its nearest Edge neural on the row; the shipped shape is reproduced in `sidecar.http.test.js`
-via `STARNET_LOCAL_VOICE=0` + the loopback Edge server, which captures the SSML and proves the PICKED
+via `EYEHOLD_LOCAL_VOICE=0` + the loopback Edge server, which captures the SSML and proves the PICKED
 voice reaches the wire.

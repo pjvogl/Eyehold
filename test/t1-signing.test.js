@@ -20,15 +20,15 @@ function run(args, env) {
 
 function mockSignatures(app, installer, status) {
   return JSON.stringify([
-    { path: app, status, statusMessage: status, signerSubject: status === 'Valid' ? 'CN=StarNet Test' : '', signerThumbprint: status === 'Valid' ? 'ABC' : '' },
-    { path: installer, status, statusMessage: status, signerSubject: status === 'Valid' ? 'CN=StarNet Test' : '', signerThumbprint: status === 'Valid' ? 'ABC' : '' }
+    { path: app, status, statusMessage: status, signerSubject: status === 'Valid' ? 'CN=Eyehold Test' : '', signerThumbprint: status === 'Valid' ? 'ABC' : '' },
+    { path: installer, status, statusMessage: status, signerSubject: status === 'Valid' ? 'CN=Eyehold Test' : '', signerThumbprint: status === 'Valid' ? 'ABC' : '' }
   ]);
 }
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 't1-signing-'));
 try {
   const app = path.join(tmp, 'skynet-desktop.exe');
-  const installer = path.join(tmp, 'StarNet_0.1.0_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_0.1.0_x64-setup.exe');
   const out = path.join(tmp, 'out');
   const latest = path.join(tmp, 'latest');
   fs.writeFileSync(app, 'fake app');
@@ -36,11 +36,11 @@ try {
 
   {
     const res = run([], {
-      STARNET_T1_APP_EXE: app,
-      STARNET_T1_INSTALLER_EXE: installer,
-      STARNET_T1_SIGNING_DIR: out,
-      STARNET_T1_SIGNING_LATEST_DIR: latest,
-      STARNET_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned')
+      EYEHOLD_T1_APP_EXE: app,
+      EYEHOLD_T1_INSTALLER_EXE: installer,
+      EYEHOLD_T1_SIGNING_DIR: out,
+      EYEHOLD_T1_SIGNING_LATEST_DIR: latest,
+      EYEHOLD_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned')
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't1-signing-status.json'), 'utf8'));
@@ -54,11 +54,11 @@ try {
   {
     const publicOut = path.join(tmp, 'public-out');
     const res = run(['--public'], {
-      STARNET_T1_APP_EXE: app,
-      STARNET_T1_INSTALLER_EXE: installer,
-      STARNET_T1_SIGNING_DIR: publicOut,
-      STARNET_T1_SIGNING_LATEST_DIR: path.join(tmp, 'public-latest'),
-      STARNET_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned')
+      EYEHOLD_T1_APP_EXE: app,
+      EYEHOLD_T1_INSTALLER_EXE: installer,
+      EYEHOLD_T1_SIGNING_DIR: publicOut,
+      EYEHOLD_T1_SIGNING_LATEST_DIR: path.join(tmp, 'public-latest'),
+      EYEHOLD_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(publicOut, 't1-signing-status.json'), 'utf8'));
@@ -70,12 +70,12 @@ try {
   {
     const startedOut = path.join(tmp, 'started-out');
     const res = run([], {
-      STARNET_T1_APP_EXE: app,
-      STARNET_T1_INSTALLER_EXE: installer,
-      STARNET_T1_SIGNING_DIR: startedOut,
-      STARNET_T1_SIGNING_LATEST_DIR: path.join(tmp, 'started-latest'),
-      STARNET_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned'),
-      STARNET_AUTHENTICODE_CERT_STATUS: 'started'
+      EYEHOLD_T1_APP_EXE: app,
+      EYEHOLD_T1_INSTALLER_EXE: installer,
+      EYEHOLD_T1_SIGNING_DIR: startedOut,
+      EYEHOLD_T1_SIGNING_LATEST_DIR: path.join(tmp, 'started-latest'),
+      EYEHOLD_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'NotSigned'),
+      EYEHOLD_AUTHENTICODE_CERT_STATUS: 'started'
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(startedOut, 't1-signing-status.json'), 'utf8'));
@@ -89,11 +89,11 @@ try {
     fs.utimesSync(installer + '.sig', new Date('2026-06-28T00:00:00.000Z'), new Date('2026-06-28T00:00:00.000Z'));
     fs.utimesSync(installer, new Date('2026-06-29T00:00:00.000Z'), new Date('2026-06-29T00:00:00.000Z'));
     const res = run(['--public'], {
-      STARNET_T1_APP_EXE: app,
-      STARNET_T1_INSTALLER_EXE: installer,
-      STARNET_T1_SIGNING_DIR: staleSigOut,
-      STARNET_T1_SIGNING_LATEST_DIR: path.join(tmp, 'stale-sig-latest'),
-      STARNET_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'Valid')
+      EYEHOLD_T1_APP_EXE: app,
+      EYEHOLD_T1_INSTALLER_EXE: installer,
+      EYEHOLD_T1_SIGNING_DIR: staleSigOut,
+      EYEHOLD_T1_SIGNING_LATEST_DIR: path.join(tmp, 'stale-sig-latest'),
+      EYEHOLD_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'Valid')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(staleSigOut, 't1-signing-status.json'), 'utf8'));
@@ -109,11 +109,11 @@ try {
     fs.writeFileSync(installer + '.sig', 'fake updater signature');
     fs.utimesSync(installer + '.sig', new Date('2026-06-29T00:01:00.000Z'), new Date('2026-06-29T00:01:00.000Z'));
     const res = run(['--public'], {
-      STARNET_T1_APP_EXE: app,
-      STARNET_T1_INSTALLER_EXE: installer,
-      STARNET_T1_SIGNING_DIR: signedOut,
-      STARNET_T1_SIGNING_LATEST_DIR: path.join(tmp, 'signed-latest'),
-      STARNET_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'Valid')
+      EYEHOLD_T1_APP_EXE: app,
+      EYEHOLD_T1_INSTALLER_EXE: installer,
+      EYEHOLD_T1_SIGNING_DIR: signedOut,
+      EYEHOLD_T1_SIGNING_LATEST_DIR: path.join(tmp, 'signed-latest'),
+      EYEHOLD_T1_AUTHENTICODE_MOCK: mockSignatures(app, installer, 'Valid')
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(signedOut, 't1-signing-status.json'), 'utf8'));

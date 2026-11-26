@@ -3,10 +3,10 @@ Date: 2026-10-15
 Status: planning document only; no runtime changes, tests, or visual assets yet.
 
 ## Goal
-Reskin the forked StarNet frontend into the original dark-fantasy Eyehold world while preserving truthful AI runtime telemetry, workstation permissions, agent delegation, pathfinding, and the possibility of adding arbitrary new themed rooms/factions without editing hardcoded seven-room logic.
+Reskin the forked Eyehold frontend into the original dark-fantasy Eyehold world while preserving truthful AI runtime telemetry, workstation permissions, agent delegation, pathfinding, and the possibility of adding arbitrary new themed rooms/factions without editing hardcoded seven-room logic.
 
 ## Verified source entrypoints (fork default branch feat/harness-backend)
-- `frontend/index.html`: HTML/CSS/script loader, boot/splash and overseer creation; contains references to protected StarNet branding, logo, sprites and UI terminology.
+- `frontend/index.html`: HTML/CSS/script loader, boot/splash and overseer creation; contains references to protected Eyehold branding, logo, sprites and UI terminology.
 - `frontend/app/world.js`: primary multi-room canvas renderer; camera pan/zoom, procedural station bake, runtime projections, geometry recalc, characters, routing and pathing.
 - `frontend/app/zones.js`: pure idle-zone geometry derived from rooms/workstations; includes multi-room/solo and leash modes.
 - `frontend/app/app.js`: user-facing agent roster and selected overseer/hero, agent skins, runtime bridge state.
@@ -69,5 +69,5 @@ Gates: Node syntax tests, `npm run test:fast`, `npm run test:http` where relevan
 ## Risks / nonclaims
 - Room count and rendering capacity have not yet been performance-tested.
 - Current room/faction data shape and identity keys still need direct source inspection.
-- The open-source code does NOT grant rights to the original StarNet branded assets.
+- The open-source code does NOT grant rights to the original Eyehold branded assets.
 - This plan file itself does not make the app functional or visually themed.

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* StarNet product-perfection controller.
+/* Eyehold product-perfection controller.
  *
  * The tracked manifest defines goals; this program derives state from verifier receipts. A receipt
  * is valid only for an exact clean commit and the exact manifest/wave definition. Source or policy
@@ -59,7 +59,7 @@ export function validateManifest(manifest) {
   const errors = [];
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) return { ok: false, errors: ['manifest must be an object'] };
   if (manifest.schemaVersion !== 1) errors.push('manifest schemaVersion must be 1');
-  if (manifest.campaign !== 'StarNet product perfection') errors.push('manifest campaign must be StarNet product perfection');
+  if (manifest.campaign !== 'Eyehold product perfection') errors.push('manifest campaign must be Eyehold product perfection');
   if (manifest.terminalVerdict !== 'PRODUCT PERFECT') errors.push('terminalVerdict must be PRODUCT PERFECT');
   if (stableJson(manifest.policy) !== stableJson(EXPECTED_POLICY)) errors.push('manifest policy does not match the locked non-publishing controller policy');
   if (!Array.isArray(manifest.waves) || manifest.waves.length !== EXPECTED_WAVES.length) {
@@ -614,9 +614,9 @@ export function runWaveVerifier(manifest, wave, candidate, runtimeDir = DEFAULT_
       timeout: Number(wave.verifier.timeoutMs),
       maxBuffer: 16 * 1024 * 1024,
       env: Object.assign({}, process.env, {
-        STARNET_PRODUCT_PERFECT_CANDIDATE_SHA: candidate.sha,
-        STARNET_PRODUCT_PERFECT_MANIFEST_HASH: manifestHash,
-        STARNET_PRODUCT_PERFECT_WAVE: wave.id
+        EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA: candidate.sha,
+        EYEHOLD_PRODUCT_PERFECT_MANIFEST_HASH: manifestHash,
+        EYEHOLD_PRODUCT_PERFECT_WAVE: wave.id
       })
     });
     exitCode = Number.isInteger(child.status) ? child.status : null;

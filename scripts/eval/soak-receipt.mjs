@@ -60,7 +60,7 @@ const checks = [
     actual: { commit: subject.commit, manifestDescribe, soakDescribe: describe }, expected: 'verified clean executable manifest with matching live describe' }
 ];
 const result = {
-  schemaVersion: 'starnet.eval.soak-verdict.v1',
+  schemaVersion: 'eyehold.eval.soak-verdict.v1',
   pass: summary.pass === true && checks.every(row => row.pass),
   scope: 'provider-free-control-plane',
   qualifiesRelease: false,

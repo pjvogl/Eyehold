@@ -1,13 +1,13 @@
 // Live DOM journey for the surviving session power tools (the SESSION TOOLS window was retired
 // 2026-07-17): rail search over 50 sessions, hit-click session switch, and per-row ⋯ menu export
-// in both formats. Start a seeded StarNet app, then point SKYNET_PORT here.
+// in both formats. Start a seeded Eyehold app, then point SKYNET_PORT here.
 import { launchChrome, connectCDP, evalJS, collectDiagnostics, sleep } from '../lib/cdp.mjs';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const PORT = process.env.SKYNET_PORT || '8787';
-const CDP_PORT = Number(process.env.STARNET_CDP_PORT || 9774);
+const CDP_PORT = Number(process.env.EYEHOLD_CDP_PORT || 9774);
 const profileDir = mkdtempSync(join(tmpdir(), 'session-power-tools-'));
 const { proc } = launchChrome({ cdpPort: CDP_PORT, profileDir });
 const failures = [];
@@ -72,7 +72,7 @@ try {
   await evalJS(cdp, `(() => {
     window.__powerExports=[]; const original=Workstreams.exportConversation;
     Workstreams.exportConversation=(id,format,opts)=>{ const b=original(id,format,opts); window.__powerExports.push({id,bundle:b}); return b; };
-    URL.createObjectURL=()=> 'blob:starnet-test'; URL.revokeObjectURL=()=>{};
+    URL.createObjectURL=()=> 'blob:eyehold-test'; URL.revokeObjectURL=()=>{};
     HTMLAnchorElement.prototype.click=function(){};
   })()`);
   const menuExport = await evalJS(cdp, `(() => {

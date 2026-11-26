@@ -1,6 +1,6 @@
-/* STARNET — pridestore.js : the thin live wiring around the pure lifetime-record engine (pride.js).
+/* EYEHOLD — pridestore.js : the thin live wiring around the pure lifetime-record engine (pride.js).
 
-   Owns what the pure engine can't: the durable localStorage key (its OWN 'starnet.pride.*' key, riding the
+   Owns what the pure engine can't: the durable localStorage key (its OWN 'eyehold.pride.*' key, riding the
    backup prefix like returnstore/mintstore — no save.js change), the U.bus subscriptions that feed real
    outcomes into the fold, and the injected wall-clock. The STATION RECORD surface (stationui.js) reads
    snapshot() at render time.
@@ -10,7 +10,7 @@
    storm doesn't hammer localStorage. node-exportable for its test. */
 'use strict';
 const PrideStore = (() => {
-  const KEY = 'starnet.pride.v1';
+  const KEY = 'eyehold.pride.v1';
   const FEED = ['agent.run.start', 'agent.run.end', 'workitem.delivered', 'cron.fire'];
   let state = null;
   let wired = false;

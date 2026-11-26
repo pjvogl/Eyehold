@@ -4,7 +4,7 @@
        authority on what is running, events only enrich it, and nothing is claimed before the first
        snapshot lands;
      · the page wiring (button, stylesheet, script) and the station windows staying reachable;
-     · the desktop wiring: module, managed state, commands, the tray's HUD Mode / Open StarNet paths,
+     · the desktop wiring: module, managed state, commands, the tray's HUD Mode / Open Eyehold paths,
        and the HUD's restore floor mirroring the main window's builder. */
 'use strict';
 const fs = require('fs');
@@ -48,7 +48,7 @@ const T0 = 1_800_000_000_000;
     'a finished card with no reply on this page says where the reply is, never that there was none');
   A.ok(js.includes("setText(v.clock, down ? 'NO LINK'") && js.includes("v.node.dataset.state = down ? 'fault' : tile.state;"), 'the widget stops its clocks and says NO LINK when the station stops answering');
   A.ok(js.includes('if (S.followId === id && S.followKey === key && cameraOn(id)) return;'), 'a follow the world could not take (or dropped) is retried, never marked done');
-  A.ok(js.includes("if (S.busy) { S.exitAfter = true;") && js.includes("invoke('starnet_hud_status').then(v => (v && v.active ? invoke('starnet_hud_set', { active: false }) : null))") && js.includes('else exit(); };'),
+  A.ok(js.includes("if (S.busy) { S.exitAfter = true;") && js.includes("invoke('eyehold_hud_status').then(v => (v && v.active ? invoke('eyehold_hud_set', { active: false }) : null))") && js.includes('else exit(); };'),
     'leaving is never dropped: during entry it runs right after, and a page that lost the HUD still hands the window back');
   A.ok(js.includes('holdToMove(open); holdToMove(rows);') && js.includes('cur.startDragging()') && js.includes("invoke('plugin:window|start_dragging', { label: 'main' })") && js.includes('if (!justMoved()) setView(\'activity\');'),
     'the agent cam moves: hold the picture or a row and drag the window; a press that does not move stays a click');
@@ -224,7 +224,7 @@ A.eq([H.fmtAgo(10_000), H.fmtAgo(5 * 60_000), H.fmtAgo(2 * 3_600_000)], ['just n
   A.eq(H.readPrefs(store), { pinned: true, rect: null, widget: null }, 'defaults: pinned, no remembered rect or widget size');
   H.writePrefs(store, { pinned: false, rect: { x: 10, y: 20, w: 400, h: 640 }, widget: { w: 520, h: 410 } });
   A.eq(H.readPrefs(store), { pinned: false, rect: { x: 10, y: 20, w: 400, h: 640 }, widget: { w: 520, h: 410 } }, 'prefs round-trip, the widget size the Commander chose included');
-  mem.set('starnet.hud', '{not json');
+  mem.set('eyehold.hud', '{not json');
   A.eq(H.readPrefs(store), { pinned: true, rect: null, widget: null }, 'corrupt prefs read as defaults');
   A.eq(H.readPrefs({ getItem() { throw new Error('blocked'); } }), { pinned: true, rect: null, widget: null }, 'blocked storage reads as defaults');
 }
@@ -304,20 +304,20 @@ A.eq([H.fmtAgo(10_000), H.fmtAgo(5 * 60_000), H.fmtAgo(2 * 3_600_000)], ['just n
   const hud = read('src-tauri/src/hud_mode.rs');
   A.ok(/\nmod hud_mode;\n/.test(main), 'hud_mode module is declared');
   A.ok(/app\.manage\(hud_mode::HudState::default\(\)\);/.test(main), 'HUD state is managed');
-  A.ok(/starnet_set_close_to_tray,\s*hud_mode::starnet_hud_status,\s*hud_mode::starnet_hud_set,\s*hud_mode::starnet_hud_pin,\s*hud_mode::starnet_hud_fold\s*\]\)/.test(main),
+  A.ok(/eyehold_set_close_to_tray,\s*hud_mode::eyehold_hud_status,\s*hud_mode::eyehold_hud_set,\s*hud_mode::eyehold_hud_pin,\s*hud_mode::eyehold_hud_fold\s*\]\)/.test(main),
     'HUD commands are registered after the lifecycle commands');
   A.ok(/MenuItem::with_id\(app, "lifecycle_hud", "HUD Mode", true, None::<&str>\)\?;/.test(main), 'tray offers HUD Mode');
-  A.ok(/Menu::with_items\(app, &\[&open_item, &hud_item, &status_item, &sep, &pause_item, &quit_item\]\)/.test(main), 'HUD Mode sits under Open StarNet');
-  A.ok(/"lifecycle_open" => \{\s*hud_mode::request\(app, false\);\s*show_main_window\(app\);\s*\}/.test(main), 'Open StarNet hands a HUD back to the full station');
+  A.ok(/Menu::with_items\(app, &\[&open_item, &hud_item, &status_item, &sep, &pause_item, &quit_item\]\)/.test(main), 'HUD Mode sits under Open Eyehold');
+  A.ok(/"lifecycle_open" => \{\s*hud_mode::request\(app, false\);\s*show_main_window\(app\);\s*\}/.test(main), 'Open Eyehold hands a HUD back to the full station');
   A.ok(/"lifecycle_hud" => \{\s*show_main_window\(app\);\s*hud_mode::request\(app, true\);\s*\}/.test(main), 'HUD Mode reveals the window and asks the page to fold');
   A.eq((main.match(/WebviewWindowBuilder::new\(/g) || []).length, 1, 'still exactly one window builder: the HUD is the main window, not a second one');
   A.ok(/\.min_inner_size\(960\.0, 600\.0\)/.test(main) && /const MAIN_MIN_W: f64 = 960\.0;/.test(hud) && /const MAIN_MIN_H: f64 = 600\.0;/.test(hud),
     'leaving the HUD restores the main window\'s real minimum size');
-  A.ok(/pub\(crate\) const HUD_EVENT: &str = "starnet-hud";/.test(hud) && /const TAURI_EVENT = 'starnet-hud';/.test(read('frontend/app/hudmode.js')),
+  A.ok(/pub\(crate\) const HUD_EVENT: &str = "eyehold-hud";/.test(hud) && /const TAURI_EVENT = 'eyehold-hud';/.test(read('frontend/app/hudmode.js')),
     'tray event name matches on both sides');
   A.ok(/win\.set_always_on_top\(false\);\s*let _ = win\.set_min_size\(Some\(LogicalSize::new\(MAIN_MIN_W, MAIN_MIN_H\)\)\);/.test(hud), 'exit unpins before restoring the station floor');
-  const fsCmd = main.slice(main.indexOf('fn starnet_toggle_fullscreen('), main.indexOf('fn starnet_toggle_fullscreen(') + 500);
-  A.ok(/^fn starnet_toggle_fullscreen\(app: AppHandle\) -> Result<bool, String> \{[\s\S]*?if hud_mode::is_active\(&app\) \{\s*return Ok\(false\);\s*\}\s*let win = app/.test(fsCmd),
+  const fsCmd = main.slice(main.indexOf('fn eyehold_toggle_fullscreen('), main.indexOf('fn eyehold_toggle_fullscreen(') + 500);
+  A.ok(/^fn eyehold_toggle_fullscreen\(app: AppHandle\) -> Result<bool, String> \{[\s\S]*?if hud_mode::is_active\(&app\) \{\s*return Ok\(false\);\s*\}\s*let win = app/.test(fsCmd),
     'F11 cannot blow the pinned HUD up to fullscreen (checked before the window is touched)');
   const caps = JSON.parse(read('src-tauri/capabilities/default.json'));
   A.ok(!caps.permissions.some(p => /always-on-top|set-size|set-position/.test(String(p))), 'the renderer gets no new raw window powers; the shell owns HUD geometry');

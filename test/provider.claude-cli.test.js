@@ -255,11 +255,11 @@ const result = (extra) => Object.assign({ type: 'result', subtype: 'success', is
 
   // J. the CLI child never inherits station secrets, and its own auto-memory stays out of the turn.
   {
-    const env = { PATH: '', STARNET_CREDITS_TOKEN: 'credits-secret', SKYNET_API_TOKEN: 'api-secret', CLAUDECODE: '1', HOME: '/h' };
+    const env = { PATH: '', EYEHOLD_CREDITS_TOKEN: 'credits-secret', SKYNET_API_TOKEN: 'api-secret', CLAUDECODE: '1', HOME: '/h' };
     const { p, calls } = make({ lines: [init('none'), result({ result: 'ok' })] }, { env });
     await collect(p, { model: 'sonnet', messages: [{ role: 'user', content: 'x' }] });
     const childEnv = calls[0].opts.env;
-    A.ok(childEnv && !Object.keys(childEnv).some(k => /^(STARNET|SKYNET)_/i.test(k)), 'no STARNET_/SKYNET_ variable reaches the CLI');
+    A.ok(childEnv && !Object.keys(childEnv).some(k => /^(EYEHOLD|SKYNET)_/i.test(k)), 'no EYEHOLD_/SKYNET_ variable reaches the CLI');
     A.eq([childEnv.CLAUDECODE, childEnv.HOME, childEnv.CLAUDE_CODE_DISABLE_AUTO_MEMORY], [undefined, '/h', '1'], 'not a nested session; user env kept; auto-memory off');
   }
 

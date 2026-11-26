@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.cleanup-verification.v1",
+  "schema": "eyehold.cleanup-verification.v1",
   "source": "c2193f1fbc07f827db07814487769adaeb6467b3",
   "runtimeEdits": true,
   "mergedToTrunk": false,
@@ -27,7 +27,7 @@
     },
     {
       "file": ".dogfood/cleanup-synced-cloud-image.log",
-      "command": "STARNET_TEST_CLOUD_ROOT=<local-cloud> node test/managed-image.e2e.test.js",
+      "command": "EYEHOLD_TEST_CLOUD_ROOT=<local-cloud> node test/managed-image.e2e.test.js",
       "source": "ed0788584289fa0884f2632036f8ba1d57c46108",
       "result": "PASS: actual local cloud code, synthetic upstream and credentials",
       "sha256": "d0dbc3a126cfc52583aa1bbe096d29b8e81a725507695e2b544293fb0915e949",
@@ -41,7 +41,7 @@
       "result": "PASS: current frontend; seeded backend predates cleanup and is not backend proof",
       "sha256": "ed7c9aa2d02187b51658d278acf9fce550d02527d87807a70e280d8187b0e15b",
       "bytes": 389,
-      "tail": "    \"before\": 420,\n    \"resized\": 512,\n    \"reopened\": 512,\n    \"reloaded\": 512\n  },\n  \"race\": {\n    \"chosen\": {\n      \"provider\": \"starnet\",\n      \"model\": \"anthropic/test-model\"\n    },\n    \"after\": {\n      \"provider\": \"starnet\",\n      \"model\": \"anthropic/test-model\"\n    }\n  }\n}"
+      "tail": "    \"before\": 420,\n    \"resized\": 512,\n    \"reopened\": 512,\n    \"reloaded\": 512\n  },\n  \"race\": {\n    \"chosen\": {\n      \"provider\": \"eyehold\",\n      \"model\": \"anthropic/test-model\"\n    },\n    \"after\": {\n      \"provider\": \"eyehold\",\n      \"model\": \"anthropic/test-model\"\n    }\n  }\n}"
     },
     {
       "file": ".dogfood/cleanup-final-journeys.log",
@@ -59,7 +59,7 @@
       "result": "PASS: UI-only simulated-provider boundary, 6 steps",
       "sha256": "a54ab0b8978553691d5e62aa66a387f9609a88dd5512e9ae1d60a8b6409773ff",
       "bytes": 1153,
-      "tail": "> starnet-harness@0.11.1 qa:beginner\n> node scripts/qa/beginner-run.mjs --port 8958 --cdp-port 9358\n\n[qa:beginner] mode=ui-only port=8958 run=.bugloops\\beginner-2026-09-10T03-34-49\n[qa:beginner] temp workspace: C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-beginner-ws-35yEMz (empty → fresh connect screen; cleaned up after run)\n[qa:beginner] booting a FRESH (no dev-seed) sidecar on :8958 …\n[qa:beginner] boot ok — page up\n[qa:beginner] first-boot splash advanced with a real Enter keypress\n[qa:beginner] title ok — CREATE YOUR OVERSEER reached\n[qa:beginner] connect ok — OpenRouter selected and name/key/model entered\n[qa:beginner] create-agent ok — WAKE accepted, left the connect screen\n[qa:beginner] awakening ok — on the floor, ceremony live\n[qa:beginner] advanced 1 explicit dialogue read gate(s)\n[qa:beginner] first-directive ok — REACHED THE UI-ONLY LLM BOUNDARY (the awakening is client-scripted; the first real /api/run is the tutorial first-command, which needs a live model). Treating boundary as PASS.\n[qa:beginner] RUN PASS — total 136890ms across 6 steps\n[qa:beginner] STATUS.md Beginner Run row → PASS"
+      "tail": "> eyehold-harness@0.11.1 qa:beginner\n> node scripts/qa/beginner-run.mjs --port 8958 --cdp-port 9358\n\n[qa:beginner] mode=ui-only port=8958 run=.bugloops\\beginner-2026-09-10T03-34-49\n[qa:beginner] temp workspace: C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-beginner-ws-35yEMz (empty → fresh connect screen; cleaned up after run)\n[qa:beginner] booting a FRESH (no dev-seed) sidecar on :8958 …\n[qa:beginner] boot ok — page up\n[qa:beginner] first-boot splash advanced with a real Enter keypress\n[qa:beginner] title ok — CREATE YOUR OVERSEER reached\n[qa:beginner] connect ok — OpenRouter selected and name/key/model entered\n[qa:beginner] create-agent ok — WAKE accepted, left the connect screen\n[qa:beginner] awakening ok — on the floor, ceremony live\n[qa:beginner] advanced 1 explicit dialogue read gate(s)\n[qa:beginner] first-directive ok — REACHED THE UI-ONLY LLM BOUNDARY (the awakening is client-scripted; the first real /api/run is the tutorial first-command, which needs a live model). Treating boundary as PASS.\n[qa:beginner] RUN PASS — total 136890ms across 6 steps\n[qa:beginner] STATUS.md Beginner Run row → PASS"
     },
     {
       "file": ".dogfood/cleanup-final-golden.log",

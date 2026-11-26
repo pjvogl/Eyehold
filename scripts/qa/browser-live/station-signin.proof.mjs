@@ -142,7 +142,7 @@ const SIDELOG = openSync(join(OUT, 'sidecar.log'), 'w');
 const bootWith = extra => require_cp.spawn(process.execPath, [join(REPO, 'sidecar', 'index.js')], { cwd: REPO, stdio: ['ignore', SIDELOG, SIDELOG],
   env: Object.assign({}, process.env, extra, { SKYNET_DEV: '1', SKYNET_WORKSPACES: wsDir, SKYNET_PORT: String(port), SKYNET_DEFAULT_MODEL: MODEL, SKYNET_OPENROUTER_KEY: 'sk-or-v1-obproof-fake' }) });
 const sidecar = bootWith({
-  SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base, SKYNET_QUEST_REFRESH: '0', SKYNET_SCOUT: '0',
+  SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base, SKYNET_QUEST_REFRESH: '0', SKYNET_SCOUT: '0',
   HOME: home, USERPROFILE: home, APPDATA: join(home, 'appdata'), LOCALAPPDATA: join(home, 'localappdata') });
 let chrome = null;
 try {

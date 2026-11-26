@@ -12,12 +12,12 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T3_LOOPS || 3) || 3) : 1;
-const REQUIRE_LIVE = argSet.has('--require-live') || truthy(process.env.STARNET_T3_REQUIRE_LIVE) || hasLiveProviderKey();
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T3_LOOPS || 3) || 3) : 1;
+const REQUIRE_LIVE = argSet.has('--require-live') || truthy(process.env.EYEHOLD_T3_REQUIRE_LIVE) || hasLiveProviderKey();
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T3_RELEASE_SMOKE_DIR || join(ROOT, '.dogfood', 't3-release-smoke-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T3_RELEASE_SMOKE_LATEST_DIR || join(ROOT, '.dogfood', 't3-release-smoke-latest'));
-const MAX_WORKLOAD_MS = Math.max(1000, Number(process.env.STARNET_T3_WORKLOAD_TIMEOUT_MS || 600000) || 600000);
+const OUT = resolve(process.env.EYEHOLD_T3_RELEASE_SMOKE_DIR || join(ROOT, '.dogfood', 't3-release-smoke-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T3_RELEASE_SMOKE_LATEST_DIR || join(ROOT, '.dogfood', 't3-release-smoke-latest'));
+const MAX_WORKLOAD_MS = Math.max(1000, Number(process.env.EYEHOLD_T3_WORKLOAD_TIMEOUT_MS || 600000) || 600000);
 const INSTALLED_SOURCES = new Set(['nsis-installed', 'windows-sandbox-installed', 'clean-vm-installed', 'physical-windows-installed']);
 const TERMINAL_TOOLS = ['shell_exec', 'verify_run'];
 const REQUIRED_TOOLS = ['fs_write', 'notebook_write'];
@@ -77,18 +77,18 @@ function tauriVersion() {
   return conf && conf.version || '';
 }
 function installerPath() {
-  const raw = process.env.STARNET_T3_INSTALLER_EXE || process.env.STARNET_T0_INSTALLER_EXE || '';
+  const raw = process.env.EYEHOLD_T3_INSTALLER_EXE || process.env.EYEHOLD_T0_INSTALLER_EXE || '';
   if (raw) return resolve(raw);
   return findCurrentNsisInstaller(ROOT);
 }
 function t0StatusPath() {
-  return resolve(process.env.STARNET_T3_T0_STATUS || join(ROOT, '.dogfood', 't0-clean-install-latest', 't0-clean-install-status.json'));
+  return resolve(process.env.EYEHOLD_T3_T0_STATUS || join(ROOT, '.dogfood', 't0-clean-install-latest', 't0-clean-install-status.json'));
 }
 function t2StatusPath() {
-  return resolve(process.env.STARNET_T3_T2_STATUS || join(ROOT, '.dogfood', 't2-state-safety-latest', 't2-state-safety-status.json'));
+  return resolve(process.env.EYEHOLD_T3_T2_STATUS || join(ROOT, '.dogfood', 't2-state-safety-latest', 't2-state-safety-status.json'));
 }
 function workloadEvidencePath() {
-  const raw = process.env.STARNET_T3_WORKLOAD_EVIDENCE || argValue('--workload-evidence') || '';
+  const raw = process.env.EYEHOLD_T3_WORKLOAD_EVIDENCE || argValue('--workload-evidence') || '';
   return raw ? resolve(raw) : '';
 }
 function step(id, phase, title, status, reason, extra = {}) {
@@ -107,9 +107,9 @@ function hasAnyTool(toolCalls, names) {
   return names.some(name => hasTool(toolCalls, name));
 }
 function checkPlan(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_T3_RELEASE_SMOKE.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_T3_RELEASE_SMOKE.md');
   const text = readText(file).toLowerCase();
-  const required = ['installed-app', 'release smoke', 'starnet.t3-installed-workload-proof.v1', 'dev-server proof does not count', 'timeout'];
+  const required = ['installed-app', 'release smoke', 'eyehold.t3-installed-workload-proof.v1', 'dev-server proof does not count', 'timeout'];
   const missing = required.filter(term => text.indexOf(term) < 0);
   return step('t3.0-loop-spec', 'T3.0', 'T3 release-smoke loop is documented', existsSync(file) && !missing.length ? 'pass' : 'fail', missing.length ? 'Missing terms: ' + missing.join(', ') : 'T3 release-smoke spec exists.', { loop, evidenceFile: file });
 }
@@ -144,7 +144,7 @@ function checkT2(loop) {
 function validateWorkloadProof(doc, installerInfo) {
   const errors = [];
   if (!doc || typeof doc !== 'object') return { ready: false, errors: ['Installed workload evidence is not valid JSON.'], proof: null };
-  if (doc.schema !== 'starnet.t3-installed-workload-proof.v1') errors.push('schema must be starnet.t3-installed-workload-proof.v1');
+  if (doc.schema !== 'eyehold.t3-installed-workload-proof.v1') errors.push('schema must be eyehold.t3-installed-workload-proof.v1');
   const gotHash = String(doc.installer && doc.installer.sha256 || '').toLowerCase();
   const gotBytes = Number(doc.installer && doc.installer.bytes || 0);
   if (!gotHash) errors.push('installer.sha256 is missing');
@@ -212,7 +212,7 @@ function validateWorkloadProof(doc, installerInfo) {
 }
 function checkWorkloadProof(loop, installerInfo) {
   const file = workloadEvidencePath();
-  if (!file) return step('t3.4-installed-workload-proof', 'T3.4', 'Installed app completed the release-smoke workload', 'blocked', 'No installed workload evidence JSON was provided. Set STARNET_T3_WORKLOAD_EVIDENCE or pass --workload-evidence.', { loop, evidenceFile: '' });
+  if (!file) return step('t3.4-installed-workload-proof', 'T3.4', 'Installed app completed the release-smoke workload', 'blocked', 'No installed workload evidence JSON was provided. Set EYEHOLD_T3_WORKLOAD_EVIDENCE or pass --workload-evidence.', { loop, evidenceFile: '' });
   if (!existsSync(file)) return step('t3.4-installed-workload-proof', 'T3.4', 'Installed app completed the release-smoke workload', 'blocked', 'Installed workload evidence file does not exist: ' + file, { loop, evidenceFile: file });
   const doc = readJson(file);
   const validation = validateWorkloadProof(doc, installerInfo);
@@ -282,7 +282,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   const releaseSmokeReady = fail === 0 && blocked === 0 && latest.length > 0 && latest.every(r => r.status === 'pass' || r.status === 'skip');
   const verdict = fail ? 'red' : (blocked ? 'blocked' : 'green');
   const status = {
-    schema: 'starnet.t3-release-smoke-status.v1',
+    schema: 'eyehold.t3-release-smoke-status.v1',
     generatedAt: nowIso(),
     lane: 'T3-release-smoke',
     verdict,
@@ -298,7 +298,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   };
   writeJson(join(OUT, 't3-release-smoke-status.json'), status);
 
-  let md = '# StarNet T3 Release Smoke Evidence\n\n';
+  let md = '# Eyehold T3 Release Smoke Evidence\n\n';
   md += '- Generated: `' + status.generatedAt + '`\n';
   md += '- Verdict: `' + status.verdict + '`\n';
   md += '- Release smoke ready: `' + status.releaseSmokeReady + '`\n';

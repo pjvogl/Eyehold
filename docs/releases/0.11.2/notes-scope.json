@@ -246,7 +246,7 @@
     },
     {
       "sha": "3f2cc70d45b2f3ece0f34d1e4c70f1fdd87b1db3",
-      "subject": "Polish provider identities, status alignment and StarNet action"
+      "subject": "Polish provider identities, status alignment and Eyehold action"
     },
     {
       "sha": "61528ba957fade1872726f342dfae3d768401c38",
@@ -958,7 +958,7 @@
     },
     {
       "sha": "c8ecf001323e709cb543019ffe5737cca20dba55",
-      "subject": "merge: synchronize creation interface with current StarNet"
+      "subject": "merge: synchronize creation interface with current Eyehold"
     },
     {
       "sha": "a5cc394eff48ead2b46aac2637c15de0096904b4",
@@ -1018,7 +1018,7 @@
     },
     {
       "sha": "dfab52ca9c65b8732efea29d0278e1f13fbf3fdb",
-      "subject": "design: simplify the StarNet start card without the subscription badge"
+      "subject": "design: simplify the Eyehold start card without the subscription badge"
     },
     {
       "sha": "0985f6314fa99c4902a7c6bfb79fb071c8cd7c88",
@@ -1062,7 +1062,7 @@
     },
     {
       "sha": "d262f37cf9d7314123591657d2efec814a1ea0e4",
-      "subject": "design: make the StarNet AI subscription offer unmistakable"
+      "subject": "design: make the Eyehold AI subscription offer unmistakable"
     },
     {
       "sha": "f3b9f5ab1c772f7997dd820c2853186696003d35",
@@ -1078,7 +1078,7 @@
     },
     {
       "sha": "25f6c8191d9e0a55d778e8ed6ccb1fdb36301f44",
-      "subject": "merge: synchronize adversarial audit with current StarNet"
+      "subject": "merge: synchronize adversarial audit with current Eyehold"
     },
     {
       "sha": "352f6a6362ab39d465d24aac4305ffcc18ed0628",
@@ -1098,7 +1098,7 @@
     },
     {
       "sha": "3bd3001cab4d940cb0bc225b364e313c0eda8930",
-      "subject": "merge: strengthen StarNet reliability and report output"
+      "subject": "merge: strengthen Eyehold reliability and report output"
     },
     {
       "sha": "2200988e909ee2eae4ddd04c56197c4f55bfb049",
@@ -1110,11 +1110,11 @@
     },
     {
       "sha": "8a30061b8695c5eb8d8a50503eb85e0e92be0146",
-      "subject": "qa: refresh StarNet wordmark source fingerprint"
+      "subject": "qa: refresh Eyehold wordmark source fingerprint"
     },
     {
       "sha": "908d6338c43dcd0f2bb81fdde7c543f129bd21e3",
-      "subject": "design: lead Overseer setup with the authentic StarNet wordmark"
+      "subject": "design: lead Overseer setup with the authentic Eyehold wordmark"
     },
     {
       "sha": "2350a90157eae4443033c4ca34f6c4adf845edf9",
@@ -1126,11 +1126,11 @@
     },
     {
       "sha": "ff595a596aaeaeb98da3b077b3b4d6487cd84bf6",
-      "subject": "chore: refresh combined StarNet source lock"
+      "subject": "chore: refresh combined Eyehold source lock"
     },
     {
       "sha": "79fea7e8d19aefd91421452066750c114649433e",
-      "subject": "merge: synchronize Hermes improvements with current StarNet"
+      "subject": "merge: synchronize Hermes improvements with current Eyehold"
     },
     {
       "sha": "75a814c1875f54de1e65e626f6a8c99dd248e5a7",
@@ -1354,11 +1354,11 @@
     },
     {
       "sha": "a039e5987cc73ce98e1f027595d9d5620c133e48",
-      "subject": "qa: refresh StarNet card source fingerprint"
+      "subject": "qa: refresh Eyehold card source fingerprint"
     },
     {
       "sha": "5d8ff8c2bacab3791c33eaa005eefd452ce8352a",
-      "subject": "feat: redesign StarNet start card with perimeter light trail"
+      "subject": "feat: redesign Eyehold start card with perimeter light trail"
     },
     {
       "sha": "f952835ab7e078d0f9dae490cbb52e7b9c8cc29f",
@@ -1374,11 +1374,11 @@
     },
     {
       "sha": "0dec053d1ffe2edf584f88014bb34ee1379b5dfd",
-      "subject": "fix: align StarNet setup logo and simplify character gallery"
+      "subject": "fix: align Eyehold setup logo and simplify character gallery"
     },
     {
       "sha": "009670cc3e2cf0a58bf01ebaaadcee25a04db6c6",
-      "subject": "docs: plan StarNet improvements from Hermes audit"
+      "subject": "docs: plan Eyehold improvements from Hermes audit"
     },
     {
       "sha": "d89e1d6e117309041dcc31be536ecfbdd8c9498a",
@@ -1580,7 +1580,7 @@
     },
     {
       "sha": "3f2cc70d45b2f3ece0f34d1e4c70f1fdd87b1db3",
-      "subject": "Polish provider identities, status alignment and StarNet action"
+      "subject": "Polish provider identities, status alignment and Eyehold action"
     },
     {
       "sha": "2c041bbe69124eda1f60a6eb5a11cc44676028cb",
@@ -1708,7 +1708,7 @@
     },
     {
       "sha": "dfab52ca9c65b8732efea29d0278e1f13fbf3fdb",
-      "subject": "design: simplify the StarNet start card without the subscription badge"
+      "subject": "design: simplify the Eyehold start card without the subscription badge"
     },
     {
       "sha": "81b6f5703ed344f8748d0b5e0c8947cf3c5ae499",
@@ -1716,7 +1716,7 @@
     },
     {
       "sha": "d262f37cf9d7314123591657d2efec814a1ea0e4",
-      "subject": "design: make the StarNet AI subscription offer unmistakable"
+      "subject": "design: make the Eyehold AI subscription offer unmistakable"
     },
     {
       "sha": "38d28f9a809369683d0746d2308af093afa8b537",
@@ -1728,7 +1728,7 @@
     },
     {
       "sha": "908d6338c43dcd0f2bb81fdde7c543f129bd21e3",
-      "subject": "design: lead Overseer setup with the authentic StarNet wordmark"
+      "subject": "design: lead Overseer setup with the authentic Eyehold wordmark"
     },
     {
       "sha": "75a814c1875f54de1e65e626f6a8c99dd248e5a7",
@@ -1804,7 +1804,7 @@
     },
     {
       "sha": "5d8ff8c2bacab3791c33eaa005eefd452ce8352a",
-      "subject": "feat: redesign StarNet start card with perimeter light trail"
+      "subject": "feat: redesign Eyehold start card with perimeter light trail"
     },
     {
       "sha": "f952835ab7e078d0f9dae490cbb52e7b9c8cc29f",
@@ -1812,7 +1812,7 @@
     },
     {
       "sha": "0dec053d1ffe2edf584f88014bb34ee1379b5dfd",
-      "subject": "fix: align StarNet setup logo and simplify character gallery"
+      "subject": "fix: align Eyehold setup logo and simplify character gallery"
     },
     {
       "sha": "d89e1d6e117309041dcc31be536ecfbdd8c9498a",
@@ -4319,11 +4319,11 @@
     "qa/audits/hermes-stress-2026-09-10/probes/schema.cjs",
     "qa/audits/hermes-stress-2026-09-10/probes/seed-entry.cjs",
     "qa/audits/hermes-stress-2026-09-10/receipt.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-json_object-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-json_schema-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-partial-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-partial.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-schema-live-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-json_object-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-json_schema-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-partial-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-partial.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-schema-live-after.json",
     "qa/bugs/04ca4207-new-backdrops-stall-switching-and-zoomed-out-ter.md",
     "qa/bugs/050da842-update-canary-uses-obsolete-saves-and-snapshots.md",
     "qa/bugs/0c148510-http-gate-watchdog-expires-before-the-full-suite.md",
@@ -4607,7 +4607,7 @@
     "test/field-manual-accessibility.test.js",
     "test/first-value.test.js",
     "test/fixtures/github-device-preload.cjs",
-    "test/genesis-starnet-link.test.js",
+    "test/genesis-eyehold-link.test.js",
     "test/github-device.http.test.js",
     "test/github-device.test.js",
     "test/glass-interactions.test.js",

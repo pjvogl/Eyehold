@@ -5,7 +5,7 @@ import { createReadStream, mkdirSync, mkdtempSync, readFileSync, readdirSync, re
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startFixtureMcpServer } from './campaign/fixture-host.mjs';
-import { startStarNetDriver } from './campaign/drivers.mjs';
+import { startEyeholdDriver } from './campaign/drivers.mjs';
 import { validateManifest } from './bind.mjs';
 import { makeReceipt } from './comparison.mjs';
 import { gradeParityTrajectory, validateParityFixtures } from './independent-grader.mjs';
@@ -186,7 +186,7 @@ async function main() {
   const fixtureServer = await startFixtureMcpServer(); let driver = null, resourceObserver = null, interrupted = false;
   const startedAt = Date.now(), deadline = startedAt + durationHours * 3600000;
   const report = {
-    schemaVersion: 'starnet.eval.installed-provider-soak.v1', mode: 'installed-provider-backed-active-idle', qualifyingDuration: durationHours >= 48, qualifiesRelease: false,
+    schemaVersion: 'eyehold.eval.installed-provider-soak.v1', mode: 'installed-provider-backed-active-idle', qualifyingDuration: durationHours >= 48, qualifiesRelease: false,
     startedAt: iso(startedAt), plannedEndAt: iso(deadline), durationHours, healthIntervalSeconds, activeIntervalSeconds,
     runtime: { root: resolve(opts['runtime-root']), workspace: resolve(opts.workspaces), port: null, describe: subject.provenance.describe,
       executable: executablePath, executableSha256: expectedExecutableSha256, rawHealthVersion: null, initialFingerprint: initialRuntimeFingerprint },
@@ -195,7 +195,7 @@ async function main() {
   const stop = () => { interrupted = true; };
   process.on('SIGINT', stop); process.on('SIGTERM', stop);
   try {
-    driver = await startStarNetDriver({ desktopExecutable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs: 300000 });
+    driver = await startEyeholdDriver({ desktopExecutable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs: 300000 });
     if (process.platform === 'win32') resourceObserver = createWindowsProcessObserver(driver.process.pid);
     if (driver.identity.mode !== 'installed-desktop' || driver.identity.health?.status !== 'ok' || String(driver.identity.health?.version || '') !== String(subject.provenance.describe)) throw new Error('installed desktop soak health identity does not match the manifest');
     report.runtime.rawHealthVersion = String(driver.identity.health?.version || '');
@@ -247,7 +247,7 @@ async function main() {
     report.qualifiesRelease = report.summary.pass;
     writeAtomic(output, report);
     if (!report.summary.pass) throw new Error('installed provider-backed soak did not meet its qualifying gates');
-    const result = { schemaVersion: 'starnet.eval.installed-provider-soak-verdict.v1', pass: true, qualifiesRelease: true, scope: report.mode, durationHours, samples: report.samples.length, providerRuns: report.providerRuns.length, summary: report.summary, resources: { rssBytes: report.summary.rssBytes } };
+    const result = { schemaVersion: 'eyehold.eval.installed-provider-soak-verdict.v1', pass: true, qualifiesRelease: true, scope: report.mode, durationHours, samples: report.samples.length, providerRuns: report.providerRuns.length, summary: report.summary, resources: { rssBytes: report.summary.rssBytes } };
     let receipt = makeReceipt({ kind: 'installed-provider-soak', contract: json(opts.contract), subject, result,
       evidence: { path: output, bytes: statSync(output).size, sha256: await hashFileStreamed(output), manifestPath, manifestSha256: await hashFileStreamed(manifestPath), fixtureSetSha256: validation.fixtureSha256 } });
     receipt = signReceipt(receipt, opts['signing-key']); writeFileSync(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');

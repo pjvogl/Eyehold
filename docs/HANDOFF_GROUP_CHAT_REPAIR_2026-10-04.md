@@ -5,7 +5,7 @@ Branch `agent/group-chat-fix-1004` (worktree `gen-trees\group-chat-fix-1004`), f
 ## What Andrew reported (on installed v0.13.0)
 
 > group chats dont seem to be working right… cant even tell when the groupchat is there, it does not show all the agents,
-> I cant @ the agents… it literally doesnt save when you add one to chat and minimize starnet, when you come back the
+> I cant @ the agents… it literally doesnt save when you add one to chat and minimize eyehold, when you come back the
 > agents are removed from the chat
 
 ## What was actually wrong (proven, not guessed)

@@ -1,7 +1,7 @@
 /* node test/cron.run-now.test.js - source-locks manual routine Run Now visibility.
 
    The reference harness had this exact class of bug: a manual cron run reported success but did
-   not actually fire through the same observable path. In StarNet the important
+   not actually fire through the same observable path. In Eyehold the important
    contract is that /api/cron/run is not only a panel-local NDJSON stream: it
    must also place a cron work item and mirror lifecycle over SSE so the floor
    moves immediately when the user presses Run Now. */

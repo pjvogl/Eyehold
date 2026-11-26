@@ -27,7 +27,7 @@ const Fullscreen = require('../frontend/app/fullscreen.js');
     }
   };
   A.eq(Fullscreen.handleKeydown(ev, tauriWin, null), true, 'F11 handler claims the shortcut');
-  A.eq(invoked, 'starnet_toggle_fullscreen', 'desktop F11 calls the native Tauri fullscreen command');
+  A.eq(invoked, 'eyehold_toggle_fullscreen', 'desktop F11 calls the native Tauri fullscreen command');
   A.ok(ev.prevented && ev.stopped, 'F11 is consumed before browser chrome handles it');
   await Promise.resolve();
   await Promise.resolve();

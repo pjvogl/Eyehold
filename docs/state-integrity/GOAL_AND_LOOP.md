@@ -8,7 +8,7 @@
 
 ## 1. Why this class exists
 
-StarNet is a long-lived single-page app. The page is loaded **once**; everything after —
+Eyehold is a long-lived single-page app. The page is loaded **once**; everything after —
 waking an agent, resuming a save, pausing to the title screen, creating a NEW AGENT,
 summoning crew, refitting the station, switching workstreams — happens by **re-driving
 module singletons that stay alive in memory**. Each transition is supposed to reset or

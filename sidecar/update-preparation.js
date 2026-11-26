@@ -86,7 +86,7 @@ function makeUpdatePreparation(deps) {
       const createdAt = Number(now());
       const id = String(createdAt) + '-' + String(newId()).replace(/[^A-Za-z0-9_-]+/g, '').slice(0, 80);
       const dir = path.join(path.dirname(workspaceRoot), 'update-snapshots');
-      const bundleFile = path.join(dir, 'pre-' + safeTarget(o.targetVersion) + '-' + id + '.starnet-backup.json');
+      const bundleFile = path.join(dir, 'pre-' + safeTarget(o.targetVersion) + '-' + id + '.eyehold-backup.json');
       const bundle = recovery.capture({
         workspaceRoot: workspaceRoot,
         browserStore: o.browserStore && typeof o.browserStore === 'object' ? o.browserStore : {},
@@ -101,7 +101,7 @@ function makeUpdatePreparation(deps) {
 
       const receiptFile = bundleFile + '.receipt.json';
       const nextReceipt = {
-        schema: 'starnet.update-preparation', version: 1, id: id,
+        schema: 'eyehold.update-preparation', version: 1, id: id,
         createdAt: createdAt, fromVersion: String(appVersion() || 'unknown'), targetVersion: String(o.targetVersion || ''),
         frozen: true, activeMutations: activeMutations, liveRuns: Number(liveRuns()),
         completedMutation: 'http:' + completedMutations,

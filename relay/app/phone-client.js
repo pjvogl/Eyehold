@@ -20,7 +20,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const LABEL = 'starnet-remote/1';
+  const LABEL = 'eyehold-remote/1';
   const VERSION = 1;
   const subtle = () => globalThis.crypto.subtle;
   const enc = new TextEncoder(), dec = new TextDecoder();

@@ -51,7 +51,7 @@ async function quickRun(answers, stopAt, wake = false, mind = null, receipts = [
   assert.equal(result.done, 1); assert.equal(result.taught, 1);
   assert(result.stages.some(([,detail]) => detail.startsWith('1 of 2')));
   assert(result.stages.some(([,detail]) => detail.startsWith('2 of 2')));
-  assert(result.storage.has('starnet.interview.deferred.v1'), 'deeper profile stays available later');
+  assert(result.storage.has('eyehold.interview.deferred.v1'), 'deeper profile stays available later');
   const retried = await quickRun([{value:'quick'}, {value:'Help me build software.'}, {value:'wait'}, {value:'wait'}], null, false, null, [{ok:false,error:'Save refused'}, {ok:true}]);
   assert.equal(retried.prompts.length, 4, 'a refused posture save repeats the question before completing setup');
   assert.deepEqual(retried.postures, ['wait', 'wait'], 'retry uses the confirmed writer again');

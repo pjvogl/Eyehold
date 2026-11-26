@@ -54,7 +54,7 @@ export async function collectPerformanceBaseline(opts = {}) {
 
   const rssEnd = process.memoryUsage().rss;
   return {
-    schemaVersion: 'starnet.eval.performance-baseline.v1',
+    schemaVersion: 'eyehold.eval.performance-baseline.v1',
     pass: true,
     scope: 'dependency-free source harness',
     samples,

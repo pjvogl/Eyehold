@@ -1,6 +1,6 @@
 # Hermes comparison follow-through — 2026-09-05
 
-The three observed StarNet reliability gaps are implemented in commits d4c4c2195, 505236bd5 and 8ccf27916. The implementation branch was synchronized with integration commit ff9e147cf in 9cb517883.
+The three observed Eyehold reliability gaps are implemented in commits d4c4c2195, 505236bd5 and 8ccf27916. The implementation branch was synchronized with integration commit ff9e147cf in 9cb517883.
 
 1. Recognized MCP command-execution tools, including `run_command`, no longer receive reusable write receipts. Repeating an identical check after repair executes it again. External sends and other ordinary writes retain per-work-item deduplication. Command execution still follows the existing mutation/consent policy.
 2. Native verification uses the active project root when no narrower execution directory exists. Dispatch, clones, structured-result repair and resumed workers inherit host-owned project scope. Background worker records persist that scope.

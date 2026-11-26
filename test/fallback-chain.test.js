@@ -91,7 +91,7 @@ const fc = require('../sidecar/fallbackchain.js');
 
 // ---------- 3. PERSISTENCE round-trip through the host's {version,models} envelope ----------
 {
-  const tmp = path.join(require('os').tmpdir(), 'starnet-fallback-test-' + process.pid + '.json');
+  const tmp = path.join(require('os').tmpdir(), 'eyehold-fallback-test-' + process.pid + '.json');
   try {
     // host writes: saveResilient(FALLBACK_FILE, { version: 1, models: fallbackSaved })
     const saved = fc.validateChainPatch({ models: ['c/z', 'd/w'] }).chain;
@@ -123,7 +123,7 @@ const fc = require('../sidecar/fallbackchain.js');
   A.ok(/fallbackChain\.promoteToolCapable\(model, fallbackModels/.test(idx), 'task admission consumes the configured chain before refusing a tool-less primary');
   A.ok(/initialFallback/.test(idx), 'preflight promotion is passed to the loop for truthful telemetry');
   A.ok(/fallbackChain\.resolveChain\(ENV_FALLBACK, fallbackSaved\)/.test(idx), 'effective chain = pure resolve(env, saved)');
-  A.ok(/parseEnvChain\(ENV\('FALLBACK_MODELS'\)/.test(idx), 'env SKYNET/STARNET_FALLBACK_MODELS remains the default baseline');
+  A.ok(/parseEnvChain\(ENV\('FALLBACK_MODELS'\)/.test(idx), 'env SKYNET/EYEHOLD_FALLBACK_MODELS remains the default baseline');
   // honest validation posture: catalog lookups warn, never refuse
   A.ok(/warmModelCatalogSet/.test(idx) && /warnings/.test(idx), 'catalog validation is wired as warnings (never a refusal)');
 }

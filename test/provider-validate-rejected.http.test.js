@@ -41,7 +41,7 @@ const KEYS = { 'sk-ant-api03-good': 200, 'sk-ant-api03-empty': 200, 'sk-ant-usr-
   const deadBaseUrl = 'http://' + HOST + ':' + gone.address().port + '/v1';
   await new Promise(resolve => gone.close(resolve));
   const fixture = SidecarFixture.create({ prefix: 'validate-rejected-', timeoutMs: 20000, env: {
-    SKYNET_CRON_ENABLED: '0', STARNET_CRON_ENABLED: '0', ANTHROPIC_API_KEY: '', SKYNET_ANTHROPIC_KEY: '', STARNET_ANTHROPIC_KEY: ''
+    SKYNET_CRON_ENABLED: '0', EYEHOLD_CRON_ENABLED: '0', ANTHROPIC_API_KEY: '', SKYNET_ANTHROPIC_KEY: '', EYEHOLD_ANTHROPIC_KEY: ''
   } });
   try {
     await fixture.start();

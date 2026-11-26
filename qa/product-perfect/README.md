@@ -1,4 +1,4 @@
-# StarNet product-perfection convergence
+# Eyehold product-perfection convergence
 
 This directory defines the literal product bar requested by the owner: every created feature,
 release-facing UI implementation, and backend promise must be fully polished and work in the running

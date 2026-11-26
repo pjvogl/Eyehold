@@ -158,22 +158,22 @@ module.exports = (async () => {
     A.ok(grokRoster.find(m => m.id === 'grok-4'), 'grok static roster fills the empty catalog');
   }
 
-  /* ---- starnet endpoint truth (2026-08-25 stranded-user incident) ----
-     starnet's baseUrl comes ONLY from the device link. Unlinked, it resolves empty — and the adapter used to
+  /* ---- eyehold endpoint truth (2026-08-25 stranded-user incident) ----
+     eyehold's baseUrl comes ONLY from the device link. Unlinked, it resolves empty — and the adapter used to
      default that to api.openai.com, silently rerouting a managed run (device token as bearer) to OpenAI,
      which answered its bare "invalid model ID" for the routed catalog id. Locked here: an endpointless
-     starnet selection refuses with the one real remedy (link the station), a linked one constructs, and the
+     eyehold selection refuses with the one real remedy (link the station), a linked one constructs, and the
      profile declares requiresBaseUrl so hasCredential/run admission read an unresolved link as unconfigured. */
   {
-    const starnet = factory.getProviderProfile('starnet');
-    A.eq(starnet.requiresBaseUrl, true, 'starnet declares requiresBaseUrl (an unresolved link is NOT configured)');
+    const eyehold = factory.getProviderProfile('eyehold');
+    A.eq(eyehold.requiresBaseUrl, true, 'eyehold declares requiresBaseUrl (an unresolved link is NOT configured)');
     let threw = null;
-    try { factory.selectProvider({ provider: 'starnet', key: 'device-token', fetch: async () => new Response('', { status: 200 }) }); }
+    try { factory.selectProvider({ provider: 'eyehold', key: 'device-token', fetch: async () => new Response('', { status: 200 }) }); }
     catch (e) { threw = e; }
-    A.ok(threw, 'an unlinked starnet selection refuses instead of defaulting to api.openai.com');
-    A.ok(/link/i.test(String(threw && threw.message)) && /STARNET/i.test(String(threw && threw.message)), 'the refusal names linking the station');
-    const linked = factory.selectProvider({ provider: 'starnet', key: 'device-token', baseUrl: 'https://account.starnetos.example/v1', fetch: async () => new Response('', { status: 200 }) });
-    A.ok(linked && typeof linked.stream === 'function', 'a linked starnet (dynamic baseUrl supplied) constructs normally');
+    A.ok(threw, 'an unlinked eyehold selection refuses instead of defaulting to api.openai.com');
+    A.ok(/link/i.test(String(threw && threw.message)) && /EYEHOLD/i.test(String(threw && threw.message)), 'the refusal names linking the station');
+    const linked = factory.selectProvider({ provider: 'eyehold', key: 'device-token', baseUrl: 'https://account.eyehold.example/v1', fetch: async () => new Response('', { status: 200 }) });
+    A.ok(linked && typeof linked.stream === 'function', 'a linked eyehold (dynamic baseUrl supplied) constructs normally');
   }
 
   // OUTPUT CEILING (issue #17): Ollama's wire has no ceiling of its own, so its profile declares one and the

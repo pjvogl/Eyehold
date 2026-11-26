@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-The exact signed 0.12.0 candidate remains resident after close-to-tray but exposes a visible StarNet window again. This blocks release acceptance.
+The exact signed 0.12.0 candidate remains resident after close-to-tray but exposes a visible Eyehold window again. This blocks release acceptance.
 
 ## Repro
 

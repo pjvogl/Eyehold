@@ -1,13 +1,13 @@
-# StarNet Privacy
+# Eyehold Privacy
 
 _Last reviewed: 2026-07-25, against the shipping code._
 
-StarNet is a **local-first desktop app**. It runs a small server (the "sidecar") on your own
-machine (`localhost`) and does the agent work there. Out of the box there is **no StarNet
-account and nothing of yours on a StarNet server** — the app talks only to the providers you
+Eyehold is a **local-first desktop app**. It runs a small server (the "sidecar") on your own
+machine (`localhost`) and does the agent work there. Out of the box there is **no Eyehold
+account and nothing of yours on a Eyehold server** — the app talks only to the providers you
 choose, with your own keys. There is exactly one opt-in exception: if you choose to buy
-**StarNet Credits**, that creates an account on our billing service. It is described in full
-under *StarNet Credits* below, and nothing in this document changes for you unless you buy
+**Eyehold Credits**, that creates an account on our billing service. It is described in full
+under *Eyehold Credits* below, and nothing in this document changes for you unless you buy
 them. This document is written in plain English and is grounded in an audit of the actual
 code — not aspirations.
 
@@ -25,22 +25,22 @@ Support questions: androo.agi@gmail.com.
   Windows: `%APPDATA%\ai.skynet.harness\workspaces\`; macOS:
   `~/Library/Application Support/ai.skynet.harness/workspaces/`; Linux:
   `~/.local/share/ai.skynet.harness/workspaces/`. (The developer-mode sidecar uses
-  `%LOCALAPPDATA%\StarNet\` on Windows.) The `ai.skynet.harness` folder name is an intentional
-  back-compatibility alias kept from before the app was renamed to StarNet on 2026-06-22 — it
-  holds your StarNet data.
+  `%LOCALAPPDATA%\Eyehold\` on Windows.) The `ai.skynet.harness` folder name is an intentional
+  back-compatibility alias kept from before the app was renamed to Eyehold on 2026-06-22 — it
+  holds your Eyehold data.
 - The app talks to the network for the configured or requested work described below, plus the
   desktop app's automatic update-manifest check. These are the only outbound cases.
 
 ## What leaves your machine — and only these
 
-StarNet makes outbound network requests in exactly these situations. Nothing else.
+Eyehold makes outbound network requests in exactly these situations. Nothing else.
 
 ### 1. Your chosen AI model provider (using your key)
 
-When an agent runs, StarNet calls the model provider **you** configured, authenticated with
+When an agent runs, Eyehold calls the model provider **you** configured, authenticated with
 **your** API key (or your ChatGPT sign-in). Your prompts, conversation, and any content the
 agent works with are sent to that provider so it can generate a response — the same as any app
-that uses that provider. StarNet is a pass-through here; it does not sit in the middle.
+that uses that provider. Eyehold is a pass-through here; it does not sit in the middle.
 
 Depending on what you set up, that provider is one of:
 
@@ -52,35 +52,35 @@ Depending on what you set up, that provider is one of:
 - or another OpenAI-compatible provider you point it at (xAI, Groq, Mistral, DeepSeek,
   Together, Fireworks, Perplexity, Cerebras).
 
-**Your key, your data, your account.** StarNet never sees a StarNet-owned copy — the key is
+**Your key, your data, your account.** Eyehold never sees a Eyehold-owned copy — the key is
 yours and the request goes straight to the provider you picked.
 
 ### 2. Chat channels — only if you connect them
 
-If you connect a chat channel, StarNet talks to that platform to send and receive messages on the
+If you connect a chat channel, Eyehold talks to that platform to send and receive messages on the
 channel you set up, authenticated with the token (or endpoint) **you** provide. Nothing is
 contacted unless you connect it:
 
-- **Discord / Telegram** — StarNet calls that platform's API (`discord.com`, `api.telegram.org`)
+- **Discord / Telegram** — Eyehold calls that platform's API (`discord.com`, `api.telegram.org`)
   with your bot token.
-- **Slack** — StarNet calls the Slack API (`slack.com`) with your bot token.
-- **Matrix** — StarNet talks to **the homeserver you point it at** — whatever URL you configure,
-  whether `matrix.org` or a server you run yourself — using your access token. StarNet does not
+- **Slack** — Eyehold calls the Slack API (`slack.com`) with your bot token.
+- **Matrix** — Eyehold talks to **the homeserver you point it at** — whatever URL you configure,
+  whether `matrix.org` or a server you run yourself — using your access token. Eyehold does not
   pick a server; you do.
-- **Signal** — StarNet talks to **the signal-cli REST endpoint you run** (the URL you configure for
+- **Signal** — Eyehold talks to **the signal-cli REST endpoint you run** (the URL you configure for
   your own signal-cli bridge), using the account you registered there.
 
-If you never connect a channel, StarNet never contacts any of these services.
+If you never connect a channel, Eyehold never contacts any of these services.
 
 ### 3. Spotify — only if you enable it
 
-If you enable the Spotify integration and authorize it, StarNet calls the Spotify API
+If you enable the Spotify integration and authorize it, Eyehold calls the Spotify API
 (`api.spotify.com`, `accounts.spotify.com`) to read what's playing and control playback, using
 the token you granted. If you don't enable Spotify, no Spotify requests are made.
 
 ### 4. Web search / web fetch — only when an agent uses that tool
 
-If an agent uses its web tools, StarNet fetches results through independent, keyless services
+If an agent uses its web tools, Eyehold fetches results through independent, keyless services
 — web search via Mojeek (`mojeek.com`, with DuckDuckGo as a fallback) and page reading via
 Jina Reader (`r.jina.ai`) — or, if you have an OpenRouter key, OpenRouter's web plugin. If the
 Jina reader is unavailable or rate-limits, the page is fetched **directly from its own host**
@@ -101,7 +101,7 @@ Automatic update checks are on by default. On first run and at the configured in
 desktop app fetches a single public manifest file from GitHub Releases:
 
 ```
-https://github.com/androoAGI/starnet-releases/releases/latest/download/latest.json
+https://github.com/Eyehold/eyehold-releases/releases/latest/download/latest.json
 ```
 
 This is a plain `GET` for a static file. **No user data, no identifier, and no telemetry are
@@ -113,15 +113,15 @@ installed. You can stop automatic checks by turning off **AUTO-CHECK FOR UPDATES
 ### 7. The Skill Market — when you open it, and while you use its skills
 
 When you open **ABILITIES › DISCOVER › SKILL MARKET**, the app downloads the public skill catalog from
-`https://starnetos.com/.well-known/starnet-skills.json`, and when you install a skill it downloads
-that skill's files from `https://starnetos.com/skills/`. These are plain `GET`s for static files:
+`https://eyehold.com/.well-known/eyehold-skills.json`, and when you install a skill it downloads
+that skill's files from `https://eyehold.com/skills/`. These are plain `GET`s for static files:
 **no user data, no identifier and no telemetry are sent.** While at least one skill you installed from the
 market is on this station, the app also re-reads the small list of skills the market has pulled
-(`https://starnetos.com/.well-known/starnet-skills-revoked.json`) shortly after it starts and every few minutes,
+(`https://eyehold.com/.well-known/eyehold-skills-revoked.json`) shortly after it starts and every few minutes,
 so a skill found to be unsafe is switched off; with no market skills installed, nothing is fetched in the
-background. Every catalog and pulled list is checked against StarNet's signature before it is used.
+background. Every catalog and pulled list is checked against Eyehold's signature before it is used.
 
-## What StarNet stores on your machine (and how)
+## What Eyehold stores on your machine (and how)
 
 Everything below lives under your per-user app-data directory (see the paths in "The short
 version" above for Windows/macOS/Linux). It never leaves your machine except as described
@@ -157,7 +157,7 @@ plaintext `channels/secrets.json` is migrated into the keychain and stripped fro
 Connector credentials use a separate encryption key under the same keychain service,
 account `connectors:encryption:v1`. Desktop startup encrypts and verifies both active
 and recovery copies before removing legacy connector credential files. If the keychain
-is locked or the original key is missing, StarNet preserves the encrypted files and
+is locked or the original key is missing, Eyehold preserves the encrypted files and
 reports that saved connections are unavailable; it does not replace them with empty data.
 Copies of those files alone cannot unlock connections on another OS account or computer.
 Protect and retain your OS credential store when restoring backups. This protects
@@ -166,7 +166,7 @@ Google content; their storage is listed separately above. Google Workspace publi
 activation remains deferred pending the remaining verification and data-handling work.
 The selected-file candidate requests only `drive.file` through Google's file picker,
 without email/profile, Gmail, Calendar or whole-Drive scopes. It can access files granted
-to StarNet and files it creates. This restriction does not mean file contents remain
+to Eyehold and files it creates. This restriction does not mean file contents remain
 local: the model-provider, transcript, memory and artifact disclosures above still apply.
 
 If you instead run the bare sidecar directly (developer mode / `node sidecar/index.js` /
@@ -186,29 +186,29 @@ Windows user account can read it. Protect your machine account accordingly.
 
 - We do **not** run analytics or telemetry of any kind.
 - We do **not** collect crash reports.
-- We do **not** require a StarNet account. Unless you buy credits, no account exists, and no
-  StarNet backend holds anything of yours.
+- We do **not** require a Eyehold account. Unless you buy credits, no account exists, and no
+  Eyehold backend holds anything of yours.
 - We do **not** sell, share, or transmit your conversations, keys, or files to anyone —
   the only outbound traffic is the specific, purpose-built requests listed above.
 - We do **not** store your prompts or your agents' replies on our servers, even on the credits
   path — see below.
 
-## StarNet Credits — only if you buy them
+## Eyehold Credits — only if you buy them
 
 Credits are optional and off by default. If you never buy them, skip this section: nothing in
 it applies to you, and the app behaves exactly as described above.
 
-If you do buy credits, you create an account on StarNet's billing service, and these things
+If you do buy credits, you create an account on Eyehold's billing service, and these things
 become true:
 
 - **What we hold.** Your email address, your credit balance and the ledger of grants and
   charges behind it, an identifier for each station you link, and the customer/subscription
   identifiers our payment processor gives us. That's the list.
-- **Card details never reach us.** Checkout runs on **Stripe**, in your browser. StarNet never
+- **Card details never reach us.** Checkout runs on **Stripe**, in your browser. Eyehold never
   sees, receives, or stores a card number — the app has no payment form at all.
-- **How you sign in.** By emailed one-time link. There is no StarNet password to steal.
+- **How you sign in.** By emailed one-time link. There is no Eyehold password to steal.
 - **Model runs go through our gateway.** This is the part worth being blunt about: on the
-  credits path your prompts and your agents' replies are relayed through StarNet's servers to
+  credits path your prompts and your agents' replies are relayed through Eyehold's servers to
   the model provider, because that is the only way we can pay for the call on your behalf. We
   relay them; we do **not** store their contents, and we do **not** train on them. What we
   keep is the metering — model name, token counts, cost, timestamp — which is what your balance
@@ -220,14 +220,14 @@ become true:
 
 Your data is just files. In the desktop app, **Settings → APP & BACKUP → ERASE EVERYTHING** deletes
 all of it on this computer (station data, the app window's own storage, the voice-model download and
-the credentials StarNet saved in the OS keychain), lists anything it could not remove, and restarts at
+the credentials Eyehold saved in the OS keychain), lists anything it could not remove, and restarts at
 first run. Project folders you let agents use are never touched. The full per-OS list of locations is in
-the [troubleshooting guide](https://starnetos.com/docs/troubleshooting.html#where-starnet-keeps-your-data).
-To wipe it by hand, uninstall StarNet and delete the `ai.skynet.harness`
+the [troubleshooting guide](https://eyehold.com/docs/troubleshooting.html#where-eyehold-keeps-your-data).
+To wipe it by hand, uninstall Eyehold and delete the `ai.skynet.harness`
 app-data folder for your OS — Windows: `%APPDATA%\ai.skynet.harness\`
 (`C:\Users\<you>\AppData\Roaming\ai.skynet.harness\`); macOS:
 `~/Library/Application Support/ai.skynet.harness/`; Linux: `~/.local/share/ai.skynet.harness/`.
-If you ever ran the developer-mode sidecar on Windows, also delete `%LOCALAPPDATA%\StarNet\`.
+If you ever ran the developer-mode sidecar on Windows, also delete `%LOCALAPPDATA%\Eyehold\`.
 Provider API keys and channel tokens held in the OS keychain can be removed there too (search
 your credential manager / keychain for `ai.skynet.harness`).
 

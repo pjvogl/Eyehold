@@ -1,5 +1,5 @@
 # UX Confusion Audit — Skills / Toolsets / Recipes / Routines / Tasks / Quests / Channels
-2026-07-15 · branch `claude/starnet-ux-confusion-audit-a6a1fe` · method: code sweep (3 explorers) + live walkthrough of a fresh seeded station (`dev/seed.js`, port 9031). All UI quotes below were confirmed live in the running app unless marked (code).
+2026-07-15 · branch `claude/eyehold-ux-confusion-audit-a6a1fe` · method: code sweep (3 explorers) + live walkthrough of a fresh seeded station (`dev/seed.js`, port 9031). All UI quotes below were confirmed live in the running app unless marked (code).
 
 ## Verdict
 The features are individually sound, but the **vocabulary layer collapses for a first-time user**. Seven nouns are presented as peers in two dock menus with one-line subtitles, the glossary defines only 3 of them, the locked doctrine (Skills=HOW / Recipes=WHAT / Routines=WHEN) appears nowhere in the UI, and several features can produce each other's artifacts with no signpost.

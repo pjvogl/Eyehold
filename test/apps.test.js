@@ -22,7 +22,7 @@ const { makePluginLoader, _internals } = require('../sidecar/plugins.js');
 const { makePluginStore } = require('../sidecar/plugin-surface.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-apps-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-apps-' + process.pid);
 const loader = makePluginLoader({ fsp, pathMod: path, dir: path.join(DIR, 'plugins'), allowFile: path.join(DIR, 'allow.json'), requireModule: () => ({}), hash: (s) => crypto.createHash('sha256').update(String(s)).digest('hex'), onError() {} });
 const mem = new Map();
 const store = makePluginStore({ store: { get: (k) => mem.get(k), set: (k, v) => mem.set(k, v), update: async (k, fn) => { const n = fn(mem.get(k)); if (n !== undefined) mem.set(k, n); } } });
@@ -50,9 +50,9 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
   try {
     A.throws(() => makeApps({ fsp, path, dir: DIR }), 'apps without an injected clock is refused');
     // the crew finds app.create by searching "app": its description must keep OUTSIDE builds away (a Netlify site and
-    // a React todo became StarNet apps on 10-02 before this line)
+    // a React todo became Eyehold apps on 10-02 before this line)
     const createDesc = tools.defs.find(d => d.name === 'app.create').description;
-    A.ok(/INSIDE StarNet/.test(createDesc) && /NOT for anything meant to run, be published or be shipped outside StarNet/.test(createDesc) && /framework codebase/.test(createDesc) && /add-on for the Commander's own web browser/.test(createDesc), 'app.create says it is only for apps inside StarNet, never a site/project/script to ship elsewhere');
+    A.ok(/INSIDE Eyehold/.test(createDesc) && /NOT for anything meant to run, be published or be shipped outside Eyehold/.test(createDesc) && /framework codebase/.test(createDesc) && /add-on for the Commander's own web browser/.test(createDesc), 'app.create says it is only for apps inside Eyehold, never a site/project/script to ship elsewhere');
     // (sweep 2026-10-02) …without the words people SEARCH for those asks: tool_search matches description substrings and
     // shows only the first sentence, so "a website, a React project, a browser extension" made it reveal app.create as
     // the top hit for exactly "browser extension" / "host a site" / "react project"
@@ -75,7 +75,7 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     const d0 = (await apps.record(a.id)).digest;
     told.length = 0;
     clock += 5000;
-    await apps.writeFile(a.id, 'index.html', '<div class="sn-panel">hi</div><script>starnet.store.get("brief")</script>');
+    await apps.writeFile(a.id, 'index.html', '<div class="sn-panel">hi</div><script>eyehold.store.get("brief")</script>');
     const d1 = (await apps.record(a.id)).digest;
     A.ok(d0 && d1 && d0 !== d1, 'writing the page moves its digest (a new URL)');
     A.eq(told[0], ['reload', a.id, d1], 'a write tells the open window to reload onto the new digest');
@@ -193,12 +193,12 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     A.ok(toolNames().every(n => grants.includes(n)), 'every app tool is granted by the computer');
     const r = await run('app.read', { app: a.id });
     A.ok(/^Today is \w+day, September 29, 2026/.test(r.content), 'app.read opens with the station\'s real date');
-    A.ok(/Data keys: brief/.test(r.content) && /HOW A STARNET APP WORKS/.test(r.content), 'app.read lists the data keys and carries the build guide');
+    A.ok(/Data keys: brief/.test(r.content) && /HOW A EYEHOLD APP WORKS/.test(r.content), 'app.read lists the data keys and carries the build guide');
     A.ok(/OK — no problems/.test((await run('app.check', { app: a.id })).content), 'a good page checks clean');
     await run('app.write', { app: a.id, path: 'index.html', content: '<body style="background:#fff"><script>fetch("https://x"); (</script></body>' });
     const c = (await run('app.check', { app: a.id })).content;
     A.ok(/PROBLEMS/.test(c) && /white background/.test(c) && /no kit classes/.test(c) && /network/.test(c), 'check reports a broken script and the look/network warnings');
-    await run('app.write', { app: a.id, path: 'index.html', content: '<div class="sn-card"></div><script>const h = (u) => `<a href="${u}" onclick="starnet.ui.openLink(${JSON.stringify(u)})">x</a>`;</script>' });
+    await run('app.write', { app: a.id, path: 'index.html', content: '<div class="sn-card"></div><script>const h = (u) => `<a href="${u}" onclick="eyehold.ui.openLink(${JSON.stringify(u)})">x</a>`;</script>' });
     A.ok(/JSON\.stringify inside an onclick/.test((await run('app.check', { app: a.id })).content), 'check flags a URL quoted into an inline onclick (the bug that framed a news site)');
     const made = await run('app.create', { name: 'Reading List' });
     A.ok(/id: reading-list/.test(made.content), 'app.create (from chat) makes a new app');

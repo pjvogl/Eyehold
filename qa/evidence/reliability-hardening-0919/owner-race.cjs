@@ -1,7 +1,7 @@
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),assert=require('node:assert/strict');
 const {makeWorkspaceOwner}=require('../../../sidecar/workspace-owner');
-const root=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-owner-race-'));
-const file=path.join(root,'.starnet-workspace-owner.json');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-owner-race-'));
+const file=path.join(root,'.eyehold-workspace-owner.json');
 fs.writeFileSync(file,JSON.stringify({version:1,pid:101,nonce:'dead',startedAt:1}));
 const deps={fs,path,now:()=>100,pidAlive:pid=>pid!==101};
 const a=makeWorkspaceOwner({...deps,pid:201,nonce:()=> 'a'});let first;

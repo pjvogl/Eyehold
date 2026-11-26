@@ -1,10 +1,10 @@
-/* node test/mcp-serve.test.js — real proof for the StarNet MCP messaging-bridge server.
+/* node test/mcp-serve.test.js — real proof for the Eyehold MCP messaging-bridge server.
 
    Boots the actual sidecar (DEV mode on, temp workspace, mock OpenRouter) on an ephemeral port,
    then spawns sidecar/mcp/serve.js as a child and speaks REAL newline-delimited JSON-RPC 2.0 over
    its stdio: initialize -> tools/list (all 11 tool names) -> tools/call conversations_list ->
    events_poll -> channels_list -> permissions_list_open -> messages_send (dev channel round-trip)
-   -> and finally a sidecar-DOWN proof (kill the sidecar; a tool returns a structured start-StarNet
+   -> and finally a sidecar-DOWN proof (kill the sidecar; a tool returns a structured start-Eyehold
    error while the server itself keeps listing tools).
 
    The bridge never touches store files: everything above is proxied over loopback HTTP to the
@@ -60,7 +60,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -128,11 +128,11 @@ function parseToolResult(result) {
   const llm = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-mcp-serve-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
-    SKYNET_DEV: '1', STARNET_DEV: '1',
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-serve-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-serve-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model'
+    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    SKYNET_DEV: '1', EYEHOLD_DEV: '1',
+    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-serve-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-serve-fake',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   let booted = await boot(9100 + (process.pid % 60), env, 20);
   let sidecar = booted.child;
@@ -140,7 +140,7 @@ function parseToolResult(result) {
 
   // spawn serve.js WITHOUT a token in env — proving it discovers the token by scraping GET /.
   const serve = spawn(process.execPath, [SERVE, '--host=' + HOST, '--port=' + String(port)], {
-    env: Object.assign({}, process.env, { STARNET_TOKEN: '', STARNET_API_TOKEN: '', SKYNET_API_TOKEN: '', STARNET_PORT: '', SKYNET_PORT: '' }),
+    env: Object.assign({}, process.env, { EYEHOLD_TOKEN: '', EYEHOLD_API_TOKEN: '', SKYNET_API_TOKEN: '', EYEHOLD_PORT: '', SKYNET_PORT: '' }),
     stdio: ['pipe', 'pipe', 'pipe']
   });
   const rpc = makeRpcClient(serve);
@@ -149,7 +149,7 @@ function parseToolResult(result) {
     // ── initialize ─────────────────────────────────────────────────────────────────────────────
     const init = await rpc.request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'test-harness', version: '0' } });
     A.eq(init.protocolVersion, '2025-06-18', 'server echoes the supported protocol version');
-    A.eq(init.serverInfo && init.serverInfo.name, 'starnet-harness', 'serverInfo name is starnet-harness');
+    A.eq(init.serverInfo && init.serverInfo.name, 'eyehold-harness', 'serverInfo name is eyehold-harness');
     A.ok(init.capabilities && init.capabilities.tools, 'server advertises tools capability');
     A.ok(typeof init.instructions === 'string' && init.instructions.length > 20, 'server ships an instructions string');
     rpc.notify('notifications/initialized');
@@ -206,9 +206,9 @@ function parseToolResult(result) {
     A.eq((stillList.tools || []).length, 10, 'tools/list still works with the sidecar down (server is independent)');
     r = parseToolResult(await rpc.request('tools/call', { name: 'conversations_list', arguments: {} }));
     A.ok(r.isError === true, 'a data tool marks isError when the sidecar is unreachable');
-    A.ok(r.data.sidecarReachable === false && /StarNet/i.test(r.data.error), 'the error tells the operator to start StarNet');
+    A.ok(r.data.sidecarReachable === false && /Eyehold/i.test(r.data.error), 'the error tells the operator to start Eyehold');
 
-    // ⛔ STATION RESTART: THE SCRAPED TOKEN IS PER-LAUNCH AND GOES STALE. StarNet is a desktop app the
+    // ⛔ STATION RESTART: THE SCRAPED TOKEN IS PER-LAUNCH AND GOES STALE. Eyehold is a desktop app the
     // Commander closes and reopens; every launch mints a NEW api token. This bridge is spawned once by the MCP
     // client and lives for that whole session, so a token cached for the process lifetime meant the FIRST
     // restart killed every tool with "returned HTTP 401" (and left the SSE feed re-presenting the dead token

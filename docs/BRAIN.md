@@ -5,7 +5,7 @@ Last full reconciliation: **2026-08-03** (grounded against the Phase 0–8 clean
 
 ## What this is
 
-**StarNet** — a real, local-first AI-agent harness wrapped in a living pixel-art space
+**Eyehold** — a real, local-first AI-agent harness wrapped in a living pixel-art space
 station, shipped as a downloadable desktop app. You create agents, build the station, and
 the layout IS the org: rooms = capability scopes, placed props = real tool grants
 (**object = capability**), conveyor items = real work. The core product law is **truthful
@@ -13,7 +13,7 @@ telemetry**: the UI never asserts anything the harness can't prove.
 
 - Thesis: beginner-friendly and power-user-complete — sandbox freedom, real work, Factorio-style pride loop. User-work quotas are off by default; limits are opt-in — with ONE shipped exception: a $25/day SOFT spend rail on metered runs (one-click RESUME, editable, 0 = off; `sidecar/budgetcaps.js`, DECISIONS 2026-09-17).
 - Lineage: UltronOS (banned from Claude API 2026-04-04) → "v7" fake sim → this real harness
-  (reuses v7's canvas + U.bus). Rebranded Skynet→StarNet 2026-06-22; internal `skynet.*`
+  (reuses v7's canvas + U.bus). Rebranded Skynet→Eyehold 2026-06-22; internal `skynet.*`
   keys are intentionally kept.
 - The repository desktop version is read from the release pins, never copied into this document. **Five
   locations must agree**: `package.json`, the root entries in `package-lock.json`,
@@ -73,7 +73,7 @@ shared/    FROZEN contract — events.js (~60 event types) + schema.js validator
            OWNED files: additive changes only, by request to the owner lane.
 
 src-tauri/ desktop shell (Tauri 2, NSIS/dmg, embedded node; credentials.rs owns keychain and
-           legacy secret migration; updater feeds from GitHub Releases: androoAGI/starnet-releases)
+           legacy secret migration; updater feeds from GitHub Releases: Eyehold/eyehold-releases)
 ```
 
 Most bugs are **seam bugs**: emitter → store → renderer. Trace the full path before editing.
@@ -107,8 +107,8 @@ not the authority boundary.
    contributors: a normal fork-and-pull-request workflow is all you need (see
    [CONTRIBUTING.md](../CONTRIBUTING.md)).
 2. **Invoke the operating-doctrine skills** (local `.claude/skills/`, untracked maintainer
-   tooling) — `starnet-task-doctrine` first, always; then the law skill for your area
-   (frontend/backend), `starnet-verify` before claiming done, `starnet-merge-ritual` to
+   tooling) — `eyehold-task-doctrine` first, always; then the law skill for your area
+   (frontend/backend), `eyehold-verify` before claiming done, `eyehold-merge-ritual` to
    integrate. They encode the locked judgment; they win over anything conflicting in older
    docs.
 3. **Gate:** `npm run test:fast` (509 manifest-owned steps as of 2026-08-03) green before merge. Sidecar/route
@@ -151,7 +151,7 @@ this file + `DECISIONS.md` / `MISTAKES.md` / `NEXT.md` (plus the untracked local
 **Historical — do NOT plan from these** (they describe finished or superseded work; kept
 for archaeology): `docs/archive/SKYNET_BUILD_PLAN.md`, `docs/archive/INCREMENTAL_ROADMAP.md`,
 `docs/archive/WIRING_AUDIT.md`, `docs/archive/BUILDER_AND_WORLD_FOUNDATION.md` (architecture
-ideas partially adopted; the code is the authority), `docs/STARNET_REF_REPLACEMENT_*` and `docs/STARNET_PHASE*` evidence
+ideas partially adopted; the code is the authority), `docs/EYEHOLD_REF_REPLACEMENT_*` and `docs/EYEHOLD_PHASE*` evidence
 templates, `docs/REF_HARNESS_*` parity docs, most `docs/*_PLAN.md` files (nearly every plan
 doc marked "SHIPPED/EXECUTED" in its header or superseded by the 2026-07-06 audits), and
 everything in `docs/archive/`.
@@ -160,7 +160,7 @@ When in doubt: the newer date wins, the audit beats the plan, and trunk beats bo
 
 ## Bottlenecks as of 2026-07-06 (historical — current priorities live in docs/NEXT.md)
 
-Since this list was written: releases are public on `androoAGI/starnet-releases` (every cut since v0.10.x),
+Since this list was written: releases are public on `Eyehold/eyehold-releases` (every cut since v0.10.x),
 the release train signs Windows installers and notarizes both macOS builds, and outside users file issues
 and PRs on the public repo. Kept for the reasoning, not as current status.
 

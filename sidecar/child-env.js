@@ -7,10 +7,10 @@
    PowerShell helpers, Chrome, project-loop checks and PTY terminals.
 
    THE RULE — strip what the STATION put there, keep what the USER put there:
-     1. Every STARNET_* / SKYNET_* variable. That is StarNet's own namespace: the desktop shell injects every
+     1. Every EYEHOLD_* / SKYNET_* variable. That is Eyehold's own namespace: the desktop shell injects every
         secret it hands the sidecar under these names (src-tauri main.rs sidecar_command: SKYNET_API_TOKEN,
         SKYNET_IPC_TOKEN, SKYNET_<PROVIDER>_API_KEY, SKYNET_KEY_POOL_*, SKYNET_TELEGRAM/DISCORD_TOKEN,
-        SKYNET_TELEGRAM_BOT_TOKENS, STARNET_CREDITS_TOKEN, STARNET_CONNECTOR_ENCRYPTION_KEY, …, each in both
+        SKYNET_TELEGRAM_BOT_TOKENS, EYEHOLD_CREDITS_TOKEN, EYEHOLD_CONNECTOR_ENCRYPTION_KEY, …, each in both
         spellings), and the sidecar reads its own secrets only through them (ENV()).
      2. Every name the sidecar itself exported into process.env (the KEYS-tab service keys — servicekeys.applyEnv
         tracks exactly which names it owns). A helper never needs them; the agent shell gets them back explicitly
@@ -31,7 +31,7 @@
 'use strict';
 const { note: failNote } = require('./failopen.js');
 
-const STATION_NAME_RE = /^(?:STARNET|SKYNET)_/i;
+const STATION_NAME_RE = /^(?:EYEHOLD|SKYNET)_/i;
 // Never stripped by the value rule: a process without these cannot even start, and a connector env value that
 // happened to equal a path must not take PATH down with it.
 const NEVER_STRIP = new Set(['PATH', 'PATHEXT', 'SYSTEMROOT', 'WINDIR', 'COMSPEC', 'HOME', 'USERPROFILE', 'TEMP', 'TMP',

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * release-cut.mjs — one-command desktop release cutter for StarNet.
+ * release-cut.mjs — one-command desktop release cutter for Eyehold.
  *
  * Goes trunk -> signed NSIS installer + updater .sig + latest.json staged in release/,
  * then prints the exact upload checklist for the public GitHub Releases channel.
@@ -8,7 +8,7 @@
  * WHY THIS SCRIPT EXISTS (the gotchas it encodes so a human never re-derives them):
  *
  *  1. SIGNING STALL (the reason 0.1.7 shipped with createUpdaterArtifacts:false).
- *     The updater private key at ~/.tauri/starnet-updater.key is an rsign ENCRYPTED
+ *     The updater private key at ~/.tauri/eyehold-updater.key is an rsign ENCRYPTED
  *     secret key. Its password is empty, and an empty password supplied through the
  *     environment is treated as absent by the Tauri build signer on Windows. That makes
  *     `tauri build` block on an invisible interactive prompt. Build the NSIS installer
@@ -31,8 +31,8 @@
  *   node scripts/release-cut.mjs [--notes-file RELEASE_NOTES.md] [--skip-build] [--dry-run]
  *
  * Env overrides:
- *   STARNET_UPDATER_KEY_FILE   default: %USERPROFILE%/.tauri/starnet-updater.key
- *   STARNET_RELEASES_REPO      default: androoAGI/starnet-releases
+ *   EYEHOLD_UPDATER_KEY_FILE   default: %USERPROFILE%/.tauri/eyehold-updater.key
+ *   EYEHOLD_RELEASES_REPO      default: Eyehold/eyehold-releases
  */
 
 import {
@@ -62,8 +62,8 @@ const DRY_RUN = argSet.has('--dry-run');
 const SKIP_BUILD = argSet.has('--skip-build');
 const PRE_BUILD_CTOR = !argSet.has('--no-pre-build-ctor');
 const NOTES_FILE = argVal('--notes-file', join(ROOT, 'RELEASE_NOTES.md'));
-const RELEASES_REPO = process.env.STARNET_RELEASES_REPO || 'androoAGI/starnet-releases';
-const KEY_FILE = process.env.STARNET_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'starnet-updater.key');
+const RELEASES_REPO = process.env.EYEHOLD_RELEASES_REPO || 'Eyehold/eyehold-releases';
+const KEY_FILE = process.env.EYEHOLD_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'eyehold-updater.key');
 const PLATFORM = 'windows-x86_64';
 
 function log(msg) { process.stdout.write(msg + '\n'); }
@@ -132,7 +132,7 @@ async function preflight() {
     fail('updater endpoint is not a GitHub Releases latest.json URL: ' + ep);
   }
   if (!SKIP_BUILD && !existsSync(KEY_FILE)) {
-    fail('updater private key not found at ' + KEY_FILE + ' — cannot sign. Set STARNET_UPDATER_KEY_FILE.');
+    fail('updater private key not found at ' + KEY_FILE + ' — cannot sign. Set EYEHOLD_UPDATER_KEY_FILE.');
   }
   return version;
 }
@@ -176,10 +176,10 @@ async function main() {
   // Locate the produced artifacts.
   const nsisDir = join(ROOT, 'src-tauri', 'target', 'release', 'bundle', 'nsis');
   const installer = DRY_RUN
-    ? join(nsisDir, 'StarNet_' + version + '_x64-setup.exe')
+    ? join(nsisDir, 'Eyehold_' + version + '_x64-setup.exe')
     : findVersionedNsisInstaller(nsisDir, version);
   if (!DRY_RUN && !installer) {
-    fail('expected installer not found: ' + join(nsisDir, 'StarNet_' + version + '_x64-setup.exe')
+    fail('expected installer not found: ' + join(nsisDir, 'Eyehold_' + version + '_x64-setup.exe')
       + ' (refusing to select a stale installer for another version)');
   }
 
@@ -208,7 +208,7 @@ async function main() {
     /* CRYPTOGRAPHICALLY VERIFY THE SIGNATURE, against the pubkey every INSTALLED app trusts.
        Existence + mtime freshness say a .sig file is there and recent; they cannot say it was made with the
        right KEY. A cut with the wrong updater private key (a restored/regenerated
-       ~/.tauri/starnet-updater.key, or STARNET_UPDATER_KEY_FILE pointing at a different file) passed T1
+       ~/.tauri/eyehold-updater.key, or EYEHOLD_UPDATER_KEY_FILE pointing at a different file) passed T1
        signing, T5 public-distribution and verify-update-host completely green, published, and then hard-failed
        the update for EVERY installed app — the exact failure minisign-verify.mjs was written to prevent, and
        whose own header names this gap. The fix was wired into ONE producer (release-assemble-manifest, the CI
@@ -222,7 +222,7 @@ async function main() {
         fail('UPDATER SIGNATURE DOES NOT VERIFY against the public key baked into src-tauri/tauri.conf.json:' +
           '\n  ' + v.reason +
           '\n  Publishing this would hard-fail the update for EVERY installed app.' +
-          '\n  Re-sign with the release updater key (~/.tauri/starnet-updater.key or STARNET_UPDATER_KEY_FILE) and cut again.');
+          '\n  Re-sign with the release updater key (~/.tauri/eyehold-updater.key or EYEHOLD_UPDATER_KEY_FILE) and cut again.');
       }
       log('  updater signature VERIFIED against the baked pubkey (' + (v.alg || 'ed') + ')');
     } catch (e) {
@@ -234,12 +234,12 @@ async function main() {
   // Stage into release/ and build latest.json pointing at the GitHub Releases asset.
   const releaseDir = join(ROOT, 'release');
   mkdirSync(releaseDir, { recursive: true });
-  const installerName = DRY_RUN ? ('StarNet_' + version + '_x64-setup.exe') : installer.split(/[\\/]/).pop();
+  const installerName = DRY_RUN ? ('Eyehold_' + version + '_x64-setup.exe') : installer.split(/[\\/]/).pop();
   const assetBase = 'https://github.com/' + RELEASES_REPO + '/releases/download/v' + version + '/';
   const installerUrl = assetBase + installerName;
 
   const notes = existsSync(NOTES_FILE) ? readText(NOTES_FILE).trim()
-    : 'StarNet desktop ' + version + '. See the release page for details.';
+    : 'Eyehold desktop ' + version + '. See the release page for details.';
 
   let signature = 'DRY-RUN-NO-SIG';
   if (!DRY_RUN) {
@@ -284,7 +284,7 @@ async function main() {
   log('      needed for the endpoint — but the installer URL inside latest.json is pinned to');
   log('      the v' + version + ' tag, so the tag MUST be exactly v' + version + '.');
   log('   5. Prove it live:  node scripts/verify-update-host.mjs');
-  log('   6. Unattended update proof: launch an OLDER installed StarNet, open System -> Updates,');
+  log('   6. Unattended update proof: launch an OLDER installed Eyehold, open System -> Updates,');
   log('      confirm it sees v' + version + ', downloads, verifies the signature, and installs.');
   log('============================================================');
 }

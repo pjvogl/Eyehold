@@ -35,7 +35,7 @@ assert.equal(deriveReadClient([row]).candidates[0].verified, false);
     };
     assert.equal(requests, 0, 'derivation makes no requests');
     assert.deepEqual(await execute('/items'), { count: 2, items: ['one', 'two'] });
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-learned-lookup-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-learned-lookup-'));
     try {
       const ledger = path.join(root, 'skills.jsonl');
       const io = { readAll: () => fs.existsSync(ledger) ? fs.readFileSync(ledger, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse) : [], append: entry => fs.appendFileSync(ledger, JSON.stringify(entry) + '\n') };

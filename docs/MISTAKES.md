@@ -2,13 +2,13 @@
 
 The mistakes this project actually repeats, so you don't repeat them again. Read before
 debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISIONS.md](DECISIONS.md) ·
-[NEXT.md](NEXT.md) · `.claude/skills/starnet-debugging` (the method) · `.claude/skills/starnet-verify` (the proof bar).
+[NEXT.md](NEXT.md) · `.claude/skills/eyehold-debugging` (the method) · `.claude/skills/eyehold-verify` (the proof bar).
 
 ## The big five (cost the most time, keep recurring)
 
 1. **Fake done.** Code that compiles + tests that pass is NOT done. Done = the behavior
    observed in the live running app. This is the #1 recurring failure on the project.
-   Mechanics: `.claude/skills/starnet-verify`.
+   Mechanics: `.claude/skills/eyehold-verify`.
 2. **Plan docs lie within hours.** Audits/plans/memory claims go stale FAST here (10+ lanes
    merge per day). Any "X is missing/broken" claim must be re-proven by grepping trunk
    before you build or "fix" anything. Half-built or fully-shipped versions of your task
@@ -35,7 +35,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
   Patching the repo/folder NEVER changes the installed UI — only an exe swap/reinstall does.
   The only proof of installed-UI behavior is CDP-attach (`--remote-debugging-port`).
 - **The installed sidecar is bundled at desktop build time too.** Editing `sidecar/` in the repo does
-  not change `%LOCALAPPDATA%\StarNet\sidecar`. A sidecar safety fix is not shipped until the desktop
+  not change `%LOCALAPPDATA%\Eyehold\sidecar`. A sidecar safety fix is not shipped until the desktop
   app is rebuilt/reinstalled and the installed bundle is live-proven.
 - **WebView2 caches the embedded frontend** in `EBWebView\Default\{Cache,Code Cache}` and
   never revalidates — V8 can run OLD bytecode against NEW data (the 7/6 "missing agents"
@@ -43,7 +43,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
   stay invisible until that cache is purged. HTTP/version checks do NOT prove the webview
   updated. (Purge-on-version-change shipped 2026-07-06, agent/wv-cache-purge.)
 - **Real station data root** = `%APPDATA%\Roaming\ai.skynet.harness\workspaces`
-  (`startup.log` proves it). `%LOCALAPPDATA%\StarNet\workspaces` is a stale migrated-from
+  (`startup.log` proves it). `%LOCALAPPDATA%\Eyehold\workspaces` is a stale migrated-from
   secondary — don't debug against it.
 - **Tauri/Rust build:** `E0463 ctor_proc_macro` = cargo parallel-build race. Pre-build the
   ctor crates, then `desktop:build`. The toolchain is fine; don't reinstall it.
@@ -66,7 +66,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
 ## Frontend / canvas traps
 
 - **Canvas screenshots time out** (rAF canvas). Verify via `preview_eval` DOM round-trips,
-  `window.__world` state reads, or CDP — not screenshots. See `starnet-verify`.
+  `window.__world` state reads, or CDP — not screenshots. See `eyehold-verify`.
 - **Composite shadow vars referencing `--ph` must live on `body`, not `:root`** (theme bezel
   trap, fixed 5274a42) — on `:root` they freeze the fallback at parse time.
 - **Per-theme `--gold-rgb` triplets** must exist for any rgba() glow derived from gold.
@@ -98,7 +98,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
   binary — author files with the Write tool or `git show :path` round-trips, and check
   `git diff` renders as text before committing.
 - **Merging Codex branches:** merge, never rebase; 29-hotfile no-touch set; grep for symbol
-  collisions after each hotfile merge (`starnet-merge-ritual` has the full ritual).
+  collisions after each hotfile merge (`eyehold-merge-ritual` has the full ritual).
 - **A fetch `signal` governs the WHOLE response, not just the connection.** Passing
   `AbortSignal.timeout(30s)` (or any un-disarmed timer signal) to a streaming fetch aborts
   the SSE body mid-stream — every model turn >30s died with "The operation was aborted due
@@ -110,13 +110,13 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
 - **Screen-first task execution (the 2026-07-08 Spotify incident).** Asked to "play a daft
   punk song", the agent skipped the LIVE `spotify_play` tool and drove `desktop.open` +
   `computer.use` — opened Spotify on the user's screen and, after focus moved, typed the
-  song title into StarNet's own chat box. Root causes, all fixed: (a) no tool-selection
+  song title into Eyehold's own chat box. Root causes, all fixed: (a) no tool-selection
   doctrine anywhere in the composed prompt (`taskDoctrineNote` in index.js now injects the
   quietest-path ladder: dedicated tool > headless shell/browser > visible screen last, plus
   act→verify-read-back→iterate); (b) `desktop.open`'s description recruited itself for
   "pull up X" phrasing (descriptions must SELF-DEMOTE — say when NOT to use the tool);
   (c) keyboard input trusted focus blindly (`computer.use` now has a focus-truth guard:
-  win32 `foreground()` probe, `expectApp` match, and typing into a StarNet-titled window is
+  win32 `foreground()` probe, `expectApp` match, and typing into a Eyehold-titled window is
   hard-refused). LAW: a visible-screen tool is a last resort the agent must justify, and
   new loud tools ship with "when NOT to use me" text + the doctrine updated.
 
@@ -136,7 +136,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
 
 - **Cleanup is still interference when it mutates unowned global state.** Calling
   `ClipCursor(NULL)` at boot, shutdown, or E-STOP can release confinement owned by the user's game,
-  even when intended as recovery from StarNet. Observe global state, reap only processes StarNet can
+  even when intended as recovery from Eyehold. Observe global state, reap only processes Eyehold can
   prove it owns, and never “restore” desktop/input/session state without an ownership receipt.
 
 - **A token, renderer IPC call, or tool annotation is not a human gesture.** Same-user children can
@@ -201,6 +201,6 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
 
 ## 2026-09-09 — rejected command-room art experiment
 
-Owner correction: furniture must use the existing StarNet prop-art workflow. PixelLab is for character sprites only, not generated furniture. New character sprites must fit the existing agents and props at actual gameplay scale; only a tiny size increase is acceptable. The command-room experiment used mismatched generated furniture and an oversized operator and was rejected in full. It has been reverted; do not reuse that pass as an approved direction.
+Owner correction: furniture must use the existing Eyehold prop-art workflow. PixelLab is for character sprites only, not generated furniture. New character sprites must fit the existing agents and props at actual gameplay scale; only a tiny size increase is acceptable. The command-room experiment used mismatched generated furniture and an oversized operator and was rejected in full. It has been reverted; do not reuse that pass as an approved direction.
 
 Owner follow-up: retain the v0.11.0 prop artwork and dimensions. The subsequent workstation/capability redesign studies were not approved for implementation. The applied prop-polish pass was reverted; keep the approved world lighting and walls, and direct further world work elsewhere unless the owner explicitly reopens prop design.

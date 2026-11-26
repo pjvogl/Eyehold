@@ -1,9 +1,9 @@
 
-> starnet-harness@0.12.3 test:fast
+> eyehold-harness@0.12.3 test:fast
 > node scripts/timeout.mjs --label test:fast --timeout=900000 -- npm run test:fast:raw
 
 
-> starnet-harness@0.12.3 test:fast:raw
+> eyehold-harness@0.12.3 test:fast:raw
 > node scripts/run-fast-tests.mjs
 
 schema.test: OK (42 assertions)
@@ -203,7 +203,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-qobiLt\ci-scratch-jw6n8x\ws is under C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-qobiLt\ci-scratch-jw6n8x); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-qobiLt\ci-scratch-jw6n8x\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-qobiLt\ci-scratch-jw6n8x); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)

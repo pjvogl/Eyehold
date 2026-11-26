@@ -3,14 +3,14 @@
 ## The artifact
 
 ```
-C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\StarNet_0.7.0_x64-setup.exe
+C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\Eyehold_0.7.0_x64-setup.exe
 ```
 
 The candidate is built from the commit tagged `v0.7.0`, which is trunk HEAD. Print the exact
 identity rather than trusting a number pasted into a doc:
 
 ```bash
-git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-tauri/target/release/bundle/nsis/StarNet_0.7.0_x64-setup.exe
+git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-tauri/target/release/bundle/nsis/Eyehold_0.7.0_x64-setup.exe
 ```
 
 | | |
@@ -23,7 +23,7 @@ git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-ta
 > *current* trunk head, so one extra commit — even a docs-only one — turns the smoke BLOCKED.
 > If trunk has moved since the build, rebuild before testing.
 
-It installs **over** your existing StarNet — `identifier` is `ai.skynet.harness`, unchanged from
+It installs **over** your existing Eyehold — `identifier` is `ai.skynet.harness`, unchanged from
 v0.6.8, so your crew, sessions, keys and station stay exactly where they are. `src-tauri/` is
 byte-identical to v0.6.8 across all 217 commits, so nothing about where the app installs or where
 its data lives has moved.
@@ -34,11 +34,11 @@ This gate has been waived at v0.6.4, v0.6.5, v0.6.7 and v0.6.8. Your test is wha
 
 ```bash
 $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--remote-debugging-port=9333'
-$env:STARNET_SMOKE_EXPECTED_HEAD=(git rev-parse HEAD)
-$env:STARNET_SMOKE_ARTIFACT='C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\StarNet_0.7.0_x64-setup.exe'
+$env:EYEHOLD_SMOKE_EXPECTED_HEAD=(git rev-parse HEAD)
+$env:EYEHOLD_SMOKE_ARTIFACT='C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\Eyehold_0.7.0_x64-setup.exe'
 ```
 
-Relaunch StarNet from the Start menu with those set, then:
+Relaunch Eyehold from the Start menu with those set, then:
 
 ```bash
 npm run qa:smoke:installed

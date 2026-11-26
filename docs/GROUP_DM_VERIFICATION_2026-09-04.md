@@ -101,7 +101,7 @@ check: 8 assertions passed. No backend execution behavior changed in this follow
 The follow-up fast suite passed all 702 steps (`dev/group-simple-fast.log`).
 Keyboard focus was also verified to skip collapsed settings and loop within the picker.
 
-## StarNet styling and alignment follow-up
+## Eyehold styling and alignment follow-up
 
 Replaced generic pill/box styling with the existing phosphor, panel, text, border,
 and raised-control tokens. Message markup now reuses COMMS `.cmsg`, `.who`, and

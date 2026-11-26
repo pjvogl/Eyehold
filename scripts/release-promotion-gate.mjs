@@ -53,7 +53,7 @@ for (const required of ['latest-to-next', 'n-minus-one-to-next']) {
   if (!accepted.some(row => row.path === required)) fail('missing required update path: ' + required);
 }
 
-const result = { schema: 'starnet.release-promotion-verdict.v1', generatedAt: new Date().toISOString(), version, minSoakHours, privacy: 'synthetic-canary-only', receipts: accepted, ok: true };
+const result = { schema: 'eyehold.release-promotion-verdict.v1', generatedAt: new Date().toISOString(), version, minSoakHours, privacy: 'synthetic-canary-only', receipts: accepted, ok: true };
 mkdirSync(dirname(outFile), { recursive: true });
 writeFileSync(outFile, JSON.stringify(result, null, 2) + '\n');
 console.log('release-promotion-gate: PASS ' + version + ' (' + accepted.map(row => row.path).join(', ') + ')');

@@ -20,7 +20,7 @@ const arg = (name, fallback) => {
   return i >= 0 && args[i + 1] ? args[i + 1] : fallback;
 };
 const bundleRoot = path.resolve(arg('--bundle-root', path.join(__dirname, '..')));
-const wavOutput = path.resolve(arg('--wav', path.join(os.tmpdir(), 'starnet-voice-loopback.wav')));
+const wavOutput = path.resolve(arg('--wav', path.join(os.tmpdir(), 'eyehold-voice-loopback.wav')));
 const lv = require(path.join(bundleRoot, 'sidecar', 'local-voice.js'));
 
 function decodeWav(wav) {

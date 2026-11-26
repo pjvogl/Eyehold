@@ -23,9 +23,9 @@ const { bootToken } = require('./_httpToken.js');
 
 const KEY = process.env.SKYNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '';
 const MODEL = process.env.SKYNET_SMOKE_MODEL
-  || process.env.STARNET_SMOKE_MODEL
+  || process.env.EYEHOLD_SMOKE_MODEL
   || process.env.SKYNET_DEFAULT_MODEL
-  || process.env.STARNET_DEFAULT_MODEL
+  || process.env.EYEHOLD_DEFAULT_MODEL
   || 'anthropic/claude-sonnet-4.6';
 const HOST = '127.0.0.1';
 const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
@@ -60,7 +60,7 @@ function boot(port, ws, attemptsLeft) {
 
 // POST /api/run and fold the NDJSON event stream into a compact summary.
 async function run(B, body, apiToken) {
-  const res = await fetch(B + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': apiToken }, body: JSON.stringify(body) });
+  const res = await fetch(B + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': apiToken }, body: JSON.stringify(body) });
   const text = await res.text();
   const evs = text.split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean);
   const names = evs.map(e => e.name);
@@ -79,7 +79,7 @@ async function run(B, body, apiToken) {
   const { child, port } = await boot(8890 + (process.pid % 40), ws, 20);
   const B = 'http://' + HOST + ':' + port;
   const apiToken = await bootToken(B, B);
-  const get = async p => { const r = await fetch(B + p, { headers: { 'X-StarNet-Token': apiToken, Origin: B } }); return r.json(); };
+  const get = async p => { const r = await fetch(B + p, { headers: { 'X-Eyehold-Token': apiToken, Origin: B } }); return r.json(); };
   const body = { key: KEY, model: MODEL, system: BIG_SYSTEM, messages: [{ role: 'user', content: 'Reply with exactly one word: ACK' }], isTask: false };
 
   try {

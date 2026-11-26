@@ -9,7 +9,7 @@ found: 2026-09-24
 lane: issue-40-investigation
 fix: 4847acd6751b5719f87dc3ef4e1d3683b2c62782
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/40
+report: https://github.com/Eyehold/eyehold/issues/40
 affected: v0.12.4; Linux Node 22 container without Python
 family: test-portability
 installer: not-applicable

@@ -120,7 +120,7 @@ let chrome, cdp, profile;
 let failed = false;
 try {
   const executable = findChrome(), port = await freePort();
-  profile = mkdtempSync(join(tmpdir(), 'starnet-sharpen-parity-'));
+  profile = mkdtempSync(join(tmpdir(), 'eyehold-sharpen-parity-'));
   chrome = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--mute-audio',
     '--use-angle=swiftshader', '--enable-unsafe-swiftshader', `--remote-debugging-port=${port}`,
     `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
@@ -160,7 +160,7 @@ try {
   await stopChild(chrome);
   if (profile) {
     const rel = relative(resolve(tmpdir()), resolve(profile));
-    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('starnet-sharpen-parity-'), 'cleanup stays inside its unique test temp directory');
+    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-sharpen-parity-'), 'cleanup stays inside its unique test temp directory');
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
     // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.

@@ -51,29 +51,29 @@ const groupMsg = (extra) => ({ offset: 1, message: Object.assign({ chatId: -1001
 async function run() {
   // ---- A. mentionsOf: who a message addresses, by UTF-16 offset (Telegram's own unit) ----
   {
-    A.eq(mentionsOf({ text: '@starnetbot look at this', entities: [{ type: 'mention', offset: 0, length: 12 }] }), ['starnetbot'], 'an @mention is extracted by offset/length');
+    A.eq(mentionsOf({ text: '@eyeholdbot look at this', entities: [{ type: 'mention', offset: 0, length: 12 }] }), ['eyeholdbot'], 'an @mention is extracted by offset/length');
     // an emoji ahead of the mention: byte offsets would slice the wrong window, UTF-16 offsets do not
-    const withEmoji = { text: '🔥 @starnetbot go', entities: [{ type: 'mention', offset: 3, length: 11 }] };
-    A.eq(mentionsOf(withEmoji), ['starnetbot'], 'offsets are UTF-16 — an emoji before the mention does not shift it');
+    const withEmoji = { text: '🔥 @eyeholdbot go', entities: [{ type: 'mention', offset: 3, length: 11 }] };
+    A.eq(mentionsOf(withEmoji), ['eyeholdbot'], 'offsets are UTF-16 — an emoji before the mention does not shift it');
     A.eq(mentionsOf({ text: 'x', entities: [{ type: 'text_mention', offset: 0, length: 1, user: { id: 3, username: 'Ana' } }] }), ['ana'], 'a text_mention contributes its username, lowercased');
     A.eq(mentionsOf({ text: '/status@otherbot' }), ['otherbot'], 'a command @suffix is an addressing form too');
-    A.eq(mentionsOf({ caption: '@starnetbot', caption_entities: [{ type: 'mention', offset: 0, length: 11 }] }), ['starnetbot'], 'a photo CAPTION can address us as well');
+    A.eq(mentionsOf({ caption: '@eyeholdbot', caption_entities: [{ type: 'mention', offset: 0, length: 11 }] }), ['eyeholdbot'], 'a photo CAPTION can address us as well');
     A.eq(mentionsOf({ text: 'no mentions here' }), [], 'plain text addresses nobody');
   }
 
   // ---- B. requireMention: an unmentioned group message costs ZERO model calls ----
   {
-    const { ad, got } = mkAdapter({ botUsername: 'starnetbot' });
+    const { ad, got } = mkAdapter({ botUsername: 'eyeholdbot' });
     ad._internals.dispatch(groupMsg({ text: 'just chatting with Bob' }));
     A.eq(got.length, 0, 'an unaddressed group message is DROPPED — this is the spend fix');
 
-    ad._internals.dispatch(groupMsg({ text: '@starnetbot what is the status?', mentions: ['starnetbot'] }));
+    ad._internals.dispatch(groupMsg({ text: '@eyeholdbot what is the status?', mentions: ['eyeholdbot'] }));
     A.eq(got.length, 1, 'an @mention of US runs');
 
     ad._internals.dispatch(groupMsg({ text: '@otherbot what is the status?', mentions: ['otherbot'] }));
     A.eq(got.length, 1, 'a mention of a DIFFERENT bot does not');
 
-    ad._internals.dispatch(groupMsg({ text: 'and the other thing?', replyTo: { text: 'here is the status', userName: 'starnetbot', fromBot: true } }));
+    ad._internals.dispatch(groupMsg({ text: 'and the other thing?', replyTo: { text: 'here is the status', userName: 'eyeholdbot', fromBot: true } }));
     A.eq(got.length, 2, 'a REPLY to one of our own messages is an address — follow-ups stay natural');
 
     ad._internals.dispatch(groupMsg({ text: 'and this?', replyTo: { text: 'something', userName: 'Ana' } }));
@@ -87,7 +87,7 @@ async function run() {
 
   // ---- B2. the gates are configurable, and a DM is never touched by them ----
   {
-    const off = mkAdapter({ botUsername: 'starnetbot', requireMention: false });
+    const off = mkAdapter({ botUsername: 'eyeholdbot', requireMention: false });
     off.ad._internals.dispatch(groupMsg({ text: 'just chatting' }));
     A.eq(off.got.length, 1, 'requireMention:false restores the old answer-everything behaviour');
 
@@ -95,15 +95,15 @@ async function run() {
     unknown.ad._internals.dispatch(groupMsg({ text: 'just chatting' }));
     A.eq(unknown.got.length, 1, 'with no botUsername we do NOT silence the room — we cannot prove we were not addressed');
 
-    const dm = mkAdapter({ botUsername: 'starnetbot' });
+    const dm = mkAdapter({ botUsername: 'eyeholdbot' });
     dm.ad._internals.dispatch({ offset: 1, message: { chatId: 111, chatType: 'dm', userId: '5', text: 'hi', messageId: '1' } });
     A.eq(dm.got.length, 1, 'a DM never needs a mention — it is already owner-only');
   }
 
   // ---- B3. ignoreBots: bot-to-bot is an unbounded spend loop with no human in it ----
   {
-    const { ad, got } = mkAdapter({ botUsername: 'starnetbot' });
-    ad._internals.dispatch(groupMsg({ text: '@starnetbot hello', mentions: ['starnetbot'], fromBot: true }));
+    const { ad, got } = mkAdapter({ botUsername: 'eyeholdbot' });
+    ad._internals.dispatch(groupMsg({ text: '@eyeholdbot hello', mentions: ['eyeholdbot'], fromBot: true }));
     A.eq(got.length, 0, 'another BOT is ignored even when it mentions us by name');
     ad._internals.dispatch({ offset: 2, message: { chatId: 111, chatType: 'dm', userId: '5', text: 'hi', messageId: '2', fromBot: true } });
     A.eq(got.length, 0, 'and ignored in a DM too — the loop is the same shape either way');
@@ -111,10 +111,10 @@ async function run() {
 
   // ---- B4. allowedUsers NARROWS; it never widens ----
   {
-    const { ad, got } = mkAdapter({ botUsername: 'starnetbot', allowedUsers: ['9'] });
-    ad._internals.dispatch(groupMsg({ userId: '9', text: '@starnetbot go', mentions: ['starnetbot'] }));
+    const { ad, got } = mkAdapter({ botUsername: 'eyeholdbot', allowedUsers: ['9'] });
+    ad._internals.dispatch(groupMsg({ userId: '9', text: '@eyeholdbot go', mentions: ['eyeholdbot'] }));
     A.eq(got.length, 1, 'a listed user runs');
-    ad._internals.dispatch(groupMsg({ userId: '77', text: '@starnetbot go', mentions: ['starnetbot'] }));
+    ad._internals.dispatch(groupMsg({ userId: '77', text: '@eyeholdbot go', mentions: ['eyeholdbot'] }));
     A.eq(got.length, 1, 'an unlisted user does not');
     // and it does not bypass the owner gate on a DM
     const other = mkAdapter({ allowedUsers: ['77'], ownerUserId: '5' });
@@ -124,9 +124,9 @@ async function run() {
 
   // ---- B5. normalize marks a bot sender and carries the mentions through ----
   {
-    const n = normalize({ update_id: 1, message: { message_id: 1, chat: GROUP, from: { id: 42, is_bot: true, username: 'rival' }, text: '@starnetbot hi', entities: [{ type: 'mention', offset: 0, length: 11 }] } });
+    const n = normalize({ update_id: 1, message: { message_id: 1, chat: GROUP, from: { id: 42, is_bot: true, username: 'rival' }, text: '@eyeholdbot hi', entities: [{ type: 'mention', offset: 0, length: 11 }] } });
     A.eq(n.message.fromBot, true, 'a bot sender is marked at the parse');
-    A.eq(n.message.mentions, ['starnetbot'], 'and the mention it made is carried');
+    A.eq(n.message.mentions, ['eyeholdbot'], 'and the mention it made is carried');
     A.eq('fromBot' in normalize({ update_id: 2, message: { message_id: 2, chat: DM, from: ME, text: 'hi' } }).message, false, 'a human message carries no fromBot key (additive only)');
   }
 
@@ -223,7 +223,7 @@ async function run() {
     // the option takes a FUNCTION, and it is consulted per message — not captured once at construction
     const asked = [];
     const { ad, got } = mkAdapter({
-      botUsername: 'starnetbot',
+      botUsername: 'eyeholdbot',
       allowedChats: ['-1001', '-1002'],
       requireMention: (chatId) => { asked.push(String(chatId)); return String(chatId) !== '-1002'; }
     });
@@ -234,12 +234,12 @@ async function run() {
     A.eq(asked.length, 2, 'the setting is read PER MESSAGE — a flip takes effect on the very next one, not at the next restart');
 
     // a store hiccup must not throw the room open
-    const b = mkAdapter({ botUsername: 'starnetbot', requireMention: () => { throw new Error('store down'); } });
+    const b = mkAdapter({ botUsername: 'eyeholdbot', requireMention: () => { throw new Error('store down'); } });
     b.ad._internals.dispatch(groupMsg({ text: 'unaddressed' }));
     A.eq(b.got.length, 0, 'a throwing lookup keeps the gate ON — the failure mode is quiet, not expensive');
 
     // and a plain boolean still works exactly as before
-    const c = mkAdapter({ botUsername: 'starnetbot', requireMention: false });
+    const c = mkAdapter({ botUsername: 'eyeholdbot', requireMention: false });
     c.ad._internals.dispatch(groupMsg({ text: 'unaddressed' }));
     A.eq(c.got.length, 1, 'a boolean option is unchanged (no caller had to be updated)');
   }
@@ -285,16 +285,16 @@ async function run() {
   }
 
   /* ---- G. WAKE WORDS: being called by NAME is being addressed --------------------------------------------
-     "@thebot check the logs" is how you address a bot. "StarNet, check the logs" is how people actually type,
+     "@thebot check the logs" is how you address a bot. "Eyehold, check the logs" is how people actually type,
      and it did nothing at all — the most natural way to call the agent by the name the member gave it. */
   {
-    const mk = (patterns) => mkAdapter({ botUsername: 'starnetbot', mentionPatterns: patterns });
+    const mk = (patterns) => mkAdapter({ botUsername: 'eyeholdbot', mentionPatterns: patterns });
 
-    let a = mk(['StarNet']);
-    a.ad._internals.dispatch(groupMsg({ text: 'StarNet, check the logs' }));
+    let a = mk(['Eyehold']);
+    a.ad._internals.dispatch(groupMsg({ text: 'Eyehold, check the logs' }));
     A.eq(a.got.length, 1, 'being called by name wakes the bot');
-    a = mk(['StarNet']);
-    a.ad._internals.dispatch(groupMsg({ text: 'hey starnet can you look at this' }));
+    a = mk(['Eyehold']);
+    a.ad._internals.dispatch(groupMsg({ text: 'hey eyehold can you look at this' }));
     A.eq(a.got.length, 1, 'case-insensitively, and anywhere in the sentence');
 
     a = mk(['Ana']);
@@ -316,34 +316,34 @@ async function run() {
     a = mk(null);
     a.ad._internals.dispatch(groupMsg({ text: 'unaddressed chatter' }));
     A.eq(a.got.length, 0, 'no patterns configured = the old behaviour, unchanged');
-    a = mk(['StarNet']);
-    a.ad._internals.dispatch(groupMsg({ text: '@starnetbot still works' , mentions: ['starnetbot'] }));
+    a = mk(['Eyehold']);
+    a.ad._internals.dispatch(groupMsg({ text: '@eyeholdbot still works' , mentions: ['eyeholdbot'] }));
     A.eq(a.got.length, 1, 'and an @mention still works alongside it');
 
-    const { wakeWords } = mkAdapter({ mentionPatterns: ['  StarNet  ', 'starnet', '', 'x', null, 'Ana'] }).ad._internals;
-    A.eq(wakeWords(), ['starnet', 'ana'], 'the list is trimmed, lowercased, de-duplicated, and stripped of anything too short');
+    const { wakeWords } = mkAdapter({ mentionPatterns: ['  Eyehold  ', 'eyehold', '', 'x', null, 'Ana'] }).ad._internals;
+    A.eq(wakeWords(), ['eyehold', 'ana'], 'the list is trimmed, lowercased, de-duplicated, and stripped of anything too short');
   }
 
   /* ---- H. OBSERVE-UNMENTIONED: the gate bought spend safety and paid in amnesia ----------------------------
      An unmentioned group message was dropped whole, so when the bot was finally addressed it had never seen what
      the room was discussing and could not honour "summarise that". */
   {
-    const a = mkAdapter({ botUsername: 'starnetbot', observeUnmentioned: () => true });
+    const a = mkAdapter({ botUsername: 'eyeholdbot', observeUnmentioned: () => true });
     a.ad._internals.dispatch(groupMsg({ text: 'the deploy went out at four' }));
     A.eq(a.got.length, 1, 'an unmentioned message is now delivered…');
     A.eq(a.got[0].observeOnly, true, '…flagged observe-only, so the hub knows never to answer it');
-    a.ad._internals.dispatch(groupMsg({ text: '@starnetbot what happened?', mentions: ['starnetbot'], messageId: '2' }));
+    a.ad._internals.dispatch(groupMsg({ text: '@eyeholdbot what happened?', mentions: ['eyeholdbot'], messageId: '2' }));
     A.eq('observeOnly' in a.got[1], false, 'a real address carries no flag');
 
     // observing must never be a way AROUND admission
-    const b = mkAdapter({ botUsername: 'starnetbot', observeUnmentioned: () => true, allowedChats: ['-9999'] });
+    const b = mkAdapter({ botUsername: 'eyeholdbot', observeUnmentioned: () => true, allowedChats: ['-9999'] });
     b.ad._internals.dispatch(groupMsg({ text: 'chatter' }));
     A.eq(b.got.length, 0, 'a chat that is not on the allowlist is still refused outright — not observed');
-    const c = mkAdapter({ botUsername: 'starnetbot', observeUnmentioned: () => true });
+    const c = mkAdapter({ botUsername: 'eyeholdbot', observeUnmentioned: () => true });
     c.ad._internals.dispatch(groupMsg({ text: 'chatter', fromBot: true }));
     A.eq(c.got.length, 0, 'and another bot is dropped, not filed');
 
-    const d = mkAdapter({ botUsername: 'starnetbot' });
+    const d = mkAdapter({ botUsername: 'eyeholdbot' });
     d.ad._internals.dispatch(groupMsg({ text: 'chatter' }));
     A.eq(d.got.length, 0, 'observing is OFF by default — storing every message a room sends is the member\'s decision to make');
   }

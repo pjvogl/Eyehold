@@ -9,7 +9,7 @@ found: 2026-09-19
 lane: agent/reliability-audit-0919
 fix:
 origin: customer
-affected: StarNet 0.11.2 Windows; Ollama gpt-oss:20b; OAuth Zoho MCP
+affected: Eyehold 0.11.2 Windows; Ollama gpt-oss:20b; OAuth Zoho MCP
 family: connector-schema-projection
 report: support-2026-09-17-zoho-bootstrap
 installer: unverified

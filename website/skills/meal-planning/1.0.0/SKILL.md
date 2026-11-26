@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Meal Planning"
   category: "Planning"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

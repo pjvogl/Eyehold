@@ -4,7 +4,7 @@ import { join } from 'node:path';
 export function findVersionedNsisInstaller(nsisDir, version) {
   const v = String(version || '').trim();
   if (!/^[0-9A-Za-z][0-9A-Za-z.+-]*$/.test(v)) return '';
-  const expected = join(nsisDir, 'StarNet_' + v + '_x64-setup.exe');
+  const expected = join(nsisDir, 'Eyehold_' + v + '_x64-setup.exe');
   try {
     return statSync(expected).isFile() ? expected : '';
   } catch (_) {

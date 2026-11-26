@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Translation Pass"
   category: "Writing"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

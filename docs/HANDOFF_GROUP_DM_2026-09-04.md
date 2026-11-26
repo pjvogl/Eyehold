@@ -1,4 +1,4 @@
-# StarNet group DM handoff — 2026-09-04
+# Eyehold group DM handoff — 2026-09-04
 
 ## Start here
 
@@ -6,7 +6,7 @@ Continue in `C:\Users\andro\gen-trees\group-dm-plan-0904`, branch
 `agent/group-dm-plan-0904`. This work is NOT merged into the shared integration
 checkout `C:\Users\andro\Desktop\gen` (`feat/harness-backend`).
 Implementation and verification were committed through `03dad97d9` before this
-handoff. The worktree was clean. Respect AGENTS.md and the StarNet task doctrine;
+handoff. The worktree was clean. Respect AGENTS.md and the Eyehold task doctrine;
 do not edit another agent's worktree or feature-edit the integration checkout.
 
 Local preview: http://127.0.0.1:9137/ — already running. The in-app browser is open
@@ -23,7 +23,7 @@ Do not reintroduce the control panel or move it behind another menu.
   COMMS identity line (`#comms-idbar`). No extra header row.
 - Use the actual normal COMMS composer (`#chat-inputrow` / `#chat-input`), Send,
   attachment staging and Stop. There is no second group composer.
-- Add agents opens StarNet's real terminal window, using
+- Add agents opens Eyehold's real terminal window, using
   `StationUI.toggleTerm('group-agents', 'ADD AGENTS', ...)`. Keep it under `#terms`
   so the existing CRT layer applies. The earlier body-mounted popup looked wrong.
 - Picker: search, clickable agent rows, selected count, ADD and Cancel. No checkbox,
@@ -117,7 +117,7 @@ proof group also contains composer/Stop test messages from this follow-up.
 ## Suggested continuation prompt
 
 Read docs/HANDOFF_GROUP_DM_2026-09-04.md in the group-dm-plan-0904 worktree.
-Preserve the normal-chat simplicity and accepted StarNet styling. Inspect the live
+Preserve the normal-chat simplicity and accepted Eyehold styling. Inspect the live
 preview on port 9137 and address my next feedback with the smallest necessary change.
 Do not bring back group settings or an extra header row.
 

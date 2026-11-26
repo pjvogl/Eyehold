@@ -32,7 +32,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "Live @ HEAD: the seeded app reaches the base in-game state on every boot/reload (READY_EXPR true: #screen-game active + #bottombar visible; window.__STARNET_DEV__ set) — verified repeatedly this wave via the cartographer liveSweep boot on :8967. Covered by the 'ingame' shoot state."
+      "notes": "Live @ HEAD: the seeded app reaches the base in-game state on every boot/reload (READY_EXPR true: #screen-game active + #bottombar visible; window.__EYEHOLD_DEV__ set) — verified repeatedly this wave via the cartographer liveSweep boot on :8967. Covered by the 'ingame' shoot state."
     },
     {
       "id": "ui/world/aria-add-a-widget-to-this-rail",
@@ -380,7 +380,7 @@
       "kind": "ui",
       "area": "world",
       "name": "⭳ EXPORT AGENT",
-      "purpose": "Exports every starnet.* key + a memory snapshot as one backup file (the only in-app export entry point).",
+      "purpose": "Exports every eyehold.* key + a memory snapshot as one backup file (the only in-app export entry point).",
       "promise": "Shown only when there is a saved agent to back up; clicking bundles the config+memories and reports the saved file + key/memory counts.",
       "wiring": {
         "files": [
@@ -413,9 +413,9 @@
       "id": "ui/world/btn-future-update",
       "kind": "ui",
       "area": "world",
-      "name": "⭯ UPDATE STARNET ▸",
-      "purpose": "The single action on the FORWARD-VERSION gate — the blocking screen shown when the save was written by a NEWER StarNet than this build can read.",
-      "promise": "On the gate screen, clicking re-checks/opens the desktop Update Center when a Tauri updater is present, else shows plain \"update StarNet then reopen\" guidance; while the gate is up nothing persists (the newer save stays untouched).",
+      "name": "⭯ UPDATE EYEHOLD ▸",
+      "purpose": "The single action on the FORWARD-VERSION gate — the blocking screen shown when the save was written by a NEWER Eyehold than this build can read.",
+      "promise": "On the gate screen, clicking re-checks/opens the desktop Update Center when a Tauri updater is present, else shows plain \"update Eyehold then reopen\" guidance; while the gate is up nothing persists (the newer save stays untouched).",
       "wiring": {
         "files": [
           "frontend/index.html",
@@ -441,14 +441,14 @@
       "missing": false,
       "selector": "#btn-future-update",
       "state": "ingame",
-      "notes": "Live @ HEAD: #btn-future-update ('⭯ UPDATE STARNET ▸') present. Update/version behavior covered by saveversion.test.js."
+      "notes": "Live @ HEAD: #btn-future-update ('⭯ UPDATE EYEHOLD ▸') present. Update/version behavior covered by saveversion.test.js."
     },
     {
       "id": "ui/world/btn-import",
       "kind": "ui",
       "area": "world",
       "name": "⭱ RESTORE BACKUP",
-      "purpose": "Restores a previously-exported StarNet backup file to bring an agent back on any browser/machine (renamed from IMPORT AGENT to avoid collision with the Recruitment Bay harness importer).",
+      "purpose": "Restores a previously-exported Eyehold backup file to bring an agent back on any browser/machine (renamed from IMPORT AGENT to avoid collision with the Recruitment Bay harness importer).",
       "promise": "Clicking opens the hidden file picker (accept=.json); choosing a valid export restores the agent + memories and resumes into it.",
       "wiring": {
         "files": [
@@ -2968,7 +2968,7 @@
       "kind": "ui",
       "area": "world",
       "name": "Local Live hands-free voice",
-      "purpose": "Canonical hands-free voice toggle — opens or closes the persistent local-speech controller for the active Starnet agent.",
+      "purpose": "Canonical hands-free voice toggle — opens or closes the persistent local-speech controller for the active Eyehold agent.",
       "promise": "aria-pressed, aria-label, and title truthfully reflect whether Local Live is off or active; one click opens the draggable controller and a second click or its close button ends the microphone session.",
       "wiring": {
         "files": [

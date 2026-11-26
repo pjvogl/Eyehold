@@ -1,4 +1,4 @@
-# StarNet reliability audit — 2026-09-19
+# Eyehold reliability audit — 2026-09-19
 
 The audit reproduced and repaired five reliability defects: four in saved-station persistence/recovery and one in capped routine scheduling. It also reproduced an unresolved Windows Node 24 validation-process crash. This is source and isolated-browser evidence, not a production-readiness or installed-customer-recovery claim.
 
@@ -25,7 +25,7 @@ Every row names actual exercised workflows; it does not imply all possible input
 | Boot, recovery, save adoption | Real seeded station; cache-cleared reload; scoped EACCES and quota faults; recovery screen and Retry; save/future-version tests | Actual Mac WebKit and installed Windows WebView quota behavior not exercised |
 | Saving, stale tabs, close/update drain | Save HTTP restart; concurrent-client revision tests; malformed/lost acknowledgements; unload-beacon and update-drain tests | Abrupt power loss and hardware filesystem faults are simulated, not physical |
 | Direct work and interruption | Live journey corps: task lifecycle, stop, panel close, reload mid-run, rapid sends, task-board truth, command dispatch | Deterministic provider streams; external model behavior not certified |
-| Providers and credential routing | Customer campaign: managed StarNet, OpenRouter, custom-compatible, Gemini and Codex; sample/direct/routine execution, real filesystem tools, second inference, restart/reuse | Strict local upstream simulators, not real account login, allowance or paid upstream calls |
+| Providers and credential routing | Customer campaign: managed Eyehold, OpenRouter, custom-compatible, Gemini and Codex; sample/direct/routine execution, real filesystem tools, second inference, restart/reuse | Strict local upstream simulators, not real account login, allowance or paid upstream calls |
 | Delegation, groups and projects | HTTP/fast suites: session dispatch, worker access, group brief/attachments/handoff, delegated connector tools, project render/navigation regressions | Representative adapter combinations; not a full provider × entrypoint cross-product |
 | Approvals and capability boundaries | Live approval prompt → blocked run → approve → resume; fast/HTTP capability, permission, E-STOP, access and revocation suites | Physical desktop interactions and elevated host operations not exercised manually |
 | Schedules and unattended work | Cron tick, one-shot, DST, lock, durability, run-now, recovery and transcript suites; live capped-load/outage/restart probe | Short diagnostic soak only; not a 12-hour or 50-routine acceptance claim |

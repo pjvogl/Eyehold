@@ -19,10 +19,10 @@ function boot(port, workspaces, fixture, attemptsLeft) {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
         SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces,
-        STARNET_TEST_SKILL_FIXTURE: fixture,
+        EYEHOLD_TEST_SKILL_FIXTURE: fixture,
         NODE_OPTIONS: (prior ? prior + ' ' : '') + '--require=' + PRELOAD,
-        OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', STARNET_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
         SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0'
       }),
       stdio: ['ignore', 'pipe', 'pipe']
@@ -52,7 +52,7 @@ function boot(port, workspaces, fixture, attemptsLeft) {
   let base = 'http://' + HOST + ':' + booted.port;
   let token = await bootToken(base);
   const api = async (route, body, method) => {
-    const headers = { 'Content-Type': 'application/json' }; if (token) headers['X-StarNet-Token'] = token;
+    const headers = { 'Content-Type': 'application/json' }; if (token) headers['X-Eyehold-Token'] = token;
     const r = await fetch(base + route, { method: method || (body ? 'POST' : 'GET'), headers, cache: 'no-store', body: body ? JSON.stringify(body) : undefined });
     return { status: r.status, body: await r.json().catch(() => null) };
   };
@@ -62,7 +62,7 @@ function boot(port, workspaces, fixture, attemptsLeft) {
     // `if (!body) return;` guard ended the handler with no response — the client socket hung until
     // Node's requestTimeout. The 5s abort makes a regression fail fast instead of stalling the gate.
     for (const route of ['/api/skill-exchange/registry', '/api/skill-exchange/inspect', '/api/skill-exchange/install', '/api/skill-exchange/registries']) {
-      const headers = { 'Content-Type': 'application/json' }; if (token) headers['X-StarNet-Token'] = token;
+      const headers = { 'Content-Type': 'application/json' }; if (token) headers['X-Eyehold-Token'] = token;
       const r = await fetch(base + route, { method: 'POST', headers, cache: 'no-store', body: '{"url":', signal: AbortSignal.timeout(5000) });
       A.eq(r.status, 400, 'malformed JSON to ' + route + ' answers 400 instead of hanging the socket');
     }

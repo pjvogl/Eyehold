@@ -19,7 +19,7 @@ async function run(){
  await start();
  const endpoint=base+'/api/eyehold/finance';
  assert.equal((await fetch(endpoint,{headers:{Origin:base}})).status,403,'finance requires existing host token');
- let headers={Origin:base,'X-StarNet-Token':await bootToken(base,base),'Content-Type':'application/json'};
+ let headers={Origin:base,'X-Eyehold-Token':await bootToken(base,base),'Content-Type':'application/json'};
  let report=await(await fetch(endpoint,{headers})).json();assert.equal(report.netProfitUSD,null);
  const store=createFinanceStore({file:path.join(root,'eyehold-finance.json')});
  store.replaceReviewed([JSON.stringify({id:'receipt-1',currency:'USD',type:'revenue',cents:100000000})],{confirmedReviewed:true});
@@ -28,8 +28,8 @@ async function run(){
  assert.notEqual((await fetch(endpoint,{method:'POST',headers,body:JSON.stringify({verified:true,netProfitUSD:100000000})})).status,200,'client cannot import finances');
  const station=WorldModel.deserialize(buildEyeholdStation().doc);
  assert(applyTrustedMilestone({station,tier:1000000,attestation:report,verifyAttestation:(proof,t)=>proof===report&&proof.unlockedMilestonesUSD.includes(t),persist:()=>{}}).complete);
- const saved=await(await fetch(base+'/api/save',{method:'POST',headers,body:JSON.stringify({schema:'starnet.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE'},station:station.serialize()})})).json();assert.equal(saved.ok,true);
- await stop();await start();headers={Origin:base,'X-StarNet-Token':await bootToken(base,base)};
+ const saved=await(await fetch(base+'/api/save',{method:'POST',headers,body:JSON.stringify({schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE'},station:station.serialize()})})).json();assert.equal(saved.ok,true);
+ await stop();await start();headers={Origin:base,'X-Eyehold-Token':await bootToken(base,base)};
  report=await(await fetch(endpoint,{headers})).json();assert.deepEqual(report.unlockedMilestonesUSD,[1000000],'host restart retains financial unlock');
  const recovered=await(await fetch(base+'/api/save?agent=agent',{headers})).json();
  const restored=WorldModel.deserialize(recovered.save.station);assert.equal(restored.props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length,7,'seven native trophies survive durable HTTP save and process restart');

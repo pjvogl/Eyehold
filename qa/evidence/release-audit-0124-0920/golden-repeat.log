@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 golden
+> eyehold-harness@0.12.4 golden
 > node scripts/golden.mjs
 
 sidecar: booting SEEDED SKYNET_DEV on :19740 (model=anthropic/claude-sonnet-4.6) ...

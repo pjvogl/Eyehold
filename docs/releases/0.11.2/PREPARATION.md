@@ -40,7 +40,7 @@ The generated website mirror and advertised source lock were refreshed for the r
 - Initial full fast command: **769/769 passed**. Audit edits began near its end, so this is an initial working-tree run, not the final frozen candidate receipt.
 - Browser journeys on `00de68e0f`: **139/139 passed**. Includes real run lifecycle, Stop, reload, duplicate send, deliverable opening and slash-command paths with controlled provider responses.
 - Fresh Beginner on `00de68e0f`: **6/6 UI steps passed**, 93.021 seconds. It used a disposable fresh station and stopped at the real-model boundary.
-- Cleanup live check on `00de68e0f`: height **420 → 512 → 512 after reopen/reload**, maximize/restore and smaller viewport checked; delayed catalog retained `starnet / anthropic/test-model`; zero page exceptions.
+- Cleanup live check on `00de68e0f`: height **420 → 512 → 512 after reopen/reload**, maximize/restore and smaller viewport checked; delayed catalog retained `eyehold / anthropic/test-model`; zero page exceptions.
 - Formatting live check: **0/0/0/2 list items before → 2/2/2/2 after**. [DOM evidence](../../../qa/evidence/0.11.2-merge-audit/report-lists.json).
 - Final fast on `1826b558a`: **769/769 passed**, exit 0; customer journeys on that candidate: **34/34 passed**, exit 0.
 - Full normal HTTP command: **111/111 passed**, exit 0. It started on `00de68e0f` and overlapped the report/QA edits; all backend bytes are unchanged between its starting source and the final candidate. This is not labeled a post-bump release gate.

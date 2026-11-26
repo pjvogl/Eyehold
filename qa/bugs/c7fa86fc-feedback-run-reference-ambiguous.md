@@ -10,7 +10,7 @@ lane: report-0110-0908
 fix: 72a8a3043c263cd53ed353daed2042e256c8e236
 origin: customer
 report: Sanitized customer report copied by owner into local task on 2026-09-07
-affected: StarNet v0.11.0; ChatGPT/Codex; GPT-6 Astra Medium; Trusted Project; Ask; customer OS unknown
+affected: Eyehold v0.11.0; ChatGPT/Codex; GPT-6 Astra Medium; Trusted Project; Ask; customer OS unknown
 family: feedback-attribution
 installer: unverified
 recovery: unconfirmed

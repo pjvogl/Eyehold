@@ -4,7 +4,7 @@ Preview: `http://127.0.0.1:18814/agent-proportion-review.html?propSet=projection
 
 The user explicitly approved the current height. All three new standing masters therefore have exactly 76 visible pixels, drawn at `18/76` in world space. Their common foot line is master row 112. Walking uses the same fixed transform; it is never fitted or resized frame by frame. Natural animation motion changes the projected silhouette slightly.
 
-The preview uses StarNet's WorldModel, StationBake, IndustrialTextures, PropSprites, PropRemaster and SPRITES code. Desks preserve the running development save's 2×1 placement; chairs and plants use their actual one-tile footprints. The projection-correction artwork is shared with the live demo. StationBake.drawBase preserves the high-resolution floor texture at close-up zoom. The optional station-lighting pass is off initially for anatomy inspection. This is an isolated visual fixture, not fabricated agent activity.
+The preview uses Eyehold's WorldModel, StationBake, IndustrialTextures, PropSprites, PropRemaster and SPRITES code. Desks preserve the running development save's 2×1 placement; chairs and plants use their actual one-tile footprints. The projection-correction artwork is shared with the live demo. StationBake.drawBase preserves the high-resolution floor texture at close-up zoom. The optional station-lighting pass is off initially for anatomy inspection. This is an isolated visual fixture, not fabricated agent activity.
 
 ## Assets and generation
 

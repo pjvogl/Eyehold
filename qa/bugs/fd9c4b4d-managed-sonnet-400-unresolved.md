@@ -9,7 +9,7 @@ found: 2026-09-05
 lane: reliability-followup
 fix:
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/6#issuecomment-5548215321
+report: https://github.com/Eyehold/eyehold/issues/6#issuecomment-5548215321
 affected: v0.10.13; managed anthropic/claude-sonnet-5
 family: production-request-truth
 installer: unverified

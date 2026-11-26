@@ -11,11 +11,11 @@ const { makeLspManager } = require('../sidecar/lsp-manager.js');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
 (async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-lsp-edit-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-lsp-edit-'));
   const workspace = path.join(root, 'a1');
   fs.mkdirSync(workspace, { recursive: true });
   const fixture = path.join(__dirname, 'fixtures', 'fake-lsp-server.js');
-  const env = Object.assign({}, process.env, { STARNET_TEST_SECRET: 'must-not-reach-child' });
+  const env = Object.assign({}, process.env, { EYEHOLD_TEST_SECRET: 'must-not-reach-child' });
   const ledgerRows = [], ledgerReleases = [];
   const ledger = { record: row => ledgerRows.push(row), pinIdentity: async () => 1, release: pid => ledgerReleases.push(pid) };
   const manager = makeLspManager({
@@ -59,7 +59,7 @@ const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
     A.eq(first.diagnostics.added[0].code, 'BROKEN', 'the new diagnostic is identified');
     A.ok(!first.content.includes('pre-existing problem'), 'pre-existing diagnostics do not reach the model result');
     A.ok(first.content.includes('newly introduced problem'), 'the newly introduced diagnostic reaches the model result');
-    A.ok(!first.content.includes('SECRET_LEAK'), 'the language-server child receives no StarNet secret environment');
+    A.ok(!first.content.includes('SECRET_LEAK'), 'the language-server child receives no Eyehold secret environment');
     const ev = events.find(e => e.name === 'verify.result');
     A.ok(ev && ev.payload.passed === false && ev.payload.added === 1, 'existing verify.result semantics carry the failed edit check');
 
@@ -78,7 +78,7 @@ const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
     const missing = makeLspManager({
       spawn, fs, fsp, pathMod: path, env,
-      servers: [{ id: 'missing', command: 'definitely-not-a-real-starnet-lsp', args: [], extensions: ['.miss'], languageIds: { '.miss': 'missing' } }],
+      servers: [{ id: 'missing', command: 'definitely-not-a-real-eyehold-lsp', args: [], extensions: ['.miss'], languageIds: { '.miss': 'missing' } }],
       limits: { diagnosticTimeoutMs: 200 }
     });
     const absent = await missing.beginEdit({ files: [{ abs: path.join(workspace, 'x.miss'), base: workspace, rel: 'x.miss', text: '' }] });

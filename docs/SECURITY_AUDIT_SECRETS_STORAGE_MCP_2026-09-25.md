@@ -82,14 +82,14 @@ The assignment rule also failed on JSON. In `"refresh_token": "…"` there is a 
 
   The collector is `sidecar/secret-values.js`. The per-launch API and IPC tokens are deliberately left out, because a few local surfaces still carry the API token in a URL the frontend must open (that belongs to the token-in-URL lane).
 - **Assignment rule.** It now matches JSON and quoted forms, and adds `id_token`, `private_key`, `secret_key`, `bot_token` and `webhook_secret`.
-- **New shapes.** Discord bot tokens, Slack `xapp-`/`xoxe-`, Matrix `syt_`, Google refresh `1//0`, Groq `gsk_`, Perplexity, Notion `ntn_`, Linear, SendGrid, and StarNet's `whk_`.
+- **New shapes.** Discord bot tokens, Slack `xapp-`/`xoxe-`, Matrix `syt_`, Google refresh `1//0`, Groq `gsk_`, Perplexity, Notion `ntn_`, Linear, SendGrid, and Eyehold's `whk_`.
 - **Object copies.** Redacted copies now use own keys only and never re-create `__proto__`.
 
 **Tests:** `test/redact.known-values.test.js` (56) and `test/secret-redaction.e2e.test.js` (11, live sidecar). The e2e covers the run stream, the transcript surface, diagnostics and the key list.
 
 ### 3. MEDIUM: backups captured quarantined credential stores, and snapshots were world-readable
 
-`quarantineCorrupt` (index.js) renames a torn store to `<file>.corrupt-<pid>-<seq>`. The backup skip rule in `station-recovery.js classifyPolicy` only matched `/\.corrupt-\d+$/`, so a quarantined `channels/secrets.json` or `connectors/servicekeys.json` was classified `include` and copied **raw** into every `update-snapshots/*.starnet-backup.json`. `update-preparation.js` then chmod-ed those files **0444**, which is world-readable on POSIX.
+`quarantineCorrupt` (index.js) renames a torn store to `<file>.corrupt-<pid>-<seq>`. The backup skip rule in `station-recovery.js classifyPolicy` only matched `/\.corrupt-\d+$/`, so a quarantined `channels/secrets.json` or `connectors/servicekeys.json` was classified `include` and copied **raw** into every `update-snapshots/*.eyehold-backup.json`. `update-preparation.js` then chmod-ed those files **0444**, which is world-readable on POSIX.
 
 The existing test could not have noticed, because it searched the base64 bundle envelope rather than the decoded file bytes.
 
@@ -171,11 +171,11 @@ Base: trunk `95b4f4fa7`. Worktree `gen-trees/sec-env`, not merged. Each item was
 
 ### 13. Helper processes no longer inherit the station's secrets
 
-**Re-verified on trunk:** `test/child-env.e2e.test.js` pointed at the trunk sidecar fails 3 of 9. A scratch repo's `core.fsmonitor` (code the user's repo runs whenever the project scan calls `git status`) received `STARNET_WORKSPACES`, the planted station secret and the exported service key.
+**Re-verified on trunk:** `test/child-env.e2e.test.js` pointed at the trunk sidecar fails 3 of 9. A scratch repo's `core.fsmonitor` (code the user's repo runs whenever the project scan calls `git status`) received `EYEHOLD_WORKSPACES`, the planted station secret and the exported service key.
 
 **The rule** (`sidecar/child-env.js`, the one builder): strip what the station put there, keep what the user put there.
 
-1. Every `STARNET_*` / `SKYNET_*` name. The desktop shell injects every secret it hands the sidecar under these names (API/IPC tokens, provider keys and pools, channel tokens, credits token, connector vault key), and the sidecar reads its own secrets only through them.
+1. Every `EYEHOLD_*` / `SKYNET_*` name. The desktop shell injects every secret it hands the sidecar under these names (API/IPC tokens, provider keys and pools, channel tokens, credits token, connector vault key), and the sidecar reads its own secrets only through them.
 2. Every name the sidecar itself exported into `process.env` (the KEYS-tab service keys, tracked by `servicekeys.applyEnv`).
 3. Any variable whose value is a secret the station currently holds (the same live collector as `redact()`'s known-value layer). `PATH`, `HOME` and the other runtime basics are never stripped by this rule.
 
@@ -247,7 +247,7 @@ This applies to catalog rows and custom servers alike. `buildAuthorizeUrl` appli
 | 13 | Low-Med | Every process inherits the sidecar's full `process.env` (provider keys, channel tokens, `SKYNET_API_TOKEN`, `SKYNET_IPC_TOKEN`, service keys) when it is spawned with no `env`: `execFile('git')` (index.js ~3287/8357/14284, including the project scan in user repos, where hooks and fsmonitor run), `shellhooks.js:179`, `inputguard.js`, `procledger.js`, `desktop.js`, `native-stt.js`, `folderpick.js` | spawn sites | **Fixed on `agent/sec-env`** (see above) |
 | 14 | Low | Connector vault is plaintext when there is no OS key (bare `npm start` sidecar). This is by design and is now 0600 | `connector-vault.js:40` | Document it; optionally derive a per-user key |
 | 15 | Low | MCP HTTP transport has no private-IP or DNS guard (loopback is allowed on purpose, and the URL is user-set through the token-gated UI or config import) | `mcp/transport.http.js:39` | Warn in the UI for private ranges, or pin the resolution |
-| 16 | Low | The stdio allowlist compares basenames only and includes `node`/`python` (so `-e`/`-c` run arbitrary code). Containment is the Safe Cell container only. `STARNET_MCP_STDIO_ALLOW='*'` disables the check | `mcp/transport.stdio.js:23-38` | Acceptable while stdio stays Safe-Cell-only |
+| 16 | Low | The stdio allowlist compares basenames only and includes `node`/`python` (so `-e`/`-c` run arbitrary code). Containment is the Safe Cell container only. `EYEHOLD_MCP_STDIO_ALLOW='*'` disables the check | `mcp/transport.stdio.js:23-38` | Acceptable while stdio stays Safe-Cell-only |
 | 17 | Low | Plugin approval hashes only `main`. Helper files `require`d by an approved plugin can change without re-approval, and plugin folders and main files are followed through symlinks | `plugins.js:72-77,197` | **Fixed on `agent/sec-env`** (see above) |
 | 18 | Low | `save-conflict-<client>.json` files grow without limit, and notebook restore has no count cap (both token-gated) | `savestore.js:239`; `notebookrestore.js` | **save-conflict fixed on `agent/sec-env`**; notebook-restore cap still open |
 | 19 | Low | `/api/harness/scan` accepts any absolute root, including UNC `\\host\share` (an SMB/NTLM touch on `stat`) | index.js `handleHarnessScan` | **Fixed on `agent/sec-env`** (see above) |

@@ -26,8 +26,8 @@ try {
   await c.send('Page.enable');
   const identity = await evalJS(c, `(async()=>{
     await IndustrialTextures.ready; await PropRemaster.ready;
-    const shell = await window.__TAURI__.core.invoke('starnet_build_info');
-    const v = await fetch('/api/version',{headers:{'X-StarNet-Token':window.__STARNET_API_TOKEN__}}).then(r=>r.json());
+    const shell = await window.__TAURI__.core.invoke('eyehold_build_info');
+    const v = await fetch('/api/version',{headers:{'X-Eyehold-Token':window.__EYEHOLD_API_TOKEN__}}).then(r=>r.json());
     return { origin:location.origin, shell, sidecar:v, textures:IndustrialTextures.status(),
       props:PropRemaster.status(), enabledProp:PropRemaster.enabled('desk','s'),
       revision:document.documentElement.dataset.textureRevision,
@@ -77,7 +77,7 @@ try {
     await sleep(5000);
     const sample = await evalJS(c, `(async()=>{
       const p=window.__releaseGraphics, t=performance.now();
-      const r=await fetch('/api/health',{cache:'no-store',headers:{'X-StarNet-Token':window.__STARNET_API_TOKEN__}});
+      const r=await fetch('/api/health',{cache:'no-store',headers:{'X-Eyehold-Token':window.__EYEHOLD_API_TOKEN__}});
       return {frames:p.frames.splice(0),longTasks:p.longTasks.splice(0),errors:p.errors.slice(),
         hidden:document.hidden,heap:performance.memory?.usedJSHeapSize??null,
         healthStatus:r.status,healthMs:performance.now()-t,cache:World._dbgCanvasLoss()};

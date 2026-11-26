@@ -1,4 +1,4 @@
-/* STARNET — stationui.js : the station-management HUD.
+/* EYEHOLD — stationui.js : the station-management HUD.
    Ports the v7 pip-boy chrome (floating terminal windows, crew manifest,
    bottom-bar panels) but wires every readout to REAL harness data — the
    present agent, the current measured context window, the real tool
@@ -62,7 +62,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   const mkEl = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
   const sfx = n => { try { if (typeof SFX === 'object' && SFX[n]) SFX[n](); } catch (_) {} };
 
-  const KEY = 'starnet.station.v1';
+  const KEY = 'eyehold.station.v1';
   const THEMES = [['realm', '#e6ac65'], ['amber', '#ffaa33'], ['green', '#3dff70'], ['blue', '#46c8ff'], ['purple', '#b46bff'], ['red', '#ff4136'], ['white', '#e8f0e8']];
 
   let present = [];          // agent objects currently on the station
@@ -1243,7 +1243,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       screen.appendChild(head); screen.appendChild(body);
       w.appendChild(screen);
       w.appendChild(mkEl('div', 'term-plate',
-        '<span>STARNET DYNAMICS</span><span class="term-knobs"><i class="knob"></i><i class="knob"></i></span>'));
+        '<span>EYEHOLD DYNAMICS</span><span class="term-knobs"><i class="knob"></i><i class="knob"></i></span>'));
     } else {
       w.appendChild(head); w.appendChild(body);
       // Phase-2 chrome (generic, plain windows only — feature windows carry their own casing):
@@ -3673,11 +3673,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       '<p class="sk-note sk-lib-intro">Reusable procedures this agent created or learned. These appear as a compact index in future runs; the agent loads the full body only when a task matches.</p>' +
       '<div id="sk-agent" class="sk-lib"><div class="sk-loading">loading agent skills…</div></div>';
     const secExchange =
-      '<p class="sk-note sk-lib-intro">Install a complete open skill package from a public HTTPS or GitHub <b>SKILL.md</b>. StarNet freezes the instructions and support files under one SHA-256 before review. Missing, oversized, unsafe, or partial packages are refused.</p>' +
+      '<p class="sk-note sk-lib-intro">Install a complete open skill package from a public HTTPS or GitHub <b>SKILL.md</b>. Eyehold freezes the instructions and support files under one SHA-256 before review. Missing, oversized, unsafe, or partial packages are refused.</p>' +
       '<div class="sk-exchange-form"><label for="sk-exchange-url">SKILL.MD SOURCE</label>' +
         '<div class="sk-exchange-row"><input id="sk-exchange-url" type="url" autocomplete="off" spellcheck="false" placeholder="https://github.com/owner/repo/blob/main/SKILL.md">' +
         '<button id="sk-exchange-inspect" class="consent-btn" type="button">INSPECT</button></div>' +
-        '<label class="consent-btn" for="sk-exchange-import">IMPORT EXPORTED PACKAGE</label><input id="sk-exchange-import" type="file" accept=".json,.starnet-skill.json,application/json" hidden></div>' +
+        '<label class="consent-btn" for="sk-exchange-import">IMPORT EXPORTED PACKAGE</label><input id="sk-exchange-import" type="file" accept=".json,.eyehold-skill.json,application/json" hidden></div>' +
       '<div class="sk-exchange-form"><label for="sk-registry-url">REGISTRY / TEAM TAP</label>' +
         '<div class="sk-exchange-row"><input id="sk-registry-url" type="url" autocomplete="off" spellcheck="false" placeholder="https://example.com/skills/index.json">' +
         '<input id="sk-registry-query" type="search" autocomplete="off" placeholder="search or browse all">' +
@@ -3690,13 +3690,13 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
        offering choices that would do nothing, and the note about WHEN a change takes effect is shown
        because a live session cannot switch voice mid-call. */
 
-    // SKILL MARKET (2026-09-29): the curated StarNet catalog, browsed as the same glass card grid the connectors
+    // SKILL MARKET (2026-09-29): the curated Eyehold catalog, browsed as the same glass card grid the connectors
     // CATALOG uses. The catalog is fetched when this section loads, never in the background.
     const secMarket =
-      '<p class="set-about"><b>Add skills to your whole crew.</b> StarNet Originals are written by StarNet for your station; community picks are credited to their authors. Installing adds the skill to your SKILL LIBRARY and switches it on.</p>' +
+      '<p class="set-about"><b>Add skills to your whole crew.</b> Eyehold Originals are written by Eyehold for your station; community picks are credited to their authors. Installing adds the skill to your SKILL LIBRARY and switches it on.</p>' +
       '<div class="cc-filters" id="skm-filters" role="group" aria-label="Filter the skill market">' +
         '<button type="button" class="cc-filter active" data-skm-filter="all" aria-pressed="true">ALL</button>' +
-        '<button type="button" class="cc-filter" data-skm-filter="originals" aria-pressed="false">STARNET ORIGINALS</button>' +
+        '<button type="button" class="cc-filter" data-skm-filter="originals" aria-pressed="false">EYEHOLD ORIGINALS</button>' +
         '<button type="button" class="cc-filter" data-skm-filter="community" aria-pressed="false">COMMUNITY</button>' +
         '<button type="button" class="cc-filter" data-skm-filter="installed" aria-pressed="false">INSTALLED</button>' +
         '<button type="button" class="cc-filter" data-skm-filter="update" aria-pressed="false">UPDATES</button>' +
@@ -3707,8 +3707,8 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
 
     const frag = html => (el => { el.innerHTML = html; });
     const sections = [
-      { id: 'market', label: 'SKILL MARKET', glyph: '▦', desc: 'Browse StarNet Originals and credited community skills, and install one for the whole crew in one click.', build: frag(secMarket) },
-      { id: 'library', label: 'SKILL LIBRARY', glyph: '▤', desc: 'The procedures your agents follow when a task matches: the ones built into StarNet and the ones you installed from the market.', build: frag(secLibrary) },
+      { id: 'market', label: 'SKILL MARKET', glyph: '▦', desc: 'Browse Eyehold Originals and credited community skills, and install one for the whole crew in one click.', build: frag(secMarket) },
+      { id: 'library', label: 'SKILL LIBRARY', glyph: '▤', desc: 'The procedures your agents follow when a task matches: the ones built into Eyehold and the ones you installed from the market.', build: frag(secLibrary) },
       { id: 'agent', label: 'AGENT SKILLS', glyph: '✎', desc: 'Procedures this agent created or learned itself.', build: frag(secAgent) },
       { id: 'exchange', label: 'SKILL EXCHANGE', glyph: '⇩', desc: 'Inspect and install open SKILL.md procedures with provenance and guard review.', build: frag(secExchange) }
     ];
@@ -3724,7 +3724,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   window.AbilityLanes = window.AbilityLanes || [];
   window.AbilityLanes.push(abilitySkillsLane);
 
-  /* SKILL MARKET — the curated StarNet catalog as a card grid (the connectors CATALOG's cc-card glass cards, reused
+  /* SKILL MARKET — the curated Eyehold catalog as a card grid (the connectors CATALOG's cc-card glass cards, reused
      so the two catalogs look and behave the same, search included). Every status a card shows comes from the
      sidecar's /api/skill-market listing: available, installed, built in (our bundled copy IS the published
      version), update, or tampered (its files changed on disk, so agents are not given it). */
@@ -3736,7 +3736,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   let skmResult = null;        // { slug, text, ok } — the last install/remove result, shown on that card
   let skmFocus = '';           // slug whose action button takes focus after the next render
   // tell the rest of the app the station's skills changed (the chat's "/" palette re-reads its list)
-  const skillsChanged = () => { try { window.dispatchEvent(new CustomEvent('starnet:skills-changed')); } catch (_) {} };
+  const skillsChanged = () => { try { window.dispatchEvent(new CustomEvent('eyehold:skills-changed')); } catch (_) {} };
   // the gear a skill can use for this agent — the SAME reading loadSkillLibrary makes (room objects, shared station
   // gear, profile / Full Access grants from /api/toolsets), so a market card never calls gear "missing" that the
   // library would count as present
@@ -3757,7 +3757,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const gear = missing.map(skmGear);
     const slug = esc(e.slug);
     const origin = e.shelf === 'originals'
-      ? '<span class="cc-badge cc-official">STARNET ORIGINAL</span>'
+      ? '<span class="cc-badge cc-official">EYEHOLD ORIGINAL</span>'
       : '<span class="cc-badge cc-community">community · ' + esc(e.author || 'credited') + '</span>';
     const btn = (act, text, cls) => {
       const busy = skmBusy.get(e.slug);
@@ -3773,11 +3773,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       action = btn('uninstall', 'REMOVE'); hint = 'Installed · v' + esc(e.installedVersion || e.version) + '.' + needs;
     } else if (e.status === 'bundled') {
       action = '<span class="cc-badge cc-official">BUILT IN</span>';
-      hint = 'Came with StarNet (v' + esc(e.builtInVersion || e.version) + '). Switch it on or off in SKILL LIBRARY.';
+      hint = 'Came with Eyehold (v' + esc(e.builtInVersion || e.version) + '). Switch it on or off in SKILL LIBRARY.';
     } else if (e.status === 'update') {
       action = btn('install', 'UPDATE');
       hint = e.builtIn && !e.delisted && e.installedVersion === e.builtInVersion
-        ? 'A newer version than the one built into StarNet: v' + esc(e.builtInVersion) + ' → v' + esc(e.version) + '.'
+        ? 'A newer version than the one built into Eyehold: v' + esc(e.builtInVersion) + ' → v' + esc(e.version) + '.'
         : 'v' + esc(e.installedVersion) + ' → v' + esc(e.version) + '.';
     } else if (e.status === 'tampered') {
       action = btn('install', 'REINSTALL'); warn = true;
@@ -3803,7 +3803,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const files = (e.files || []).map(f => '<li><code>' + esc(f.path) + '</code> <span class="dim">' + esc(String(f.bytes)) + ' B</span></li>').join('');
     const upstream = e.upstream && /^https:\/\//.test(String(e.upstream.url || ''))
       ? '<div class="mc-hint">Adapted from <a class="dim" href="' + esc(e.upstream.url) + '" target="_blank" rel="noopener">the original ↗</a> (' + esc(e.upstream.license || e.license) + ')</div>' : '';
-    const search = [e.category, e.author, e.shelf === 'originals' ? 'starnet original' : 'community'].concat(e.tags || []).join(' ');
+    const search = [e.category, e.author, e.shelf === 'originals' ? 'eyehold original' : 'community'].concat(e.tags || []).join(' ');
     return '<div class="cc-card' + (on ? ' cc-on' : '') + '" data-skm="' + slug + '" data-shelf="' + esc(e.shelf) + '" data-status="' + esc(e.status) + '" data-installed="' + (e.installedVersion && e.status !== 'available' ? '1' : '') + '" data-search="' + esc(search) + '" style="--ci:' + (i || 0) + '">' +
       '<div class="cc-head"><span class="cc-brand" aria-hidden="true">' + esc(String(e.name || e.slug).slice(0, 2).toUpperCase()) + '</span>' +
         '<div class="cc-identity"><b>' + esc(e.name) + '</b><span class="cc-chip">' + esc(e.category) + '</span></div></div>' +
@@ -3842,21 +3842,21 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       host.dataset.skmOk = '';
       const err = String((d && d.error) || 'no answer').replace(/[.\s]+$/, '');
       if (/turned off on this station/.test(err)) {
-        host.innerHTML = '<p class="mc-notice"><b>The skill market is turned off</b>This station was started with the market switched off (STARNET_SKILL_MARKET_URL=off). Skills you already installed keep working.</p>';
+        host.innerHTML = '<p class="mc-notice"><b>The skill market is turned off</b>This station was started with the market switched off (EYEHOLD_SKILL_MARKET_URL=off). Skills you already installed keep working.</p>';
         return;
       }
       // a catalog that failed its signature or serial check was reached but REFUSED — say that, not "couldn't reach"
       const refused = /^the skill market (.+?) was not trusted: (.+)$/.exec(err);
       // "http 403" / "took too long" come from THIS app talking to its own station, not from the market
-      const local = /^http \d{3}$/i.test(err) ? 'your station didn\'t answer the request (' + err.toUpperCase() + '); reload StarNet and try again'
+      const local = /^http \d{3}$/i.test(err) ? 'your station didn\'t answer the request (' + err.toUpperCase() + '); reload Eyehold and try again'
         : /took too long/i.test(err) ? 'your station took too long to answer' : '';
       host.innerHTML = (refused
-        ? '<p class="mc-notice"><b>StarNet refused the skill market\'s ' + esc(refused[1]) + '</b>' + esc(refused[2]) + '. Nothing from it was used, and skills you already installed keep working.</p>'
+        ? '<p class="mc-notice"><b>Eyehold refused the skill market\'s ' + esc(refused[1]) + '</b>' + esc(refused[2]) + '. Nothing from it was used, and skills you already installed keep working.</p>'
         : '<p class="mc-hint">' + (local ? 'Couldn\'t load the skill market: ' + esc(local) : 'Couldn\'t reach the skill market: ' + esc(err)) + '. Skills you already installed keep working.</p>') +
         '<button class="bb xs" type="button" data-skm-act="retry">TRY AGAIN</button>';
       return;
     }
-    const shelves = [['originals', 'StarNet Originals', 'Written by StarNet for your station\'s gear and tools.'], ['community', 'Community picks', 'Open skills by other authors, adapted for StarNet and credited.']];
+    const shelves = [['originals', 'Eyehold Originals', 'Written by Eyehold for your station\'s gear and tools.'], ['community', 'Community picks', 'Open skills by other authors, adapted for Eyehold and credited.']];
     const html = shelves.map(([id, label, note]) => {
       const rows = d.entries.filter(e => e.shelf === id);
       if (!rows.length) return '';
@@ -4083,7 +4083,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           '</div>' +
           '<div class="sk-card-actions"><button class="sk-expand" data-expand="' + esc(s.slug) + '" aria-expanded="false" aria-label="Read instructions for ' + esc(s.name) + '">Read instructions</button>' + switchHTML(s) + '</div>' +
           '<div class="sk-body"><div class="sk-detail-label">Required gear</div><div class="sk-reqs">' + reqBadges(s) + '</div><div class="sk-detail-label">Instructions</div><div class="sk-instructions">' + (typeof Deliverables !== 'undefined' && Deliverables.safeMarkdown ? Deliverables.safeMarkdown(s.body || '') : '<pre>' + esc(s.body || '') + '</pre>') + '</div>' +
-            (s.market ? '<div class="sk-attr">' + (s.shelf === 'originals' ? 'StarNet Original, installed from the Skill Market' : 'From the Skill Market' + (s.author ? ' · by ' + esc(s.author) : '')) + (s.license ? ' · ' + esc(s.license) : '') + '</div>'
+            (s.market ? '<div class="sk-attr">' + (s.shelf === 'originals' ? 'Eyehold Original, installed from the Skill Market' : 'From the Skill Market' + (s.author ? ' · by ' + esc(s.author) : '')) + (s.license ? ' · ' + esc(s.license) : '') + '</div>'
               : s.author ? '<div class="sk-attr">Ported from ' + esc(s.author) + (s.license ? ' · ' + esc(s.license) : '') + '</div>' : '') +
           '</div>' +
         '</div>';
@@ -4338,7 +4338,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         btn.classList.add('busy'); const r = await Harness.skillExchangeExport({ agentId, id: skill.id }); btn.classList.remove('busy');
         if (r && r.ok && r.envelope) {
           const url = URL.createObjectURL(new Blob([r.envelope], { type: 'application/json' }));
-          const a = document.createElement('a'); a.href = url; a.download = r.filename || (skill.id + '.starnet-skill.json'); a.click();
+          const a = document.createElement('a'); a.href = url; a.download = r.filename || (skill.id + '.eyehold-skill.json'); a.click();
           setTimeout(() => URL.revokeObjectURL(url), 1000); notify('Exported sealed package ' + String(r.digest || '').slice(0, 12), 'good');
         } else notify((r && r.error) || 'Export was refused.', 'warn');
         return;
@@ -4750,11 +4750,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
      the real Harness store; nothing here is simulated. Secrets are shown MASKED only — the
      full key is never written into the DOM (truthful-telemetry + don't-leak-the-key). */
   const PROVIDERS = [
-    // STARNET MANAGED is the one provider with no credential to paste and no account to sign into here: it
+    // EYEHOLD MANAGED is the one provider with no credential to paste and no account to sign into here: it
     // runs on the credits balance a linked station already has. It is also the one provider that must be able
     // to DISAPPEAR — see creditsProviderState() — because offering it on a station with no cloud configured
     // would advertise an account the user cannot create.
-    { id: 'starnet',       name: 'STARNET MANAGED',   endpoint: 'managed inference · credits', blurb: 'no API key — runs on your balance', live: true, credits: true },
+    { id: 'eyehold',       name: 'EYEHOLD MANAGED',   endpoint: 'managed inference · credits', blurb: 'no API key — runs on your balance', live: true, credits: true },
     { id: 'openrouter',    name: 'OPENROUTER',        endpoint: 'openrouter.ai/api/v1',      blurb: 'one key · 300+ models',  live: true },
     { id: 'codex',         name: 'CHATGPT (CODEX)',   endpoint: 'OAuth · ChatGPT subscription', blurb: 'sign-in, no API key',  live: true },
     { id: 'grok',          name: 'GROK (XAI)',        endpoint: 'OAuth · SuperGrok / X Premium+', blurb: 'sign-in, no API key', live: true },
@@ -4777,7 +4777,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   const H = () => (typeof Harness === 'object' && Harness) ? Harness : null;
   function provName(id) { const p = PROVIDERS.find(x => x.id === id); return p ? p.name : String(id || '').toUpperCase(); }
 
-  /* ---- STARNET MANAGED, the credits provider -------------------------------------------------
+  /* ---- EYEHOLD MANAGED, the credits provider -------------------------------------------------
      Three states, and the first one is the reason this is not a static row:
        absent   — no cloud is configured on this station, so the card DOES NOT RENDER. The honesty
                   law the STORE already follows: never offer an account we cannot create. A shipped
@@ -4795,7 +4795,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   // nothing: an outage is not proof that a saved link vanished.
   function publishCreditsConfigured(configured) {
     const h = H();
-    if (h && h.setDesktopConfigured) h.setDesktopConfigured('starnet', !!configured);
+    if (h && h.setDesktopConfigured) h.setDesktopConfigured('eyehold', !!configured);
     if (typeof ModelDock !== 'undefined' && ModelDock.reflect) ModelDock.reflect();
   }
   function refreshCreditsProvider() {
@@ -4827,7 +4827,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           });
       });
   }
-  // The rows CONNECTIONS should actually draw. Only starnet is ever filtered — every other provider
+  // The rows CONNECTIONS should actually draw. Only eyehold is ever filtered — every other provider
   // is a fixed part of the product and must stay visible whether or not it is configured.
   function visibleProviders() {
     return PROVIDERS.filter(p => !p.credits || creditsProv.state !== 'absent');
@@ -5142,7 +5142,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       (extras.length ? all.map(row).join('') : '') +
       box +
       '<div class="prov-accounts-add">' +
-        (canAdd ? '<button class="bb sm" data-act="prov-claude-add" title="sign in another Claude account — Claude Code keeps each sign-in, StarNet never sees them">＋ ADD ACCOUNT</button>' : '') +
+        (canAdd ? '<button class="bb sm" data-act="prov-claude-add" title="sign in another Claude account — Claude Code keeps each sign-in, Eyehold never sees them">＋ ADD ACCOUNT</button>' : '') +
         '<span class="dim">' + (extras.length
           ? 'runs start on the first ready account; when it hits its usage limit they continue on the next'
           : 'connect more Claude accounts — when one hits its usage limit, runs continue on the next') + '</span>' +
@@ -5218,8 +5218,8 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   }
 
   function providerLogoHtml(id) {
-    const asset = id === 'starnet' ? 'starnet-wordmark.svg' : 'providers/' + (id === 'codex' ? 'openai' : id) + '.svg';
-    return '<span class="prov-logo' + (id === 'starnet' ? ' prov-logo-starnet' : '') + '" aria-hidden="true" style="--provider-icon:url(&quot;' + esc(new URL('assets/brand/' + asset, document.baseURI).href) + '&quot;)"></span>';
+    const asset = id === 'eyehold' ? 'eyehold-wordmark.svg' : 'providers/' + (id === 'codex' ? 'openai' : id) + '.svg';
+    return '<span class="prov-logo' + (id === 'eyehold' ? ' prov-logo-eyehold' : '') + '" aria-hidden="true" style="--provider-icon:url(&quot;' + esc(new URL('assets/brand/' + asset, document.baseURI).href) + '&quot;)"></span>';
   }
 
   function providersHtml() {
@@ -5293,7 +5293,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         '</button>' +
           '<span class="prov-stat"><span class="prov-stat-t">' + stat + (credentialSaved && !isOAuthProvider(p.id) ? '<i>' + n + (n === 1 ? ' key' : ' keys') + '</i>' : '') + statWhy + '</span></span>' +
         (wantsInline ? '<button class="bb sm prov-addkey" data-act="prov-add-toggle" data-provider="' + esc(p.id) + '" aria-label="Add a ' + esc(p.name) + ' key" title="paste a ' + esc(p.name) + ' key without leaving this card">＋ ADD KEY</button>' : '') +
-        (wantsClaudeSignin && !claudeFlowing && !(typeof ClaudeCliSignIn !== 'undefined' && ClaudeCliSignIn.active()) ? '<button class="bb sm prov-addkey" data-act="prov-claude-signin" aria-label="Sign in with Claude" title="opens Claude in your browser — Claude Code keeps the sign-in, StarNet never sees it">' + (claudeCard.failed ? '⏼ TRY AGAIN' : '⏼ SIGN IN') + '</button>' : '') +
+        (wantsClaudeSignin && !claudeFlowing && !(typeof ClaudeCliSignIn !== 'undefined' && ClaudeCliSignIn.active()) ? '<button class="bb sm prov-addkey" data-act="prov-claude-signin" aria-label="Sign in with Claude" title="opens Claude in your browser — Claude Code keeps the sign-in, Eyehold never sees it">' + (claudeCard.failed ? '⏼ TRY AGAIN' : '⏼ SIGN IN') + '</button>' : '') +
         (wantsClaudeInstall ? '<button class="bb sm prov-addkey" data-act="prov-claude-install" aria-label="Get Claude Code" title="Claude Code needs a Pro, Max, Team or Enterprise plan">↗ GET CLAUDE CODE</button>' : '') +
         (wantsOAuthSignin ? '<button class="bb sm prov-addkey" data-act="prov-oauth-signin" data-provider="' + esc(p.id) + '" aria-label="Sign in to ' + esc(p.name) + '" title="device-code sign-in — no API key needed">' + (codexDead ? '⏼ RECONNECT' : '⏼ SIGN IN') + '</button>' : '') +
         (wantsInline
@@ -5316,7 +5316,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         '</div>';
     }).join('');
   }
-  // The STARNET MANAGED card. Same shape as every other provider row so it reads as one of them, but its
+  // The EYEHOLD MANAGED card. Same shape as every other provider row so it reads as one of them, but its
   // action routes to the STORE rather than owning a second copy of the pairing flow.
   function creditsProviderCard(p, pi, active) {
     const linked = creditsProv.state === 'linked';
@@ -5337,8 +5337,8 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       '</button>' +
         '<span class="prov-stat"><span class="prov-stat-t">' + stat + '</span></span>' +
       '<button class="bb sm prov-addkey" data-act="credits-store" data-provider="' + esc(p.id) + '" ' +
-      'aria-label="' + ((linked || saved) ? 'Open the STORE' : 'Link this station to a StarNet account') + '" ' +
-      'title="' + ((linked || saved) ? 'balance, plan and history live in the STORE' : 'link this station to a StarNet account') + '">' +
+      'aria-label="' + ((linked || saved) ? 'Open the STORE' : 'Link this station to a Eyehold account') + '" ' +
+      'title="' + ((linked || saved) ? 'balance, plan and history live in the STORE' : 'link this station to a Eyehold account') + '">' +
       ((linked || saved) ? '◆ STORE' : '↗ LINK STATION') + '</button>' +
       '</div>';
   }
@@ -5408,7 +5408,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           '<span class="conn-dot"></span>' +
           '<div class="key-main">' +
           '<div class="key-top"><span class="key-prov">' + esc(provName(k.provider)) + '</span>' +
-          '<code class="key-mask" title="signed in through Claude Code, which keeps the sign-in; StarNet never holds it">' + esc(claudeCliSt.email || 'Claude sign-in') + '</code></div>' +
+          '<code class="key-mask" title="signed in through Claude Code, which keeps the sign-in; Eyehold never holds it">' + esc(claudeCliSt.email || 'Claude sign-in') + '</code></div>' +
           '<div class="key-meta">model <b>' + esc(k.model || '—') + '</b> · ' + runState +
           (plan ? ' · <span class="key-stat">' + esc(plan) + '</span>' : '') +
           ' · <span class="key-stat">no API key needed</span></div>' +
@@ -6005,7 +6005,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         sfx('click');
       });
       if (inlineSave) inlineSave.addEventListener('click', ev => { ev.stopPropagation(); saveInline(card.dataset.provider); });
-      // STARNET MANAGED: both LINK STATION and STORE land in the same place — the STORE section owns the
+      // EYEHOLD MANAGED: both LINK STATION and STORE land in the same place — the STORE section owns the
       // pairing flow, and duplicating it on this card would be a second implementation to keep in step.
       const toStore = card.querySelector('[data-act="credits-store"]');
       if (toStore) toStore.addEventListener('click', ev => {
@@ -6069,7 +6069,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       }
     } catch (_) {}
     let win = null;
-    try { win = window.open(url, 'starnet_oauth', 'width=540,height=720'); } catch (_) {}
+    try { win = window.open(url, 'eyehold_oauth', 'width=540,height=720'); } catch (_) {}
     return { opened: !!win, where: 'popup', win };
   }
 
@@ -6109,7 +6109,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         if (!current()) return;
         if (!j || typeof j.configured !== 'boolean') throw new Error('invalid credits status');
         if (j && j.configured) return renderCreditsConfigured(body, host, j);
-        // unconfigured → is this station LINKABLE (STARNET_CLOUD_URL wired)? If so, offer LINK STATION. Otherwise
+        // unconfigured → is this station LINKABLE (EYEHOLD_CLOUD_URL wired)? If so, offer LINK STATION. Otherwise
         // render NOTHING (honesty law: a bare BYOK install shows no STORE surface at all).
         return Harness.api.get('/api/credits/linkable')
           .then(lk => {
@@ -6192,7 +6192,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     // Same balance, completely different sentence — describing a subscriber's own account as something "the
     // operator tops up" is just wrong on the surface that is supposed to be the truthful one.
     const about = j.linkSaved
-      ? 'This station runs on <b>your StarNet credits</b> — agents work without you bringing a provider key. Each run reserves up to your <b>PER RUN</b> budget and refunds whatever it doesn’t spend. You can always switch to your own key under API KEYS above.'
+      ? 'This station runs on <b>your Eyehold credits</b> — agents work without you bringing a provider key. Each run reserves up to your <b>PER RUN</b> budget and refunds whatever it doesn’t spend. You can always switch to your own key under API KEYS above.'
       : 'This station runs on <b>managed credits</b> — a prepaid balance the operator tops up, so your agents can work without you bringing your own provider key. Each run reserves up to your <b>PER RUN</b> budget and refunds whatever it doesn’t spend. You can always switch to your own key under API KEYS above.';
     host.innerHTML =
       '<h4 class="ms-h">STORE <span class="dim">— managed credits</span></h4>' +
@@ -6207,7 +6207,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         (j.subscription ? '<button class="bb xs" id="credits-manage" title="change or cancel your plan in the browser">MANAGE PLAN ↗</button>' : '') +
         '<button class="bb xs" id="credits-refresh" title="re-read the balance">↻ REFRESH</button>' +
       '</div>' +
-      '<div class="mc-hint">Adding credits opens your browser — StarNet never handles your payment details.</div>' +
+      '<div class="mc-hint">Adding credits opens your browser — Eyehold never handles your payment details.</div>' +
       '<div class="set-row"><span class="dim">RECENT ACTIVITY</span></div>' +
       '<div class="mc-list">' + rows + '</div>' +
       (j.linkSaved ? '<div class="set-row" style="margin-top:.6em"><span class="dim" style="font-size:.85em">' +
@@ -6250,14 +6250,14 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           stage = 'refresh';
         })
         // Symmetric to the link path: a station that just gave up its credential must stop reporting
-        // that it can run on credits, or STARNET stays selectable and every run fails at admission.
+        // that it can run on credits, or EYEHOLD stays selectable and every run fails at admission.
         .then(() => (H() && H().refreshCreditsConfigured) ? H().refreshCreditsConfigured() : null)
         .then(() => refreshCreditsProvider())
         .then(() => { _creditsUnlinkPending = false; scheduleSettingsRepaint(); wireCredits(body); })
         .catch(() => {
           _creditsUnlinkPending = false;
           _creditsUnlinkError = stage === 'keychain'
-            ? 'Could not clear the saved account credential. Unlink was not completed. Try UNLINK again; if it still fails, fully quit and reopen StarNet.'
+            ? 'Could not clear the saved account credential. Unlink was not completed. Try UNLINK again; if it still fails, fully quit and reopen Eyehold.'
             : stage === 'station'
               ? 'Could not confirm that unlink completed. Refresh the account connection, then retry UNLINK if it is still linked.'
               : 'Unlink completed, but the account display could not refresh. Retry to load the linking options.';
@@ -6296,10 +6296,10 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     host.innerHTML =
       '<h4 class="ms-h">STORE <span class="dim">— managed credits</span></h4>' +
       creditsUnlinkErrorMarkup() +
-      '<p class="set-about">Link this station to your <b>StarNet account</b> to run agents on managed credits — no provider key needed. You will confirm a short code in your browser.</p>' +
+      '<p class="set-about">Link this station to your <b>Eyehold account</b> to run agents on managed credits — no provider key needed. You will confirm a short code in your browser.</p>' +
       (note ? '<div class="set-row" style="color:var(--gold,#e8c15a)">' + esc(note) + '</div>' : '') +
       '<div class="mc-acts"><button class="bb sm" id="credits-link">🔗 LINK STATION</button></div>' +
-      '<div class="mc-hint">Linking opens your browser to confirm — StarNet never handles your payment details.</div>' +
+      '<div class="mc-hint">Linking opens your browser to confirm — Eyehold never handles your payment details.</div>' +
       '<div id="credits-link-state"></div>';
     const btn = host.querySelector('#credits-link');
     if (btn) btn.addEventListener('click', () => { sfx('click'); startCreditsLink(body, host); });
@@ -6314,9 +6314,9 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const btn = host.querySelector('#credits-link');
     if (btn) btn.disabled = true;
     if (state) state.innerHTML = '<div class="set-row dim">Requesting a link code…</div>';
-    // Same failure facts as the genesis LINK (app.js startStarnetLink): a dead local engine is never "the link service".
+    // Same failure facts as the genesis LINK (app.js startEyeholdLink): a dead local engine is never "the link service".
     const startFail = info => Object.assign(new Error('start failed'), { linkStart: info });
-    Harness.api.post('/api/credits/link/start', { deviceName: 'StarNet Station' })
+    Harness.api.post('/api/credits/link/start', { deviceName: 'Eyehold Station' })
       .then(r => { if (generation !== _creditsLinkGeneration) return null; if (!r || !r.ok) throw startFail({ status: r && r.status, j: r && r.j }); return r.j; },
         () => { throw startFail({ local: true }); })
       .then(j => { if (generation !== _creditsLinkGeneration) return; if (!j || !j.code) throw new Error('no code'); showCreditsLinkCode(body, host, j); })
@@ -6362,7 +6362,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
             // NOTE the token itself never passes through here — Rust reads the file, moves the
             // secret, and rewrites it. We only say "a link just happened". Best-effort: with no
             // desktop shell (browser/dev) there is no keychain, and the file path stays honest.
-            // Tell Harness the credential now exists: configured('starnet') is what resume and the
+            // Tell Harness the credential now exists: configured('eyehold') is what resume and the
             // model dock gate on, and it was probed at boot when this station was NOT yet linked.
             adoptCreditsToken()
               .then(() => (H() && H().refreshCreditsConfigured) ? H().refreshCreditsConfigured() : null)
@@ -6433,14 +6433,14 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           badge.hidden = false;
         }
       });
-      // Issue #53: "0 = no cap" is not the whole truth on StarNet credits — a managed run with PER RUN at 0 stops
+      // Issue #53: "0 = no cap" is not the whole truth on Eyehold credits — a managed run with PER RUN at 0 stops
       // at the default the sidecar reports (null when no managed credits are wired: then say nothing).
       const managedHint = body.querySelector('#bg-managed-hint');
       if (managedHint) {
         const md = st && st.managedRunDefaultUsd;
         const showManaged = typeof md === 'number' && Number.isFinite(md) && md > 0;
         managedHint.textContent = showManaged
-          ? 'On StarNet credits, a run with PER RUN at 0 still stops at ' + fmtUsd(md) + ', so one prompt can’t use up your balance. Set a per-run cap above 0 to use your own limit instead.'
+          ? 'On Eyehold credits, a run with PER RUN at 0 still stops at ' + fmtUsd(md) + ', so one prompt can’t use up your balance. Set a per-run cap above 0 to use your own limit instead.'
           : '';
         managedHint.hidden = !showManaged;
       }
@@ -6452,11 +6452,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         const open = Array.isArray(st.unsettled) ? st.unsettled.length : 0;
         const floor = (st.atLeast && typeof st.atLeast.today === 'number') ? ' At least ' + fmtUsd(st.atLeast.today) + ' today.' : '';
         spendEl.textContent = acc.writeError
-          ? 'Spend history unavailable — it could not be saved to disk, so your spending limits can’t be checked. Restart StarNet to recover it.'
+          ? 'Spend history unavailable — it could not be saved to disk, so your spending limits can’t be checked. Restart Eyehold to recover it.'
           : (acc.readError === 'UNSETTLED_SPEND' && open)
             ? 'Spend history unavailable — ' + (open === 1 ? 'an interrupted run never recorded what it spent' : open + ' interrupted runs never recorded what they spent') +
               ', so your spending limits can’t be checked. Settle ' + (open === 1 ? 'it' : 'each') + ' below.' + floor
-            : 'Spend history unavailable — the spend record could not be read, so your spending limits can’t be checked. Restart StarNet; if this stays, the spend files in your workspaces folder are damaged.';
+            : 'Spend history unavailable — the spend record could not be read, so your spending limits can’t be checked. Restart Eyehold; if this stays, the spend files in your workspaces folder are damaged.';
       } else if (spendEl) {
         const today = fmtUsd(st && st.spentToday), life = fmtUsd(st && st.lifetime);
         const runs = (st && typeof st.runs === 'number') ? st.runs : 0;
@@ -6498,15 +6498,15 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         const row = document.createElement('div');
         row.className = 'set-row bg-unsettled';
         const where = [r.provider, r.model].filter(Boolean).join(' · ');
-        // WHERE the charge is: a run on StarNet credits (receipt managed:true) was billed to the managed account, so its
+        // WHERE the charge is: a run on Eyehold credits (receipt managed:true) was billed to the managed account, so its
         // charge is in the STORE's RECENT ACTIVITY (AI & MODELS), which lists each charge with its run id — on a linked
         // station and an operator (env) one alike — not on a provider dashboard the user never had.
         const managed = r.managed === true;
-        const chargedBy = managed ? 'what StarNet charged' : 'what your provider charged';
-        row.setAttribute('data-tip', 'This run stopped before StarNet recorded what it spent' +
-          (managed ? ' (it ran on your StarNet credits' + (r.model ? ', ' + r.model : '') + ')' : (where ? ' (it started on ' + where + ')' : '')) +
-          (managed ? '. Enter what StarNet charged for it — SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY lists those charges as run ' + String(r.runId).slice(0, 8)
-            : '. Enter the charge your provider dashboard shows for it') + ': StarNet books it once and your spending limits can be checked again.');
+        const chargedBy = managed ? 'what Eyehold charged' : 'what your provider charged';
+        row.setAttribute('data-tip', 'This run stopped before Eyehold recorded what it spent' +
+          (managed ? ' (it ran on your Eyehold credits' + (r.model ? ', ' + r.model : '') + ')' : (where ? ' (it started on ' + where + ')' : '')) +
+          (managed ? '. Enter what Eyehold charged for it — SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY lists those charges as run ' + String(r.runId).slice(0, 8)
+            : '. Enter the charge your provider dashboard shows for it') + ': Eyehold books it once and your spending limits can be checked again.');
         const what = document.createElement('span');
         what.className = 'bg-un-what';
         const name = document.createElement('b');
@@ -6722,10 +6722,10 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   }
 
   // CLASS TIER MODELS (Class Loadouts S3) — the three tier->model pins the summon path (app.resolveTierModel)
-  // reads. Persisted in localStorage under the SAME key app.js reads (starnet.tierModels.v1) so there's no new
+  // reads. Persisted in localStorage under the SAME key app.js reads (eyehold.tierModels.v1) so there's no new
   // plumbing between the two IIFEs. The selects use the active provider's live catalog;
   // an empty value means "(station default)" — the tier inherits the model dock.
-  const TIER_MODELS_KEY = 'starnet.tierModels.v1';
+  const TIER_MODELS_KEY = 'eyehold.tierModels.v1';
   const TM_TIERS = ['reasoning', 'balanced', 'fast'];
   function readTierModels() {
     try { const m = JSON.parse(localStorage.getItem(TIER_MODELS_KEY) || '{}'); return (m && typeof m === 'object') ? m : {}; }
@@ -6962,7 +6962,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           const stamp = new Date().toISOString().slice(0, 10);
-          a.href = url; a.download = 'starnet-station-' + stamp + '.json';
+          a.href = url; a.download = 'eyehold-station-' + stamp + '.json';
           document.body.appendChild(a); a.click(); a.remove();
           setTimeout(() => URL.revokeObjectURL(url), 2000);
           setMsg('✓ exported (secrets excluded — re-enter keys after importing)', true); sfx('sale');
@@ -6974,7 +6974,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         const f = fileIn.files && fileIn.files[0]; if (!f) return;
         const reader = new FileReader();
         reader.onload = () => {
-          let env; try { env = JSON.parse(String(reader.result || '')); } catch (_) { setMsg('that is not a valid StarNet backup file'); sfx('bad'); fileIn.value = ''; return; }
+          let env; try { env = JSON.parse(String(reader.result || '')); } catch (_) { setMsg('that is not a valid Eyehold backup file'); sfx('bad'); fileIn.value = ''; return; }
           setMsg('importing…');
           Harness.api.post('/api/config/import', { envelope: env })
             .then(async ({ ok, j }) => {
@@ -7193,7 +7193,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       '<div class="mc-form" id="budget-form">' +
         '<div class="set-row"><label for="bg-perRun">PER RUN <span class="src-badge" id="bg-src-perRun" hidden></span></label><input id="bg-perRun" class="key-input bg-cap" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="off" placeholder="blank or 0 = no cap"></div>' +
         '<div class="mc-hint">Hard ceiling for a single agent run. The run stops the moment it would exceed this.</div>' +
-        '<div class="mc-hint" id="bg-managed-hint" hidden></div>' +   // #53: the StarNet-credit default, painted from /api/budget/status
+        '<div class="mc-hint" id="bg-managed-hint" hidden></div>' +   // #53: the Eyehold-credit default, painted from /api/budget/status
         '<div class="set-row"><label for="bg-perAgent">PER AGENT <span class="src-badge" id="bg-src-perAgent" hidden></span></label><input id="bg-perAgent" class="key-input bg-cap" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="off" placeholder="blank or 0 = no cap"></div>' +
         '<div class="mc-hint">Lifetime cap on any one agent’s total spend across all its runs.</div>' +
         '<div class="set-row"><label for="bg-perDay">PER DAY <span class="src-badge" id="bg-src-perDay" hidden></span></label><input id="bg-perDay" class="key-input bg-cap" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="off" placeholder="blank or 0 = no cap"></div>' +
@@ -7211,7 +7211,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       // sets what the loop tries NEXT if that model fails mid-run. Persisted server-side + applied live to every run
       // path (browser, cron, channels); env SKYNET_FALLBACK_MODELS is the default until you save one here.
       '<h4 class="ms-h">Backup models <span class="dim">— tried in order if your primary model fails</span></h4>' +
-      '<p class="set-about">Choose your primary model in COMMS. If it fails mid-run because of availability, authentication, billing, or rate limits, StarNet tries this list from top to bottom. Saved models use your OpenRouter connection, or your StarNet connection when StarNet is the primary provider. <b>An empty list disables fallback.</b> Model changes appear in COMMS and the logbook.</p>' +
+      '<p class="set-about">Choose your primary model in COMMS. If it fails mid-run because of availability, authentication, billing, or rate limits, Eyehold tries this list from top to bottom. Saved models use your OpenRouter connection, or your Eyehold connection when Eyehold is the primary provider. <b>An empty list disables fallback.</b> Model changes appear in COMMS and the logbook.</p>' +
       '<div class="mc-form" id="fbc-form">' +
         '<div id="fbc-list" class="mc-list-fb"><div class="dim">reading chain…</div></div>' +
         '<div class="set-row"><select id="fbc-add" class="fbc-sel"><option value="">＋ add a model from the catalog…</option></select></div>' +
@@ -7351,18 +7351,18 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const secSystem =
       // "POWER" — this header held only KEEP COMPUTER AWAKE, so "SCHEDULED TASKS" mislabelled it.
       '<h4 class="ms-h">POWER</h4>' +
-      '<label class="set-row"><input type="checkbox" id="set-awake" ' + (awakeChecked ? 'checked' : '') + (awakeDesktop ? '' : ' disabled') + '> KEEP COMPUTER AWAKE <span class="dim">— ' + (awakeDesktop ? 'prevent idle sleep while StarNet is open' : 'desktop app only') + '</span></label>' +
+      '<label class="set-row"><input type="checkbox" id="set-awake" ' + (awakeChecked ? 'checked' : '') + (awakeDesktop ? '' : ' disabled') + '> KEEP COMPUTER AWAKE <span class="dim">— ' + (awakeDesktop ? 'prevent idle sleep while Eyehold is open' : 'desktop app only') + '</span></label>' +
       // Lane 4D — native startup/tray choices + the honest background-lifecycle explainer. All controls are
       // desktop-only; they stay disabled and the line names the browser reality otherwise. The explainer
       // is filled live from the tray supervisor's REAL armed state (wireLifecycle) so it never over-claims.
-      '<label class="set-row"><input type="checkbox" id="set-autostart" disabled> LAUNCH AT LOGIN <span class="dim">— ' + (lifecycleDesktop ? 'start StarNet automatically when you sign in' : 'desktop app only') + '</span></label>' +
+      '<label class="set-row"><input type="checkbox" id="set-autostart" disabled> LAUNCH AT LOGIN <span class="dim">— ' + (lifecycleDesktop ? 'start Eyehold automatically when you sign in' : 'desktop app only') + '</span></label>' +
       '<label class="set-row"><input type="checkbox" id="set-start-minimized" disabled> START MINIMIZED TO TRAY <span class="dim">— ' + (lifecycleDesktop ? 'begin each launch hidden; open from the tray icon' : 'desktop app only') + '</span></label>' +
-      '<label class="set-row"><input type="checkbox" id="set-close-to-tray" disabled> CLOSE WINDOW TO TRAY <span class="dim">— ' + (lifecycleDesktop ? 'X hides StarNet; tray Quit stops it' : 'desktop app only') + '</span></label>' +
+      '<label class="set-row"><input type="checkbox" id="set-close-to-tray" disabled> CLOSE WINDOW TO TRAY <span class="dim">— ' + (lifecycleDesktop ? 'X hides Eyehold; tray Quit stops it' : 'desktop app only') + '</span></label>' +
       '<p class="set-about" id="lifecycle-desc">' + (lifecycleDesktop ? 'Checking what runs in the background…' : 'The desktop app can stay supervised in the system tray. This browser tab has no background process.') + '</p>' +
       // ADVANCED — env-only runtime knobs, now editable + persisted server-side (P1-9). PRECEDENCE is spelled out
       // in the card: an explicit environment variable ALWAYS wins over a value saved here (a deploy stays in control).
       '<h4 class="ms-h">Runtime limits <span class="dim">— optional ceilings and timeouts</span></h4>' +
-      '<p class="set-about">StarNet does not limit agent concurrency or run iterations by default. Set a positive value only when you want a ceiling. Saved here on this machine and read by the sidecar at boot. <b>An environment variable always overrides a value saved here</b>. Blank a field to clear the override.</p>' +
+      '<p class="set-about">Eyehold does not limit agent concurrency or run iterations by default. Set a positive value only when you want a ceiling. Saved here on this machine and read by the sidecar at boot. <b>An environment variable always overrides a value saved here</b>. Blank a field to clear the override.</p>' +
       '<div class="mc-form" id="adv-form"><div class="dim" id="adv-loading">reading runtime settings…</div></div>' +
       '<div id="adv-msg" class="msg"></div>' +
       // DATA / STATION BACKUP — export the whole station config to one JSON file, import it back, reset a section.
@@ -7406,7 +7406,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       '<div id="diag-build" class="dim" style="margin-top:6px;font-size:11px" hidden></div>' +
       // CLEAR NOTIFICATIONS moved to the NOTIFICATIONS section (where it belongs); this is now just the about note.
       '<h4 class="ms-h">ABOUT</h4>' +
-      '<p class="set-about">STARNET — gamified AI-agent harness.<br>Theme, display & audio preferences are saved locally on this machine. Manage planned tasks on the TASK BOARD and saved conversations under SESSIONS in COMMS.</p>';
+      '<p class="set-about">EYEHOLD — gamified AI-agent harness.<br>Theme, display & audio preferences are saved locally on this machine. Manage planned tasks on the TASK BOARD and saved conversations under SESSIONS in COMMS.</p>';
 
     // Keep every control mounted and reachable; group existing nodes without replacing their IDs.
     function arrangeSettingsPane(el) {
@@ -7522,10 +7522,10 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       // preferences — same word, two doors), and a 'SYSTEM' section inside SETTINGS inside the SYSTEM
       // dock read as a loop.
       { id: 'notifs', label: 'ALERTS', glyph: '◔', desc: 'What pings you while you work, and whether it chimes.', build: frag(secNotifs) },
-      // STARNET REMOTE: pair a phone and drive the station from anywhere (app/remote-devices.js owns the pane)
+      // EYEHOLD REMOTE: pair a phone and drive the station from anywhere (app/remote-devices.js owns the pane)
       { id: 'remote', label: 'REMOTE', glyph: '▯', desc: 'Pair your phone and control this station from anywhere.', build: el => { if (typeof RemoteDevices !== 'undefined') RemoteDevices.mount(el, arrangeSettingsPane); else el.textContent = 'Remote is not available in this build.'; } },
       // BROWSER: where the station browser lives — built-in / a Chrome window / your Chrome (app/outputbrowser.js owns the pane)
-      { id: 'browser', label: 'BROWSER', glyph: '◎', desc: 'Where the station browser runs: inside StarNet, as its own Chrome window, or in your own Chrome.', build: el => {
+      { id: 'browser', label: 'BROWSER', glyph: '◎', desc: 'Where the station browser runs: inside Eyehold, as its own Chrome window, or in your own Chrome.', build: el => {
         if (typeof OutputBrowser !== 'undefined' && OutputBrowser.mountSettings) OutputBrowser.mountSettings(el, arrangeSettingsPane);
         // SAVED SIGN-INS: STEP-IN is no longer a standing dock button, so the sign-ins it keeps get a door here
         const row = mkEl('div', 'set-row');
@@ -7545,7 +7545,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     wireProviderActions(host);
     wireKeyActions(host);
     queueProviderHealthRefresh();
-    // The STARNET MANAGED card is drawn from a cached credits state, so the FIRST paint of a fresh session
+    // The EYEHOLD MANAGED card is drawn from a cached credits state, so the FIRST paint of a fresh session
     // has nothing to go on. Re-read, and repaint only if the answer changed the card's existence or its
     // balance — an unconditional rerender here would wipe an open key editor on every settings open.
     (() => {
@@ -7746,12 +7746,12 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           if (startMinimizedToggle) { startMinimizedToggle.disabled = false; startMinimizedToggle.checked = !!v.startMinimized; }
           if (closeToTrayToggle) { closeToTrayToggle.disabled = false; closeToTrayToggle.checked = !!v.closeToTray; }
           if (v.closeToTray) {
-            lifeDesc.textContent = 'Closing the window hides StarNet in the tray and keeps the station running. Use Quit StarNet in the tray menu to stop it.';
+            lifeDesc.textContent = 'Closing the window hides Eyehold in the tray and keeps the station running. Use Quit Eyehold in the tray menu to stop it.';
           } else if (v.armed) {
             const why = (v.reasons && v.reasons.length) ? v.reasons.join(', ') : 'armed background work';
             lifeDesc.textContent = 'Right now, closing the window KEEPS the station running in the background (' + why + '). Quit fully from the tray icon. Otherwise closing would fully quit.';
           } else {
-            lifeDesc.textContent = 'Right now, nothing is armed — closing the window fully quits StarNet (no background process). Arm a routine, connect a channel, or set autonomy to BUILD or FREE to keep it running while closed.';
+            lifeDesc.textContent = 'Right now, nothing is armed — closing the window fully quits Eyehold (no background process). Arm a routine, connect a channel, or set autonomy to BUILD or FREE to keep it running while closed.';
           }
         }).catch(() => { lifeDesc.textContent = 'Closing the window keeps the station running only when armed work needs it — otherwise it fully quits.'; });
       };
@@ -8399,7 +8399,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
             '<div class="set-row"><label>USER</label><input class="key-input" data-ssh-user value="' + esc(String(target.user || '')) + '" placeholder="optional"></div>' +
             '<div class="set-row"><label>PORT</label><input class="key-input" data-ssh-port type="number" min="1" max="65535" value="' + esc(String(target.port || 22)) + '"></div>' +
             '<div class="set-row"><label>REMOTE ROOT</label><input class="key-input" data-ssh-root value="' + esc(String(target.remoteRoot || '/workspace')) + '" placeholder="/workspace"></div>' +
-            '<div class="mc-hint">Uses the OS OpenSSH agent/config with batch authentication and strict known_hosts. StarNet stores no password or private key. Files push before each command and pull back afterward; sync never deletes either side.</div>' +
+            '<div class="mc-hint">Uses the OS OpenSSH agent/config with batch authentication and strict known_hosts. Eyehold stores no password or private key. Files push before each command and pull back afterward; sync never deletes either side.</div>' +
             '<div class="mc-hint" data-ssh-status>' + esc(sshStatus) + '</div>' +
             '<div class="mc-acts"><button class="bb sm" data-ssh-save>SAVE &amp; PROBE</button>' +
               (sshConfigured ? '<button class="bb sm" data-ssh-sync="push">PUSH NOW</button><button class="bb sm" data-ssh-sync="pull">PULL NOW</button><button class="bb xs danger" data-ssh-clear>CLEAR TARGET</button>' : '') +
@@ -9186,20 +9186,20 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         banner.style.cssText = 'position:fixed;top:8px;left:10%;right:10%;z-index:100000;padding:16px;background:#281e12;color:#fff;border:2px solid #e8b35c';
         const label = document.createElement('p'); label.textContent = d.title;
         const exportButton = document.createElement('button'); exportButton.className = 'bb'; exportButton.textContent = 'Download this window’s save';
-        exportButton.onclick = () => { const blob = new Blob([JSON.stringify(CloudSave.localSnapshot() || {})], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'starnet-conflicting-save.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
+        exportButton.onclick = () => { const blob = new Blob([JSON.stringify(CloudSave.localSnapshot() || {})], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'eyehold-conflicting-save.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
         const reload = document.createElement('button'); reload.className = 'bb'; reload.textContent = 'Reload current station'; reload.onclick = async () => { try { await CloudSave.reloadCurrent(); } catch (e) { label.textContent = e.message; } };
         banner.append(label, exportButton, reload); document.body.append(banner);
       }
       return;
     }
     if (h && h.degraded) {
-      // EL-11 FIX 1: the sidecar is REFUSING writes — this workspace was written by a NEWER StarNet. Persistent
+      // EL-11 FIX 1: the sidecar is REFUSING writes — this workspace was written by a NEWER Eyehold. Persistent
       // red dot + a one-time visible line; never lets a refused write read as a healthy backup.
       d.classList.add('degraded');
-      d.title = 'this station’s data was written by a newer StarNet — update the app. Until then, changes are NOT being backed up.';
+      d.title = 'this station’s data was written by a newer Eyehold — update the app. Until then, changes are NOT being backed up.';
       if (!degradedNotified) {
         degradedNotified = true;
-        try { notify('This station’s data was written by a newer StarNet — update the app. Until you do, your changes are NOT being backed up.', 'bad'); } catch (_) {}
+        try { notify('This station’s data was written by a newer Eyehold — update the app. Until you do, your changes are NOT being backed up.', 'bad'); } catch (_) {}
       }
     } else if (h && h.stale) {
       d.classList.add('stale');
@@ -9377,7 +9377,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         el.appendChild(mkEl('p', 'cd-privacy', 'Your profile is stored locally. Its briefing is sent to each agent’s configured model when it works; relevant summaries may also be used for suggestions.'));
         el.appendChild(cdBriefing(ds));
       } },
-      { id: 'sources', label: 'SOURCES', glyph: '⌁', desc: 'Manage the notes StarNet can study for useful work.', build: el => {
+      { id: 'sources', label: 'SOURCES', glyph: '⌁', desc: 'Manage the notes Eyehold can study for useful work.', build: el => {
         if (typeof WorkHub !== 'undefined') WorkHub.mountSources(el);
         else el.appendChild(mkEl('p', 'cd-empty', 'Source settings are unavailable. Reopen the dossier to try again.'));
       }, onShow: el => { const detail = el.querySelector('.wh-source-settings'); if (detail) detail.open = true; } },
@@ -9713,7 +9713,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
      you are on, and the steps ahead.
 
      WHERE IT DEPARTS FROM A BATTLE PASS, DELIBERATELY: nothing here is locked, and no node is a tier you
-     buy or unlock. StarNet's standing law is that the log reveals ORDER and never withholds — so upcoming
+     buy or unlock. Eyehold's standing law is that the log reveals ORDER and never withholds — so upcoming
      nodes read as "coming up", never as locked loot, and there is no padlock, no tier number, and no
      fake currency. The reward each node names is the real outcome the milestone produces.
 
@@ -9828,7 +9828,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const next = steps.find(s => s.isNext && s.status !== 'done');
     const accept = (next && !next.inFlight)
       ? '<button class="consent-btn q-arc-accept q-track-accept" data-gid="' + esc(next.arcGoalId) + '" data-mid="' + esc(next.milestoneId) + '">▶ START THIS STEP</button><p class="sub dim">Starts work with your crew using your current model and permissions.</p>'
-        + '<details class="q-life-report"><summary>I DID THIS STEP</summary><label>What did you do?<textarea class="q-step-evidence" maxlength="1000" placeholder="Describe the action you completed outside StarNet"></textarea></label>'
+        + '<details class="q-life-report"><summary>I DID THIS STEP</summary><label>What did you do?<textarea class="q-step-evidence" maxlength="1000" placeholder="Describe the action you completed outside Eyehold"></textarea></label>'
         + '<button class="consent-btn q-step-report" data-gid="' + esc(next.arcGoalId) + '" data-mid="' + esc(next.milestoneId) + '">RECORD MY ACTION</button></details>'
       : (next && next.inFlight ? '<span class="sub q-track-running">the build for this step is running — finishing it completes the step.</span>' : '');
     const alternatives = steps.filter(s => s.status !== 'done' && !s.isNext);
@@ -10085,7 +10085,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const recent = (Array.isArray(j.outcomes) ? j.outcomes : []).slice(-3).reverse();
     const progression = j.progression;
     const achievements = progression && Array.isArray(progression.achievements) ? progression.achievements.slice(-5).reverse() : [];
-    const proofLabel = (kind, authority) => authority === 'commander-confirmed' ? 'You confirmed' : kind === 'metric' ? 'You recorded' : 'StarNet recorded';
+    const proofLabel = (kind, authority) => authority === 'commander-confirmed' ? 'You confirmed' : kind === 'metric' ? 'You recorded' : 'Eyehold recorded';
     const growthHtml = progression ? '<div class="q-commander-growth"><div class="q-journey-title">WARDEN LEVEL ' + progression.level + '</div>'
       + '<div class="sub">' + progression.points + ' achievement points · ' + progression.pointsToNextLevel + ' to the next level</div>'
       + '<div class="sub dim">Confirmed goal activity and recorded metric checkpoints earn points across your goals. Confirming a completed goal earns 100 points. Setbacks never erase your history.</div>'
@@ -10149,7 +10149,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
           + '<button class="consent-btn q-goal-reflect">SAVE REFLECTION</button></details></details>';
       }).join('') + '</div>' : '';
     return '<details class="q-life-goal q-life-manage"' + (goals.length ? '' : ' open') + '><summary>Start a goal</summary>'
-      + '<p class="sub">A rough idea is enough. Shape it with StarNet or write your own plan.</p>'
+      + '<p class="sub">A rough idea is enough. Shape it with Eyehold or write your own plan.</p>'
       + '<label>I want to…<input class="q-new-goal" maxlength="280" placeholder="Learn to play a song, change careers, build a business…"></label>'
       + '<button class="consent-btn q-goal-suggest">HELP SHAPE MY PLAN</button><p class="sub dim">Uses your current AI model to suggest an editable plan. Saving and starting work are separate actions.</p>'
       + '<div class="q-plan-feedback" role="status" aria-live="polite"></div><div class="q-plan-proposal"></div>'
@@ -10333,7 +10333,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
       const rewardHtml = q.reward ? '<div class="sub q-reward"><span class="q-field-label">REWARD</span>&#9670; ' + esc(q.reward) + '</div>' : '';
       const actionRow = (goBtn || queueBtn) ? '<div class="q-actions">' + goBtn + queueBtn + '</div>' : '';
       const lifeActions = q.kind === 'ledger' && q.status !== 'done' ? '<div class="q-life-quest" data-qid="' + esc(q.id) + '">'
-        + '<div class="sub q-owner">' + esc(q.executionMode === 'commander' ? 'YOUR ACTION' : q.executionMode === 'together' ? 'YOU + STARNET' : 'STARNET CAN HELP') + '</div>'
+        + '<div class="sub q-owner">' + esc(q.executionMode === 'commander' ? 'YOUR ACTION' : q.executionMode === 'together' ? 'YOU + EYEHOLD' : 'EYEHOLD CAN HELP') + '</div>'
         + (q.whyNow ? '<div class="sub">Why now: ' + esc(q.whyNow) + '</div>' : '')
         + (isPaused(q) ? '<div class="sub">' + esc(q.disposition.type === 'later' ? 'Saved for tomorrow' : q.disposition.type === 'too_big' ? 'Needs a smaller step' : 'Blocked') + (q.disposition.reason ? ': ' + esc(q.disposition.reason) : '') + '</div><button class="consent-btn q-quest-disposition" data-action="resume">RESUME</button>'
           : '<details><summary>CHANGE THIS RECOMMENDATION</summary><label>What needs to change?<input id="q-reason-' + esc(q.id) + '" class="q-disposition-reason" value="' + esc(questDrafts.get(q.id)?.reason || '') + '" maxlength="240" placeholder="For example: waiting for a reply, or only 15 minutes available"></label>'
@@ -10567,7 +10567,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     if (suggest) suggest.addEventListener('click', async () => {
       if (body._journeyPlanning) return;
       const form = body.querySelector('.q-life-manage'), title = form.querySelector('.q-new-goal').value.trim();
-      if (title.length < 4) { body._journeyPlanMessage = 'Tell StarNet a little about what you want to do first.'; planFeedback.textContent = body._journeyPlanMessage; form.querySelector('.q-new-goal').focus(); return; }
+      if (title.length < 4) { body._journeyPlanMessage = 'Tell Eyehold a little about what you want to do first.'; planFeedback.textContent = body._journeyPlanMessage; form.querySelector('.q-new-goal').focus(); return; }
       const options = { motivation: form.querySelector('.q-new-motivation').value, constraints: form.querySelector('.q-new-constraints').value,
         successCondition: form.querySelector('.q-new-success').value, steps: form.querySelector('.q-new-steps').value };
       body._journeyPlanning = true; body._journeyPlan = null; rerender('quests', false);
@@ -10657,7 +10657,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     }));
     body.querySelectorAll('.q-journey-export').forEach(b => b.addEventListener('click', () => {
       const url = URL.createObjectURL(new Blob([GoalStore.exportJourney()], { type: 'application/json' }));
-      const a = document.createElement('a'); a.href = url; a.download = 'starnet-journey.json'; a.click();
+      const a = document.createElement('a'); a.href = url; a.download = 'eyehold-journey.json'; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }));
     body.querySelectorAll('.q-goal-focus').forEach(b => b.addEventListener('click', () => { if (GoalStore.focusGoal(b.dataset.gid)) rerender('quests', false); }));
@@ -11122,10 +11122,10 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   }
 
   // called when entering the game room with the live agent(s)
-  // one-shot: fold any legacy starnet.station.v1 kanban cards into real workstreams, then retire tasks[].
+  // one-shot: fold any legacy eyehold.station.v1 kanban cards into real workstreams, then retire tasks[].
   // Guarded by a persisted flag so a refresh never re-imports / duplicates the cards. Runs from enter(),
   // which is called during app.js init() while `const App` is still in its TDZ — so this must NOT touch
-  // App. The imported workstreams are written to starnet.save by the trailing persist() in resumeInto/onWake
+  // App. The imported workstreams are written to eyehold.save by the trailing persist() in resumeInto/onWake
   // (a direct in-scope call), which always follows enterGame; here we only update our own station store.
   function importLegacyTasks() {
     if (store.tasksImported) return;

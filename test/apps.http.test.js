@@ -30,7 +30,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const page = await fx.request('/app-ui/' + id + '/' + a0.digest + '/index.html');
     const html = await page.text();
     const csp = page.headers.get('content-security-policy') || '';
-    A.ok(page.status === 200 && /_starnet\/kit\.js/.test(html) && /Your crew is building this app/.test(html), 'the app page is served with the station kit injected');
+    A.ok(page.status === 200 && /_eyehold\/kit\.js/.test(html) && /Your crew is building this app/.test(html), 'the app page is served with the station kit injected');
     A.ok(/sandbox allow-scripts/.test(csp) && /connect-src 'none'/.test(csp) && /form-action 'none'/.test(csp), 'served under the network-less sandbox: ' + csp.slice(0, 120));
     const stale = await fx.request('/app-ui/' + id + '/' + 'f'.repeat(64) + '/index.html');
     A.eq(stale.status, 410, 'a stale version is refused (410)');

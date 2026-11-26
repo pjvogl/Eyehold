@@ -1,8 +1,8 @@
-/* sidecar/skills/market-format.js — the StarNet Skill Market catalog format, shared by the build script
+/* sidecar/skills/market-format.js — the Eyehold Skill Market catalog format, shared by the build script
    (scripts/build-skill-catalog.mjs, which writes the catalog into website/) and the app (skills/market.js, which
    reads it). One definition so the two can never disagree about slugs, versions, digests or the file manifest.
 
-   The index is the existing `starnet-skill-registry/v1` document (so the SKILL EXCHANGE registry reader can also
+   The index is the existing `eyehold-skill-registry/v1` document (so the SKILL EXCHANGE registry reader can also
    read it) with extra fields per entry: slug, shelf, category, tags, requires, librarySlug and `files`, the exact
    manifest the app downloads. `digest` is the open-agent-skill-package/v1 digest over those files; the app refuses
    an install whose downloaded bytes do not reproduce it. Every version lives in its own folder
@@ -13,16 +13,16 @@
 
    The index also carries a `serial` (bumped by every build that changes it; a station never accepts a lower serial
    than one it has already seen) and `revoked`, the skills the market has pulled. The pulled list is published on
-   its own too (starnet-skill-revocations/v1, a few hundred bytes) so stations with market skills installed can
+   its own too (eyehold-skill-revocations/v1, a few hundred bytes) so stations with market skills installed can
    check it often. Both documents are signed (skills/market-signing.js). Pure: no network, no clock. */
 'use strict';
 
 const packageFormat = require('./package-format.js');
 const catalog = require('./catalog.js');
 
-const FORMAT = 'starnet-skill-registry/v1';
-const REVOKED_FORMAT = 'starnet-skill-revocations/v1';
-const MARKET_NAME = 'StarNet Skill Market';
+const FORMAT = 'eyehold-skill-registry/v1';
+const REVOKED_FORMAT = 'eyehold-skill-revocations/v1';
+const MARKET_NAME = 'Eyehold Skill Market';
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const VERSION_RE = /^\d+\.\d+\.\d+$/;
 const SHELVES = ['originals', 'community'];
@@ -76,14 +76,14 @@ function revokedMatch(revoked, slug, digest) {
   return (revoked || []).find(r => r.slug === slug && (!r.digest || r.digest === digest)) || null;
 }
 
-/* libraryToSkillMd — a bundled StarNet recipe (sidecar/skills/library/<slug>.md, parsed by catalog.parse) as a
+/* libraryToSkillMd — a bundled Eyehold recipe (sidecar/skills/library/<slug>.md, parsed by catalog.parse) as a
    standard Agent Skills SKILL.md: spec name = the slug, the display title under metadata.title. The body is the
    recipe body byte for byte, so the market copy and the bundled copy say the same thing at the same version. */
 function libraryToSkillMd(recipe, opts) {
   opts = opts || {};
   const lines = ['---', 'name: ' + recipe.slug, 'description: ' + q(str(recipe.description).replace(/\s+/g, ' ').trim()),
     'license: ' + q(recipe.license || 'MIT'), 'metadata:', '  title: ' + q(recipe.name), '  category: ' + q(recipe.category || 'General'),
-    '  author: ' + q(opts.author || 'StarNet')];
+    '  author: ' + q(opts.author || 'Eyehold')];
   if (opts.version) lines.push('  version: ' + q(opts.version));
   lines.push('---', '');
   return lines.join('\n') + '\n' + str(recipe.body).trim() + '\n';
@@ -129,7 +129,7 @@ function buildEntry(src) {
   const doc = readSkillMd(main.content, slug);
   if (src.shelf === 'community') {
     if (!files.some(f => ROOT_FILES.test(f.path) && /^(LICENSE|COPYING)/.test(f.path))) throw new Error(slug + ': a community skill must ship its LICENSE text');
-    // its source is either an upstream repo it was adapted from, or the reviewed upload it came from (account.starnetos.com
+    // its source is either an upstream repo it was adapted from, or the reviewed upload it came from (account.eyehold.com
     // Skills tab, pulled by scripts/pull-skill-submissions.mjs): the submission id + the author's owner key
     const sub = src.submission;
     const uploaded = !!(sub && /^sk_[A-Za-z0-9_-]{6,40}$/.test(str(sub.id)) && /^[0-9a-f]{24}$/.test(str(sub.owner)));
@@ -138,7 +138,7 @@ function buildEntry(src) {
   const pkg = packageFormat.canonicalize(files, { maxFileBytes: 256000 });
   const entry = {
     slug, name: doc.title, description: doc.description.slice(0, 280), version: str(src.version),
-    author: list(src.authors).join(', ') || doc.author || 'StarNet', license: str(src.license || doc.license),
+    author: list(src.authors).join(', ') || doc.author || 'Eyehold', license: str(src.license || doc.license),
     shelf: src.shelf, category: str(src.category || doc.category || 'General'), tags: list(src.tags).slice(0, 8), requires,
     librarySlug: src.librarySlug ? str(src.librarySlug) : '',
     sourceUrl: '/skills/' + slug + '/' + src.version + '/SKILL.md',
@@ -146,7 +146,7 @@ function buildEntry(src) {
     files: pkg.files.map(f => ({ path: f.path, sha256: f.sha256, bytes: f.bytes }))
   };
   if (src.upstream) entry.upstream = { url: str(src.upstream.url), commit: str(src.upstream.commit), license: str(src.upstream.license || entry.license) };
-  // shared by a StarNet user through the upload page (read and approved before it was published); additive, older apps ignore it
+  // shared by a Eyehold user through the upload page (read and approved before it was published); additive, older apps ignore it
   if (src.shelf === 'community' && src.submission && !src.upstream) entry.uploaded = true;
   return { entry, pkg };
 }
@@ -202,10 +202,10 @@ function readCatalog(doc) {
 }
 
 // revokedUrl(indexUrl) -> the pulled-skills list published next to the index
-function revokedUrl(indexUrl) { return new URL('starnet-skills-revoked.json', indexUrl).href; }
+function revokedUrl(indexUrl) { return new URL('eyehold-skills-revoked.json', indexUrl).href; }
 
 // fileUrl(indexUrl, entry, path) -> the absolute URL of one package file
-//   Files live in skills/ BESIDE the site the index is published on: for https://host/.well-known/starnet-skills.json
+//   Files live in skills/ BESIDE the site the index is published on: for https://host/.well-known/eyehold-skills.json
 //   that is https://host/skills/…, and a catalog hosted under a subpath (https://host/market/.well-known/…) resolves
 //   to https://host/market/skills/… instead of the site root.
 function fileUrl(indexUrl, entry, path) {

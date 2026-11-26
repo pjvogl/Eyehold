@@ -1,22 +1,22 @@
-/* node test/manual.test.js — the StarNet operator manual appended to the system prompt so an agent
+/* node test/manual.test.js — the Eyehold operator manual appended to the system prompt so an agent
    can guide a stuck Commander. Verifies it is deterministic, structurally defers to the authoritative
    capabilities block (so it can never over-promise THIS agent's powers), and names props/UI with the
    SAME labels the live floor uses (guards label drift). */
 'use strict';
 const A = require('./_assert.js');
-const { starnetManual } = require('../sidecar/manual.js');
+const { eyeholdManual } = require('../sidecar/manual.js');
 
 (function () {
-  const m = starnetManual();
+  const m = eyeholdManual();
 
   // 1) non-empty string, and deterministic (resume-safe — same bytes every call, ignores any arg)
   A.eq(typeof m, 'string', 'returns a string');
   A.ok(m.length > 200, 'manual is substantive');
-  A.eq(starnetManual(), m, 'deterministic: identical across calls');
-  A.eq(starnetManual({ surface: 'interactive', role: 'lead' }), m, 'argless: ignores opts, same bytes');
+  A.eq(eyeholdManual(), m, 'deterministic: identical across calls');
+  A.eq(eyeholdManual({ surface: 'interactive', role: 'lead' }), m, 'argless: ignores opts, same bytes');
 
   // 2) fenced as a manual block (so it reads as a distinct section, like <capabilities_ground_truth>)
-  A.ok(/<starnet_operator_manual>/.test(m) && /<\/starnet_operator_manual>/.test(m), 'wrapped in the manual fence');
+  A.ok(/<eyehold_operator_manual>/.test(m) && /<\/eyehold_operator_manual>/.test(m), 'wrapped in the manual fence');
 
   // 3) NO-CONTRADICTION GUARANTEE: it explicitly defers to <capabilities_ground_truth> and disclaims
   //    that it is the agent's own power list — this is what keeps it from ever lying about what the agent can do.
@@ -45,7 +45,7 @@ const { starnetManual } = require('../sidecar/manual.js');
   A.ok(/NO COMPUTE/.test(m), 'troubleshoots the NO COMPUTE / needs-a-workstation case');
   A.ok(/CALL station\.inspect first/.test(m), 'live harness-state questions route to the authoritative inspector');
   A.ok(/needs no placed prop or approval/.test(m), 'self-inspection is correctly described as a base read');
-  A.ok(/Never[\s\S]{0,160}invent a StarNet CLI command/.test(m), 'manual forbids guessing a diagnostic command');
+  A.ok(/Never[\s\S]{0,160}invent a Eyehold CLI command/.test(m), 'manual forbids guessing a diagnostic command');
   A.ok(/place the matching prop/i.test(m), 'tells the agent to place the matching prop for a missing power');
   A.ok(/Windows Task Scheduler/.test(m) && /OS crontab/.test(m), 'routine guidance points away from OS schedulers');
 
@@ -84,7 +84,7 @@ const { starnetManual } = require('../sidecar/manual.js');
   A.ok(/If you have the connectors\.list tool, CALL IT/.test(m), 'tells the agent to call it rather than answer from memory');
   A.ok(/WITHOUT that tool you do NOT have a reliable/.test(m),
     'the anti-guessing rule is now scoped to the case where the tool is absent, not stated unconditionally');
-  /* and the specific lie a Commander reports as gaslighting: "StarNet can't do that" when the truth is
+  /* and the specific lie a Commander reports as gaslighting: "Eyehold can't do that" when the truth is
      "that isn't connected yet". Those are different claims and the manual must separate them. */
   A.ok(/not connected YET/.test(m), 'separates "cannot reach" from "not connected yet"');
 

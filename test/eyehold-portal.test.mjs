@@ -31,7 +31,7 @@ const liveHealth = await worker.fetch(new Request('https://eyehold.babelbook.net
 const liveHealthBody = await liveHealth.json();
 assert.equal(liveHealthBody.billingLive, true);
 assert.equal(liveHealthBody.mode, 'live');
-assert.doesNotMatch(home.body, /starnetos|babelbook-staging/);
+assert.doesNotMatch(home.body, /eyehold|babelbook-staging/);
 const feed = await get('/updates/latest.json', headers);
 assert.equal(feed.status, 200);
 assert.deepEqual(feed.body.platforms, {});

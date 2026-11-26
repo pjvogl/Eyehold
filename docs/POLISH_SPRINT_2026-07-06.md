@@ -2,7 +2,7 @@
 
 Source: five-lane truthful-telemetry audit (this session) + Andrew's direct asks.
 Orchestrator: Fable. Implementation agents: Opus, one worktree each, `agent/<lane>` branches.
-Gate: `npm run test:fast` green + live verification per `starnet-verify` before merge.
+Gate: `npm run test:fast` green + live verification per `eyehold-verify` before merge.
 
 ## Lane 1 — `ux-popup-escape` (Andrew ask)
 Every popup/beat that asks the Commander questions must be exitable without answering.
@@ -28,7 +28,7 @@ re-uses the genesis skin options and live-updates the world sprite. Hero deletio
 question — block deleting the hero (last agent) rather than asking.
 
 ## Lane 4 — `voice-button-reliability` (Andrew bug)
-"The voice button does not always work reliably." Reproduce-first (starnet-debugging). Suspects:
+"The voice button does not always work reliably." Reproduce-first (eyehold-debugging). Suspects:
 frontend/app/voice.js dual STT path (browser SpeechRecognition vs desktop MediaRecorder→/api/stt),
 init/permission races, button state machine getting stuck after a failed recognition start,
 hands-free loop re-arm (chat.js:4048), recent desktop haveKey() fix (8c25d4fc) adjacency.
@@ -96,5 +96,5 @@ Deliver: diagnosis + fix + a button state that always recovers (visible error st
 - focusAgent global-model overwrite (app.js:364) — "follows station default" can lie; small fix but
   touches model-pinning semantics.
 
-## Merge order (starnet-merge-ritual per branch)
+## Merge order (eyehold-merge-ritual per branch)
 Small/independent first: 2 → 1 → 8 → 7 → 6 → 5 → 3 → 4 (4 lands whenever diagnosis completes).

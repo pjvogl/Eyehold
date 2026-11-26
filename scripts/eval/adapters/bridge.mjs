@@ -105,12 +105,12 @@ async function codeAdapter() {
 }
 
 async function lspAdapter() {
-  const root = mkdtempSync(path.join(os.tmpdir(), 'starnet-eval-lsp-'));
+  const root = mkdtempSync(path.join(os.tmpdir(), 'eyehold-eval-lsp-'));
   const workspace = path.join(root, 'a1');
   mkdirSync(workspace, { recursive: true });
   const fixture = fileURLToPath(new URL('../fixtures/fake-lsp-server.cjs', import.meta.url));
   const manager = makeLspManager({
-    spawn, fs, fsp, pathMod: path, env: Object.assign({}, process.env, { STARNET_EVAL_SECRET: 'must-not-cross' }),
+    spawn, fs, fsp, pathMod: path, env: Object.assign({}, process.env, { EYEHOLD_EVAL_SECRET: 'must-not-cross' }),
     servers: [{ id: 'eval-fake', command: process.execPath, args: [fixture], extensions: ['.fake'], languageIds: { '.fake': 'fake' } }],
     limits: { requestTimeoutMs: 2000, diagnosticTimeoutMs: 1000, idleMs: 5000 }
   });
@@ -139,7 +139,7 @@ async function lspAdapter() {
 }
 
 async function historyAdapter() {
-  const root = mkdtempSync(path.join(os.tmpdir(), 'starnet-eval-history-'));
+  const root = mkdtempSync(path.join(os.tmpdir(), 'eyehold-eval-history-'));
   const historyRoot = path.join(root, 'history');
   try {
     let io = makeSegmentedTranscriptIo({ fs, path, root: historyRoot, segmentBytes: 300, recentPerStream: 8, legacyFiles: [] });

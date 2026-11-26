@@ -8,7 +8,7 @@
    The plugin's main exports register(api). The api is the plugin's whole reach into the station, over IPC:
      api.on(event, fn)                 hook the run (pre_tool_call may return { decision: 'block', reason })
      api.tool({ name, description, parameters, readOnly, run(args, ctx) })   a tool the crew can call
-     api.handle(name, fn(args))        answer the plugin's own windows: starnet.backend.call(name, args)
+     api.handle(name, fn(args))        answer the plugin's own windows: eyehold.backend.call(name, args)
      api.every(ms, fn)                 a background job (min 10 s)
      api.store.get/set/delete/keys     the SAME private store the plugin's windows use
      api.log(...)                      a line in the station log, prefixed with the plugin id

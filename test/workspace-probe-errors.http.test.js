@@ -4,7 +4,7 @@ const {SidecarFixture}=require('./helpers/sidecar-fixture');
 (async()=>{
  for(const code of ['EACCES','EIO','ENOSYS']){
   const f=SidecarFixture.create({timeoutMs:10000});
-  const lock=path.join(f.workspace,'.starnet-workspace-owner.json');
+  const lock=path.join(f.workspace,'.eyehold-workspace-owner.json');
   const raw=JSON.stringify({version:1,pid:process.pid,nonce:'live-owner',startedAt:Date.now()});
   fs.writeFileSync(lock,raw);
   f.entry=path.join(f.workspace,'fault-host.cjs');

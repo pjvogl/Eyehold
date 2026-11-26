@@ -27,16 +27,16 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), STARNET_PORT: String(port),
-        SKYNET_WORKSPACES: workspaces, STARNET_WORKSPACES: workspaces,
+        SKYNET_PORT: String(port), EYEHOLD_PORT: String(port),
+        SKYNET_WORKSPACES: workspaces, EYEHOLD_WORKSPACES: workspaces,
         // clear every provider key so no route can reach the network (determinism + zero spend).
-        OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', STARNET_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
-        ANTHROPIC_API_KEY: '', STARNET_ANTHROPIC_API_KEY: '', SKYNET_ANTHROPIC_API_KEY: '',
-        GEMINI_API_KEY: '', STARNET_GEMINI_API_KEY: '', SKYNET_GEMINI_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
+        ANTHROPIC_API_KEY: '', EYEHOLD_ANTHROPIC_API_KEY: '', SKYNET_ANTHROPIC_API_KEY: '',
+        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', SKYNET_GEMINI_API_KEY: '',
         // keep DEV off by default so POST /api/dev/inbound proves its 404 gate deterministically.
-        STARNET_DEV: '', SKYNET_DEV: '',
-        STARNET_APP_VERSION: '9.9.9-routes-test'
+        EYEHOLD_DEV: '', SKYNET_DEV: '',
+        EYEHOLD_APP_VERSION: '9.9.9-routes-test'
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -65,7 +65,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   let apiToken = '';
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     if (apiToken) headers['Origin'] = B;
     const r = await fetch(B + p, { method: m, headers, body: body === undefined ? undefined : JSON.stringify(body) });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
@@ -114,7 +114,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(mint.body.ok, true, 'mint reports ok:true');
     A.ok(mint.body.id && typeof mint.body.id === 'string', 'mint returns the new quest id');
     const questId = mint.body.id;
-    const mintBad = await fetch(B + '/api/quests/mint', { method: 'POST', headers: { 'X-StarNet-Token': apiToken, Origin: B }, body: '{not json' });
+    const mintBad = await fetch(B + '/api/quests/mint', { method: 'POST', headers: { 'X-Eyehold-Token': apiToken, Origin: B }, body: '{not json' });
     A.eq(mintBad.status, 400, 'POST /api/quests/mint with malformed JSON -> 400');
     // the minted quest is now visible in the ledger read (the store round-trip is real)
     const quests1 = await j('GET', '/api/quests');
@@ -176,7 +176,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- (8) POST /api/dev/inbound — dev-gated: on a NON-dev boot the route 404s (the gate holds) ----
     const devInbound = await j('POST', '/api/dev/inbound', { text: 'ping' });
-    A.eq(devInbound.status, 404, 'POST /api/dev/inbound on a non-dev boot -> 404 (STARNET_DEV gate holds)');
+    A.eq(devInbound.status, 404, 'POST /api/dev/inbound on a non-dev boot -> 404 (EYEHOLD_DEV gate holds)');
     A.eq(devInbound.body.error, 'not found', 'the dev-gate 404 is honest');
 
     // ---- (9) POST /api/workshop/remove — no-such-idea -> 404; bad agentId -> 400 ----
@@ -234,7 +234,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const study = await j('GET', '/api/study/proposals?agent=agent&run=nope');
     A.eq(study.status, 200, 'GET /api/study/proposals -> 200');
     A.ok(Array.isArray(study.body.proposals), 'study proposals returns a proposals array (empty on a fresh workspace)');
-    const studyBad = await fetch(B + '/api/study/proposals?agent=' + encodeURIComponent('../evil'), { headers: { 'X-StarNet-Token': apiToken, Origin: B } });
+    const studyBad = await fetch(B + '/api/study/proposals?agent=' + encodeURIComponent('../evil'), { headers: { 'X-Eyehold-Token': apiToken, Origin: B } });
     A.eq(studyBad.status, 403, 'GET /api/study/proposals with a jail-escape agent id -> 403');
 
     // ---- (17) GET /api/toolsets — the placeable-capability catalog ----
@@ -253,7 +253,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(wdir.status, 200, 'GET /api/workspace/dir?agent=agent -> 200');
     A.ok(typeof wdir.body.dir === 'string' && wdir.body.dir.length > 0, 'workspace/dir returns an absolute jailed path');
     A.ok(wdir.body.dir.indexOf(ws) >= 0, 'the returned dir is jailed under the WORKSPACES root');
-    const wdirEscape = await fetch(B + '/api/workspace/dir?agent=' + encodeURIComponent('../../etc'), { headers: { 'X-StarNet-Token': apiToken, Origin: B } });
+    const wdirEscape = await fetch(B + '/api/workspace/dir?agent=' + encodeURIComponent('../../etc'), { headers: { 'X-Eyehold-Token': apiToken, Origin: B } });
     A.eq(wdirEscape.status, 403, 'GET /api/workspace/dir with a jail-escape agent id -> 403');
 
   } finally {

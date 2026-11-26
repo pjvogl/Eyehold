@@ -4,7 +4,7 @@
  * user's world — save doc, roster, station build, workstreams, cron routines, notebook memory — must be
  * byte-preserved or losslessly migrated. This gate is the automated proof the audit asked for.
  *
- * SCOPE (honest, per starnet-verify — say what is proven vs deferred):
+ * SCOPE (honest, per eyehold-verify — say what is proven vs deferred):
  *   PROVEN HERE, deterministically + filesystem-only + no-LLM + in-process (test:fast-eligible):
  *     (1) SAME-CODE REBOOT PARITY. A realistic workspace is seeded on a real temp dir through the REAL sidecar
  *         store writers (savestore.js, memory-store.js notebook, cron-store.js, durable-store.js roster
@@ -41,7 +41,7 @@ const { readJsonResilient, writeJsonResilient } = require('../sidecar/durable-st
 // ---------------------------------------------------------------------------------------------------------
 // temp workspace on the real fs (deterministic reads/writes; no network, no LLM, no child process).
 // ---------------------------------------------------------------------------------------------------------
-const WS = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-parity-'));
+const WS = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-parity-'));
 const clock = { now: () => 1700000000000 };   // fixed clock so savedAt is deterministic across the run
 function cleanup() { try { fs.rmSync(WS, { recursive: true, force: true }); } catch (_) {} }
 process.on('exit', cleanup);
@@ -63,7 +63,7 @@ const saveCron = (env) => writeJsonResilient({ fs, path }, CRON_FILE, env);
 // ---------------------------------------------------------------------------------------------------------
 const HERO_STATS = { xp: 120, level: 3, lifetimeXp: 340, confidence: 61, samples: 8, counters: { runs: 8 }, milestones: ['first-run'] };
 const SAVE_DOC = {
-  schema: 'starnet.save', version: 6, updatedAt: 1700000000000,
+  schema: 'eyehold.save', version: 6, updatedAt: 1700000000000,
   agent: {
     id: 'agent', name: 'NOVA', color: '#5ad0ff', model: 'anthropic/claude-sonnet-4.5', personaId: 'worker-homie',
     purpose: 'always-ready dev test agent', specialtyId: null, createdAt: 1699000000000,
@@ -221,7 +221,7 @@ function loadSaveModule() {
   vm.createContext(sandbox);
   vm.runInContext(src + '\nthis.__Save = Save;', sandbox, { filename: 'save.js' });
   // migrate(doc) via the real load path: stash the doc under the save KEY, then load() (migrates in place).
-  const migrateViaLoad = (doc) => { store['starnet.save'] = JSON.stringify(doc); delete store['starnet.save.pre-migrate.backup']; return sandbox.__Save.load(); };
+  const migrateViaLoad = (doc) => { store['eyehold.save'] = JSON.stringify(doc); delete store['eyehold.save.pre-migrate.backup']; return sandbox.__Save.load(); };
   return { Save: sandbox.__Save, migrateViaLoad };
 }
 
@@ -231,7 +231,7 @@ function loadSaveModule() {
 
   // --- v1 doc: the oldest schema (single flat history). Every top-level field must survive or be folded. ---
   const V1 = {
-    schema: 'starnet.save', version: 1,
+    schema: 'eyehold.save', version: 1,
     agent: { id: 'agent', name: 'ULTRON', model: 'anthropic/claude-sonnet-4.5', purpose: 'serve' },
     history: [{ role: 'user', content: 'what is my purpose?' }, { role: 'assistant', content: 'to serve, Commander.' }],
     usage: { tokens: 1200, cost: 0.0345, calls: 3 },
@@ -268,7 +268,7 @@ function loadSaveModule() {
   }
   // prove the envelope stamps are reconstructed by a write (they are NOT lost — the writer owns them).
   const rewritten = Save.write(m1);
-  A.eq(rewritten.schema, 'starnet.save', 'v1->v6: Save.write() re-stamps the schema tag (envelope field, not lost)');
+  A.eq(rewritten.schema, 'eyehold.save', 'v1->v6: Save.write() re-stamps the schema tag (envelope field, not lost)');
   A.eq(rewritten.version, 6, 'v1->v6: Save.write() stamps the current version');
   A.ok(typeof rewritten.updatedAt === 'number' && rewritten.updatedAt > 0, 'v1->v6: Save.write() re-stamps updatedAt (envelope field, not lost)');
 
@@ -303,7 +303,7 @@ function loadSaveModule() {
   A.eq(endpoint, origin + host.updaterPath, 'updater endpoint is the Eyehold feed');
   A.eq(pageMatch && pageMatch[1], origin + host.releaseNotesPath, 'release notes page uses the same domain');
   A.eq(conf.bundle.createUpdaterArtifacts, false, 'artifacts stay off until the owner signing key replaces the baked pubkey');
-  A.ok(!/starnetos\.com|androoAGI|github\.com/.test(endpoint + (pageMatch && pageMatch[1] || '')), 'updater does not follow an upstream host');
+  A.ok(!/eyehold\.com|Eyehold|github\.com/.test(endpoint + (pageMatch && pageMatch[1] || '')), 'updater does not follow an upstream host');
   A.ok(/const EYEHOLD_UPDATES_ENABLED = false;/.test(updatesSrc), 'client checks stay off until signing is replaced');
   }
 }

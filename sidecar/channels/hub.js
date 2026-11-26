@@ -53,11 +53,11 @@
       : scope === 'day' ? 'hit the ' + cap + 'daily spend cap'
       : scope === 'global' ? 'hit the ' + cap + 'all-time spend cap'
       : 'hit a spend cap';
-    // a StarNet run whose ceiling admission clamped to the balance (agent.run.end budgetCapIsBalance) spent the wallet:
+    // a Eyehold run whose ceiling admission clamped to the balance (agent.run.end budgetCapIsBalance) spent the wallet:
     // the door is the top-up, not a cap to raise (mirrors chat.js budgetStopLine)
-    if (scope === 'run' && atBalance === true) return '\n\n(' + (cap ? 'used the ' + cap + 'left on your StarNet balance' : 'used what was left on your StarNet balance') + ' — add credits in the app under SETTINGS → AI & MODELS.)';
+    if (scope === 'run' && atBalance === true) return '\n\n(' + (cap ? 'used the ' + cap + 'left on your Eyehold balance' : 'used what was left on your Eyehold balance') + ' — add credits in the app under SETTINGS → AI & MODELS.)';
     // the caps live in SETTINGS › SPENDING LIMITS (MISSION CONTROL is only a room label). A per-RUN stop says
-    // "raise", never "remove" — on StarNet credits PER RUN 0 still stops at the managed default (mirrors chat.js).
+    // "raise", never "remove" — on Eyehold credits PER RUN 0 still stops at the managed default (mirrors chat.js).
     return '\n\n(' + what + (scope === 'run' ? ' — raise it' : ' — raise or remove it') + ' in the app under SETTINGS › SPENDING LIMITS.)';
   }
   function endNote(reason, state) {
@@ -489,7 +489,7 @@
         // doesn't fit — a silent cut would ask for an approval of words the Commander never saw
         const ARGS_MAX = 3000;
         const args = String(f.argsSummary || '').trim();
-        const shown = args.length > ARGS_MAX ? args.slice(0, ARGS_MAX) + '\n… (' + (args.length - ARGS_MAX) + ' more characters: open StarNet to read the whole request before you allow it)' : args;
+        const shown = args.length > ARGS_MAX ? args.slice(0, ARGS_MAX) + '\n… (' + (args.length - ARGS_MAX) + ' more characters: open Eyehold to read the whole request before you allow it)' : args;
         const body = '🔐 Permission needed\n\n' + String(f.tool || 'a tool')
           + (f.scope ? '  (' + f.scope + ')' : '')
           + (shown ? '\n' + shown : '')
@@ -1009,7 +1009,7 @@
         const me = (roster || []).find(x => String(x.agentId) === String(boundId));
         const who = me ? (me.name || me.agentId) : boundId;
         await deliver(chatId,
-          'STARNET online — you are talking to ' + who + '.\n\n'
+          'EYEHOLD online — you are talking to ' + who + '.\n\n'
           + 'Just say what you need in plain language and I will get on it. I can search and read the web, '
           + 'work with your files, remember things for you, and run scheduled work.\n\n'
           + helpText(), '', 'command');
@@ -1627,7 +1627,7 @@
       try { emit('channel.inbound', { channel, chatId, agentId, userId: msg.userId || '', kind: msg.chatType === 'group' ? 'group' : 'dm' }); } catch (_) {}
 
       if (!sec.model || (!usingCodex && !sec.configured && !sec.key)) {
-        await deliver(chatId, '⚠ ' + (sec.error || 'No provider/model is configured yet. Open the STARNET app → Messaging tab and connect.'), '', 'error');
+        await deliver(chatId, '⚠ ' + (sec.error || 'No provider/model is configured yet. Open the EYEHOLD app → Messaging tab and connect.'), '', 'error');
         return;
       }
 

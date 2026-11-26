@@ -129,7 +129,7 @@ for (const bp of M.BLUEPRINTS) {
   const cases = [
     [{ line: 'teleporter' }, /There is no line called "teleporter"\. The lines are: front_desk \(One agent\)/],
     [{}, /Choose a line, or give its purpose in the Commander's words\. The lines are:/],
-    [{ line: 'build_test', x: 3, y: 4, rotate: 90 }, /StarNet chooses every position, belt and piece of furniture itself, so these fields are not accepted: x, y, rotate/],
+    [{ line: 'build_test', x: 3, y: 4, rotate: 90 }, /Eyehold chooses every position, belt and piece of furniture itself, so these fields are not accepted: x, y, rotate/],
     [{ line: 'build_test', where: 'Mars' }, /There is no room called "Mars"\. Use "new room", or one of: HOME/],
     [{ line: 'build_test', steps: [{ step: 9 }] }, /This line has steps 1 to 2: 1 Engineer, 2 Tester/],
     [{ line: 'build_test', steps: [{ role: 'PILOT' }] }, /This line has no PILOT step\. Its steps are: 1 Engineer, 2 Tester/],
@@ -468,7 +468,7 @@ for (const c of T.catalog) {
   A.ok(!late.ok && /changed since this plan/.test(late.error), 'a plan made before a link was removed is refused');
 }
 
-/* ---- 12. VIBE DESIGN: the Commander describes the room part by part; StarNet places every piece and machine ---- */
+/* ---- 12. VIBE DESIGN: the Commander describes the room part by part; Eyehold places every piece and machine ---- */
 {
   const RS = require('../frontend/app/roomstyles.js'), LL = require('../frontend/app/linelayout.js'), LE = require('../frontend/app/lineedit.js');
   // the page's catalog is the REMASTERED one (a desk is 3 tiles, not 2): every design runs under both
@@ -760,7 +760,7 @@ for (const c of T.catalog) {
     const ln = SB.plan(st.serialize(), { line: 'build_test', beside: 'WORKSHOP', side: 'west' }, E), kt = SB.planRoom(st.serialize(), { kit: 'LIBRARY', beside: 'BUILD & TEST', side: 'north' }, E);
     A.ok(ln.ok && kt.ok, 'a line\'s room and a furnished room go north and west too (' + (ln.error || kt.error || '') + ')');
   }
-  // a giant hall holds many lines: they pack in rows, and a room StarNet sizes grows to hold what goes in it
+  // a giant hall holds many lines: they pack in rows, and a room Eyehold sizes grows to hold what goes in it
   {
     const st = fresh(), six = ['build_test', 'research_line', 'second_opinion', 'revision_loop', 'front_desk', 'deep_dive'].map(line => ({ line }));
     const g = SB.planBuild(st.serialize(), { rooms: [{ name: 'Factory', size: 'giant', lines: six }] }, E);
@@ -768,7 +768,7 @@ for (const c of T.catalog) {
     if (g.ok) { const a = SB.apply(st, g.plan, E); A.ok(a.ok && new Set(a.lines.map(l => l.lineId)).size === 6, 'and build as six separate lines'); st.undo(); }
     const auto = SB.planBuild(st.serialize(), { rooms: [{ name: 'Works', lines: six.slice(0, 4) }] }, E);
     const m = auto.ok && /^WORKS, a new (\d+) × (\d+) room /.exec(auto.plan.summary);
-    A.ok(m && +m[1] <= 44 && +m[2] <= 26 && +m[1] > +m[2], 'with no size, four lines get a room wider than it is tall, within what StarNet builds (' + (auto.error || (m && m[1] + ' × ' + m[2])) + ')');
+    A.ok(m && +m[1] <= 44 && +m[2] <= 26 && +m[1] > +m[2], 'with no size, four lines get a room wider than it is tall, within what Eyehold builds (' + (auto.error || (m && m[1] + ' × ' + m[2])) + ')');
     const tiny = SB.planBuild(st.serialize(), { rooms: [{ name: 'Closet', size: 'medium', lines: six }] }, E);
     A.ok(!tiny.ok && /^CLOSET at 18 × 11 is too small for what goes in it: that needs about \d+ × \d+\. Leave size out, or ask for a bigger one\.$/.test(tiny.error), 'a size too small for its lines says the size that would do: ' + tiny.error);
   }
@@ -1298,7 +1298,7 @@ for (const c of T.catalog) {
       if (empty.ok) { A.ok(SB.apply(st, empty.plan, E).ok); const again = SB.planEdit(st.serialize(), { clear: 'GYM' }, E); A.ok(!again.ok && /^GYM has no furniture to clear/.test(again.error), 'clearing an empty room is refused'); A.ok(st.undo().ok); }
     }
   }
-  // EDIT WHAT STANDS, part 2 (Andrew 09-30: "reliably and cleanly build and put together anything within the starnet world"):
+  // EDIT WHAT STANDS, part 2 (Andrew 09-30: "reliably and cleanly build and put together anything within the eyehold world"):
   // named pieces in and out, one line out, an agent seated, a room moved with everything in it, a line restaffed
   {
     const st = fresh();
@@ -1443,7 +1443,7 @@ for (const c of T.catalog) {
     A.ok(st.redo().ok, 'fixture: the lounge is back (redo)');
     A.ok(st.addRoom({ kind: 'hab', name: 'MINE', rect: { x1: -40, y1: -40, x2: -30, y2: -33 } }).ok, 'fixture: the Commander builds something of their own');
     const no = SB.planUndo(st.serialize(), last);
-    A.ok(!no.ok && /^The station has changed since the lead's last build, so StarNet will not undo it/.test(no.error), 'after someone else\'s edit, the lead will not undo');
+    A.ok(!no.ok && /^The station has changed since the lead's last build, so Eyehold will not undo it/.test(no.error), 'after someone else\'s edit, the lead will not undo');
     const none = SB.planUndo(st.serialize(), null);
     A.ok(!none.ok && /^There is nothing of the lead's to undo/.test(none.error), 'with no build of the lead\'s, there is nothing to undo');
   }
@@ -1816,7 +1816,7 @@ for (const c of T.catalog) {
     const loopP = on(gl, 'loop')[0], joinP = on(gl, 'joiner')[0], bayP = on(gl, 'bay')[0], inP = on(gl, 'intake')[0], filtP = on(fl, 'filter')[0];
     const portal = st.props().find(p => p.t === 'connector_portal'), term = st.props().find(p => p.t === 'plugin_terminal');
     const loop0 = { done: loopP.done }, filt0 = { def: filtP.def, bufferSize: filtP.bufferSize };
-    const SV = Object.assign({}, E, { services: { projects: [{ name: 'starnet', root: 'C:/code/starnet' }], connectors: [{ id: 'github', label: 'GitHub' }], plugins: [{ id: 'notes-kit', name: 'Notes Kit' }] } });
+    const SV = Object.assign({}, E, { services: { projects: [{ name: 'eyehold', root: 'C:/code/eyehold' }], connectors: [{ id: 'github', label: 'GitHub' }], plugins: [{ id: 'notes-kit', name: 'Notes Kit' }] } });
     const ops = [
       { op: 'budget', prop: bayP.id, stages: 12, perJob: 0.5, perDay: 4 },
       { op: 'hands', prop: bayP.id, text: 'just the summary' },
@@ -1824,14 +1824,14 @@ for (const c of T.catalog) {
       { op: 'tries', prop: loopP.id, max: 3 },
       { op: 'wait', prop: joinP.id, minutes: 30 },
       { op: 'routes', prop: filtP.id, routes: { code: 'east' } },
-      { op: 'folder', prop: inP.id, project: 'starnet' },
+      { op: 'folder', prop: inP.id, project: 'eyehold' },
       { op: 'bind', prop: portal.id, connector: 'github' },
       { op: 'bind', prop: term.id, plugin: 'notes kit' }
     ];
     const set = SB.planEdit(st.serialize(), { refit: ops }, SV);
     A.ok(set.ok, 'every line setting plans as one refit (' + (set.error || 'ok') + ')');
     A.ok(set.ok && /may spend \$4 a day, \$0\.5 a job, through 12 steps/.test(set.plan.summary) && /hands on: "just the summary"/.test(set.plan.summary) && /allows 6 passes, repeats until the verdict is approved, escalates east/.test(set.plan.summary)
-      && /waits up to 30 minutes for every branch/.test(set.plan.summary) && /works in starnet/.test(set.plan.summary) && /gives its room's agents GitHub's tools/.test(set.plan.summary) && /gives its room's agents Notes Kit's tools/.test(set.plan.summary), 'the card says each setting in words');
+      && /waits up to 30 minutes for every branch/.test(set.plan.summary) && /works in eyehold/.test(set.plan.summary) && /gives its room's agents GitHub's tools/.test(set.plan.summary) && /gives its room's agents Notes Kit's tools/.test(set.plan.summary), 'the card says each setting in words');
     // built with an env that has NO services: the plan carries what it resolved
     A.ok(set.ok && SB.apply(st, set.plan, E).ok, 'and it builds');
     const P = id => st.propById(id);
@@ -1840,15 +1840,15 @@ for (const c of T.catalog) {
     A.ok(P(loopP.id).maxIter === 3 && P(loopP.id).when === 'approved' && P(loopP.id).esc === 'E' && P(loopP.id).done === loop0.done, 'the loop: tries set after it kept its verdict, escalation and exit (' + JSON.stringify({ m: P(loopP.id).maxIter, w: P(loopP.id).when, e: P(loopP.id).esc, d: P(loopP.id).done }) + ')');
     A.ok(P(joinP.id).timeoutMin === 30, 'the joiner waits 30 minutes');
     A.ok(P(filtP.id).routes && P(filtP.id).routes.code === 'E' && P(filtP.id).def === filt0.def && P(filtP.id).bufferSize === filt0.bufferSize, 'new routes keep the filter\'s default lane and buffer');
-    A.ok(on(gl, 'intake').every(p => P(p.id).projectRoot === 'C:/code/starnet'), 'the line works in the trusted project');
+    A.ok(on(gl, 'intake').every(p => P(p.id).projectRoot === 'C:/code/eyehold'), 'the line works in the trusted project');
     A.ok(P(portal.id).connectorId === 'github' && P(term.id).pluginId === 'notes-kit', 'the portal and the terminal are bound');
     const det = SB.mapOf(st.serialize(), E, { room: 'Works' }), dp = id => det.ok && det.map.pieces.find(x => x.id === id);
-    A.ok(dp(inP.id).budget.perDay === 4 && dp(bayP.id).hands === 'just the summary' && dp(loopP.id).maxIter === 3 && dp(loopP.id).esc === 'E' && dp(joinP.id).timeoutMin === 30 && dp(inP.id).folder === 'starnet' && dp(portal.id).connectorId === 'github', 'station.map { room } reads every setting back');
+    A.ok(dp(inP.id).budget.perDay === 4 && dp(bayP.id).hands === 'just the summary' && dp(loopP.id).maxIter === 3 && dp(loopP.id).esc === 'E' && dp(joinP.id).timeoutMin === 30 && dp(inP.id).folder === 'eyehold' && dp(portal.id).connectorId === 'github', 'station.map { room } reads every setting back');
     const sw = SB.planEdit(st.serialize(), { refit: [{ op: 'swap', prop: joinP.id }] }, E);
     A.ok(sw.ok && /becomes a merger \(the branches take turns\)/.test(sw.plan.summary) && SB.apply(st, sw.plan, E).ok && P(joinP.id).t === 'merger', 'swap turns the joiner into a merger: the branches take turns');
     // only what the station has
     for (const [q, re] of [
-      [[{ op: 'folder', prop: inP.id, project: 'C:/Windows' }], /^Edit 1 \(folder\): "C:\/Windows" is not one of the Commander's trusted projects \(starnet\)\. The Commander trusts a folder under PROJECTS first/],
+      [[{ op: 'folder', prop: inP.id, project: 'C:/Windows' }], /^Edit 1 \(folder\): "C:\/Windows" is not one of the Commander's trusted projects \(eyehold\)\. The Commander trusts a folder under PROJECTS first/],
       [[{ op: 'bind', prop: portal.id, connector: 'slack' }], /^Edit 1 \(bind\): there is no connected service called "slack" \(GitHub\)/],
       [[{ op: 'bind', prop: portal.id, plugin: 'notes kit' }], /^Edit 1 \(bind\): a connector portal takes a connector/],
       [[{ op: 'loop', prop: loopP.id, until: 'whenever' }], /^Edit 1 \(loop\): until is approved, revise/],
@@ -1894,7 +1894,7 @@ for (const c of T.catalog) {
       const off = SB.planEdit(st.serialize(), { refit: [{ op: 'cap', prop: inP.id, usd: null }] }, E);
       A.ok(off.ok, 'usd: null still takes the cap off, said plainly');
     }
-    const noSv =SB.planEdit(st.serialize(), { refit: [{ op: 'folder', prop: inP.id, project: 'starnet' }] }, E);
+    const noSv =SB.planEdit(st.serialize(), { refit: [{ op: 'folder', prop: inP.id, project: 'eyehold' }] }, E);
     A.ok(!noSv.ok && /could not read the Commander's trusted projects/.test(noSv.error), 'a page that could not read the projects refuses, never guesses');
     // sweep 2026-10-01: routes only on a FILTER (a bay took routes and "sorted" nothing)
     const rb = SB.planEdit(st.serialize(), { refit: [{ op: 'routes', prop: bayP.id, routes: { code: 'east' } }] }, SV);
@@ -2053,13 +2053,13 @@ for (const c of T.catalog) {
     A.ok(/plan-e-1/.test(r.content) && r.summary === 'planned an edit', 'an edit of what stands plans through the page: ' + JSON.stringify(req));
     A.eq(calls[calls.length - 1], ['station.plan_edit', { request: req }], 'and reaches the edit planner as it was sent');
   }
-  // MAKE A PROP (Andrew 10-01): the lead makes a new piece with the Commander's StarNet credits through the station's own
+  // MAKE A PROP (Andrew 10-01): the lead makes a new piece with the Commander's Eyehold credits through the station's own
   // prop maker, asks first, waits for it to land, loads it on the page and says how to place it
   {
     const made = [], jobs = new Map();
     const fakeUP = {
       start: async noun => {
-        if (noun === 'nothing') return { ok: false, code: 'not_linked', message: 'Making props uses StarNet credits. Link this station under SETTINGS → PROVIDERS first.' };
+        if (noun === 'nothing') return { ok: false, code: 'not_linked', message: 'Making props uses Eyehold credits. Link this station under SETTINGS → PROVIDERS first.' };
         const id = 'pj_TEST' + (jobs.size + 1) + 'abcdefgh';
         if (noun === 'a broken thing') { jobs.set(id, { status: 'failed', error: { code: 'refused', message: 'the drawing never passed its checks' }, costUsd: 0.2 }); return { ok: true, job: { id } }; }
         const pid = 'user_' + noun.replace(/\W+/g, '_') + '_t1';
@@ -2081,9 +2081,9 @@ for (const c of T.catalog) {
     const round = JSON.parse((await pt.run({ describe: 'a round table', sideView: true }, {})).content);
     A.ok(round.made && round.sideView === false && /it is round, so it turns with its own front view/.test(round.sideNote) && round.costUsd === 0.35, 'a round prop is never charged for a side view');
     const no = await pt.run({ describe: 'nothing' }, {});
-    A.ok(/^REFUSED: Making props uses StarNet credits\. Link this station under SETTINGS → PROVIDERS first\./.test(no.content), 'without StarNet credits it says how to link them');
+    A.ok(/^REFUSED: Making props uses Eyehold credits\. Link this station under SETTINGS → PROVIDERS first\./.test(no.content), 'without Eyehold credits it says how to link them');
     const bad = await pt.run({ describe: 'a broken thing' }, {});
-    A.ok(/^REFUSED: StarNet could not make "a broken thing": the drawing never passed its checks \(\$0\.20 was spent on the tries\)/.test(bad.content), 'a failed drawing says why and what it spent: ' + bad.content);
+    A.ok(/^REFUSED: Eyehold could not make "a broken thing": the drawing never passed its checks \(\$0\.20 was spent on the tries\)/.test(bad.content), 'a failed drawing says why and what it spent: ' + bad.content);
     A.ok(/^REFUSED: Making props is not available on this station\./.test((await toolsOf(null).makePropTool.run({ describe: 'x' }, {})).content), 'a station without the prop maker refuses plainly');
     // the front view and the side view share ONE wait: two full waits outran the tool's own timeout and lost a paid prop's id
     {
@@ -2098,7 +2098,7 @@ for (const c of T.catalog) {
       A.ok(polls <= 12, 'both views wait within one budget (10 ticks), not one each: ' + polls + ' polls');
     }
     const idx = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
-    A.ok(/station\[\._\]make_prop\$\/\.test\(String\(call && call\.name \|\| ''\)\)\) return '"' \+ String\(a\.describe/.test(idx) && /'", drawn with your StarNet credits \(about \$0\.35'/.test(idx), 'the approval card names the object and its price');
+    A.ok(/station\[\._\]make_prop\$\/\.test\(String\(call && call\.name \|\| ''\)\)\) return '"' \+ String\(a\.describe/.test(idx) && /'", drawn with your Eyehold credits \(about \$0\.35'/.test(idx), 'the approval card names the object and its price');
   }
   // TEST A LINE (Andrew 10-01: "and then also setting up the conveyor systems"): the lead sends one real job down a line
   // through SEND A JOB's own route and reads each step back; what the line delivered comes back fenced as data
@@ -2154,8 +2154,8 @@ for (const c of T.catalog) {
     startAnswer = { ok: true, kind: 'webhook', id: 'trg_x1', path: null, enabled: true, secret: 'SHOULD-NEVER-SHOW' };
     const wh = await sl.run({ line: 'ship it', webhook: true, job: 'A deploy finished: check it' }, {});
     A.ok(/press NEW KEY on this trigger for its address and key/.test(wh.content) && !/SHOULD-NEVER-SHOW/.test(wh.content), 'a webhook tells the Commander where its key is, and never carries a key');
-    startAnswer = { ok: false, error: 'that folder is outside the folders StarNet may watch' };
-    A.ok(/^REFUSED: that folder is outside the folders StarNet may watch\./.test((await sl.run({ line: 'ship it', folder: 'C:/Windows', job: 'x' }, {})).content), 'the panel core\'s refusal travels back');
+    startAnswer = { ok: false, error: 'that folder is outside the folders Eyehold may watch' };
+    A.ok(/^REFUSED: that folder is outside the folders Eyehold may watch\./.test((await sl.run({ line: 'ship it', folder: 'C:/Windows', job: 'x' }, {})).content), 'the panel core\'s refusal travels back');
     A.ok(/^REFUSED: Say one start/.test((await sl.run({ line: 'ship it', schedule: 'daily', webhook: true, job: 'x' }, {})).content) && /^REFUSED: job is the work the line gets/.test((await sl.run({ line: 'ship it', schedule: 'daily' }, {})).content), 'one start a call, each with its job');
     startAnswer = { ok: true, kind: 'off', id: 'trg_x1', was: 'webhook' };
     A.ok(/"said":"The webhook trigger trg_x1 on SHIP IT is off\."/.test((await sl.run({ line: 'ship it', off: 'trg_x1' }, {})).content), 'a trigger turns off');
@@ -2204,7 +2204,7 @@ for (const c of T.catalog) {
   A.ok(Array.isArray(lk.images) && lk.images.length === 1 && lk.images[0].mime === 'image/webp' && lk.images[0].data === 'UklGRg==', 'station.map { look } hands the model the picture');
   A.ok(/^A picture of DEN as it renders now \(640 x 420 px; it shows tiles x 23-54, y -1-22 with the wall faces above, about 20 px a tile\)\. Judge it as a designer/.test(lk.content) && /station\.map \{ room \}/.test(lk.content) && lk.summary === 'looked at DEN' && !/UklGRg/.test(lk.content), 'with a note that says what it shows, and never the bytes as text');
   A.eq(calls[calls.length - 1], ['station.map', { look: 'Den' }], 'the page is asked for that room');
-  A.ok(/ Issues StarNet sees in this room \(fix every one\): the chair at \(30, 4\) faces west, away from the long table beside it/.test(lk.content), 'a room look carries the issues StarNet sees beside the picture');
+  A.ok(/ Issues Eyehold sees in this room \(fix every one\): the chair at \(30, 4\) faces west, away from the long table beside it/.test(lk.content), 'a room look carries the issues Eyehold sees beside the picture');
   const lkAll = await mapT.run({ look: 'the whole station' }, {});
   A.eq(calls[calls.length - 1], ['station.map', { look: true }], 'look: "the whole station" asks for all of it');
   A.ok(/^REFUSED: The page sent no picture/.test(lkAll.content), 'a reply with no picture is refused, never passed off as one');

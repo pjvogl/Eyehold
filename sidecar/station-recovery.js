@@ -5,7 +5,7 @@
    zero completed mutations lost before that barrier; this module does not pretend that periodic/continuous
    RPO exists when the caller has not established one.
 
-   The bundle contains every non-ephemeral file under WORKSPACES plus browser-owned `starnet.*` state supplied
+   The bundle contains every non-ephemeral file under WORKSPACES plus browser-owned `eyehold.*` state supplied
    by the caller. System-managed credentials are never exported: connector/channel identities and non-secret
    configuration survive, while OAuth/token/key material is removed and listed under `reauthentication`.
 
@@ -22,7 +22,7 @@ const crypto = require('crypto');
 const fsNative = require('fs');
 const pathNative = require('path');
 
-const SCHEMA = 'starnet.station-recovery';
+const SCHEMA = 'eyehold.station-recovery';
 const VERSION = 1;
 const REQUIRED_CATEGORIES = [
   'agents', 'rooms_props', 'conversations', 'memories', 'routines', 'loops', 'tasks',
@@ -30,13 +30,13 @@ const REQUIRED_CATEGORIES = [
 ];
 
 const SAFE_BROWSER_SECRET_KEYS = new Set([
-  'starnet.byok.model', 'starnet.byok.prov', 'starnet.byok.reasoningEffort'
+  'eyehold.byok.model', 'eyehold.byok.prov', 'eyehold.byok.reasoningEffort'
 ]);
-const BROWSER_SECRET_NAMESPACE = /^(?:starnet|skynet)\.(?:channels?|oauth|auth|credentials?|secrets?)(?:[._:-]|$)/i;
+const BROWSER_SECRET_NAMESPACE = /^(?:eyehold|skynet)\.(?:channels?|oauth|auth|credentials?|secrets?)(?:[._:-]|$)/i;
 const BROWSER_SECRET_SEGMENT = /(?:^|[._:-])(?:api[-_]?key|apikey|key|keys|token|tokens|secret|secrets|credential|credentials|password|passwd|pwd|authorization|bearer)(?:$|[._:-])/i;
 const SECRET_FIELD = /^(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|key|api[_-]?key|secret|client[_-]?secret|password|passwd|pwd|authorization|bearer|cookie|session)$/i;
-const EPHEMERAL_TOP = new Set(['.browser-profile', '.starnet-workspace-owner.json.generations']);
-const EPHEMERAL_FILES = new Set(['cron.lock', 'proc-ledger.json', '.starnet-workspace-owner.json']);
+const EPHEMERAL_TOP = new Set(['.browser-profile', '.eyehold-workspace-owner.json.generations']);
+const EPHEMERAL_FILES = new Set(['cron.lock', 'proc-ledger.json', '.eyehold-workspace-owner.json']);
 const SYSTEM_SECRET_TOP = new Set(['.secrets', 'codex', 'grok', 'kimi']);
 
 function sha256(data) { return crypto.createHash('sha256').update(data).digest('hex'); }
@@ -48,9 +48,9 @@ function stableSort(arr, key) { return arr.sort((a, b) => String(key(a)).localeC
 function safeId(v, fallback) { return String(v == null ? fallback || '' : v).slice(0, 200); }
 
 function browserKeyIsSecret(raw) {
-  const key = String(raw || '').replace(/^skynet\./i, 'starnet.');
+  const key = String(raw || '').replace(/^skynet\./i, 'eyehold.');
   if (SAFE_BROWSER_SECRET_KEYS.has(key)) return false;
-  if (/^starnet\.byok\./i.test(key)) return true;
+  if (/^eyehold\.byok\./i.test(key)) return true;
   return BROWSER_SECRET_NAMESPACE.test(key) || BROWSER_SECRET_SEGMENT.test(key);
 }
 
@@ -131,8 +131,8 @@ function sanitizeManagedJson(rel, raw, options = {}) {
     value = Object.assign({}, doc, { allow: allow.filter(x => x.indexOf('path:') !== 0), meta: keptMeta });
     for (const key of machinePaths) reauthentication.push({ kind: 'project-path', id: key.slice(5), reason: 'Machine-specific path authority is not transferable; restore or relocate the project, then re-authorize it.', fields: ['permissions.allow'] });
   } else if (p === 'connectors/state.json') {
-    if (typeof doc.format === 'string' && doc.format.startsWith('starnet.connector-vault.')) {
-      if (typeof options.readConnectorState !== 'function') throw new Error('Encrypted connector export requires the running StarNet app and its unlocked OS credential store.');
+    if (typeof doc.format === 'string' && doc.format.startsWith('eyehold.connector-vault.')) {
+      if (typeof options.readConnectorState !== 'function') throw new Error('Encrypted connector export requires the running Eyehold app and its unlocked OS credential store.');
       doc = options.readConnectorState();
       if (!doc || doc.version !== 2 || !Array.isArray(doc.configs) || !isObj(doc.oauth)) throw new Error('Encrypted connector export could not verify the original settings.');
     }
@@ -313,7 +313,7 @@ function capture(opts) {
   const browser = [];
   const browserStore = isObj(o.browserStore) ? o.browserStore : {};
   for (const key of Object.keys(browserStore).sort()) {
-    if (!/^(?:starnet|skynet)\./i.test(key)) { skipped.push({ path: 'browser:' + key, reason: 'foreign browser key' }); continue; }
+    if (!/^(?:eyehold|skynet)\./i.test(key)) { skipped.push({ path: 'browser:' + key, reason: 'foreign browser key' }); continue; }
     if (browserKeyIsSecret(key)) {
       skipped.push({ path: 'browser:' + key, reason: 'browser credential material is intentionally excluded' });
       reauthentication.push({ kind: 'browser-credential', id: key, reason: 'Credential value is intentionally excluded.' });
@@ -356,8 +356,8 @@ function capture(opts) {
 
 function validate(bundle) {
   const errors = [];
-  if (!bundle || bundle.schema !== SCHEMA) errors.push('not a StarNet station recovery bundle');
-  if (bundle && Number(bundle.version) > VERSION) errors.push('bundle was created by a newer StarNet recovery format');
+  if (!bundle || bundle.schema !== SCHEMA) errors.push('not a Eyehold station recovery bundle');
+  if (bundle && Number(bundle.version) > VERSION) errors.push('bundle was created by a newer Eyehold recovery format');
   const files = bundle && Array.isArray(bundle.files) ? bundle.files : [];
   const browser = bundle && Array.isArray(bundle.browser) ? bundle.browser : [];
   const seen = new Set();

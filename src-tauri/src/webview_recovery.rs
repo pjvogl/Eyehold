@@ -1,7 +1,7 @@
 //! WebView2 crash recovery policy (Windows).
 //!
 //! Without this, a WebView2 browser/renderer crash (e.g. Windows running out of memory overnight)
-//! left the StarNet window permanently white while the sidecar kept running: the sidecar has a
+//! left the Eyehold window permanently white while the sidecar kept running: the sidecar has a
 //! watchdog, the webview had none. The host now listens for `ProcessFailed` and either reloads
 //! the page (renderer died) or rebuilds the whole window (browser process died — the webview is
 //! closed for good and only a fresh one can recover). This module is the pure policy; the COM
@@ -69,7 +69,7 @@ pub(crate) enum SecondLaunch {
 }
 
 /// 2026-09-23: a relaunch during a slow boot hit the zombie branch and quit the instance that was
-/// still starting, so StarNet "wouldn't load" — both processes exited and nothing stayed open.
+/// still starting, so Eyehold "wouldn't load" — both processes exited and nothing stayed open.
 pub(crate) fn second_launch_action(
     window_present: bool,
     window_was_built: bool,

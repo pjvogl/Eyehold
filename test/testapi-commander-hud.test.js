@@ -7,7 +7,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 let journey = null, stale = true, label = { textContent: '—' };
 const ctx = vm.createContext({
-  window: { __STARNET_DEV__: true }, console: { log() {} }, setTimeout() {},
+  window: { __EYEHOLD_DEV__: true }, console: { log() {} }, setTimeout() {},
   document: { getElementById: id => id === 'gt-station' ? label : null },
   U: { bus: { emit() {} } },
   JourneyStore: { status: () => journey, state: () => ({ stale }) },

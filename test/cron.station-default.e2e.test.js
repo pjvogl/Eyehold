@@ -34,9 +34,9 @@ test('routines on an unpinned agent run on the station default (Run Now + schedu
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'cron-station-default-', timeoutMs: 20000, env: {
-    STARNET_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '',
-    STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    STARNET_CRON_TICK_MS: '400', SKYNET_CRON_TICK_MS: '400',
+    EYEHOLD_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '',
+    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+    EYEHOLD_CRON_TICK_MS: '400', SKYNET_CRON_TICK_MS: '400',
     CUSTOM_OPENAI_KEY: 'direct-fixture', CUSTOM_OPENAI_BASE_URL: base + '/v1'
   } });
   // arm the scheduler before boot so the scheduled leg really ticks
@@ -46,7 +46,7 @@ test('routines on an unpinned agent run on the station default (Run Now + schedu
     const agents = [
       { agentId: 'agent', name: 'Overseer', system: 'You are the overseer.', provider: 'custom', model: 'hero-model' },
       // unpinned specialist whose row still carries a stale provider: it must follow the Overseer, not the row
-      { agentId: 'scout', name: 'Scout', system: 'You are the scout.', provider: 'starnet', model: '' },
+      { agentId: 'scout', name: 'Scout', system: 'You are the scout.', provider: 'eyehold', model: '' },
       { agentId: 'pinned', name: 'Pinned', system: 'You are pinned.', provider: 'custom', model: 'pin-model' }
     ];
     assert.equal((await fixture.json('POST', '/api/roster', { agents, updatedAt: Date.now() })).status, 200);

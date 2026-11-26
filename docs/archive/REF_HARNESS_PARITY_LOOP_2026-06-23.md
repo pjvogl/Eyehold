@@ -1,9 +1,9 @@
-# StarNet → ref-parity Loop (H1 → H6)
+# Eyehold → ref-parity Loop (H1 → H6)
 
 > The durable brain for the self-paced ref-parity loop. Source: the 2026-06-23 adversarially-verified
-> StarNet-vs-the reference harnessAgent comparison (21-agent workflow `wf_f9c4308c-fd3`). 8 confirmed ON-MOAT gaps where
-> the reference harness excels and StarNet lacks; 2 off-moat non-goals (OpenAI-compat server/REPL, mixture-of-agents) excluded.
-> **Defining theme: most fixes are WIRING — StarNet already writes durable transcripts/telemetry/recall it never
+> Eyehold-vs-the reference harnessAgent comparison (21-agent workflow `wf_f9c4308c-fd3`). 8 confirmed ON-MOAT gaps where
+> the reference harness excels and Eyehold lacks; 2 off-moat non-goals (OpenAI-compat server/REPL, mixture-of-agents) excluded.
+> **Defining theme: most fixes are WIRING — Eyehold already writes durable transcripts/telemetry/recall it never
 > reads back. Consume what exists before building anything new. Smallest-leverage-first.**
 
 ## Operating protocol (obeyed every iteration — same discipline as the P0–P3 loop)
@@ -38,7 +38,7 @@
 ---
 
 ## PHASE H1 — Bulletproof resume + agent recall (rank 1, highest leverage)  ·  STATUS: ✅ DONE (3/3)
-> StarNet fsyncs a durable transcript (`transcriptstore.js`) + serves `GET /api/transcript`, but NOTHING reads
+> Eyehold fsyncs a durable transcript (`transcriptstore.js`) + serves `GET /api/transcript`, but NOTHING reads
 > it back: resume rides the frontend `activeWs.history` (rendered/truncatable), the transcript stores only
 > title+final-text per run (no tool_calls/intermediate turns), and there's no agent recall over it.
 
@@ -123,7 +123,7 @@ Fold runstore + spend ledger into per-model spend, tool-usage ranking, runs-over
 - **Notes:**
 
 ## PHASE H4 — Agent-authored skills library (rank 4, genuinely new)  ·  STATUS: ✅ DONE (2/2, trunk `1ea91d5`)
-> StarNet's thesis names "an owned compounding exportable library" as core, yet the only "skill" is a memory KIND
+> Eyehold's thesis names "an owned compounding exportable library" as core, yet the only "skill" is a memory KIND
 > (a one-line notebook fact); `notebook.js` even says "reusable procedures belong in a skill, not memory" with no
 > such artifact. Mirror the notebook plumbing. Keep it a plain titled document (defer the reference harness YAML/hub install).
 

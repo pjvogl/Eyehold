@@ -9,7 +9,7 @@ const { tmpdir } = require('node:os');
 
 const root = resolve(__dirname, '..');
 const executableSha = createHash('sha256').update(readFileSync(process.execPath)).digest('hex');
-const temp = mkdtempSync(join(tmpdir(), 'starnet-campaign-preflight-'));
+const temp = mkdtempSync(join(tmpdir(), 'eyehold-campaign-preflight-'));
 try {
   const credential = join(temp, 'tokens.json');
   const wrongExecutable = join(temp, 'wrong.exe');

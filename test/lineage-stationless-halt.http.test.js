@@ -34,7 +34,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
     LOCALAPPDATA: appData, APPDATA: appData,
     HOME: sandbox, USERPROFILE: sandbox,
     SKYNET_WORKSPACES: ws, SKYNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0',
-    SKYNET_OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: ''
+    SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
   });
   function boot(port, attemptsLeft) {
     return new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
     let apiToken = await bootToken(B(), B());
     const j = async (m, p, body) => {
       const headers = { 'Content-Type': 'application/json', Origin: B() };
-      if (apiToken) headers['X-StarNet-Token'] = apiToken;
+      if (apiToken) headers['X-Eyehold-Token'] = apiToken;
       const r = await fetch(B() + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
       const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
       return { status: r.status, body: v };

@@ -1,5 +1,5 @@
 /* node test/reasoning-migration-0125.test.js — the 0.12.5 reasoning migration keeps what an upgraded station RAN.
-   0.12.4's dock showed every OpenAI-API / xAI / Grok / DeepSeek / StarNet Managed model locked at OFF and saved it,
+   0.12.4's dock showed every OpenAI-API / xAI / Grok / DeepSeek / Eyehold Managed model locked at OFF and saved it,
    while the adapter sent no reasoning_effort. 0.12.5 sends the saved level, so without this migration an upgrade
    would silently turn reasoning OFF for OpenAI/xAI/DeepSeek users and switch paid thinking ON for Managed users.
    app.js is not node-loadable, so the migration is lifted from source (like station-default-wire.test.js). */
@@ -59,14 +59,14 @@ function migrate(saved) {
   A.eq('reasoningEffort' in r.saved, false, 'the station-level inherited OFF is dropped');
   A.eq(r.saved.reasoningMigrated, '0125', 'the save is marked');
   A.eq(r.calls[0], ['clear', ['openai', 'xai', 'grok', 'deepseek']], 'the per-provider stored OFF is cleared for exactly the locked providers');
-  A.eq(r.calls[1], ['set', 'none', 'starnet'], 'Managed keeps OFF on the page wire');
+  A.eq(r.calls[1], ['set', 'none', 'eyehold'], 'Managed keeps OFF on the page wire');
 }
 
-// ---- StarNet Managed station: nothing was sent in 0.12.4, so the onboarding MEDIUM must not switch thinking on ----
+// ---- Eyehold Managed station: nothing was sent in 0.12.4, so the onboarding MEDIUM must not switch thinking on ----
 {
-  const r = migrate({ prov: 'starnet', reasoningEffort: 'medium',
-    agent: { id: 'agent', model: 'anthropic/claude-sonnet-5', provider: 'starnet', reasoningEffort: 'medium' },
-    agents: [{ id: 'writer', model: 'openai/gpt-5.5', provider: 'starnet', reasoningEffort: 'high' }] });
+  const r = migrate({ prov: 'eyehold', reasoningEffort: 'medium',
+    agent: { id: 'agent', model: 'anthropic/claude-sonnet-5', provider: 'eyehold', reasoningEffort: 'medium' },
+    agents: [{ id: 'writer', model: 'openai/gpt-5.5', provider: 'eyehold', reasoningEffort: 'high' }] });
   A.eq(r.saved.agent.reasoningEffort, 'none', 'the Managed Overseer keeps OFF (nothing sent), not its onboarding MEDIUM');
   A.eq(r.saved.agents[0].reasoningEffort, 'none', 'a Managed pin keeps OFF');
   A.eq(r.saved.reasoningEffort, 'none', 'the Managed station wire keeps OFF');
@@ -99,19 +99,19 @@ A.ok(/getReasoningEffort, setReasoningEffort, clearLegacyReasoningOff,/.test(har
 // ---- Harness.clearLegacyReasoningOff removes only an inherited OFF, only for the named providers ----
 {
   const store = new Map([
-    ['starnet.byok.reasoningEffort.openai', 'none'], ['starnet.byok.reasoningEffort.deepseek', 'high'],
-    ['starnet.byok.reasoningEffort.anthropic', 'none'], ['starnet.byok.reasoningEffort.xai', 'off']
+    ['eyehold.byok.reasoningEffort.openai', 'none'], ['eyehold.byok.reasoningEffort.deepseek', 'high'],
+    ['eyehold.byok.reasoningEffort.anthropic', 'none'], ['eyehold.byok.reasoningEffort.xai', 'off']
   ]);
   const localStorage = { getItem: k => (store.has(k) ? store.get(k) : null), removeItem: k => store.delete(k) };
-  const LS = { effort: 'starnet.byok.reasoningEffort' };
+  const LS = { effort: 'eyehold.byok.reasoningEffort' };
   const hsrc = lift(harnessjs, 'normalizeReasoningEffort') + '\n' + lift(harnessjs, 'clearLegacyReasoningOff');
   const clear = new Function('localStorage', 'LS', 'providerSlot', 'normalizeProviderId', hsrc + '\nreturn clearLegacyReasoningOff;')(
     localStorage, LS, (base, p) => base + '.' + p, p => String(p).toLowerCase());
   clear(['openai', 'xai', 'grok', 'deepseek']);
-  A.eq(store.has('starnet.byok.reasoningEffort.openai'), false, 'OpenAI-API inherited OFF is cleared');
-  A.eq(store.has('starnet.byok.reasoningEffort.xai'), false, 'xAI inherited OFF (stored as off) is cleared');
-  A.eq(store.get('starnet.byok.reasoningEffort.deepseek'), 'high', 'a real level is kept');
-  A.eq(store.get('starnet.byok.reasoningEffort.anthropic'), 'none', 'a provider outside the list is untouched');
+  A.eq(store.has('eyehold.byok.reasoningEffort.openai'), false, 'OpenAI-API inherited OFF is cleared');
+  A.eq(store.has('eyehold.byok.reasoningEffort.xai'), false, 'xAI inherited OFF (stored as off) is cleared');
+  A.eq(store.get('eyehold.byok.reasoningEffort.deepseek'), 'high', 'a real level is kept');
+  A.eq(store.get('eyehold.byok.reasoningEffort.anthropic'), 'none', 'a provider outside the list is untouched');
 }
 
 A.report('reasoning-migration-0125.test');

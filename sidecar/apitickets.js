@@ -1,7 +1,7 @@
 /* sidecar/apitickets.js — SCOPED, SHORT-LIVED URL CAPABILITIES ("tickets") that replace the master API token in
    every URL the app builds (2026-09-25 security lane, audit 09-23 open item "master token in URLs").
 
-   WHY: a few browser surfaces cannot attach the X-StarNet-Token header — a link/tab navigation (/api/file,
+   WHY: a few browser surfaces cannot attach the X-Eyehold-Token header — a link/tab navigation (/api/file,
    /workshop-run/), EventSource (/api/channels/events) and the unload beacon (POST /api/save). They used to carry
    the MASTER per-launch token as ?token=…, and URLs leak: OS-browser history (desktop hands file/tool links to the
    default browser), Referer, copied links, screenshots, request logs. A leaked master token drives the whole API.
@@ -20,13 +20,13 @@
    Node callers (tests, QA scripts) mint with mint() below.
 
    Wire format:  st1.<exp base36 ms>.<nonce hex 16-64>.<base64url HMAC-SHA256>
-   MAC message:  "starnet-ticket-v1\n" + METHOD + "\n" + scope + "\n" + exp + "\n" + nonce
+   MAC message:  "eyehold-ticket-v1\n" + METHOD + "\n" + scope + "\n" + exp + "\n" + nonce
 
    Pure: no ambient clock (callers pass `now`), no module state except what a caller creates via replayGuard(). */
 'use strict';
 const nodeCrypto = require('node:crypto');
 
-const DOMAIN = 'starnet-ticket-v1';
+const DOMAIN = 'eyehold-ticket-v1';
 const SKEW_MS = 30 * 1000;   // same machine, but page and sidecar read the clock at different moments
 // Per-kind lifetime CAP (server-enforced) + whether the ticket may be presented once only.
 const KINDS = Object.freeze({

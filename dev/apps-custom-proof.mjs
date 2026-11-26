@@ -13,7 +13,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), CDP_PORT = 9496;
 const out = '.worldshots/apps-custom';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-live-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-live-'));
 const report = { checks: [], facts: {}, exceptions: [], approvals: 0 };
 let chrome, cdp;
 const run = (s) => evalJS(cdp, s);

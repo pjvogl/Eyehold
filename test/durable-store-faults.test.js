@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { makeDurableJsonStore, writeJsonResilient, readJsonResilient } = require('../sidecar/durable-store.js');
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-durable-faults-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-durable-faults-'));
 let checks = 0, failures = 0;
 function check(fn) { checks++; try { fn(); } catch(e) { failures++; console.error(e.message); } }
 (async () => {

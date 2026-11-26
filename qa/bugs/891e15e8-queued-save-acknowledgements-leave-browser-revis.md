@@ -25,7 +25,7 @@ Write the browser cache as App.persist does, send one save, and queue another be
 
 ## Evidence
 
-Hosted Windows installed-app run [34567303092](https://github.com/androoAGI/starnet/actions/runs/34567303092) upgraded the published 0.11.1 installer to signed candidate source 61528ba957fade1872726f342dfae3d768401c38. Populated state survived installation. After normal close/restart, the receipt recorded localRevision 0, durableRevision 2 and a refused stale write with a preserved recovery file. This was a real application defect after earlier fixture corrections.
+Hosted Windows installed-app run [34567303092](https://github.com/Eyehold/eyehold/actions/runs/34567303092) upgraded the published 0.11.1 installer to signed candidate source 61528ba957fade1872726f342dfae3d768401c38. Populated state survived installation. After normal close/restart, the receipt recorded localRevision 0, durableRevision 2 and a refused stale write with a preserved recovery file. This was a real application defect after earlier fixture corrections.
 
 The added regression failed before the fix with browser revision 6 versus durable revision 8. It passes after the fix, including a subsequent restart/write and a negative case ensuring that an acknowledgement cannot mark a different, unsubmitted edit clean.
 

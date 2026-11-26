@@ -1,4 +1,4 @@
-# StarNet power-user deep-dive audit — 2026-07-15
+# Eyehold power-user deep-dive audit — 2026-07-15
 
 Source tested: `75cad9e8` on three isolated worktrees, isolated save roots, unique ports,
 the real sidecar, project-native headless Chrome/CDP, and deterministic mock providers.
@@ -46,14 +46,14 @@ No fixes were implemented in this audit.
 #### PU-03 — Recovery “Export Agent” includes browser BYOK secrets despite “secrets excluded” copy
 
 - Repro: plant harmless sentinel
-  `starnet.byok.key.openrouter=QA_PLANTED_BROWSER_KEY_SENTINEL`; invoke the real recovery
+  `eyehold.byok.key.openrouter=QA_PLANTED_BROWSER_KEY_SENTINEL`; invoke the real recovery
   `#btn-export`; inspect the collected/exported payload.
 - Actual: `Backup.collectStore()` and the export contain the exact sentinel. The UI reports the
   export saved successfully. Settings’ separate STATION BACKUP explicitly says secrets are
   excluded and must be re-entered.
 - Expected: browser BYOK credentials are excluded, or the export is explicitly treated and
   protected as secret-bearing.
-- Seam: `frontend/app/backup.js:33` collects every `starnet.*` localStorage entry.
+- Seam: `frontend/app/backup.js:33` collects every `eyehold.*` localStorage entry.
 - Safety note: only a planted sentinel was read; it was removed after the proof.
 
 #### PU-04 — A dragged Settings window can become completely unreachable after viewport shrink

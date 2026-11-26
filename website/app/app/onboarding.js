@@ -1,4 +1,4 @@
-/* STARNET — onboarding.js : THE AWAKENING (the first-meeting), master cut.
+/* EYEHOLD — onboarding.js : THE AWAKENING (the first-meeting), master cut.
 
    A breathtaking, witnessed birth. Your agent catches fire in the dark and finds its first dry, quick
    words in front of you; THE FLOOD then pours every page it knows into its mind — overwhelming, then
@@ -973,7 +973,7 @@ const Onboarding = (() => {
      offers to pay it: one gentle COMMS nudge — accept runs the full guided-discovery meeting (the same
      runLeadMeeting the awakening uses, minus the birth theatre), decline hands the gap to hunt mode.
      ONE-SHOT: the flag is spent on OFFER (never a nag loop); reEnable lives in re-running onboarding. */
-  const DEFER_KEY = 'starnet.interview.deferred.v1';
+  const DEFER_KEY = 'eyehold.interview.deferred.v1';
   function setDeferred() { try { localStorage.setItem(DEFER_KEY, '1'); } catch (_) {} }
   function deferredPending() { try { return localStorage.getItem(DEFER_KEY) === '1'; } catch (_) { return false; } }
   function clearDeferred() { try { localStorage.removeItem(DEFER_KEY); } catch (_) {} }

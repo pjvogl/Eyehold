@@ -1,4 +1,4 @@
-# StarNet world generation II
+# Eyehold world generation II
 
 Status, 2026-09-08: the owner rejected and cancelled the separate New Horizon rebuild.
 Its source, generated assets, website mirror, tests, and entry wiring were removed in

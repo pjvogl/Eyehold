@@ -1,4 +1,4 @@
-/* STARNET — routinenudgestore.js : the "you keep launching this — schedule it?" nudge (lane D).
+/* EYEHOLD — routinenudgestore.js : the "you keep launching this — schedule it?" nudge (lane D).
 
    A recipe the Commander keeps hand-launching is a routine that hasn't been admitted yet. This store watches
    the REAL per-recipe launch counters (ProspectStore.launches — the scout usage read) and, when a recipe
@@ -15,7 +15,7 @@
    it never emits and never writes server state. node-exportable for its test. */
 'use strict';
 const RoutineNudgeStore = (() => {
-  const KEY = 'starnet.routinenudge.v1';
+  const KEY = 'eyehold.routinenudge.v1';
   const CAP = 1;             // at most one schedule offer per session
   const LAUNCH_FLOOR = 3;    // a recipe earns the offer only after this many REAL launches
   const OFFER_MAX = 2;       // …and is never offered more than this many times, ever (ignored ≠ declined, but twice is enough)

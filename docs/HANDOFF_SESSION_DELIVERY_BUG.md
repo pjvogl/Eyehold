@@ -78,7 +78,7 @@ A reconciliation pass, mirroring autosessions' pattern, so the durable truth hea
   sessions (peek-first rule in the [ORCHESTRATION] briefing in `sidecar/index.js`).
 - Voice identity on installed builds: `local:true` TTS maps the picked voice onto the Edge floor when the
   Kokoro engine is absent (`sidecar/local-voice.js edgeVoiceFor`, `handleTts serveEdge`) — never the
-  keyed provider chain. Kill-switch `STARNET_LOCAL_VOICE=0` reproduces the installed shape.
+  keyed provider chain. Kill-switch `EYEHOLD_LOCAL_VOICE=0` reproduces the installed shape.
 
 ## Protocol (non-negotiable, from CLAUDE.md + hard-won today)
 

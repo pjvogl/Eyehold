@@ -34,7 +34,7 @@ const SCALES = [['t100', 100], ['t150', 150]];
 const KEYS = ['tasks', 'settings', 'agents'];
 
 const setScale = (v) => `(() => {
-  const KEY = 'starnet.station.v1';
+  const KEY = 'eyehold.station.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   // a remembered drag position / size would mask the DEFAULT placement this report is about

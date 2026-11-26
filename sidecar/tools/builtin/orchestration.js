@@ -968,7 +968,7 @@
               settle(r); return { status: 'error', reason: r.reason, result: r.result, usd: r.usd, taintedBy: r.taintedBy || '' };
             }
             if (!result) {
-              const r = { label, agentId: ephemeralId, reason: 'refused', result: 'subagent could not start — the concurrency cap (STARNET_MAX_CONCURRENT_AGENTS) is full or a sign-in is needed. Try fewer at once.', usd: 0 };
+              const r = { label, agentId: ephemeralId, reason: 'refused', result: 'subagent could not start — the concurrency cap (EYEHOLD_MAX_CONCURRENT_AGENTS) is full or a sign-in is needed. Try fewer at once.', usd: 0 };
               settle(r); return { status: 'error', reason: 'refused', result: r.result, usd: 0 };
             }
             const firstText = lastAssistant(result.messages) || '(the subagent returned no text)';

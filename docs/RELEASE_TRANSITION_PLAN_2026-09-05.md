@@ -1,4 +1,4 @@
-# StarNet release transition plan — 2026-09-05
+# Eyehold release transition plan — 2026-09-05
 
 This plan begins after `v0.10.13` and remains valid while the remaining UI lanes merge. The
 candidate is not releasable until every exit criterion below is proved against one immutable

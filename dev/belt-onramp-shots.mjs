@@ -136,7 +136,7 @@ async function main() {
 
     // ---- Feature 2: bind an agent on the stamped RESEARCH LINE -> the auto first ride fires ----
     await evalJS(cdp, CLEAR_FLOOR);
-    await evalJS(cdp, `localStorage.removeItem(Object.keys(localStorage).find(k => k.startsWith('starnet.refit.firstride')) || 'x')`);
+    await evalJS(cdp, `localStorage.removeItem(Object.keys(localStorage).find(k => k.startsWith('eyehold.refit.firstride')) || 'x')`);
     const spot2 = await evalJS(cdp, findSpot('research_line'));
     if (!spot2) throw new Error('no spot for the first-ride proof');
     const rideSetup = await evalJS(cdp, `(() => {
@@ -161,7 +161,7 @@ async function main() {
     // the auto ride arms on the recompile and fires ~700ms later; catch it mid-narration
     await sleep(2000);
     const rideProof = await evalJS(cdp, `(() => {
-      const key = Object.keys(localStorage).find(k => k.startsWith('starnet.refit.firstride'));
+      const key = Object.keys(localStorage).find(k => k.startsWith('eyehold.refit.firstride'));
       return { fired: !!key, flag: key || null };
     })()`);
     console.log('ride fired:', JSON.stringify(rideProof));

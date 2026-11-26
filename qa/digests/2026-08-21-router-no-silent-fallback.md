@@ -20,7 +20,7 @@ then tried to route around — by opening a host terminal.
   `resolutionFor(agentId)`; `backendIdFor` unchanged for callers. "Present" now means the manager's own
   `describe().availability` is not `absent | unavailable | configuration-required`. `describeAgent` carries
   `requestedBackend`, `backendMatched`, `mismatchReason`, `sandboxFallback`, `refusing`. Header rewritten.
-- **C2 `STARNET_SANDBOX_FALLBACK = refuse (default) | allow`.** Under refuse, `forAgent()` returns:
+- **C2 `EYEHOLD_SANDBOX_FALLBACK = refuse (default) | allow`.** Under refuse, `forAgent()` returns:
   - a *refusing proxy* when the sandbox is absent (execute-class methods reject `{code:'sandbox_unavailable',
     requested, reason, precondition}`; describe/status/workspace methods still answer), or
   - an *honest proxy* over a registered docker/ssh manager: the manager attempts for real (that IS the probe);
@@ -52,7 +52,7 @@ then tried to route around — by opening a host terminal.
 - `test/checkpoint-default-on.test.js` (new, 14): the shipped env parser + fs.write's precise path.
 - `test/sidecar.http.test.js`: `GET /api/checkpoint` → `enabled:true` with no env var.
 
-## Live proof (seed on :9971, Docker absent on this box, `STARNET_FULL_ACCESS=0` so Full Power did not force local)
+## Live proof (seed on :9971, Docker absent on this box, `EYEHOLD_FULL_ACCESS=0` so Full Power did not force local)
 
 - `GET /api/checkpoint?agent=agent` → `enabled:true` (no env var).
 - SAFE CELL set via `App.setExecutionProfile` (the dossier chip's path); survived a sidecar restart.

@@ -31,7 +31,7 @@ const GROK = {
   deviceUrl: 'https://auth.x.ai/oauth2/device/code',
   tokenUrl: 'https://auth.x.ai/oauth2/token',
   scope: 'openid profile email offline_access grok-cli:access api:access conversations:read conversations:write',
-  deviceExtraBody: { referrer: 'starnet' },
+  deviceExtraBody: { referrer: 'eyehold' },
   encoding: 'form',
   refreshSkewSeconds: 120,
   forbiddenIsAllowlist: true
@@ -65,7 +65,7 @@ const KIMI = {
       A.eq(f.calls[0].init.headers['Content-Type'], 'application/x-www-form-urlencoded', 'grok device leg is form-encoded');
       const body = formObj(f.calls[0].init);
       A.eq(body.client_id, 'b1a00492-073a-47ea-816f-4c329264a828', 'grok sends its public client_id');
-      A.eq(body.referrer, 'starnet', 'grok sends referrer=starnet on the device leg');
+      A.eq(body.referrer, 'eyehold', 'grok sends referrer=eyehold on the device leg');
       A.ok(body.scope && body.scope.indexOf('offline_access') >= 0, 'grok sends the offline_access scope');
       A.eq(r.device_code, 'dc_grok', 'returns the opaque device_code (kept server-side by the host)');
       A.eq(r.user_code, 'ABCD-1234', 'returns user_code');

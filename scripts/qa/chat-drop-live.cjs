@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const cp = require('node:child_process');
-const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 (async () => {
   const baseline = process.argv.includes('--baseline');
   const browser = await chromium.launch({headless:true, channel:'msedge'});
@@ -41,7 +41,7 @@ const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwrigh
     }
     const dir=path.resolve('.dogfood/chat-drop');fs.mkdirSync(dir,{recursive:true});
     const textPath=path.join(dir,'drop-proof.txt'), pngPath=path.join(dir,'drop-pixel.png');
-    fs.writeFileSync(textPath,'StarNet real file drop proof');
+    fs.writeFileSync(textPath,'Eyehold real file drop proof');
     fs.writeFileSync(pngPath,Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lxoAAAAASUVORK5CYII=','base64'));
     const cdp=await page.context().newCDPSession(page);
     const box=await page.locator('#chat-log').boundingBox();

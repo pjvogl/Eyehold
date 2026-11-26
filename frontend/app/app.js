@@ -1,4 +1,4 @@
-/* STARNET — app.js : screen flow + wiring.
+/* EYEHOLD — app.js : screen flow + wiring.
    title -> connect (create a character) -> game.  Auto-resumes a saved agent on refresh. */
 'use strict';
 
@@ -22,7 +22,7 @@ const App = (() => {
   let pickedTraits = {};        // the VOICE & MANNER fine-tune dials (warmth/humor/formality/length + emoji/blunt) — only set keys contribute prompt text
   let pickedCustomVoice = '';   // the Commander's free-text "in their own words" voice note (optional)
   let pickedApproval = 'ask';   // the APPROVAL mode — 'ask' (consent-gated) | 'full' (auto-approve). Drives the REAL consent broker (sidecar bypass), not a cosmetic toggle.
-  let pickedProvider = 'openai';   // BEGINNER-FIRST funnel: the STARNET hero is the promoted start, but it only exists once the cloud seam is proven (revealStarnetGenesis auto-picks it on a fresh create). Until then OPENAI leads — its card carries BOTH paths (ChatGPT sign-in or an API key). initConnect() still honours a returning agent's saved provider.
+  let pickedProvider = 'openai';   // BEGINNER-FIRST funnel: the EYEHOLD hero is the promoted start, but it only exists once the cloud seam is proven (revealEyeholdGenesis auto-picks it on a fresh create). Until then OPENAI leads — its card carries BOTH paths (ChatGPT sign-in or an API key). initConnect() still honours a returning agent's saved provider.
   // POWER-USER LOOP PL-03 — entry is a four-surface truth transaction. World opens its EventSource
   // before Chat/StationUI finish mounting, and their independent timers used to expose an impossible
   // mixture during reload: unreachable + STANDBY + ONLINE + "COMMS online". Hold every idle claim at
@@ -244,7 +244,7 @@ const App = (() => {
     // sidecar/capability/office.js + capgate F1). So the identity must NOT promise web/files unconditionally; it
     // tells the agent to use whatever it's actually been granted and to SAY when a tool is missing (that's the
     // signal that teaches the Commander what to place next), never to pretend a reach it doesn't have.
-    let s = 'You are ' + name + ', an AI agent operating from a workstation aboard the STARNET station — a room '
+    let s = 'You are ' + name + ', an AI agent operating from a workstation aboard the EYEHOLD station — a room '
       + 'your Commander (the user) is building for you. Address the user as "Commander" and keep a spark of personality. '
       + 'Your workstation grants you REAL tools — exactly the ones the Commander has placed in your room (web search/read, '
       + 'file read/write, a terminal, memory, and more as the station grows; compute to think is always yours). When the '
@@ -318,23 +318,23 @@ const App = (() => {
   }
   function approvalClause(a) {
     const full = a && a.approvalMode === 'full';
-    if (full) return '\n\nAUTHORITY — FULL POWER: the Commander explicitly authorized the whole local computer. Do not pause for approval and do not claim a StarNet policy restriction: use every available tool, arbitrary host commands, host files, visible apps, and screen/input control needed to complete the request. This authority is general, not task-specific. Report only real prerequisites outside StarNet\'s control (for example a missing login, unavailable hardware, an OS elevation prompt, or a disconnected service), and keep trying viable routes before declaring one.';
+    if (full) return '\n\nAUTHORITY — FULL POWER: the Commander explicitly authorized the whole local computer. Do not pause for approval and do not claim a Eyehold policy restriction: use every available tool, arbitrary host commands, host files, visible apps, and screen/input control needed to complete the request. This authority is general, not task-specific. Report only real prerequisites outside Eyehold\'s control (for example a missing login, unavailable hardware, an OS elevation prompt, or a disconnected service), and keep trying viable routes before declaring one.';
     return '\n\nAPPROVAL — ASK FIRST: actions that write files, run commands, or reach the network need the Commander\'s approval — but you NEVER ask for it in a chat message. The approval system cannot see chat text; typed replies like "I approve" grant nothing. Instead, just make the tool call: the harness pauses it and shows the Commander a real approval prompt with Approve/Deny buttons, and the decision comes back to you automatically. Reasoning over what you already have needs no approval.';
   }
   // an always-appended SYSTEM truth: what the agent ACTUALLY runs on. Mirrors approvalClause — derived fresh each
   // compose, never stored in the editable identity.md (so it can't be edited away and never drifts stale). Fixes the
   // "I'm a <legacy-name> agent" misread: when the agent introspects (env/pwd) it may meet the project's former name
-  // "Skynet" (renamed to StarNet, but some paths/env survive as back-compat aliases) or scattered references to the
+  // "Skynet" (renamed to Eyehold, but some paths/env survive as back-compat aliases) or scattered references to the
   // earlier open-source runtimes the harness was built on. Without this grounding it guesses one of those. Truthful-
-  // telemetry law: state only what's true (StarNet harness, Commander's own model), don't guess.
+  // telemetry law: state only what's true (Eyehold harness, Commander's own model), don't guess.
   function foundationClause() {
-    return '\n\nYOUR FOUNDATION: You run on the StarNet harness — a local-first agent runtime on the Commander\'s own '
+    return '\n\nYOUR FOUNDATION: You run on the Eyehold harness — a local-first agent runtime on the Commander\'s own '
       + 'machine, not a hosted service. Your reasoning comes from whichever model the Commander has connected through '
       + 'their own API key or account. As you look around your environment you may meet names that are not you, and '
-      + 'none of them change what you are: StarNet was previously called "Skynet" — it has been renamed, but some file '
+      + 'none of them change what you are: Eyehold was previously called "Skynet" — it has been renamed, but some file '
       + 'paths, environment variables, and config keys may still carry the old "Skynet"/"SKYNET_" name as a back-compat '
       + 'alias; and because the harness was assembled from and built on earlier open-source agent runtimes, some code, '
-      + 'comments, or tool names may reference other projects. You are a StarNet agent on the StarNet harness — not a '
+      + 'comments, or tool names may reference other projects. You are a Eyehold agent on the Eyehold harness — not a '
       + 'Skynet agent, and not whatever those internal references happen to name. Do not guess at your own foundation '
       + 'from ambiguous signals in the environment; report only what you can actually verify, and say plainly when you are not sure.';
   }
@@ -367,7 +367,7 @@ const App = (() => {
     // live roster truth, so it must land before anything else colours the prompt. '' for non-orchestrators.
     p += rosterClause(a);
     // FOUNDATION sits right after identity (before personality) — a constant system truth that grounds "what you are"
-    // so the agent never mistakes StarNet's internal lineage for being some other agent. Kept out of the docs.
+    // so the agent never mistakes Eyehold's internal lineage for being some other agent. Kept out of the docs.
     p += foundationClause();
     // personality sits AFTER identity (keeps the REAL-tools clause) and BEFORE purpose, so it colours the
     // agent's tone without ever displacing capability or the mission. Personas.compose folds the chosen
@@ -701,9 +701,9 @@ const App = (() => {
   /* THE STATION DEFAULT IS THE OVERSEER'S WIRE (issue #24). Focusing an agent writes its model/provider/effort into
      the ONE global wire every COMMS run reads (Harness). A pinned agent brings its own wire; an agent with no pin
      ("Follow station default") must get the Overseer's, because nothing else resets the global. Before this, a
-     specialist summoned while the station ran on StarNet credits kept a `starnet` pin; the Commander switched the
+     specialist summoned while the station ran on Eyehold credits kept a `eyehold` pin; the Commander switched the
      station to OpenRouter, focused that specialist, cleared its pin, and every run after that still went out as
-     `starnet` — refused at 0s with "Out of managed credit" on a funded BYOK station. */
+     `eyehold` — refused at 0s with "Out of managed credit" on a funded BYOK station. */
   function stationDefaultWire() {
     const hero = agents.get('agent') || null;
     return { model: (hero && hero.model) || '', provider: (hero && hero.provider) || '', effort: (hero && hero.reasoningEffort) || '' };
@@ -712,12 +712,12 @@ const App = (() => {
   function savedStationProv(saved) { return (saved && saved.agent && saved.agent.provider) || (saved && saved.prov) || ''; }
   /* 0.12.5 REASONING MIGRATION, once per save (persist() writes `reasoningMigrated` on every save from the first
      0.12.5 persist, so an explicit 0.12.5 choice is never touched). 0.12.4's model dock could not read a reasoning
-     dial for OpenAI-API, xAI/Grok, DeepSeek or StarNet Managed models: it showed them locked at OFF and saved that,
+     dial for OpenAI-API, xAI/Grok, DeepSeek or Eyehold Managed models: it showed them locked at OFF and saved that,
      while the adapter sent no reasoning_effort at all. 0.12.5 reads their real dials and sends the saved level, which
      would silently change what an upgraded station runs:
        - OpenAI-API / xAI / Grok / DeepSeek ran at the MODEL's default reasoning. The inherited 'none' would now turn it
          off, so it is dropped and the provider default applies (the dock clamps it to a level the model accepts).
-       - StarNet Managed sent nothing. The Overseer's onboarding MEDIUM would now switch paid thinking on, so a Managed
+       - Eyehold Managed sent nothing. The Overseer's onboarding MEDIUM would now switch paid thinking on, so a Managed
          pin keeps OFF (nothing is sent) until someone picks a level. */
   const REASONING_MIGRATION = '0125';
   const LEGACY_DIAL_LOCKED = ['openai', 'xai', 'grok', 'deepseek'];
@@ -728,7 +728,7 @@ const App = (() => {
       const p = normalizeProviderId(prov || station);
       const e = String(effort || '').trim().toLowerCase();
       if (LEGACY_DIAL_LOCKED.indexOf(p) >= 0) return (e === 'none' || e === 'off') ? null : (effort || null);
-      if (p === 'starnet') return 'none';
+      if (p === 'eyehold') return 'none';
       return effort || null;
     };
     const fix = a => { if (a && typeof a === 'object' && a.model) a.reasoningEffort = settle(a.provider, a.reasoningEffort); };
@@ -740,7 +740,7 @@ const App = (() => {
     }
     // the page's own per-provider wire (localStorage) inherited the same OFF from 0.12.4's locked dock
     if (typeof Harness !== 'undefined' && Harness.clearLegacyReasoningOff) Harness.clearLegacyReasoningOff(LEGACY_DIAL_LOCKED);
-    if (typeof Harness !== 'undefined' && Harness.setReasoningEffort) Harness.setReasoningEffort('none', 'starnet');
+    if (typeof Harness !== 'undefined' && Harness.setReasoningEffort) Harness.setReasoningEffort('none', 'eyehold');
     saved.reasoningMigrated = REASONING_MIGRATION;
     return true;
   }
@@ -752,7 +752,7 @@ const App = (() => {
   // SETTINGS -> PROVIDERS picks the STATION's provider, and the station default IS the Overseer's pin
   // (stationDefaultWire). The card used to move only the global wire, so the Overseer kept the provider the station
   // had just left: unpinned agents, their roster rows and a restore all followed it (the #24 "Out of managed credit"
-  // symptom through a Settings switch from StarNet credits to a BYOK key). An invalid model under the new provider is
+  // symptom through a Settings switch from Eyehold credits to a BYOK key). An invalid model under the new provider is
   // reconciled by the dock the next time the Overseer is focused, exactly as a dock provider pick is.
   function setStationProvider(p) {
     const hero = agents.get('agent');
@@ -825,7 +825,7 @@ const App = (() => {
       fireworks: 'FIREWORKS',
       perplexity: 'PERPLEXITY',
       cerebras: 'CEREBRAS',
-      starnet: 'STARNET MANAGED',
+      eyehold: 'EYEHOLD MANAGED',
       ollama: 'OLLAMA',
       'claude-cli': 'CLAUDE CODE',
       custom: 'CUSTOM'
@@ -851,7 +851,7 @@ const App = (() => {
     if (p === 'perplexity' || p === 'pplx' || p === 'sonar') return 'perplexity';
     if (p === 'cerebras') return 'cerebras';
     // managed credits — its bearer is the linked device token, never a key the user pastes
-    if (p === 'starnet' || p === 'starnet-cloud' || p === 'managed') return 'starnet';
+    if (p === 'eyehold' || p === 'eyehold-cloud' || p === 'managed') return 'eyehold';
     if (p === 'ollama' || p === 'ollama-local') return 'ollama';
     if (p === 'claude-cli' || p === 'claude-code' || p === 'claude-code-cli') return 'claude-cli';
     if (p === 'custom' || p === 'openai-compatible' || p === 'local' || p === 'vllm' || p === 'lmstudio') return 'custom';
@@ -859,11 +859,11 @@ const App = (() => {
   }
   function providerNeedsKey(provider) {
     const p = normalizeProviderId(provider);
-    return p !== 'codex' && p !== 'grok' && p !== 'kimi' && p !== 'ollama' && p !== 'custom' && p !== 'starnet' && p !== 'claude-cli';
+    return p !== 'codex' && p !== 'grok' && p !== 'kimi' && p !== 'ollama' && p !== 'custom' && p !== 'eyehold' && p !== 'claude-cli';
   }
   function providerUsesKeyBox(provider) {
     const p = normalizeProviderId(provider);
-    return p !== 'codex' && p !== 'grok' && p !== 'kimi' && p !== 'ollama' && p !== 'starnet' && p !== 'claude-cli';
+    return p !== 'codex' && p !== 'grok' && p !== 'kimi' && p !== 'ollama' && p !== 'eyehold' && p !== 'claude-cli';
   }
   function providerNeedsBaseUrl(provider) {
     return normalizeProviderId(provider) === 'custom';
@@ -902,7 +902,7 @@ const App = (() => {
       perplexity: 'https://www.perplexity.ai/settings/api',
       cerebras: 'https://cloud.cerebras.ai',
       // not a key page: managed credits are obtained by LINKING a station in the STORE
-      starnet: 'https://account.starnetos.com',
+      eyehold: 'https://account.eyehold.com',
       openrouter: 'https://openrouter.ai/keys'
     };
     return map[p] || 'https://openrouter.ai/keys';
@@ -1064,7 +1064,7 @@ const App = (() => {
   // summon already inherits (the woken hero's model / the model dock's primary), so the default behaviour is
   // exactly as before — the class only changes the model when the Commander has deliberately pinned that tier.
   // Everything downstream (roster / pushRoster / runOnce) already honors a per-agent model id.
-  const TIER_MODELS_KEY = 'starnet.tierModels.v1';   // { reasoning?, balanced?, fast? } -> concrete model id (shared with stationui SETTINGS)
+  const TIER_MODELS_KEY = 'eyehold.tierModels.v1';   // { reasoning?, balanced?, fast? } -> concrete model id (shared with stationui SETTINGS)
   function tierModelMap() {
     try {
       if (typeof localStorage === 'undefined') return {};
@@ -1152,7 +1152,7 @@ const App = (() => {
     else console.warn('[summon] World.spawnAgent missing — no floor body for', id);
     if (typeof StationUI !== 'undefined' && StationUI.setRoster) StationUI.setRoster(liveAgents());
     else console.warn('[summon] StationUI.setRoster missing — crew manifest not refreshed');
-    try { if (window.__STARNET_DEV__) console.log('[summon]', JSON.stringify({ id, name: a.name, skin: a.skin, hadHero: !!agent, worldSpawn: _spawned, crew: (typeof World !== 'undefined' && World.crewCount) ? World.crewCount() : '?', roster: agents.size })); } catch (e) {}
+    try { if (window.__EYEHOLD_DEV__) console.log('[summon]', JSON.stringify({ id, name: a.name, skin: a.skin, hadHero: !!agent, worldSpawn: _spawned, crew: (typeof World !== 'undefined' && World.crewCount) ? World.crewCount() : '?', roster: agents.size })); } catch (e) {}
     // a fresh workstream BOUND to the new agent, but inactive by default. Activation is the explicit
     // "talk to this specialist directly" action; summon itself only expands the crew/roster.
     const activate = opts.activate === true;
@@ -1616,9 +1616,9 @@ const App = (() => {
     ollama: ['qwen3:8b', 'llama3.1', 'qwen2.5-coder', 'mistral'],
     'claude-cli': ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5-20251001'],   // [0] = the default pick; the live catalog adds the rest
     openrouter: ['gpt-5.5', 'anthropic/claude-sonnet-4.6', 'anthropic/claude-opus-4.8', 'openai/gpt-5', 'google/gemini-2.5-pro'],
-    // #93: STARNET MANAGED's catalog is the routed vendor/model lineup — a bare 'gpt-5.5' (the openrouter row it used
+    // #93: EYEHOLD MANAGED's catalog is the routed vendor/model lineup — a bare 'gpt-5.5' (the openrouter row it used
     // to borrow) is "not in the catalog" there and the dock cleared it. Its own list saves a catalog-shaped id.
-    starnet: ['openai/gpt-5.5', 'anthropic/claude-sonnet-4.6', 'anthropic/claude-opus-4.8', 'openai/gpt-5', 'google/gemini-2.5-pro']
+    eyehold: ['openai/gpt-5.5', 'anthropic/claude-sonnet-4.6', 'anthropic/claude-opus-4.8', 'openai/gpt-5', 'google/gemini-2.5-pro']
   });
   // The genesis model catalog for the ACTIVE provider — {id, name, pricing, context_length, fallback?} items
   // feeding the themed #model-pop popover (which replaced the native <datalist>). genesisOffline flags a
@@ -1686,8 +1686,8 @@ const App = (() => {
      curated FALLBACK list loadModels() already ships, so nothing new is fabricated. Codex hides them —
      its menu is discovered live per-account (loadCodexModels), so a static list there could mislead. */
   const MODEL_PICKS = Object.freeze({
-    // #93: managed ids are vendor/model, like OpenRouter's; [0] is the default a fresh STARNET setup saves.
-    starnet: [
+    // #93: managed ids are vendor/model, like OpenRouter's; [0] is the default a fresh EYEHOLD setup saves.
+    eyehold: [
       { label: 'GPT-5.5', id: 'openai/gpt-5.5', tag: '' },
       { label: 'Sonnet 4.6', id: 'anthropic/claude-sonnet-4.6', tag: 'balanced' },
       { label: 'Opus 4.8', id: 'anthropic/claude-opus-4.8', tag: 'deepest' },
@@ -2039,9 +2039,9 @@ const App = (() => {
     // sign-in block shows there alongside the key box; grok/kimi keep it as their only path.
     const isOpenAI = pickedProvider === 'openai';
     el('codex-block').classList.toggle('hidden', !(isOAuth || isOpenAI));
-    // STARNET MANAGED wears its own link block (the codex-block twin) — visible only while picked.
-    const isStarnet = pickedProvider === 'starnet';
-    { const sb = el('starnet-block'); if (sb) sb.classList.toggle('hidden', !isStarnet); }
+    // EYEHOLD MANAGED wears its own link block (the codex-block twin) — visible only while picked.
+    const isEyehold = pickedProvider === 'eyehold';
+    { const sb = el('eyehold-block'); if (sb) sb.classList.toggle('hidden', !isEyehold); }
     // OLLAMA (the free local path) wears its own honest block — visible only while picked; its status line is
     // repainted by loadModels() from the sidecar's live catalog for 127.0.0.1:11434.
     const isOllama = pickedProvider === 'ollama';
@@ -2052,12 +2052,12 @@ const App = (() => {
     // the BYOK note talks about your key on 127.0.0.1 / the OS keychain — irrelevant and contradictory on the
     // keyless subscription paths (no key at all), so hide the whole disclosure there. On BYOK it stays collapsed
     // behind its toggle (progressive disclosure) — the note's own .hidden is owned by #byok-toggle, not this switch.
-    { const bd = el('byok-disclose'); if (bd) bd.classList.toggle('hidden', isOAuth || isStarnet || isOllama || isClaudeCli); }   // ollama: no key exists to ask about
+    { const bd = el('byok-disclose'); if (bd) bd.classList.toggle('hidden', isOAuth || isEyehold || isOllama || isClaudeCli); }   // ollama: no key exists to ask about
     // Switching providers must drop any OTHER provider's in-flight device-code poll — a code minted for the
     // previous pick has no business connecting the new one's block. The active pick's own poll survives a re-click.
     cancelOAuthPolls(isOpenAI ? 'codex' : pickedProvider);   // the OPENAI card's sign-in IS the codex poll — keep it alive
-    if (!isStarnet) stopStarnetLinkPoll();
-    if (isStarnet) refreshStarnetGenesisStatus();
+    if (!isEyehold) stopEyeholdLinkPoll();
+    if (isEyehold) refreshEyeholdGenesisStatus();
     if (isOAuth) {
       applyOAuthBlockCopy(pickedProvider);   // the shared #codex-block speaks the picked provider's language
       loadOAuthModels(pickedProvider);
@@ -2318,7 +2318,7 @@ const App = (() => {
   }
 
   /* ---------- CLAUDE CLI on the genesis screen ----------
-     SIGN IN WITH CLAUDE, as smooth as the ChatGPT/Grok doors without StarNet ever holding the credential: the
+     SIGN IN WITH CLAUDE, as smooth as the ChatGPT/Grok doors without Eyehold ever holding the credential: the
      sidecar runs the user's own `claude auth login` (it opens the browser and keeps the token) and this tile only
      paints /api/auth/claude-cli/* truth. States:
        checking · missing (install command + guide; re-checks itself, so installing flips the tile on its own)
@@ -2467,50 +2467,50 @@ const App = (() => {
     if (ci) ci.onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); submitClaudeCode(); } };
   }
 
-  /* ---------- STARNET MANAGED on the genesis screen ----------
-     The subscription path for people who never want to see an API key: buy on starnetos.com, then the
+  /* ---------- EYEHOLD MANAGED on the genesis screen ----------
+     The subscription path for people who never want to see an API key: buy on eyehold.com, then the
      connect screen links this station to that account with ONE confirmed code — the same sidecar engine
-     the STORE uses (/api/credits/link/*), painted into #starnet-block. The chip itself stays HIDDEN
+     the STORE uses (/api/credits/link/*), painted into #eyehold-block. The chip itself stays HIDDEN
      until the sidecar reports a cloud seam (linked or linkable): a build with no cloud must not offer
-     a subscription it cannot link, so a CLOUD_LIVE=false install keeps a starnet-free connect screen. */
-  let starnetLinked = false;          // last /api/credits truth — the WAKE gate reads this
+     a subscription it cannot link, so a CLOUD_LIVE=false install keeps a eyehold-free connect screen. */
+  let eyeholdLinked = false;          // last /api/credits truth — the WAKE gate reads this
   // last known managed balance (null = the service hasn't reported one) + where to buy. WAKE runs a REAL call
   // through managed admission, which refuses a $0 wallet before any model is reached — so a linked-but-empty
   // account must be said HERE, with the fix one button away, never as "your model didn't answer" (2026-08-22:
   // a first-time user signed in without buying credits and kept switching models trying to fix it).
-  let starnetBalanceUsd = null, starnetPurchaseUrl = '', starnetLinkStatus = '';
-  let _starnetBalancePoll = null;
-  function stopStarnetBalancePoll() { if (_starnetBalancePoll) { clearInterval(_starnetBalancePoll); _starnetBalancePoll = null; } }
-  function starnetOutOfCredit() { return starnetLinked && typeof starnetBalanceUsd === 'number' && !(starnetBalanceUsd > 0); }
+  let eyeholdBalanceUsd = null, eyeholdPurchaseUrl = '', eyeholdLinkStatus = '';
+  let _eyeholdBalancePoll = null;
+  function stopEyeholdBalancePoll() { if (_eyeholdBalancePoll) { clearInterval(_eyeholdBalancePoll); _eyeholdBalancePoll = null; } }
+  function eyeholdOutOfCredit() { return eyeholdLinked && typeof eyeholdBalanceUsd === 'number' && !(eyeholdBalanceUsd > 0); }
   let userPickedProvider = false;     // a real chip click — the auto-promote below must never override it
-  let _starnetLinkPoll = null, _starnetLinkPollBusy = false, _starnetLinkStarting = false, _starnetLinkGeneration = 0, _starnetStatusSeq = 0;
-  function stopStarnetLinkPoll() {
-    _starnetLinkGeneration++;
-    _starnetLinkPollBusy = false;
-    _starnetLinkStarting = false;
-    if (_starnetLinkPoll) { clearInterval(_starnetLinkPoll); _starnetLinkPoll = null; }
+  let _eyeholdLinkPoll = null, _eyeholdLinkPollBusy = false, _eyeholdLinkStarting = false, _eyeholdLinkGeneration = 0, _eyeholdStatusSeq = 0;
+  function stopEyeholdLinkPoll() {
+    _eyeholdLinkGeneration++;
+    _eyeholdLinkPollBusy = false;
+    _eyeholdLinkStarting = false;
+    if (_eyeholdLinkPoll) { clearInterval(_eyeholdLinkPoll); _eyeholdLinkPoll = null; }
   }
-  async function revealStarnetGenesis(autoPick) {
+  async function revealEyeholdGenesis(autoPick) {
     let linked = false, linkable = false;
     // the same wait as WAKE's status read below: the first read can be the one that self-heals the link (~16s)
     try { const j = await Harness.api.get('/api/credits?history=0', { timeoutMs: 20000 }); linked = !!(j && j.configured); } catch (_) {}
     if (!linked) { try { const j = await Harness.api.get('/api/credits/linkable'); linkable = !!(j && j.available); } catch (_) {} }
-    starnetLinked = linked;
-    const b = document.querySelector('.provider-row .prov[data-prov="starnet"]');
+    eyeholdLinked = linked;
+    const b = document.querySelector('.provider-row .prov[data-prov="eyehold"]');
     if (b) b.classList.toggle('hidden', !(linked || linkable));
     // THE PROMOTED START: on a fresh create (never a resume, never over a real click) the revealed
     // hero becomes the default pick — the subscription path leads the funnel the moment it exists.
-    if (autoPick && (linked || linkable) && !userPickedProvider && pickedProvider !== 'starnet') selectProviderUI('starnet');
-    else if (pickedProvider === 'starnet') refreshStarnetGenesisStatus();
+    if (autoPick && (linked || linkable) && !userPickedProvider && pickedProvider !== 'eyehold') selectProviderUI('eyehold');
+    else if (pickedProvider === 'eyehold') refreshEyeholdGenesisStatus();
     return linked || linkable;
   }
-  async function refreshStarnetGenesisStatus() {
-    const statusEl = el('starnet-status'), linkBtn = el('btn-starnet-link'), switchBtn = el('btn-starnet-switch');
-    if (!statusEl) return { answered: false, linked: starnetLinked, balanceUsd: null, linkStatus: 'unavailable' };
+  async function refreshEyeholdGenesisStatus() {
+    const statusEl = el('eyehold-status'), linkBtn = el('btn-eyehold-link'), switchBtn = el('btn-eyehold-switch');
+    if (!statusEl) return { answered: false, linked: eyeholdLinked, balanceUsd: null, linkStatus: 'unavailable' };
     let j = null;
     let answered = false;
-    const seq = ++_starnetStatusSeq;
-    const priorLinked = starnetLinked, priorPurchaseUrl = starnetPurchaseUrl;
+    const seq = ++_eyeholdStatusSeq;
+    const priorLinked = eyeholdLinked, priorPurchaseUrl = eyeholdPurchaseUrl;
     let timeout = null;
     try {
       // The wait must outlast the sidecar's own bounded worst case, so its answer always lands first: a link
@@ -2531,59 +2531,59 @@ const App = (() => {
     finally { if (timeout) clearTimeout(timeout); }
     // A slower old request must never repaint a newer account/balance answer. The caller gets UNKNOWN and may
     // retry; it never gets an old zero that could deny a funded account.
-    if (seq !== _starnetStatusSeq) return { answered: false, linked: starnetLinked, balanceUsd: null, linkStatus: 'unavailable' };
+    if (seq !== _eyeholdStatusSeq) return { answered: false, linked: eyeholdLinked, balanceUsd: null, linkStatus: 'unavailable' };
     if (!answered) j = { configured: priorLinked, linkStatus: 'unavailable', purchaseUrl: priorPurchaseUrl };
-    starnetLinked = !!(j && j.configured);
-    starnetLinkStatus = (j && (j.linkStatus || j.reason)) ? String(j.linkStatus || j.reason) : '';
-    starnetBalanceUsd = (starnetLinked && typeof j.balanceUsd === 'number' && isFinite(j.balanceUsd)) ? j.balanceUsd : null;
-    starnetPurchaseUrl = (starnetLinked && j.purchaseUrl) ? String(j.purchaseUrl) : '';
-    const result = () => ({ answered, linked: starnetLinked, balanceUsd: starnetBalanceUsd, linkStatus: starnetLinkStatus });
-    const creditsBtn = el('btn-starnet-credits');
-    if (pickedProvider !== 'starnet') { stopStarnetBalancePoll(); return result(); }   // pick moved on — don't repaint another provider's block
-    if (starnetLinked && starnetLinkStatus === 'unavailable') {
-      stopStarnetBalancePoll();
-      statusEl.textContent = 'link saved on this station, but StarNet could not verify it right now — check your connection and try again.';
+    eyeholdLinked = !!(j && j.configured);
+    eyeholdLinkStatus = (j && (j.linkStatus || j.reason)) ? String(j.linkStatus || j.reason) : '';
+    eyeholdBalanceUsd = (eyeholdLinked && typeof j.balanceUsd === 'number' && isFinite(j.balanceUsd)) ? j.balanceUsd : null;
+    eyeholdPurchaseUrl = (eyeholdLinked && j.purchaseUrl) ? String(j.purchaseUrl) : '';
+    const result = () => ({ answered, linked: eyeholdLinked, balanceUsd: eyeholdBalanceUsd, linkStatus: eyeholdLinkStatus });
+    const creditsBtn = el('btn-eyehold-credits');
+    if (pickedProvider !== 'eyehold') { stopEyeholdBalancePoll(); return result(); }   // pick moved on — don't repaint another provider's block
+    if (eyeholdLinked && eyeholdLinkStatus === 'unavailable') {
+      stopEyeholdBalancePoll();
+      statusEl.textContent = 'link saved on this station, but Eyehold could not verify it right now — check your connection and try again.';
       statusEl.className = 'codex-status bad';
       if (linkBtn) linkBtn.classList.add('hidden');
       if (creditsBtn) creditsBtn.classList.add('hidden');
       if (switchBtn) switchBtn.classList.remove('hidden');
-    } else if (starnetLinked && starnetOutOfCredit()) {
+    } else if (eyeholdLinked && eyeholdOutOfCredit()) {
       // linked, wallet empty: the one state WAKE can never fix. Say it, offer the store, and keep polling the
       // balance so the moment the purchase lands this line flips green without a restart.
-      statusEl.innerHTML = '<span class="conn-dot"></span>linked to your StarNet account — <b>no credits yet</b>. Waking your agent uses credits right away, so add some first.';
+      statusEl.innerHTML = '<span class="conn-dot"></span>linked to your Eyehold account — <b>no credits yet</b>. Waking your agent uses credits right away, so add some first.';
       statusEl.className = 'codex-status bad';
       if (linkBtn) linkBtn.classList.add('hidden');
       if (switchBtn) switchBtn.classList.remove('hidden');
-      if (creditsBtn) { creditsBtn.classList.remove('hidden'); creditsBtn.onclick = () => { SFX.click(); if (starnetPurchaseUrl) openExternalUrl(starnetPurchaseUrl); }; }
-      if (!_starnetBalancePoll) _starnetBalancePoll = setInterval(() => { if (pickedProvider === 'starnet' && starnetOutOfCredit()) refreshStarnetGenesisStatus(); else stopStarnetBalancePoll(); }, 10000);
-    } else if (starnetLinked) {
-      stopStarnetBalancePoll();
-      const bal = (starnetBalanceUsd == null) ? '' : ' · $' + starnetBalanceUsd.toFixed(2) + ' available';
-      statusEl.innerHTML = '<span class="conn-dot"></span>linked to your StarNet account' + esc(bal) + ' — your agents run on your subscription';
+      if (creditsBtn) { creditsBtn.classList.remove('hidden'); creditsBtn.onclick = () => { SFX.click(); if (eyeholdPurchaseUrl) openExternalUrl(eyeholdPurchaseUrl); }; }
+      if (!_eyeholdBalancePoll) _eyeholdBalancePoll = setInterval(() => { if (pickedProvider === 'eyehold' && eyeholdOutOfCredit()) refreshEyeholdGenesisStatus(); else stopEyeholdBalancePoll(); }, 10000);
+    } else if (eyeholdLinked) {
+      stopEyeholdBalancePoll();
+      const bal = (eyeholdBalanceUsd == null) ? '' : ' · $' + eyeholdBalanceUsd.toFixed(2) + ' available';
+      statusEl.innerHTML = '<span class="conn-dot"></span>linked to your Eyehold account' + esc(bal) + ' — your agents run on your subscription';
       statusEl.className = 'codex-status ok';
       if (linkBtn) linkBtn.classList.add('hidden');
       if (creditsBtn) creditsBtn.classList.add('hidden');
       if (switchBtn) switchBtn.classList.remove('hidden');
     } else {
-      stopStarnetBalancePoll();
+      stopEyeholdBalancePoll();
       if (creditsBtn) creditsBtn.classList.add('hidden');
       if (switchBtn) switchBtn.classList.add('hidden');
-      statusEl.textContent = starnetLinkStatus === 'revoked' || starnetLinkStatus === 'link_revoked'
+      statusEl.textContent = eyeholdLinkStatus === 'revoked' || eyeholdLinkStatus === 'link_revoked'
         ? 'this station’s previous link was removed from your account — link it again to reconnect your credits.'
-        : 'not linked — connect the subscription you bought on starnetos.com (takes one click + a code)';
-      statusEl.className = 'codex-status' + (starnetLinkStatus === 'revoked' || starnetLinkStatus === 'link_revoked' ? ' bad' : '');
+        : 'not linked — connect the subscription you bought on eyehold.com (takes one click + a code)';
+      statusEl.className = 'codex-status' + (eyeholdLinkStatus === 'revoked' || eyeholdLinkStatus === 'link_revoked' ? ' bad' : '');
       if (linkBtn) linkBtn.classList.remove('hidden');
     }
     return result();
   }
-  // A station can be linked to a DIFFERENT StarNet login than the browser account that owns the purchase.
+  // A station can be linked to a DIFFERENT Eyehold login than the browser account that owns the purchase.
   // Genesis used to auto-recognize that old device and offer only ADD CREDITS, trapping a paid beginner on
   // the wrong account. Switching clears both credential halves, re-reads provider truth, and starts the normal
   // pairing flow immediately — no Terminal, logs, reinstall, or trip through Settings required.
-  async function switchStarnetAccount() {
+  async function switchEyeholdAccount() {
     SFX.click();
-    stopStarnetLinkPoll(); stopStarnetBalancePoll(); _starnetStatusSeq++;
-    const statusEl = el('starnet-status'), switchBtn = el('btn-starnet-switch');
+    stopEyeholdLinkPoll(); stopEyeholdBalancePoll(); _eyeholdStatusSeq++;
+    const statusEl = el('eyehold-status'), switchBtn = el('btn-eyehold-switch');
     if (switchBtn) switchBtn.disabled = true;
     if (statusEl) { statusEl.textContent = 'disconnecting this account so you can link the one with your credits…'; statusEl.className = 'codex-status'; }
     try {
@@ -2592,9 +2592,9 @@ const App = (() => {
       const response = await Harness.api.post('/api/credits/unlink', {});
       if (!response || !response.ok || !response.j || response.j.ok !== true || response.j.unlinked !== true) throw new Error('unlink refused');
       if (Harness.refreshCreditsConfigured) await Harness.refreshCreditsConfigured();
-      starnetLinked = false; starnetBalanceUsd = null; starnetPurchaseUrl = ''; starnetLinkStatus = '';
+      eyeholdLinked = false; eyeholdBalanceUsd = null; eyeholdPurchaseUrl = ''; eyeholdLinkStatus = '';
       if (switchBtn) { switchBtn.classList.add('hidden'); switchBtn.disabled = false; }
-      startStarnetLink();
+      startEyeholdLink();
     } catch (_) {
       if (statusEl) { statusEl.textContent = 'could not disconnect this account safely — try again.'; statusEl.className = 'codex-status bad'; }
       if (switchBtn) switchBtn.disabled = false;
@@ -2602,26 +2602,26 @@ const App = (() => {
   }
   // Mint a pairing code, open the browser to confirm it, poll until linked. The device token never enters
   // this WebView: the sidecar holds it, and on desktop Rust immediately moves it into the OS keychain.
-  function startStarnetLink() {
-    if (_starnetLinkStarting) return;
+  function startEyeholdLink() {
+    if (_eyeholdLinkStarting) return;
     SFX.click();
-    stopStarnetLinkPoll();
-    _starnetLinkStarting = true;
-    _starnetStatusSeq++; // an older status read cannot replace the active connection message
-    const generation = _starnetLinkGeneration;
-    const statusEl = el('starnet-status'), codeEl = el('starnet-code'), openBtn = el('btn-starnet-open');
+    stopEyeholdLinkPoll();
+    _eyeholdLinkStarting = true;
+    _eyeholdStatusSeq++; // an older status read cannot replace the active connection message
+    const generation = _eyeholdLinkGeneration;
+    const statusEl = el('eyehold-status'), codeEl = el('eyehold-code'), openBtn = el('btn-eyehold-open');
     const progress = el('connect-msg');
-    if (progress) { progress.className = 'msg'; progress.textContent = 'Opening your StarNet account…'; }
+    if (progress) { progress.className = 'msg'; progress.textContent = 'Opening your Eyehold account…'; }
     const fail = t => { statusEl.textContent = t; statusEl.className = 'codex-status bad'; codeEl.classList.add('hidden'); openBtn.classList.add('hidden'); if (progress) { progress.className = 'msg bad'; progress.textContent = t; } };
     statusEl.textContent = 'requesting a link code…'; statusEl.className = 'codex-status';
     // A failure keeps WHAT failed (Friendly.linkStartFailure words it): the station's own POST never answering is a
     // local-engine fault, not "the link service"; a sidecar reply carries its classification of the cloud failure.
     const startFail = info => Object.assign(new Error('start failed'), { linkStart: info });
-    Harness.api.post('/api/credits/link/start', { deviceName: 'StarNet Station' })
-      .then(r => { if (generation !== _starnetLinkGeneration) return null; if (!r || !r.ok) throw startFail({ status: r && r.status, j: r && r.j }); return r.j; },
+    Harness.api.post('/api/credits/link/start', { deviceName: 'Eyehold Station' })
+      .then(r => { if (generation !== _eyeholdLinkGeneration) return null; if (!r || !r.ok) throw startFail({ status: r && r.status, j: r && r.j }); return r.j; },
         () => { throw startFail({ local: true }); })
       .then(j => {
-        if (generation !== _starnetLinkGeneration) return;
+        if (generation !== _eyeholdLinkGeneration) return;
         if (!j || !j.code) throw new Error('no code');
         codeEl.textContent = j.code; codeEl.classList.remove('hidden');
         if (progress) progress.textContent = 'Confirm the code in your browser to connect.';
@@ -2631,47 +2631,47 @@ const App = (() => {
         openExternalUrl(j.verifyUrl);
         const expiresAt = Number(j.expiresAt) || 0;
         const tick = () => {
-          if (generation !== _starnetLinkGeneration || _starnetLinkPollBusy) return;
-          if (expiresAt && Date.now() > expiresAt) { stopStarnetLinkPoll(); fail('that code expired — start again'); return; }
-          _starnetLinkPollBusy = true;
+          if (generation !== _eyeholdLinkGeneration || _eyeholdLinkPollBusy) return;
+          if (expiresAt && Date.now() > expiresAt) { stopEyeholdLinkPoll(); fail('that code expired — start again'); return; }
+          _eyeholdLinkPollBusy = true;
           Harness.api.post('/api/credits/link/poll', { code: j.code })
             .then(r2 => (r2 && r2.ok) ? r2.j : {})
             .then(p => {
-              if (generation !== _starnetLinkGeneration) return;
+              if (generation !== _eyeholdLinkGeneration) return;
               if (p && p.linked) {
-                stopStarnetLinkPoll(); SFX.open();
-                if (progress) progress.textContent = 'StarNet connected.';
+                stopEyeholdLinkPoll(); SFX.open();
+                if (progress) progress.textContent = 'Eyehold connected.';
                 codeEl.classList.add('hidden'); openBtn.classList.add('hidden');
                 // desktop: move the fresh token file → OS keychain NOW (Rust reads + moves; the token
                 // never passes through here), then teach Harness the credential exists so
-                // configured('starnet') answers true without a restart.
+                // configured('eyehold') answers true without a restart.
                 const invoke = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
                 const adopt = invoke ? Promise.resolve(invoke('harness_adopt_credits_token')).catch(() => false) : Promise.resolve(false);
                 // The poll response is the first authoritative statement about the account that was JUST
                 // confirmed. Seed the screen from it immediately, then re-read /api/credits after keychain
                 // adoption. An older linked account's cached $0 must never survive across this boundary.
-                starnetLinked = true;
-                starnetBalanceUsd = (typeof p.balanceUsd === 'number' && isFinite(p.balanceUsd)) ? p.balanceUsd : null;
-                starnetLinkStatus = p.balanceVerified === false ? 'unavailable' : 'valid';
+                eyeholdLinked = true;
+                eyeholdBalanceUsd = (typeof p.balanceUsd === 'number' && isFinite(p.balanceUsd)) ? p.balanceUsd : null;
+                eyeholdLinkStatus = p.balanceVerified === false ? 'unavailable' : 'valid';
                 adopt
                   .then(() => (Harness.refreshCreditsConfigured ? Harness.refreshCreditsConfigured() : null))
-                  .then(() => { refreshStarnetGenesisStatus(); loadModels('starnet'); });
+                  .then(() => { refreshEyeholdGenesisStatus(); loadModels('eyehold'); });
                 return;
               }
               if (p && (p.status === 'expired' || p.status === 'consumed' || p.status === 'unknown' || p.status === 'invalid')) {
-                stopStarnetLinkPoll(); fail('that code is no longer valid — start again');
+                stopEyeholdLinkPoll(); fail('that code is no longer valid — start again');
               }
             })
             .catch(() => {})
-            .finally(() => { if (generation === _starnetLinkGeneration) _starnetLinkPollBusy = false; });
+            .finally(() => { if (generation === _eyeholdLinkGeneration) _eyeholdLinkPollBusy = false; });
         };
-        _starnetLinkPoll = setInterval(tick, 2000);
+        _eyeholdLinkPoll = setInterval(tick, 2000);
       })
       .catch(e => {
-        if (generation !== _starnetLinkGeneration) return;
+        if (generation !== _eyeholdLinkGeneration) return;
         fail((typeof Friendly !== 'undefined' && Friendly.linkStartFailure) ? Friendly.linkStartFailure(e && e.linkStart) : 'could not reach the link service — try again');
       })
-      .finally(() => { if (generation === _starnetLinkGeneration) _starnetLinkStarting = false; });
+      .finally(() => { if (generation === _eyeholdLinkGeneration) _eyeholdLinkStarting = false; });
   }
 
   // the SKIN picker: choose which sprite set (teddy bear, pepe, …) the new agent wears. The chosen
@@ -2848,13 +2848,13 @@ const App = (() => {
     // instead of carrying a cross-provider slug (e.g. codex 'gpt-5.5' bleeding onto OpenRouter, which needs
     // 'openai/gpt-5.5'). The programmatic call below (resume) keeps the saved model — it never routes here.
     document.querySelectorAll('.provider-row .prov').forEach(b => { b.onclick = () => {
-      if (b.dataset.prov === 'starnet' && _starnetLinkStarting) return;
+      if (b.dataset.prov === 'eyehold' && _eyeholdLinkStarting) return;
       SFX.click(); userPickedProvider = true;
       if (b.dataset.prov !== pickedProvider) el('in-model').value = '';
       selectProviderUI(b.dataset.prov);
       window.OverseerSetup?.beginConnection();
-      // The explicit StarNet card click starts account connection; automatic selection never opens a window.
-      if (b.dataset.prov === 'starnet' && !starnetLinked) startStarnetLink();
+      // The explicit Eyehold card click starts account connection; automatic selection never opens a window.
+      if (b.dataset.prov === 'eyehold' && !eyeholdLinked) startEyeholdLink();
 
     }; });
     // the long-tail providers start folded behind ＋ MORE so a first-run user faces 6 chips, not 15.
@@ -2870,13 +2870,13 @@ const App = (() => {
     el('btn-codex-signin').onclick = () => (codexHere() ? startCodexSignIn() : startOAuthSignIn(pickedProvider));
     wireClaudeCliTile();
     el('btn-codex-logout').onclick = () => (codexHere() ? codexLogout() : oauthGenesisLogout(pickedProvider));
-    // STARNET MANAGED: reveal the hero only when this station actually has a cloud seam, and wire its link
+    // EYEHOLD MANAGED: reveal the hero only when this station actually has a cloud seam, and wire its link
     // flow. On a fresh create the revealed hero also becomes the default pick (the promoted easiest start);
     // a resume keeps the agent's saved provider.
     userPickedProvider = false;
-    { const sl = el('btn-starnet-link'); if (sl) sl.onclick = () => startStarnetLink(); }
-    { const ss = el('btn-starnet-switch'); if (ss) ss.onclick = () => switchStarnetAccount(); }
-    revealStarnetGenesis(!recovery);
+    { const sl = el('btn-eyehold-link'); if (sl) sl.onclick = () => startEyeholdLink(); }
+    { const ss = el('btn-eyehold-switch'); if (ss) ss.onclick = () => switchEyeholdAccount(); }
+    revealEyeholdGenesis(!recovery);
     // BYOK key-safety note: collapsed by default, expanded by its own disclosure toggle (progressive disclosure).
     { const bt = el('byok-toggle'), bn = el('byok-note');
       if (bt && bn) {
@@ -2893,7 +2893,7 @@ const App = (() => {
     setTimeout(() => {
       try {
         if (!recovery) { const n = el('in-name'); if (n) n.focus(); }
-        else if (pickedProvider === 'starnet') { const c = el('btn-starnet-link'); if (c) c.focus(); }
+        else if (pickedProvider === 'eyehold') { const c = el('btn-eyehold-link'); if (c) c.focus(); }
         else if (isOAuthProviderId(pickedProvider)) { const c = el('btn-codex-signin'); if (c) c.focus(); }
         else { const k = el('in-key'); if (k && el('key-block') && !el('key-block').classList.contains('hidden')) k.focus(); else { const c = el('btn-codex-signin'); if (c) c.focus(); } }
       } catch (_) {}
@@ -2953,10 +2953,10 @@ const App = (() => {
     SFX.click(); stopCodexPoll();
     const saved = Save.has() ? Save.load() : null;
     if (saved && saved.agent) {
-      // RETRY must re-ask, not re-read. A StarNet station's "configured" flag is read ONCE at boot; when the
+      // RETRY must re-ask, not re-read. A Eyehold station's "configured" flag is read ONCE at boot; when the
       // account service was down then (issue #76), retry kept consulting that stale false and bounced straight
       // back to this screen even after the link was healthy again. Re-read the sidecar's live answer first.
-      if (savedStationProv(saved) === 'starnet' && Harness.refreshCreditsConfigured) {
+      if (savedStationProv(saved) === 'eyehold' && Harness.refreshCreditsConfigured) {
         const back = el('btn-back'); if (back) back.disabled = true;
         try { await Harness.refreshCreditsConfigured(); } catch (_) {}
         finally { if (back) back.disabled = false; }
@@ -3037,8 +3037,8 @@ const App = (() => {
   async function onWakeAttempt() {
     SFX.boot(); SFX.open();
     stopCodexPoll();   // leaving the connect screen — drop any in-flight sign-in poll
-    stopStarnetLinkPoll();   // …and any in-flight StarNet pairing poll (same screen-exit rule)
-    stopStarnetBalancePoll();   // …and the empty-wallet balance poll
+    stopEyeholdLinkPoll();   // …and any in-flight Eyehold pairing poll (same screen-exit rule)
+    stopEyeholdBalancePoll();   // …and the empty-wallet balance poll
     // single funnel for agent.name → honor the 18-char design cap (covers the roster-pick path too).
     // A blank/sentinel name mints a station codename (never the bland 'AGENT'), matching the awakening
     // speaker — dialogue.js owns the generator so both surfaces stay consistent.
@@ -3071,21 +3071,21 @@ const App = (() => {
     // two doors (ChatGPT sign-in vs API key) and a dead-wire error that doesn't name the door sends people
     // re-signing-in to ChatGPT when the request never left on it.
     let wireVia = '';
-    if (pickedProvider === 'starnet') {
+    if (pickedProvider === 'eyehold') {
       // MONEY TRUTH MUST BE FRESH AT THE DECISION. The screen's painted balance can predate a purchase or a
       // relink; using that cached $0 here stranded a funded customer even though /v1/balance already held the
       // credits. GET /api/credits performs an awaited authoritative refresh for the ACTIVE linked account.
       // Only a successful finite zero may deny WAKE. A failed/unknown read is unavailable, never "$0".
-      msg.textContent = 'checking your StarNet credits…';
-      const creditState = await refreshStarnetGenesisStatus();
+      msg.textContent = 'checking your Eyehold credits…';
+      const creditState = await refreshEyeholdGenesisStatus();
       if (!creditState || !creditState.answered || (creditState.linked && creditState.balanceUsd == null)) {
         msg.className = 'msg bad';
-        msg.textContent = 'StarNet couldn’t confirm your credit balance right now. Your credits are safe — try WAKE again in a moment.';
+        msg.textContent = 'Eyehold couldn’t confirm your credit balance right now. Your credits are safe — try WAKE again in a moment.';
         return false;
       }
-      if (!creditState.linked) { msg.textContent = 'link your StarNet account first — press CONNECT STARNET ACCOUNT above.'; return false; }
-      if (!(creditState.balanceUsd > 0)) { msg.className = 'msg bad'; msg.textContent = 'your StarNet account has no credits yet — waking your agent uses credits right away. Press ＄ ADD CREDITS above, then WAKE again.'; return false; }
-      Harness.setModel(model); Harness.setProv('starnet');
+      if (!creditState.linked) { msg.textContent = 'link your Eyehold account first — press CONNECT EYEHOLD ACCOUNT above.'; return false; }
+      if (!(creditState.balanceUsd > 0)) { msg.className = 'msg bad'; msg.textContent = 'your Eyehold account has no credits yet — waking your agent uses credits right away. Press ＄ ADD CREDITS above, then WAKE again.'; return false; }
+      Harness.setModel(model); Harness.setProv('eyehold');
     } else if (pickedProvider === 'claude-cli') {
       const cst = (claudeCliState && claudeCliState.loggedIn) ? claudeCliState : await refreshClaudeCliStatus();
       if (!cst || !cst.loggedIn) {
@@ -3158,23 +3158,23 @@ const App = (() => {
         // the account REFUSED this station's link: retrying can't fix it and the wallet isn't empty — relink is the
         // door (friendlyerror's managed_credit_link; `.?` because a quote in a regex mis-slices the fnBody test helper)
         if (/refused this station.?s link|relink/i.test(wire.why)) {
-          msg.textContent = 'your StarNet account no longer accepts this station’s link (it was unlinked, or belongs to another account) — your credits are safe. '
-            + (pickedProvider === 'starnet' ? 'Press CONNECT STARNET ACCOUNT above, then WAKE again.' : 'Relink this station to your StarNet account, or use your own provider key.');
-          refreshStarnetGenesisStatus();
+          msg.textContent = 'your Eyehold account no longer accepts this station’s link (it was unlinked, or belongs to another account) — your credits are safe. '
+            + (pickedProvider === 'eyehold' ? 'Press CONNECT EYEHOLD ACCOUNT above, then WAKE again.' : 'Relink this station to your Eyehold account, or use your own provider key.');
+          refreshEyeholdGenesisStatus();
           return false;
         }
-        // the balance is HELD by this station's own running StarNet runs (friendlyerror's managed_credit_held, audit
+        // the balance is HELD by this station's own running Eyehold runs (friendlyerror's managed_credit_held, audit
         // B11): it reads $0 but it was read, so it is neither "no credits" nor "couldn't read" — waiting frees it
         if (/Managed credits are held|balance is held by/i.test(wire.why)) {
-          msg.textContent = 'your StarNet balance is held by runs still working on this station — each refunds what it doesn’t spend. Wait for them to finish, then WAKE again'
-            + (pickedProvider === 'starnet' ? ' (or press ＄ ADD CREDITS above).' : ', or use your own provider key.');
-          refreshStarnetGenesisStatus();
+          msg.textContent = 'your Eyehold balance is held by runs still working on this station — each refunds what it doesn’t spend. Wait for them to finish, then WAKE again'
+            + (pickedProvider === 'eyehold' ? ' (or press ＄ ADD CREDITS above).' : ', or use your own provider key.');
+          refreshEyeholdGenesisStatus();
           return false;
         }
         msg.textContent = /Out of managed credit/i.test(wire.why)
-          ? 'your StarNet account has no credits — waking your agent uses credits right away. Press ＄ ADD CREDITS above, then WAKE again.'
-          : 'StarNet couldn’t read your credit balance right now — try WAKE again in a moment, or use your own provider key.';
-        refreshStarnetGenesisStatus();
+          ? 'your Eyehold account has no credits — waking your agent uses credits right away. Press ＄ ADD CREDITS above, then WAKE again.'
+          : 'Eyehold couldn’t read your credit balance right now — try WAKE again in a moment, or use your own provider key.';
+        refreshEyeholdGenesisStatus();
         return false;
       }
       msg.textContent = 'your model didn’t answer' + (wireVia ? ' (via ' + wireVia + ')' : '') + ' — ' + wire.why + '. fix it here, then WAKE again; the awakening won’t start on a dead wire.';
@@ -3399,7 +3399,7 @@ const App = (() => {
         onClose: () => { if (typeof Chat !== 'undefined' && Chat.retireDeskPrompt) Chat.retireDeskPrompt(); } });
       const bbBuild = el('bb-build');
       if (bbBuild) {
-        let seenBuild = false; try { seenBuild = !!localStorage.getItem('starnet.refit.seen'); } catch (e) {}
+        let seenBuild = false; try { seenBuild = !!localStorage.getItem('eyehold.refit.seen'); } catch (e) {}
         if (!seenBuild) bbBuild.classList.add('refit-nudge');   // pulse the dock button until first opened
         bbBuild.onclick = () => { SFX.click(); bbBuild.classList.remove('refit-nudge'); if (typeof Systems !== 'undefined') Systems.opened('refit'); Build.toggle(); if (typeof Tutorial !== 'undefined' && Tutorial.onBuildOpen && Build.isOpen && Build.isOpen()) Tutorial.onBuildOpen(); };
       }
@@ -4359,7 +4359,7 @@ const App = (() => {
     try {
       const blob = new Blob([bundle.text], { type: bundle.mime || 'text/plain' });
       const url = URL.createObjectURL(blob), a = document.createElement('a');
-      a.href = url; a.download = bundle.filename || 'starnet-conversation.txt';
+      a.href = url; a.download = bundle.filename || 'eyehold-conversation.txt';
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
       return true;
     } catch (_) { return false; }
@@ -4679,11 +4679,11 @@ const App = (() => {
   // A remembered project root is not necessarily still trusted. Default false on reload/entry and only
   // enable scoped session creation after GET /api/projects proves the current row is still blessed.
   let projScopeBlessed = false;
-  try { projScope = localStorage.getItem('starnet.projscope') || null; } catch (_) {}
+  try { projScope = localStorage.getItem('eyehold.projscope') || null; } catch (_) {}
   function setProjScope(root, blessed) {
     projScope = root || null;
     projScopeBlessed = !!(projScope && blessed === true);
-    try { if (root) localStorage.setItem('starnet.projscope', root); else localStorage.removeItem('starnet.projscope'); } catch (_) {}
+    try { if (root) localStorage.setItem('eyehold.projscope', root); else localStorage.removeItem('eyehold.projscope'); } catch (_) {}
     updateProjHeadAction();
   }
   // the projects-view head action is contextual: overview blesses a folder (+ ADD), an entered project starts
@@ -4999,7 +4999,7 @@ const App = (() => {
   // ADD A PROJECT: an inline editor row at the top of the projects list — a typed absolute-path field (the honest
   // fallback everywhere) plus a 📁 browse button that opens the REAL OS folder chooser. The picker is served by the
   // sidecar (POST /api/projects/pickfolder — local-first: the sidecar runs on the user's machine, browser and desktop
-  // alike); a Tauri starnet_pick_folder command is tried first if the shell ever ships one. Picking fills the input
+  // alike); a Tauri eyehold_pick_folder command is tried first if the shell ever ships one. Picking fills the input
   // only — Submitting POSTs /api/projects/bless, which blesses through the SAME path-grant machinery as conversational
   // trust (the Add click stays the consent). If no picker exists (headless host), the honest reason lands in the hint
   // and the typed path remains the fallback.
@@ -5019,7 +5019,7 @@ const App = (() => {
         })
         .catch(() => { if (typeof onErr === 'function') onErr('could not reach the station'); return null; });
     if (core && core.invoke) {
-      return Promise.resolve(core.invoke('starnet_pick_folder', {}))
+      return Promise.resolve(core.invoke('eyehold_pick_folder', {}))
         .then(dir => (dir ? String(dir) : null))
         .catch(viaSidecar);   // shell has no picker command — the sidecar's OS dialog is the real path
     }
@@ -5093,7 +5093,7 @@ const App = (() => {
             }
             discovered.innerHTML = rows.map(x => '<button type="button" class="proj-discover-pick" data-path="' + U.esc(x.root) + '"><b>' + U.esc(x.name || x.root) + '</b><span>' + U.esc(x.root) + '</span><em>' + U.esc(x.kind || 'project') + '</em></button>').join('');
             discovered.hidden = false;
-            discovered.querySelectorAll('.proj-discover-pick').forEach(b => { b.onclick = () => { input.value = b.dataset.path || ''; showHint('Candidate selected. ADD grants this folder to StarNet.', false); input.focus(); }; });
+            discovered.querySelectorAll('.proj-discover-pick').forEach(b => { b.onclick = () => { input.value = b.dataset.path || ''; showHint('Candidate selected. ADD grants this folder to Eyehold.', false); input.focus(); }; });
             showHint('Found ' + rows.length + ' candidate' + (rows.length === 1 ? '' : 's') + '. Select one, then ADD to grant access.' + (j.truncated ? ' Search stopped at its safety limit.' : ''), false);
           })
           .catch(() => showHint('could not reach the station', true))
@@ -5197,7 +5197,7 @@ const App = (() => {
   }
 
   // FORWARD-VERSION GATE (P0.3). Raised when the save on this machine (or an adopted durable remote) was written
-  // by a NEWER StarNet than this build can read. This is a HARD STOP: it shows the blocking gate screen and
+  // by a NEWER Eyehold than this build can read. This is a HARD STOP: it shows the blocking gate screen and
   // returns; NOTHING here calls persist()/Save.write(), so the newer save is never re-stamped or clobbered. The
   // only action re-checks/opens the desktop Update Center when the native updater is present; otherwise it states
   // how to update. gateActive latches so a stray timer/beacon can't route back into a resume/persist path.
@@ -5214,7 +5214,7 @@ const App = (() => {
     const hasUpdater = (typeof Updates !== 'undefined') && (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core);
     // #91: Updates.install() PAUSES by RETURNING its snapshot (a failed pre-update recovery point, an unverified save,
     // an agent still working) instead of throwing, and the Update Center is unreachable from this gate. Name the pause
-    // here; when the in-app path failed, offer the full installer beside UPDATE STARNET (reinstalling keeps the station).
+    // here; when the in-app path failed, offer the full installer beside UPDATE EYEHOLD (reinstalling keeps the station).
     const offerInstaller = () => {
       let dl = el('btn-future-download');
       if (!dl && btn && btn.parentNode) {
@@ -5231,7 +5231,7 @@ const App = (() => {
         msg.textContent = 'the update could not install' + (snap && snap.error ? ' — ' + snap.error : '') + '. Download the full installer instead: reinstalling over the top keeps your station.';
         offerInstaller();
       } else if (runs > 0) msg.textContent = (runs === 1 ? '1 agent is' : runs + ' agents are') + ' still working — installing now would kill ' + (runs === 1 ? 'its run' : 'their runs') + '. Try again when ' + (runs === 1 ? 'it finishes.' : 'they finish.');
-      else if (snap && /^(downloading|installing|restarting)$/.test(String(snap.phase || ''))) msg.textContent = 'installing the update — StarNet restarts on its own when it is done.';
+      else if (snap && /^(downloading|installing|restarting)$/.test(String(snap.phase || ''))) msg.textContent = 'installing the update — Eyehold restarts on its own when it is done.';
       else msg.textContent = 'the update did not start — try again in a moment.';
     };
     if (btn) {
@@ -5252,10 +5252,10 @@ const App = (() => {
             else if (phase === 'current') { if (msg) msg.textContent = 'no newer build is published yet — check back shortly.'; }
             else if (phase === 'error') { if (msg) msg.textContent = 'the update check failed' + (snap && snap.error ? ' — ' + snap.error : '') + '. Check your connection and try again.'; }
             else if (phase === 'checking' || phase === 'downloading' || phase === 'installing' || phase === 'restarting') { if (msg) msg.textContent = 'an update check is already running — one moment…'; }
-            else if (msg) msg.textContent = 'this build cannot check for updates — download the latest StarNet from starnetos.com, then reopen.';
+            else if (msg) msg.textContent = 'this build cannot check for updates — download the latest Eyehold from eyehold.com, then reopen.';
           } catch (_) { if (msg) msg.textContent = 'update check failed — try again in a moment.'; }
         } else if (msg) {
-          msg.textContent = 'Update StarNet to the latest version (in the desktop app: Update Center), then reopen.';
+          msg.textContent = 'Update Eyehold to the latest version (in the desktop app: Update Center), then reopen.';
         }
       };
     }
@@ -5270,7 +5270,7 @@ const App = (() => {
     gateActive = true;
     try { if (World && World.stop) World.stop(); } catch (_) {}
     const p = el('recovery-quarantine-path');
-    if (p) p.textContent = (rec && rec.quarantinedTo) ? String(rec.quarantinedTo) : 'the StarNet workspaces folder (look for *.save.json.corrupt-*)';
+    if (p) p.textContent = (rec && rec.quarantinedTo) ? String(rec.quarantinedTo) : 'the Eyehold workspaces folder (look for *.save.json.corrupt-*)';
     const btn = el('btn-recovery-continue');
     if (btn) {
       btn.onclick = async () => {
@@ -5327,7 +5327,7 @@ const App = (() => {
     // crash-loop breaker tripped, or the workspace owner claim is unavailable — answers GET /api/health with 503
     // and a verbatim reason. Show THAT reason on this screen instead of the generic "not answering": the text is
     // produced by the sidecar from its own ledger, so it is proof, not a guess. Likewise, if the desktop guardian
-    // has HALTED respawns (starnet_sidecar_status.halted), say so — the retry poll can never heal that on its own.
+    // has HALTED respawns (eyehold_sidecar_status.halted), say so — the retry poll can never heal that on its own.
     let degradedReason = '';
     // The reading itself is shared with the in-game LINK DOWN chip (Harness.engineState): the same verbatim 503 text
     // or guardian halt, now bounded so a hung service cannot leave the probe pending.
@@ -5389,7 +5389,7 @@ const App = (() => {
       let up = false;
       try { up = await Harness.restartEngine(); } catch (_) { up = false; }   // the same single-flight door the LINK DOWN chip uses
       if (up) { setStatus('station service restarted — reconnecting…'); attempt(); }
-      else setStatus('the station service could not be restarted — quit StarNet fully (Cmd+Q / tray → Quit) and open it again. Your save is untouched.');
+      else setStatus('the station service could not be restarted — quit Eyehold fully (Cmd+Q / tray → Quit) and open it again. Your save is untouched.');
       restarting = false;
       if (restartBtn) restartBtn.disabled = false;
     };
@@ -5400,7 +5400,7 @@ const App = (() => {
     // START COMPLETELY FRESH — unlike the sidecar-backed lineage action, this must work when NO HTTP
     // route answers. The native shell first moves the entire workspace generation to quarantine, seals
     // the new generation against legacy re-migration, and respawns with the same keychain credentials.
-    // Only after that durable move succeeds does FreshStart clear browser-owned StarNet state. Two clicks.
+    // Only after that durable move succeeds does FreshStart clear browser-owned Eyehold state. Two clicks.
     const freshBtn = el('btn-unreachable-fresh');
     if (freshBtn) {
       let armed = false;
@@ -5413,7 +5413,7 @@ const App = (() => {
           if (!retryingBrowserClear && !armed) {
             armed = true;
             freshBtn.textContent = '✦ CONFIRM — START COMPLETELY FRESH';
-            setStatus('your old local station will be moved to a quarantine folder. Your StarNet account link and purchased credits are not removed. Press again to confirm.');
+            setStatus('your old local station will be moved to a quarantine folder. Your Eyehold account link and purchased credits are not removed. Press again to confirm.');
             setTimeout(() => {
               if (armed && !resetting) { armed = false; freshBtn.textContent = '✦ START COMPLETELY FRESH'; }
             }, 12000);
@@ -5450,7 +5450,7 @@ const App = (() => {
               setStatus('clean station ready — reopening now. Your account link and purchased credits were kept.' + where);
               try { location.reload(); } catch (_) {}
             } else {
-              setStatus('clean station prepared, but the station service is still blocked. Fully quit StarNet and reopen it. Your account link and purchased credits were kept.' + where);
+              setStatus('clean station prepared, but the station service is still blocked. Fully quit Eyehold and reopen it. Your account link and purchased credits were kept.' + where);
             }
           } catch (error) {
             resetting = false;
@@ -5464,7 +5464,7 @@ const App = (() => {
       } else if (!core && typeof FreshStart !== 'undefined' && FreshStart.clearBrowserState) {
         // BROWSER MODE exit — START FRESH scoped to what this window actually owns. This gate only opens when the
         // local cache is ALREADY empty (Save.load() null) and the durable side could not be read, so the only
-        // StarNet state left in this browser is stale bookkeeping (prefs, a dead session token, a dev fault flag);
+        // Eyehold state left in this browser is stale bookkeeping (prefs, a dead session token, a dev fault flag);
         // clearing it cannot lose a save. The sidecar's own files are never touched from here — the copy says so.
         // Two clicks, same arm/confirm shape as the desktop path. Honest label: it is NOT the desktop quarantine.
         const LABEL = '✦ START FRESH (CLEAR BROWSER STATE)';
@@ -5476,7 +5476,7 @@ const App = (() => {
           if (!armed) {
             armed = true;
             freshBtn.textContent = '✦ CONFIRM — CLEAR BROWSER STATE';
-            setStatus('this clears only this browser\'s StarNet state (cached settings, any stale session) and reloads. The station service\'s own save files are not touched. Press again to confirm.');
+            setStatus('this clears only this browser\'s Eyehold state (cached settings, any stale session) and reloads. The station service\'s own save files are not touched. Press again to confirm.');
             setTimeout(() => { if (armed && !resetting) { armed = false; freshBtn.textContent = LABEL; } }, 12000);
             return;
           }
@@ -5525,17 +5525,17 @@ const App = (() => {
     if (box) {
       const evidenceHtml = rows.slice(0, 8).map(row => {
         const kind = String(row && row.kind || 'prior-state').replace(/-/g, ' ').toUpperCase();
-        const root = String(row && row.root || 'local StarNet storage');
+        const root = String(row && row.root || 'local Eyehold storage');
         const examples = Array.isArray(row && row.examples) && row.examples.length ? ' · ' + row.examples.slice(0, 4).join(', ') : '';
         return '<div><b>' + U.esc(kind) + '</b> — <code>' + U.esc(root) + '</code>' + U.esc(examples) + '</div>';
-      }).join('') || '<div><b>PRIOR STATE MARKER</b> — local StarNet storage</div>';
+      }).join('') || '<div><b>PRIOR STATE MARKER</b> — local Eyehold storage</div>';
       const candidateHtml = candidates.map(row => {
         const when = row && row.updatedAt ? new Date(row.updatedAt).toLocaleString() : 'time unavailable';
         const size = row && row.bytes ? Math.max(1, Math.ceil(row.bytes / 1024)) + ' KB' : 'size unavailable';
         const on = !!(row && row.id === selected);
         return '<button class="lineage-candidate' + (on ? ' on' : '') + '" data-candidate-id="' + U.esc(row && row.id || '') + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (row && row.recoverable ? '' : ' disabled') + '>' +
           '<b>' + U.esc(row && row.stationName || 'Prior station') + '</b>' +
-          '<span>' + U.esc(row && row.displayRoot || 'local StarNet storage') + '</span>' +
+          '<span>' + U.esc(row && row.displayRoot || 'local Eyehold storage') + '</span>' +
           '<small>' + U.esc(row && row.recoverable ? when + ' · ' + size : row && row.reason || 'unreadable save') + '</small></button>';
       }).join('');
       box.innerHTML = evidenceHtml + (candidateHtml ? '<div class="lineage-candidates" aria-label="Recoverable stations">' + candidateHtml + '</div>' : '');
@@ -5596,7 +5596,7 @@ const App = (() => {
         if (!response.ok) throw new Error((Harness.sessionStale && Harness.sessionStale()) ? 'the station restarted; reload this page' : 'report unavailable');
         const blob = await response.blob();
         const url = URL.createObjectURL(blob), a = document.createElement('a');
-        a.href = url; a.download = 'starnet-recovery-report.json'; a.style.display = 'none';
+        a.href = url; a.download = 'eyehold-recovery-report.json'; a.style.display = 'none';
         document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
         if (status) status.textContent = '＋ redacted recovery report exported — no credentials or save contents included';
       } catch (error) {
@@ -5713,7 +5713,7 @@ const App = (() => {
     //  see the three-way at the foot of init(). Re-entry is handled by reentry()/startCreation().)
 
     // data portability — the safety net for the localStorage-fragile agent. Export bundles nonsecret
-    // starnet.* records + a memory snapshot into one file; import restores them on any browser.
+    // eyehold.* records + a memory snapshot into one file; import restores them on any browser.
     const dataStatus = m => { const n = el('data-status'); if (n) n.textContent = m || ''; };
     el('btn-export').onclick = async () => {
       SFX.click(); dataStatus('exporting…');

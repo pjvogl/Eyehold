@@ -15,13 +15,13 @@ function desktopClient(raw) {
 
 function loadDesktopClient({ env, readFile }) {
   try {
-    const raw = env.STARNET_GOOGLE_DESKTOP_CLIENT_JSON || readFile();
+    const raw = env.EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON || readFile();
     if (!raw) return null;
     return desktopClient(JSON.parse(raw));
   } catch (_) { return null; } // UI reports unavailable; release staging fails with a useful operator error.
 }
 
-const UNAVAILABLE = 'Google sign-in is not available in this build. StarNet needs to finish enabling it. You do not need to create an app or enter credentials.';
+const UNAVAILABLE = 'Google sign-in is not available in this build. Eyehold needs to finish enabling it. You do not need to create an app or enter credentials.';
 // Release scope, deliberately source-controlled: publisher credentials do not enable this feature.
 // true = each Workspace service is gated by RELEASED below. Only test/review preloads set it false.
 const RELEASE_DEFERRED = true;
@@ -54,7 +54,7 @@ const RELEASED = {
    nobody mistakes it for a verified release. Legacy endpoints stay deferred; the relay guard applies.
    The SOURCE default below is what decides it today: ON since 2026-09-23 (Andrew) — users need Google NOW while
    verification is pending, so EVERY build (public release-train included) is early access. The staged-registration
-   flag (STARNET_GOOGLE_EARLY_ACCESS=1 → `earlyAccess: true`, read by loadEarlyAccess) can only turn it ON, so it is
+   flag (EYEHOLD_GOOGLE_EARLY_ACCESS=1 → `earlyAccess: true`, read by loadEarlyAccess) can only turn it ON, so it is
    inert while this is true. When Google approves: set this back to false and release services through RELEASED. */
 const EARLY_ACCESS = true;
 function loadEarlyAccess({ readFile }) {

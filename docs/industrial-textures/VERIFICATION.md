@@ -188,7 +188,7 @@ Unrelated integration-checkout edits were preserved exactly. The local post-merg
 run hit its 15-minute guard without an assertion failure. Another lane then
 integrated website changes, keeping the station source unchanged. The combined
 commit `f8ddd9c36` passed **772 / 772 fast tests** and **34 / 34 customer journeys**
-in [post-merge CI](https://github.com/androoAGI/starnet/actions/runs/34728957569).
+in [post-merge CI](https://github.com/Eyehold/eyehold/actions/runs/34728957569).
 Exact source and preservation details are recorded in the
 [integration receipt](../../qa/digests/2026-09-12-industrial-textures.md).
 No installed-desktop rebuild or release publication was performed.

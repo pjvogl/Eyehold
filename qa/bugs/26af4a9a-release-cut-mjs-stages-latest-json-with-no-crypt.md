@@ -14,7 +14,7 @@ fix: b315063b
 
 ## Symptom
 
-A release cut with the wrong updater private key (a restored/regenerated ~/.tauri/starnet-updater.key, or STARNET_UPDATER_KEY_FILE pointed at a different file) passes T1 signing, T5 public-distribution and verify-update-host completely green, publishes, and then hard-fails the update for EVERY installed app — the exact failure minisign-verify.mjs was written to prevent. Nothing in the ladder catches it; only a human remembering to run `release:verify-sig` by hand does.
+A release cut with the wrong updater private key (a restored/regenerated ~/.tauri/eyehold-updater.key, or EYEHOLD_UPDATER_KEY_FILE pointed at a different file) passes T1 signing, T5 public-distribution and verify-update-host completely green, publishes, and then hard-fails the update for EVERY installed app — the exact failure minisign-verify.mjs was written to prevent. Nothing in the ladder catches it; only a human remembering to run `release:verify-sig` by hand does.
 
 ## Repro
 

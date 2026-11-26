@@ -64,7 +64,7 @@ The operator reported the composed Crown runtime CI green. `sidecar/index.js` is
 
 ## Multi-department reality check (2026-10-16)
 - Added **CHECK LIVE CREW** in the Work Board, backed by the current sidecar `GET /api/roster`, showing how many of seven department specialty assignments actually exist. No implied agents, accounts or built rooms.
-- Business role and interdepartmental handoff plans are represented in `frontend/app/eyehold-departments.js`; matching physical room geometry and roster activation remains pending. Shared StarNet WorldModel supports explicit `addRoom` and `setRoomTerritory`, but physical world mutations must respect collision/build-mode persistence and operator consent.
+- Business role and interdepartmental handoff plans are represented in `frontend/app/eyehold-departments.js`; matching physical room geometry and roster activation remains pending. Shared Eyehold WorldModel supports explicit `addRoom` and `setRoomTerritory`, but physical world mutations must respect collision/build-mode persistence and operator consent.
 - Explicitly do not create external accounts or connect personal financial data; Treasury Watch must report only verified business revenue/cost inputs. Automated commercial production cannot be called active until actual persistent rooms, staffed agents and authorized delegation are demonstrated.
 
 ## 2026-10-16 unattended-work notification mitigation and seven-room native blueprint

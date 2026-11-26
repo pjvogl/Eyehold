@@ -79,11 +79,11 @@ function toolResult(requests, callId) {
 (async () => {
   const mock = await startMock();
   const fixture = SidecarFixture.create({ prefix: 'taint-inherit-', timeoutMs: 20000, env: {
-    SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'fixture', STARNET_OPENROUTER_KEY: 'fixture',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_CRON_ENABLED: '0', STARNET_CRON_ENABLED: '0',
-    SKYNET_FULL_ACCESS: '', STARNET_FULL_ACCESS: ''
+    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    SKYNET_OPENROUTER_KEY: 'fixture', EYEHOLD_OPENROUTER_KEY: 'fixture',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    SKYNET_CRON_ENABLED: '0', EYEHOLD_CRON_ENABLED: '0',
+    SKYNET_FULL_ACCESS: '', EYEHOLD_FULL_ACCESS: ''
   } });
   try {
     await fixture.start();

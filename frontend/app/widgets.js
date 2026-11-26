@@ -1,4 +1,4 @@
-/* STARNET — widgets.js : the WIDGET RAILS (user-pinnable telemetry instruments).
+/* EYEHOLD — widgets.js : the WIDGET RAILS (user-pinnable telemetry instruments).
 
    Two rails of compact instruments live in the chrome's DEAD SPACE — the empty middle of
    #topbar (between the logo anchor and the instrument cluster) and of #bottombar (between
@@ -31,10 +31,10 @@
 
    Layout is user-arranged: drag a widget by anywhere on its body between the two rails
    (an insert caret previews the slot), add from the ＋ popover, remove via the hover ✕.
-   Persisted under starnet.widgets.v1 = {v:1, top:[ids], bot:[ids]}. */
+   Persisted under eyehold.widgets.v1 = {v:1, top:[ids], bot:[ids]}. */
 'use strict';
 const Widgets = (() => {
-  const KEY = 'starnet.widgets.v1';
+  const KEY = 'eyehold.widgets.v1';
   const POLL_INSIGHTS_MS = 30000;
   const POLL_FEED_MS = 30000;
   const TICKER_MS = 4000;
@@ -520,7 +520,7 @@ const Widgets = (() => {
   async function sourceCards(force = false) {
     if (!popEl || popMode !== 'list' || popFilter !== 'apps') return;
     const root = popEl, epoch = ++studioEpoch, list = root.querySelector('.wg-library-list'); list.replaceChildren();
-    studioText(list, 'p', selectedPreset ? 'Choose the app for ' + selectedPreset.label + '.' : 'Choose an app, then tell StarNet what to display.', 'wg-studio-note');
+    studioText(list, 'p', selectedPreset ? 'Choose the app for ' + selectedPreset.label + '.' : 'Choose an app, then tell Eyehold what to display.', 'wg-studio-note');
     if (!sourceRows || force) {
       const loading = studioText(list, 'p', 'Loading connected apps…', 'wg-studio-note');
       try {
@@ -542,7 +542,7 @@ const Widgets = (() => {
       const row = studioText(list, 'div', '', 'wg-app-row');
       const caption = studioText(row, 'div', '', 'wg-app-caption');
       studioText(caption, 'strong', s.label);
-      studioText(caption, 'small', s.kind === 'agent' ? 'Information StarNet manages' : s.kind === 'servicekey' && s.available ? 'API key configured' : s.available ? 'Connected' : s.state);
+      studioText(caption, 'small', s.kind === 'agent' ? 'Information Eyehold manages' : s.kind === 'servicekey' && s.available ? 'API key configured' : s.available ? 'Connected' : s.state);
       const b = addStudioButton(row, s.available ? 'Choose' : 'Reconnect', () => {
         if (s.available) showWidgetForm(s, null, selectedPreset);
         else { closePop(); if (typeof StationUI !== 'undefined') StationUI.openTerm('connectors', s.kind === 'servicekey' ? 'keys' : 'mcp'); }

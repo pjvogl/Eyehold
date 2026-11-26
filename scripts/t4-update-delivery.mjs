@@ -33,14 +33,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T4_LOOPS || 3) || 3) : 1;
-const REQUIRE_LIVE = argSet.has('--require-live') || truthy(process.env.STARNET_T4_REQUIRE_LIVE);
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T4_LOOPS || 3) || 3) : 1;
+const REQUIRE_LIVE = argSet.has('--require-live') || truthy(process.env.EYEHOLD_T4_REQUIRE_LIVE);
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T4_UPDATE_DELIVERY_DIR || join(ROOT, '.dogfood', 't4-update-delivery-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T4_UPDATE_DELIVERY_LATEST_DIR || join(ROOT, '.dogfood', 't4-update-delivery-latest'));
-const MAX_UPDATE_MS = Math.max(1000, Number(process.env.STARNET_T4_UPDATE_TIMEOUT_MS || 600000) || 600000);
-const MAX_WORKLOAD_MS = Math.max(1000, Number(process.env.STARNET_T4_WORKLOAD_TIMEOUT_MS || 600000) || 600000);
-const PROOF_SCHEMA = 'starnet.t4-update-delivery-proof.v1';
+const OUT = resolve(process.env.EYEHOLD_T4_UPDATE_DELIVERY_DIR || join(ROOT, '.dogfood', 't4-update-delivery-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T4_UPDATE_DELIVERY_LATEST_DIR || join(ROOT, '.dogfood', 't4-update-delivery-latest'));
+const MAX_UPDATE_MS = Math.max(1000, Number(process.env.EYEHOLD_T4_UPDATE_TIMEOUT_MS || 600000) || 600000);
+const MAX_WORKLOAD_MS = Math.max(1000, Number(process.env.EYEHOLD_T4_WORKLOAD_TIMEOUT_MS || 600000) || 600000);
+const PROOF_SCHEMA = 'eyehold.t4-update-delivery-proof.v1';
 const REQUIRED_BUCKETS = ['save', 'notebook', 'todo', 'channels', 'ledger', 'runs', 'transcript', 'update-settings'];
 const REQUIRED_TOOLS = ['fs_write', 'notebook_write'];
 const TERMINAL_TOOLS = ['shell_exec', 'verify_run'];
@@ -99,12 +99,12 @@ function argValue(name) {
   return idx >= 0 ? rawArgs[idx + 1] : '';
 }
 function installerPath() {
-  const raw = process.env.STARNET_T4_INSTALLER_EXE || process.env.STARNET_T3_INSTALLER_EXE || process.env.STARNET_T0_INSTALLER_EXE || '';
+  const raw = process.env.EYEHOLD_T4_INSTALLER_EXE || process.env.EYEHOLD_T3_INSTALLER_EXE || process.env.EYEHOLD_T0_INSTALLER_EXE || '';
   if (raw) return resolve(raw);
   return findCurrentNsisInstaller(ROOT);
 }
 function updateProofPath() {
-  const raw = process.env.STARNET_T4_UPDATE_PROOF || argValue('--update-proof') || '';
+  const raw = process.env.EYEHOLD_T4_UPDATE_PROOF || argValue('--update-proof') || '';
   return raw ? resolve(raw) : '';
 }
 function assert(cond, msg) {
@@ -151,7 +151,7 @@ function jsonlIo(file) {
 
 function currentSave(overrides = {}) {
   return Object.assign({
-    schema: 'starnet.save',
+    schema: 'eyehold.save',
     version: 5,
     updatedAt: 5000,
     agent: { id: 'agent', name: 'NOVA', stats: { xp: 42, level: 3 } },
@@ -284,7 +284,7 @@ function loadSaveApi(storage, workstreams) {
 }
 function v1Save(overrides = {}) {
   return Object.assign({
-    schema: 'starnet.save',
+    schema: 'eyehold.save',
     version: 1,
     updatedAt: 101,
     agent: { id: 'agent', name: 'NOVA' },
@@ -308,20 +308,20 @@ function workstreamsMigrator() {
   };
 }
 function localRollbackProof() {
-  const backupKey = 'starnet.save.pre-migrate.backup';
+  const backupKey = 'eyehold.save.pre-migrate.backup';
   const oldRaw = JSON.stringify(v1Save());
-  const storage = new MemoryStorage({ 'starnet.save': oldRaw });
+  const storage = new MemoryStorage({ 'eyehold.save': oldRaw });
   const Save = loadSaveApi(storage, workstreamsMigrator());
   const loaded = Save.load();
   assert(loaded && loaded.version === Save.CURRENT, 'old save should migrate in memory');
-  assert(storage.getItem('starnet.save') === oldRaw, 'load-time migration should not overwrite persisted save');
+  assert(storage.getItem('eyehold.save') === oldRaw, 'load-time migration should not overwrite persisted save');
   assert(storage.getItem(backupKey) === oldRaw, 'pre-migration backup should preserve exact original');
 
-  const failing = new MemoryStorage({ 'starnet.save': oldRaw });
+  const failing = new MemoryStorage({ 'eyehold.save': oldRaw });
   const FailingSave = loadSaveApi(failing, { migrateV1() { throw new Error('injected migration failure'); } });
   const failed = FailingSave.load();
   assert(failed === null, 'failed migration should return null');
-  assert(failing.getItem('starnet.save') === oldRaw, 'failed migration should leave original untouched');
+  assert(failing.getItem('eyehold.save') === oldRaw, 'failed migration should leave original untouched');
   assert(failing.getItem(backupKey) === oldRaw, 'failed migration should leave backup');
   return { backupKey, backupBytes: oldRaw.length };
 }
@@ -486,7 +486,7 @@ function loadProofValidation(installerInfo) {
 }
 
 function checkPlan(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_T4_UPDATE_DELIVERY.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_T4_UPDATE_DELIVERY.md');
   const text = readText(file).toLowerCase();
   const required = [
     'manual reinstall/update',
@@ -506,7 +506,7 @@ function checkReinstallProof(loop, installerInfo, proofState) {
     return step('t4.2-reinstall-over-state-proof', 'T4.2', 'Current installer was run over an existing install', 'blocked', 'Build or provide the current NSIS installer first.', { loop, artifacts: { installer: null }, evidenceFile: proofState.file || '' });
   }
   if (proofState.missing) {
-    return step('t4.2-reinstall-over-state-proof', 'T4.2', 'Current installer was run over an existing install', 'blocked', proofState.reason || 'No update delivery proof JSON was provided. Set STARNET_T4_UPDATE_PROOF or pass --update-proof.', { loop, artifacts: { installer: installerInfo }, evidenceFile: proofState.file || '' });
+    return step('t4.2-reinstall-over-state-proof', 'T4.2', 'Current installer was run over an existing install', 'blocked', proofState.reason || 'No update delivery proof JSON was provided. Set EYEHOLD_T4_UPDATE_PROOF or pass --update-proof.', { loop, artifacts: { installer: installerInfo }, evidenceFile: proofState.file || '' });
   }
   const v = proofState.validation;
   return step('t4.2-reinstall-over-state-proof', 'T4.2', 'Current installer was run over an existing install', v.updateReady ? 'pass' : 'fail', v.updateReady ? 'Imported proof shows the current installer updated/reinstalled over an existing install and launched afterward.' : v.updateErrors.join('; '), { loop, artifacts: { installer: installerInfo }, evidenceFile: proofState.file, updateProof: v.proof && { installer: v.proof.installer, update: v.proof.update }, errors: v.updateErrors });
@@ -587,7 +587,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   const updateDeliveryReady = fail === 0 && blocked === 0 && latest.length > 0 && latest.every(r => r.status === 'pass' || r.status === 'skip');
   const verdict = fail ? 'red' : (blocked ? 'blocked' : 'green');
   const status = {
-    schema: 'starnet.t4-update-delivery-status.v1',
+    schema: 'eyehold.t4-update-delivery-status.v1',
     generatedAt: nowIso(),
     lane: 'T4-update-delivery',
     verdict,
@@ -603,7 +603,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   };
   writeJson(join(OUT, 't4-update-delivery-status.json'), status);
 
-  let md = '# StarNet T4 Update Delivery Evidence\n\n';
+  let md = '# Eyehold T4 Update Delivery Evidence\n\n';
   md += '- Generated: `' + status.generatedAt + '`\n';
   md += '- Verdict: `' + status.verdict + '`\n';
   md += '- Update delivery ready: `' + status.updateDeliveryReady + '`\n';

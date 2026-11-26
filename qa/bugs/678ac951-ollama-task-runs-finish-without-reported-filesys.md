@@ -9,9 +9,9 @@ found: 2026-09-19
 lane: agent/reliability-audit-0919
 fix: 0e25b955f
 origin: customer
-affected: StarNet 0.12.3 Windows; llama3.1:8b and qwen3:8b; reported source 3ba5b84922f3b62caa4e159999ef3acc82af2a3e
+affected: Eyehold 0.12.3 Windows; llama3.1:8b and qwen3:8b; reported source 3ba5b84922f3b62caa4e159999ef3acc82af2a3e
 family: local-provider-tool-projection
-report: https://github.com/androoAGI/starnet/issues/20
+report: https://github.com/Eyehold/eyehold/issues/20
 installer: unverified
 recovery: unconfirmed
 ---
@@ -20,7 +20,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-On StarNet 0.12.3 Windows, llama3.1:8b and qwen3:8b reportedly finish file creation requests with zero tool calls despite visible File Cabinet tools. Direct Ollama structured calls reportedly work.
+On Eyehold 0.12.3 Windows, llama3.1:8b and qwen3:8b reportedly finish file creation requests with zero tool calls despite visible File Cabinet tools. Direct Ollama structured calls reportedly work.
 
 ## Repro
 
@@ -36,11 +36,11 @@ Open: no affected wire capture or actual Ollama models available. Do not force e
 
 ## Regression
 
-Reproduced on a real Ollama 0.34.4 (RTX 5060 Ti 16 GB) with qwen3:8b: the StarNet task request (~98 KB, 86 tool schemas) went to /v1/chat/completions, Ollama ran the model at its server default window (context_length 4096 in /api/ps: the default is 4k under 24 GB VRAM) and reported prompt_tokens 2050. The model saw only the tail of the tool list and answered "I cannot create files ... the available tools only support scheduling routines"; the run ended done with no tool call. The /v1 endpoint ignores options.num_ctx, a top-level num_ctx, and a native preload (it reloads the model back to 4096).
+Reproduced on a real Ollama 0.34.4 (RTX 5060 Ti 16 GB) with qwen3:8b: the Eyehold task request (~98 KB, 86 tool schemas) went to /v1/chat/completions, Ollama ran the model at its server default window (context_length 4096 in /api/ps: the default is 4k under 24 GB VRAM) and reported prompt_tokens 2050. The model saw only the tail of the tool list and answered "I cannot create files ... the available tools only support scheduling routines"; the run ended done with no tool call. The /v1 endpoint ignores options.num_ctx, a top-level num_ctx, and a native preload (it reloads the model back to 4096).
 
 Fix 0e25b955f: Ollama chat rides the native /api/chat with options.num_ctx sized to the request (ladder 8k..64k, capped by the model window from /api/show) and truncate:false, so an under-estimate is refused with the exact count and resent once. Live after the fix: prompt_eval_count 20969 at num_ctx 32768, qwen3:8b calls fs_write, and a fresh station driven through the real genesis UI (OLLAMA -> qwen3:8b -> first task) wrote agent/hello.txt with the requested text (context gauge 22k / 41k).
 
-Residual, not a StarNet defect: llama3.1:8b's Ollama chat template renders the tool list only when the last message is from the user, so after its first tool result the model is sent ~6k tokens with no tools and starts writing calls as text. qwen3:8b does not have this limit.
+Residual, not a Eyehold defect: llama3.1:8b's Ollama chat template renders the tool list only when the last message is from the user, so after its first tool result the model is sent ~6k tokens with no tools and starts writing calls as text. qwen3:8b does not have this limit.
 
 Before: prompt_tokens 2050 of a ~21k task prompt, no tool call, run done. After: prompt_eval_count 20969 at num_ctx 32768, fs_write called, hello.txt written.
 

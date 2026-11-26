@@ -1,5 +1,5 @@
 /* node test/model-tier-badges.test.js — the model dock's tier-badge index. Badges come ONLY from the cloud's
-   list, only on OpenRouter-id rows (starnet managed + openrouter), and a failed list badges nothing. */
+   list, only on OpenRouter-id rows (eyehold managed + openrouter), and a failed list badges nothing. */
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -25,12 +25,12 @@ test('index keeps every board a model sits on, drops unknown tiers', () => {
   assert.equal(idx.has('bogus/x'), false);
 });
 
-test('only starnet/openrouter rows match (OpenRouter id space); vendor-direct ids never get guessed badges', () => {
+test('only eyehold/openrouter rows match (OpenRouter id space); vendor-direct ids never get guessed badges', () => {
   const idx = tierIndexFrom(LIST);
-  assert.equal(tiersFor({ id: 'anthropic/claude-sonnet-5.5', provider: 'starnet' }, idx).length, 2);
+  assert.equal(tiersFor({ id: 'anthropic/claude-sonnet-5.5', provider: 'eyehold' }, idx).length, 2);
   assert.equal(tiersFor({ id: 'deepseek/deepseek-v4', provider: 'openrouter' }, idx)[0].tier, 'A');
   assert.deepEqual(tiersFor({ id: 'anthropic/claude-sonnet-5.5', provider: 'anthropic' }, idx), []);
-  assert.deepEqual(tiersFor({ id: 'openai/unlisted', provider: 'starnet' }, idx), []);
+  assert.deepEqual(tiersFor({ id: 'openai/unlisted', provider: 'eyehold' }, idx), []);
 });
 
 test('a failed or empty tier list badges nothing', () => {

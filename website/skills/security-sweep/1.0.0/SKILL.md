@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Security Sweep"
   category: "Engineering"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

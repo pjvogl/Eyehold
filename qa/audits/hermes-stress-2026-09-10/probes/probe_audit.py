@@ -6,7 +6,7 @@ from cli import _render_final_assistant_content
 from io import StringIO
 from pathlib import Path
 root=Path('..')
-cases=json.loads((root/'starnet-schema.json').read_text(encoding='utf-8-sig'))
+cases=json.loads((root/'eyehold-schema.json').read_text(encoding='utf-8-sig'))
 values={'basic':('{"score":4}','{}'),'minimum':('{"score":4}','{"score":-1}'),'pattern':('{"code":"ABC"}','{"code":"a1"}'),'minItems':('["a","b"]','["a"]'),'oneOf':('4','true'),'ref':('4','"no"')}
 rows=[]
 for c in cases:

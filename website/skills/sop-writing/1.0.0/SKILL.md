@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "SOP Writing"
   category: "Productivity"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

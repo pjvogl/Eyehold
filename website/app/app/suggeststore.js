@@ -1,4 +1,4 @@
-/* STARNET — suggeststore.js : the browser wiring for ONGOING SUGGESTIONS (the recurring counterpart to the
+/* EYEHOLD — suggeststore.js : the browser wiring for ONGOING SUGGESTIONS (the recurring counterpart to the
    one-time First Pitch). Slice 3 of "the agent that points you."
 
    Where pitchstore.js fires ONCE (the graduation beat), this keeps the reverse value-flow alive: as the station
@@ -17,7 +17,7 @@
    NEVER emits), self-persists its own key (no save.js change), node-exportable for its test. */
 'use strict';
 const SuggestStore = (() => {
-  const KEY = 'starnet.suggest.v1';
+  const KEY = 'eyehold.suggest.v1';
   const RECENT_CAP = 8;    // remember the last N pitched-idea fingerprints so the agent never re-pitches the same idea
   const DECLINED_TITLE_CAP = 24;  // …and the readable titles behind them, for the directive's exclusion list
   const TITLE_CHARS = 90;         // one clause each — the directive stays bounded no matter how long a title got

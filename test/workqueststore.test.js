@@ -154,7 +154,7 @@ A.eq(WorkQuestStore.quests().some(q => q.id === wId), false, 'a dismissed build 
 WorkQuestStore.init();   // reload
 A.eq(WorkQuestStore.isDismissed(wId), true, 'dismissal survives a reload');
 WorkQuestStore.reset();
-A.eq(global.localStorage.getItem('starnet.workquests.v1'), null, 'reset removes the self-persisted key');
+A.eq(global.localStorage.getItem('eyehold.workquests.v1'), null, 'reset removes the self-persisted key');
 A.eq(WorkQuestStore.quests().length, 0, 'a reset store has no quests until the next init');
 
 /* ---------- source-level locks: the acceptance-path wiring ---------- */

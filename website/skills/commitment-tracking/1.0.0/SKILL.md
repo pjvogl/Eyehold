@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Commitment Tracking"
   category: "Productivity"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

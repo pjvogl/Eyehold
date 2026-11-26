@@ -12,7 +12,7 @@ sessions may run at once **only on DIFFERENT areas** (the sharded registry makes
 ## Laws that override everything
 
 - **You judge; you never fake-green.** An entry is `perfected` only when you PROVED it in the live
-  app — never because the code looks right. Only claim what you verified (`starnet-verify`).
+  app — never because the code looks right. Only claim what you verified (`eyehold-verify`).
 - **Fixes are NEVER made in this lane.** You DETECT + JUDGE + file. A real defect is filed through the
   ledger and routed to a feature worktree — the QA lane never ships the fix (same split as the whole
   station: `qa/QA_STATION.md`). The ONE exception is a bug in the Atlas tooling itself.

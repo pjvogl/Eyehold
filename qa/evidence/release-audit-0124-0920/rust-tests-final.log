@@ -4,7 +4,7 @@
 
 running 56 tests
 test credentials::tests::channel_namespace_is_closed_and_env_mapping_is_stable ... ok
-test credentials::tests::connector_keychain_roundtrip ... ignored, Requires an unlocked native OS credential store; creates the persistent StarNet connector key if absent
+test credentials::tests::connector_keychain_roundtrip ... ignored, Requires an unlocked native OS credential store; creates the persistent Eyehold connector key if absent
 test credentials::tests::connector_key_requires_exact_256_bit_encoding ... ok
 test credentials::tests::keychain_accounts_preserve_legacy_openrouter_slot ... ok
 test credentials::tests::provider_aliases_normalize_to_runtime_ids ... ok

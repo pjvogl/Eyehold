@@ -6,7 +6,7 @@ The optional quick tour has two lessons: equipment already in the agent's area, 
 
 Next and Finish remain visible in a short COMMS panel; only lesson text scrolls. The tour does not set activity to WORKING or IDLE. A fresh user's typed first task survives the optional tour and returns in the same editable review. Only explicitly clicking Start submits it. Replay can return to COMMS or explicitly selected first-task recipes. No placement checklist or connector pitch follows completion. Reload no longer resurfaces the old checklist for returning users. Earned progress remains stored.
 
-The file example is optional, preflighted, and asks to preserve an existing `starnet-welcome.txt`. Approval wording reflects access settings. Narration only begins after an explicitly launched example receives a matching agent start, and completion follows the captured run ID. Denial is correlated by prompt ID. Timeout and failure text make no unsupported claims about file contents or the cause of a connection failure.
+The file example is optional, preflighted, and asks to preserve an existing `eyehold-welcome.txt`. Approval wording reflects access settings. Narration only begins after an explicitly launched example receives a matching agent start, and completion follows the captured run ID. Denial is correlated by prompt ID. Timeout and failure text make no unsupported claims about file contents or the cause of a connection failure.
 
 ## Verified
 

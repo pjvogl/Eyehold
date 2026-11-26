@@ -79,13 +79,13 @@ function startMock() {
   return new Promise(r => server.listen(0, '127.0.0.1', () => { mock.server = server; mock.base = 'http://127.0.0.1:' + server.address().port + '/api/v1'; r(mock); }));
 }
 async function leadRun(base, token, prompt) {
-  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base },
+  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base },
     body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: prompt }] }) });
   const text = await res.text();
   return { status: res.status, events: text.split('\n').map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean) };
 }
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-layout-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-layout-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');
@@ -185,7 +185,7 @@ try {
   await Promise.all([stopChild(chrome, true), stopChild(sidecar)]);
   try { mock.server.close(); } catch {}
   const resolvedRoot = root.replace(/\\/g, '/');
-  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /starnet-layout-e2e-/.test(resolvedRoot)) {
+  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /eyehold-layout-e2e-/.test(resolvedRoot)) {
     for (let attempt = 0; attempt < 10; attempt++) {
       try { rmSync(root, { recursive: true, force: true }); break; }
       catch (error) { if (attempt === 9) console.log('(could not remove ' + root + ': ' + error.message + ')'); await sleep(300); }

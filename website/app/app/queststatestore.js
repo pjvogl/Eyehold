@@ -1,4 +1,4 @@
-/* STARNET — queststatestore.js : the live wiring around the pure queststate.js engine — the quest log's
+/* EYEHOLD — queststatestore.js : the live wiring around the pure queststate.js engine — the quest log's
    durable memory + the completion celebration.
 
    Self-persists to its own localStorage key (rides the backup prefix, like curiositystore/mintstore — no
@@ -15,7 +15,7 @@
    call into SFX/StationUI, so the lint-emits gate has nothing to catch. */
 'use strict';
 const QuestStateStore = (() => {
-  const KEY = 'starnet.queststate.v1';
+  const KEY = 'eyehold.queststate.v1';
   const FLOURISH_MS = 2500;   // the row's gold flash window — a moment, not a state
   let state = null;
   let flourish = {};          // quest id -> celebration deadline (ms). In-memory only: the flash never persists.
@@ -92,7 +92,7 @@ const QuestStateStore = (() => {
   const isCelebrating = id => (flourish[id] || 0) > Date.now();
   const stateOf = id => ready() ? QuestState.stateOf(state, id) : null;
 
-  // a NEW AGENT starts with no quest history (own key — Save.clear() only wipes starnet.save; mirrors
+  // a NEW AGENT starts with no quest history (own key — Save.clear() only wipes eyehold.save; mirrors
   // CuriosityStore.reset). The next init() hydrates clean.
   function reset() { state = null; flourish = {}; try { localStorage.removeItem(KEY); } catch (_) {} }
 

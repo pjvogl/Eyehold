@@ -22,7 +22,7 @@ no network requests. Article anchors are present in the static HTML. A broken ex
 The homepage has six feature summaries and three documentation paths. Its blocking boot overlay
 is removed. First-run and installation copy follows the current two-step Overseer setup in
 `frontend/app/overseer-setup.js`. The public version fallback is 0.11.2, verified against
-[the public release](https://github.com/androoAGI/starnet-releases/releases/tag/v0.11.2).
+[the public release](https://github.com/Eyehold/eyehold-releases/releases/tag/v0.11.2).
 Raw release labels are generated from the same fallback used by `website/site.js`.
 
 ## Observed browser behavior
@@ -71,10 +71,10 @@ were closed and viewport overrides reset.
 No integration merge or publication was performed. This is website behavior verification;
 it does not certify every pre-existing documentation claim or the installed desktop product.
 
-## Visual correction — StarNet glass (2026-09-12)
+## Visual correction — Eyehold glass (2026-09-12)
 
 The user rejected the initial sans-serif / olive documentation styling and requested the
-StarNet identity with the current app glass treatment. This revision supersedes that visual
+Eyehold identity with the current app glass treatment. This revision supersedes that visual
 direction while retaining the six topic groups, existing URLs, search and reading layout.
 
 - Restored self-hosted VT323 for headings, article text, navigation and metadata; code and

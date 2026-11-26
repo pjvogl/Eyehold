@@ -14,7 +14,7 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const script = path.join(ROOT, 'scripts', 'verify-update-host.mjs');
 
-const REPO = 'androoAGI/starnet-releases';
+const REPO = 'Eyehold/eyehold-releases';
 // Far-future fixture version: --manifest mode compares manifest.version >= the SHIPPED
 // tauri.conf.json version, so a fixture pinned near the current release becomes a gate
 // time-bomb on the next bump (broke the v0.2.1 train gate on 2026-07-06).
@@ -31,13 +31,13 @@ function fullPlatform(version) {
     notes: 'test release',
     pub_date: '2026-07-06T00:00:00.000Z',
     platforms: {
-      'windows-x86_64': { signature: GOOD_SIG, url: url('win', 'StarNet_' + (version || VERSION) + '_x64-setup.exe', version) },
-      'darwin-aarch64': { signature: GOOD_SIG, url: url('mac', 'StarNet_aarch64.app.tar.gz', version) },
-      'darwin-x86_64': { signature: GOOD_SIG, url: url('mac', 'StarNet_x64.app.tar.gz', version) },
-      'linux-x86_64': { signature: GOOD_SIG, url: url('lin', 'StarNet_amd64.AppImage', version) },
+      'windows-x86_64': { signature: GOOD_SIG, url: url('win', 'Eyehold_' + (version || VERSION) + '_x64-setup.exe', version) },
+      'darwin-aarch64': { signature: GOOD_SIG, url: url('mac', 'Eyehold_aarch64.app.tar.gz', version) },
+      'darwin-x86_64': { signature: GOOD_SIG, url: url('mac', 'Eyehold_x64.app.tar.gz', version) },
+      'linux-x86_64': { signature: GOOD_SIG, url: url('lin', 'Eyehold_amd64.AppImage', version) },
       // Required alongside the AppImage: .deb installs resolve this key first and hard-fail
       // on the AppImage fallback, so a manifest without it strands every .deb user.
-      'linux-x86_64-deb': { signature: GOOD_SIG, url: url('lin', 'StarNet_amd64.deb', version) }
+      'linux-x86_64-deb': { signature: GOOD_SIG, url: url('lin', 'Eyehold_amd64.deb', version) }
     }
   };
 }
@@ -113,7 +113,7 @@ try {
   {
     const m = fullPlatform();
     // manifest says 99.0.0 but this URL is pinned to v0.1.9
-    m.platforms['windows-x86_64'].url = url('win', 'StarNet_0.1.9_x64-setup.exe', '0.1.9');
+    m.platforms['windows-x86_64'].url = url('win', 'Eyehold_0.1.9_x64-setup.exe', '0.1.9');
     const f = writeManifest('wrongurl.json', m);
     const res = run(['--manifest', f]);
     assert.equal(res.status, 1, 'wrong url version path should fail\n' + res.stdout);

@@ -1,4 +1,4 @@
-/* STARNET — recqualitystore.js : THE OUTCOME LOOP (the live half of the recommendation quality loop).
+/* EYEHOLD — recqualitystore.js : THE OUTCOME LOOP (the live half of the recommendation quality loop).
 
    The spine picks the best-grounded offer it can cite. This store answers the question nobody was asking before
    it existed: DID THAT OFFER ACTUALLY HELP? A channel whose accepted offers produce work the Commander rates 👎
@@ -39,7 +39,7 @@
    key (no save.js change), node-exportable for its test. The pure arithmetic lives in recquality.js. */
 'use strict';
 const RecQualityStore = (() => {
-  const KEY = 'starnet.recquality.v1';
+  const KEY = 'eyehold.recquality.v1';
   const STAMP_CAP = 60;      // in-memory run→stamp memory, FIFO, mirroring chat.js's RUN_META ledger size
   const DENY_CAP = 100;      // re-confirm denial memory (FIFO) — bounded exactly like goalstore's offered set
   /* HOW LONG AN ARMED ACCEPT MAY WAIT FOR ITS RUN. The accept→run link is only honest while the two are the same

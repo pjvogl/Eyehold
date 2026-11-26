@@ -3,9 +3,9 @@
  * release-assemble-manifest.mjs — assemble ONE multi-platform Tauri updater
  * latest.json from a directory of built release artifacts + their .sig files.
  *
- * Replaces the stale single-platform scripts/starnet-release-manifest.mjs. The
+ * Replaces the stale single-platform scripts/eyehold-release-manifest.mjs. The
  * old script only ever emitted windows-x86_64 and pointed at a dead
- * (updates.starnet.app) example URL, which is exactly the P0 the update-pipeline
+ * (updates.eyehold.app) example URL, which is exactly the P0 the update-pipeline
  * audit (docs/UPDATE_PIPELINE_AUDIT_2026-07-06.md) flags: Mac/Linux users were
  * permanently stranded because nothing assembled their artifacts into the feed.
  *
@@ -19,7 +19,7 @@
  * or on a non-SemVer version — so a broken/partial feed can never be assembled
  * silently.
  *
- * Migrated validations from starnet-release-manifest.mjs:
+ * Migrated validations from eyehold-release-manifest.mjs:
  *   - --version must be SemVer.
  *   - every emitted url is https:// (guaranteed by the fixed github.com base).
  *   - every signature is non-empty AND verifies against the baked public key.
@@ -180,7 +180,7 @@ function main() {
 
   const notes = notesFile && existsSync(notesFile)
     ? readText(notesFile).trim()
-    : (notesFile ? '' : 'StarNet desktop ' + version + '. See the release page for details.');
+    : (notesFile ? '' : 'Eyehold desktop ' + version + '. See the release page for details.');
 
   const platforms = {};
   let assetBase = argVal('--asset-base') || ('https://github.com/' + repo + '/releases/download/' + tag + '/');

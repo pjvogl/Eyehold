@@ -59,24 +59,24 @@ H6.3 subagent budget containment: worker `maxIters` propagation and no-op turn r
 
 ## Blockers / Holds
 
-- `sidecar/index.js` is required to consume `o.maxIters` in production `runOnce`, but board check at 2026-06-26 07:52 UTC showed it is contended by `agent/hermes-settings-audit`, `agent/starnet-replacement-eval`, and `agent/starnet-spend-model-honesty`. Held instead of editing the contended run host.
-- `sidecar/index.js` is also outside the Session 5 owned-file list in `docs/STARNET_SESSION_LOOPS_1_6.md`; final production plumbing needs owner/orchestrator coordination before this session can touch it.
-- Board check at 2026-06-26 08:51 UTC now also shows `sidecar/loop.js` actively contended by `agent/starnet-replacement-eval` and `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
-- Board check at 2026-06-26 09:51 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-replacement-eval` and `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
-- Board check at 2026-06-26 10:51 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-replacement-eval` and `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- `sidecar/index.js` is required to consume `o.maxIters` in production `runOnce`, but board check at 2026-06-26 07:52 UTC showed it is contended by `agent/hermes-settings-audit`, `agent/eyehold-replacement-eval`, and `agent/eyehold-spend-model-honesty`. Held instead of editing the contended run host.
+- `sidecar/index.js` is also outside the Session 5 owned-file list in `docs/EYEHOLD_SESSION_LOOPS_1_6.md`; final production plumbing needs owner/orchestrator coordination before this session can touch it.
+- Board check at 2026-06-26 08:51 UTC now also shows `sidecar/loop.js` actively contended by `agent/eyehold-replacement-eval` and `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 09:51 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-replacement-eval` and `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 10:51 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-replacement-eval` and `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
 - `sidecar/index.js` inspection at 2026-06-26 10:52 UTC still shows `runAgentLoop` using `limits: { maxIters: CAPS.maxIters, ... }`; `o.maxIters` is not yet consumed by the production run host.
-- Board check at 2026-06-26 17:57 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-replacement-eval` and `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
-- Board check at 2026-06-26 17:57 UTC still shows `sidecar/index.js` actively contended by `agent/hermes-settings-audit`, `agent/starnet-replacement-eval`, and `agent/starnet-spend-model-honesty`; it also remains outside the Session 5 owned-file list.
-- `AGENTS.md` was requested by the session prompt but is absent under `C:\Users\<you>\gen-trees`; this run followed `docs/STARNET_SESSION_LOOPS_1_6.md` and existing repository conventions.
-- Board check at 2026-06-26 18:58 UTC still shows `sidecar/index.js` actively contended by `agent/hermes-settings-audit`, `agent/starnet-replacement-eval`, and `agent/starnet-spend-model-honesty`; it also remains outside the Session 5 owned-file list.
+- Board check at 2026-06-26 17:57 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-replacement-eval` and `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 17:57 UTC still shows `sidecar/index.js` actively contended by `agent/hermes-settings-audit`, `agent/eyehold-replacement-eval`, and `agent/eyehold-spend-model-honesty`; it also remains outside the Session 5 owned-file list.
+- `AGENTS.md` was requested by the session prompt but is absent under `C:\Users\<you>\gen-trees`; this run followed `docs/EYEHOLD_SESSION_LOOPS_1_6.md` and existing repository conventions.
+- Board check at 2026-06-26 18:58 UTC still shows `sidecar/index.js` actively contended by `agent/hermes-settings-audit`, `agent/eyehold-replacement-eval`, and `agent/eyehold-spend-model-honesty`; it also remains outside the Session 5 owned-file list.
 - `sidecar/index.js` inspection at 2026-06-26 18:58 UTC still shows `runAgentLoop` using `limits: { maxIters: CAPS.maxIters, ... }`; `o.maxIters` is not yet consumed by the production run host.
-- Board check at 2026-06-26 19:59 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 19:59 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
 - Board check at 2026-06-26 19:59 UTC still lists `sidecar/index.js` as a contended file across multiple lanes; it also remains outside the Session 5 owned-file list.
 - `sidecar/index.js` inspection at 2026-06-26 20:00 UTC still shows `runAgentLoop` using `limits: { maxIters: CAPS.maxIters, ... }`; `o.maxIters` is not yet consumed by the production run host.
-- Board check at 2026-06-26 21:00 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 21:00 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
 - Board check at 2026-06-26 21:00 UTC still lists `sidecar/index.js` as a contended file across multiple lanes; it also remains outside the Session 5 owned-file list.
 - `sidecar/index.js` inspection at 2026-06-26 21:01 UTC still shows `runAgentLoop` using `limits: { maxIters: CAPS.maxIters, ... }`; `o.maxIters` is not yet consumed by the production run host.
-- Board check at 2026-06-26 22:02 UTC still shows `sidecar/loop.js` actively contended by `agent/starnet-spend-model-honesty`; held instead of editing a hot owned implementation file.
+- Board check at 2026-06-26 22:02 UTC still shows `sidecar/loop.js` actively contended by `agent/eyehold-spend-model-honesty`; held instead of editing a hot owned implementation file.
 - `sidecar/index.js` remains outside the Session 5 owned-file list; inspection at 2026-06-26 22:02 UTC still shows `runAgentLoop` using `limits: { maxIters: CAPS.maxIters, ... }`; `o.maxIters` is not yet consumed by the production run host.
 
 ## Readiness Claim

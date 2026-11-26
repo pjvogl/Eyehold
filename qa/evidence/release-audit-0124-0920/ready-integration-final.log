@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 qa:ready
+> eyehold-harness@0.12.4 qa:ready
 > node scripts/qa/ready.mjs
 
 NOT READY — 5 reasons

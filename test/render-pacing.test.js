@@ -1,6 +1,6 @@
-/* node test/render-pacing.test.js — #69 "Windows laggy after leaving starnet open".
+/* node test/render-pacing.test.js — #69 "Windows laggy after leaving eyehold open".
 
-   StarNet is meant to stay open all day so routines run. Measured on the seeded station (headless Chromium on the
+   Eyehold is meant to stay open all day so routines run. Measured on the seeded station (headless Chromium on the
    real GPU, 240 Hz panel, window visible but NOT focused — the reporter's exact state):
        before   world drawn 237-240x/s, GPU process ~1.12 cores, renderer ~0.65 cores (10 min soak)
        after    world drawn 4.9x/s, GPU process 0.05-0.09 cores, renderer 0.03-0.04 cores

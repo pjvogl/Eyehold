@@ -20,7 +20,7 @@ const pick = (flag, dflt) => { const i = args.indexOf(flag); return i >= 0 && ar
 const PORT = pick('--port', process.env.PORT || '8790');
 const URL = `http://127.0.0.1:${PORT}/`;
 
-const WS = process.env.SKYNET_ROOMSHAPE_WS || join(tmpdir(), 'starnet-roomshape-ws');
+const WS = process.env.SKYNET_ROOMSHAPE_WS || join(tmpdir(), 'eyehold-roomshape-ws');
 const fresh = args.includes('--fresh') || !existsSync(join(WS, 'agent.save.json'));
 if (fresh) { mkdirSync(WS, { recursive: true }); materializeSeedWorkspace(WS); }
 
@@ -46,7 +46,7 @@ const marks = { 'SHAPE.cornerN': /SHAPE = \{ cornerN/.test(js), 'lampRows()': /f
 const bad = Object.entries(marks).filter(([, ok]) => !ok).map(([k]) => k);
 
 console.log(`
-  StarNet (seeded, past onboarding)  ->  ${URL}
+  Eyehold (seeded, past onboarding)  ->  ${URL}
   crtlab sliders                     ->  ${URL}?crtlab=1
   workspace                          ->  ${WS}   (persists; --fresh to reset)
   build markers                      ->  ${bad.length ? 'MISMATCH: ' + bad.join(', ') + ' — this port is NOT serving this branch' : 'ok (this branch)'}

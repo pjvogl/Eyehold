@@ -1,6 +1,6 @@
 # OpenRouter delegation investigation — 2026-09-20
 
-Reported build: desktop v0.12.4, Windows x64, source f00aa04df. The sanitized report describes direct OpenRouter BYOK succeeding while delegated specialists fail immediately against an empty StarNet managed wallet.
+Reported build: desktop v0.12.4, Windows x64, source f00aa04df. The sanitized report describes direct OpenRouter BYOK succeeding while delegated specialists fail immediately against an empty Eyehold managed wallet.
 
 Source repair: `13a83534b`. Verified candidate: `379b013f3`. Isolated branch: `agent/openrouter-delegation-0920`. Owner-requested integration: `09100d151f1fda3b0851b86650849968e05d5236`. No installer rebuild, publication, or customer-station mutation.
 

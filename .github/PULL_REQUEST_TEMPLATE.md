@@ -27,4 +27,4 @@ are tracked separately. See qa/bugs/README.md. Write "not a reported bug" when a
 purpose shown in the UI; explain how users see requirements, current state, results, and recovery.
 Identify advanced controls that remain available. Justify any new destination, term, or exception.
 Link the live journey (including a relevant failure path) and check wording against
-docs/STARNET_BEHAVIOR_CONTRACT.md. Write "not user-facing" when applicable. -->
+docs/EYEHOLD_BEHAVIOR_CONTRACT.md. Write "not user-facing" when applicable. -->

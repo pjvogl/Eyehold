@@ -27,7 +27,7 @@ performed (Andrew's instruction).
 
 | commit | user-facing fix |
 |---|---|
-| `107c3b8ef` | "invalid model ID" strand: endpointless provider refuses instead of silently rerouting managed runs to api.openai.com; unresolved starnet link reads NOT CONFIGURED with the real remedy named |
+| `107c3b8ef` | "invalid model ID" strand: endpointless provider refuses instead of silently rerouting managed runs to api.openai.com; unresolved eyehold link reads NOT CONFIGURED with the real remedy named |
 | `0c84d88c5` | codex chat bricked forever: one orphaned function_call_output no longer 400s every later turn (pairing repaired at the Responses wire) |
 | `1c413a90c` | fresh install stranded on PRIOR STATION DATA FOUND after one open/close: quit-path E-STOP bookkeeping is INFRA, never prior-station evidence |
 | `14f7de6f7` | Higgsfield MCP "does not verify": catalog row with OAuth+DCR (mint live-proven to a real authorize URL; consent→tools/list needs a human login) |

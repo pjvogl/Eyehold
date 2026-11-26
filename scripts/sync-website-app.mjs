@@ -2,7 +2,7 @@
 /*
  * sync-website-app.mjs — mirror frontend/ into website/app/ (`npm run sync:website`)
  *
- * WHY THIS EXISTS. website/app is the live demo embedded on starnetos.com, and both
+ * WHY THIS EXISTS. website/app is the live demo embedded on eyehold.com, and both
  * website/app/demo-boot.js and website/live-preview.js describe it as "a verbatim copy of the app
  * frontend". It was not one. On 2026-07-24 the copy had drifted to 59 differing files and 394 files
  * missing outright — a months-old snapshot still advertising retired copy ("IMPORT AGENT" for a
@@ -82,11 +82,11 @@ function embedIndexHtml(src) {
   let out = src;
 
   // 1. Fonts. This used to STRIP a Google Fonts link the app carried and the public site could
-  //    not (zero third-party requests). As of the STARNET font law the app has no remote font
+  //    not (zero third-party requests). As of the EYEHOLD font law the app has no remote font
   //    either — VT323 has exactly one source, the local woff2 — so there is nothing left to
   //    strip and this is now a pure assertion. Kept as a hard check rather than deleted: the
   //    website is generated, so this is the last gate before a re-introduced CDN font would be
-  //    published to starnetos.com.
+  //    published to eyehold.com.
   if (/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(out)) {
     fail('index.html: a third-party font request survived the strip — the public site promises zero third-party requests');
   }

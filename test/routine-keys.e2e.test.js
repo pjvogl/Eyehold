@@ -59,11 +59,11 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
 (async () => {
   const mock = await startMock();
   const blank = {};
-  for (const n of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY']) { blank[n] = ''; blank['SKYNET_' + n] = ''; blank['STARNET_' + n] = ''; }
+  for (const n of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY']) { blank[n] = ''; blank['SKYNET_' + n] = ''; blank['EYEHOLD_' + n] = ''; }
   const fixture = SidecarFixture.create({ prefix: 'sk-routine-keys-', env: Object.assign(blank, {
-    SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base,
+    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
     SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_AUX_BUDGET: '0',
-    SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0', SKYNET_DESKTOP_SHELL: '', STARNET_DESKTOP_SHELL: ''
+    SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', SKYNET_DESKTOP_SHELL: '', EYEHOLD_DESKTOP_SHELL: ''
   }) });
   const ws = fixture.workspace;
   const keysFile = path.join(ws, '.secrets', 'provider-keys.json');
@@ -82,7 +82,7 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
     }
     const refused = await runNow(ids.empty);
     A.eq(refused.status, 400, 'Run Now with no station key is refused before any spend');
-    const SENTENCE = 'no OPENROUTER API key is saved on this station for this routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts StarNet';
+    const SENTENCE = 'no OPENROUTER API key is saved on this station for this routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts Eyehold';
     A.eq(refused.body && refused.body.error, SENTENCE, 'the refusal is the shared sentence (was "connect a OpenRouter API key to run this scheduled routine")');
 
     /* ---- 2. legacy toolset lists heal on load and are persisted ---- */

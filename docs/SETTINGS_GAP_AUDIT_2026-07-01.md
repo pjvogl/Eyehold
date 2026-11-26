@@ -1,18 +1,18 @@
 # Settings & Customization Surface Gap Audit — 2026-07-01
 
-**Question answered:** "StarNet feels shallow on customization/tuning/permissions vs the reference harness,
+**Question answered:** "Eyehold feels shallow on customization/tuning/permissions vs the reference harness,
 and is missing integration UI + small details. What exactly is missing, and what should we build?"
 
 **Method:** code-level diff of the full user-facing configuration surface in both repos —
 the reference harness reference clone (`C:\Users\<you>\harness-ref`, ~150+ config keys / 15 settings panels)
-vs StarNet (`Desktop\gen`, ~140 controls across 14 terminal windows). Plan docs were NOT
+vs Eyehold (`Desktop\gen`, ~140 controls across 14 terminal windows). Plan docs were NOT
 trusted; every "backend exists" claim below was re-verified by grep on 2026-07-01.
 This is a different layer than the prior the reference harness audits (engine parity H1–H6) — those compared
 runtimes; this compares **knobs and UI affordances**.
 
-**Headline finding:** the recurring StarNet theme holds again — **wiring, not architecture**.
+**Headline finding:** the recurring Eyehold theme holds again — **wiring, not architecture**.
 The five biggest "missing" features already have complete backends with zero or partial UI.
-StarNet's *count* of controls is close to the reference harness (~140 vs ~150); what's missing is
+Eyehold's *count* of controls is close to the reference harness (~140 vs ~150); what's missing is
 (a) surfacing engines we already built, (b) per-agent depth, and (c) the small-affordance
 layer (test buttons, help text, import/export) that makes a settings surface feel deep.
 
@@ -35,13 +35,13 @@ layer (test buttons, help text, import/export) that makes a settings surface fee
 | 6 | **Per-agent model/provider/effort override** | Model is station-global today ("no per-run model override" is by design, but per-AGENT is not). Multi-agent crew is the core fantasy — cheap model for the scout, expensive for the lead — and it plays directly into leveling/XP. the reference harness has per-task auxiliary routing + delegation model overrides. Natural home: DOSSIER › CONFIG tab. |
 | 7 | **Config export/import/reset-to-defaults** | None today. Cheap to build, huge "polished harness" signal, and it *feeds the marketplace GTM* — an exported station setup is a shareable recipe. the reference harness: top-level Export/Import/Reset buttons. |
 | 8 | **Notification preferences** | NOTIFICATIONS panel is history-only. Add per-kind toggles, completion-sound picker, and a TEST button. the reference harness has all three; small-details feel. |
-| 9 | **ADVANCED runtime knobs section** | Consent timeout, max iters, agent concurrency, cron tick/timezone are env-only (`STARNET_CONSENT_TIMEOUT_MS`, `STARNET_MAX_ITERS`, `STARNET_MAX_CONCURRENT_AGENTS`, `STARNET_CRON_TZ`). Beginners can't edit env vars — surface them in a collapsed ADVANCED block, persisted server-side, defaults untouched. |
+| 9 | **ADVANCED runtime knobs section** | Consent timeout, max iters, agent concurrency, cron tick/timezone are env-only (`EYEHOLD_CONSENT_TIMEOUT_MS`, `EYEHOLD_MAX_ITERS`, `EYEHOLD_MAX_CONCURRENT_AGENTS`, `EYEHOLD_CRON_TZ`). Beginners can't edit env vars — surface them in a collapsed ADVANCED block, persisted server-side, defaults untouched. |
 | 10 | **Memory controls** | No user knob on memory at all (adaptive by design, but zero visibility = "app lies" risk). On/off + budget + a "what it knows / what it's been told not to ask" view. Dovetails with the LOCKED memory-question-overhaul plan — the denylist/asked-state being built there needs a UI home anyway. |
 
 ## P2 — The small-details polish sweep (do as ONE lane, checklist style)
 
 The "we lack the small details" feeling is mostly this layer. the reference harness has each of these on
-essentially every settings row; StarNet has them sporadically:
+essentially every settings row; Eyehold has them sporadically:
 
 - [ ] **Test-connection button** on every provider key card (today: paste-and-pray for 13 BYOK providers; only Codex/Telegram give live status)
 - [ ] Show/hide toggle on masked keys + copy-to-clipboard
@@ -58,15 +58,15 @@ essentially every settings row; StarNet has them sporadically:
   depth, response-cache TTLs, prompt-caching knobs, human-delay pacing, tirith scanner,
   Honcho/Mem0 cloud memory, VS Code theme marketplace, personality presets (our 4 dossier
   markdown files are strictly richer).
-- **Principle:** capability-via-placed-objects IS StarNet's permission allowlist. Do not
+- **Principle:** capability-via-placed-objects IS Eyehold's permission allowlist. Do not
   flatten world mechanics into menus. Only pure numbers (budgets, timeouts) and pure
   integrations (MCP, channels) belong in SETTINGS; anything an object can gate stays an object.
 
 ## Product forks — Andrew decides (not silently built)
 
 1. **Voice settings surface** — the reference harness ships 10+ TTS / 6 STT providers with full config UI.
-   StarNet voice is design-DNA level with no config surface. Whole-subsystem scope decision.
-2. **Real project-folder access** — the reference harness has cwd picker + env passthrough; StarNet jails
+   Eyehold voice is design-DNA level with no config surface. Whole-subsystem scope decision.
+2. **Real project-folder access** — the reference harness has cwd picker + env passthrough; Eyehold jails
    workspaces by design. The beginner zero-to-value audit says real-work value eventually
    needs the user's real files. This is a sandbox-philosophy fork, not a settings gap.
 

@@ -1,6 +1,6 @@
-/* STARNET — the DEAD-ENGINE diagnostic fallback (2026-07-29).
+/* EYEHOLD — the DEAD-ENGINE diagnostic fallback (2026-07-29).
 
-   WHY THIS TEST EXISTS. A 0.7.0 user sat on "Can't reach StarNet's local service" for a day. All support ever
+   WHY THIS TEST EXISTS. A 0.7.0 user sat on "Can't reach Eyehold's local service" for a day. All support ever
    received was a screenshot of that sentence — because the app's one self-service diagnostic door,
    "⧉ copy diagnostics for a bug report", fetched GET /api/diagnostics FROM THE SIDECAR. So in the exact failure
    the door is offered under, it returned nothing and the user had nothing to send. Worse, that one sentence
@@ -64,7 +64,7 @@ const Diag = require('../frontend/app/diagnostics.js');
     A.ok(/network/.test(withCtx), 'the classified kind is carried into the report');
 
     // ---- (3) it must never carry a secret. The report reads the API ORIGIN but must not touch the token. ----
-    global.window = { __STARNET_API__: 'http://127.0.0.1:53124', __STARNET_API_TOKEN__: 'supersecrettoken123456' };
+    global.window = { __EYEHOLD_API__: 'http://127.0.0.1:53124', __EYEHOLD_API_TOKEN__: 'supersecrettoken123456' };
     const withOrigin = await Diag.localReport({ engineAlive: false });
     A.ok(/127\.0\.0\.1:53124/.test(withOrigin), 'the loopback origin is included (a wrong/absent port is the tell)');
     A.ok(!/supersecrettoken123456/.test(withOrigin), 'the per-launch API token is NEVER in the report');

@@ -1,4 +1,4 @@
-/* STARNET — curiositystore.js : the thin wiring around the pure just-in-time curiosity engine (curiosity.js).
+/* EYEHOLD — curiositystore.js : the thin wiring around the pure just-in-time curiosity engine (curiosity.js).
 
    Holds the state the pure engine can't: the per-SESSION nudge count (in memory, resets each run of the app —
    keeps "one gentle ask per session"), the persisted set of dimensions the Commander has waved off (so a
@@ -10,7 +10,7 @@
    NEVER emits on U.bus. */
 'use strict';
 const CuriosityStore = (() => {
-  const KEY = 'starnet.curiosity.v1';
+  const KEY = 'eyehold.curiosity.v1';
   let state = null;
   let sessionCount = 0;
   let workCount = 0;    // completed TASK-runs this session (in-memory) — the earned-ask floor (Curiosity.MIN_WORK)
@@ -104,7 +104,7 @@ const CuriosityStore = (() => {
   }
 
   // S2: a NEW AGENT starts with no waved-off dimensions. Drop the self-persisted key so the next init()
-  // hydrates clean (Save.clear() only wipes starnet.save — this store persists to its own key).
+  // hydrates clean (Save.clear() only wipes eyehold.save — this store persists to its own key).
   function reset() { state = null; sessionCount = 0; workCount = 0; try { localStorage.removeItem(KEY); } catch (_) {} }
 
   return { init, consider, noteWork, earned, hunting, markShown, markDismissed, markAnswered, statusOf, reEnable, reset };

@@ -85,7 +85,7 @@ function boot(port, env, attempts) {
 
 async function run(base, token, body) {
   const res = await fetch(base + '/api/run', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base }, body: JSON.stringify(body)
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base }, body: JSON.stringify(body)
   });
   A.eq(res.status, 200, 'image task run streams');
   return (await res.text()).split('\n').map(s => s.trim()).filter(Boolean).map(s => { try { return JSON.parse(s); } catch (_) { return null; } }).filter(Boolean);
@@ -93,11 +93,11 @@ async function run(base, token, body) {
 
 (async () => {
   const provider = await startProvider();
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-image-task-e2e-'));
-  const noOpenRouterKey = { STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-image-task-e2e-'));
+  const noOpenRouterKey = { EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
   const env = Object.assign({}, noOpenRouterKey, {
     SKYNET_WORKSPACES: workspace,
-    STARNET_OPENROUTER_BASE: provider.baseUrl,
+    EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
     SKYNET_FULL_ACCESS: '1',
     SKYNET_AUX_BUDGET: '0'
   });

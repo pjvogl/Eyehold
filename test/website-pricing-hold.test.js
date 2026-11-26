@@ -3,7 +3,7 @@
 
    WHAT IS ACTUALLY AT STAKE. `pricing.html` is written, reviewed, and deliberately unpublished
    (Andrew, 2026-08-02), along with the Credits clauses in the legal pages. The only thing standing
-   between that and starnetos.com is `scripts/stage-website-deploy.mjs`. If its guard silently stops
+   between that and eyehold.com is `scripts/stage-website-deploy.mjs`. If its guard silently stops
    guarding, the failure is invisible: Cloudflare's catch-all answers 200 for every path, so nothing
    404s and nobody notices that a paid tier was announced early — with legal text citing a price
    list, on a domain where the price list resolves to the homepage.

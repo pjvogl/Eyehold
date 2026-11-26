@@ -14,9 +14,9 @@ import { containsSecretMaterial, validateLinkReceipt } from '../../installed-fir
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
 const QA_INSTALLED = path.join(ROOT, 'qa', 'installed');
-const candidateCommit = String(process.env.STARNET_PRODUCT_PERFECT_CANDIDATE_SHA || '').trim().toLowerCase();
-const artifactPath = String(process.env.STARNET_FIRST_RUN_ARTIFACT || process.env.STARNET_SMOKE_ARTIFACT || '').trim();
-const cdpPortInput = String(process.env.STARNET_FIRST_RUN_CDP_PORT || process.env.STARNET_SMOKE_CDP_PORT || '').trim();
+const candidateCommit = String(process.env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA || '').trim().toLowerCase();
+const artifactPath = String(process.env.EYEHOLD_FIRST_RUN_ARTIFACT || process.env.EYEHOLD_SMOKE_ARTIFACT || '').trim();
+const cdpPortInput = String(process.env.EYEHOLD_FIRST_RUN_CDP_PORT || process.env.EYEHOLD_SMOKE_CDP_PORT || '').trim();
 const cdpPort = cdpPortInput ? Number(cdpPortInput) : 9333;
 
 function runNode(label, args, timeoutMs, extraEnv = {}) {
@@ -92,7 +92,7 @@ if (!candidateTree) {
 }
 const artifact = hashFile(artifactPath);
 if (!artifact) {
-  console.error('[W1 BLOCKED] STARNET_FIRST_RUN_ARTIFACT must name the exact installed executable bytes');
+  console.error('[W1 BLOCKED] EYEHOLD_FIRST_RUN_ARTIFACT must name the exact installed executable bytes');
   process.exit(2);
 }
 for (const authorityPath of [
@@ -115,11 +115,11 @@ for (const [label, args] of [
   if (status) process.exit(status);
 }
 
-const linkProbeInput = String(process.env.STARNET_W1_LINK_PROBE || '').trim().replace(/\\/g, '/');
+const linkProbeInput = String(process.env.EYEHOLD_W1_LINK_PROBE || '').trim().replace(/\\/g, '/');
 const linkProbePath = linkProbeInput ? path.resolve(ROOT, linkProbeInput) : '';
 const linkProbeRelative = linkProbePath ? path.relative(ROOT, linkProbePath).replace(/\\/g, '/') : '';
 if (!linkProbePath || !/^scripts\/qa\/[A-Za-z0-9._\/-]+\.mjs$/.test(linkProbeRelative) || linkProbeRelative.startsWith('../')) {
-  console.error('[W1 BLOCKED] STARNET_W1_LINK_PROBE must name the candidate-owned installed link probe under scripts/qa/');
+  console.error('[W1 BLOCKED] EYEHOLD_W1_LINK_PROBE must name the candidate-owned installed link probe under scripts/qa/');
   process.exit(2);
 }
 const probeOwned = candidateOwnedFile(linkProbeRelative);
@@ -130,10 +130,10 @@ if (!probeOwned) {
 const probe = { path: linkProbeRelative, sha256: probeOwned.sha256 };
 
 const journey = runNode('installed fresh-user first-value journey', ['scripts/qa/installed-first-run.mjs'], 700000, {
-  STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SHA256: artifact.sha256,
-  STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SIZE: String(artifact.size),
-  STARNET_FIRST_RUN_CDP_PORT: String(cdpPort),
-  STARNET_SMOKE_CDP_PORT: String(cdpPort)
+  EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SHA256: artifact.sha256,
+  EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SIZE: String(artifact.size),
+  EYEHOLD_FIRST_RUN_CDP_PORT: String(cdpPort),
+  EYEHOLD_SMOKE_CDP_PORT: String(cdpPort)
 });
 if (journey) process.exit(journey);
 
@@ -151,14 +151,14 @@ for (const name of [
 const probeRun = spawnSync(process.execPath, [linkProbePath], {
   cwd: ROOT, encoding: 'utf8', windowsHide: true, timeout: 180000, maxBuffer: 16 * 1024 * 1024,
   env: Object.assign(probeEnv, {
-    STARNET_W1_LINK_CHALLENGE: challenge,
-    STARNET_W1_LINK_OUTPUT: linkReceiptPath,
-    STARNET_W1_LINK_PROBE_SHA256: probe.sha256,
-    STARNET_PRODUCT_PERFECT_CANDIDATE_SHA: candidateCommit,
-    STARNET_PRODUCT_PERFECT_CANDIDATE_TREE: candidateTree,
-    STARNET_FIRST_RUN_ARTIFACT: artifact.path,
-    STARNET_FIRST_RUN_CDP_PORT: String(cdpPort),
-    STARNET_SMOKE_CDP_PORT: String(cdpPort)
+    EYEHOLD_W1_LINK_CHALLENGE: challenge,
+    EYEHOLD_W1_LINK_OUTPUT: linkReceiptPath,
+    EYEHOLD_W1_LINK_PROBE_SHA256: probe.sha256,
+    EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA: candidateCommit,
+    EYEHOLD_PRODUCT_PERFECT_CANDIDATE_TREE: candidateTree,
+    EYEHOLD_FIRST_RUN_ARTIFACT: artifact.path,
+    EYEHOLD_FIRST_RUN_CDP_PORT: String(cdpPort),
+    EYEHOLD_SMOKE_CDP_PORT: String(cdpPort)
   })
 });
 const linkEndedAt = Date.now();
@@ -188,7 +188,7 @@ for (const evidence of descriptors) {
   }
   let bytes = null;
   try { bytes = fs.readFileSync(file); } catch (_) {}
-  if (!bytes || containsSecretMaterial(bytes.toString('utf8'), [process.env.STARNET_FIRST_RUN_PROVIDER_SECRET])) {
+  if (!bytes || containsSecretMaterial(bytes.toString('utf8'), [process.env.EYEHOLD_FIRST_RUN_PROVIDER_SECRET])) {
     console.error('[W1 BLOCKED] link evidence contains secret-shaped material or is unreadable: ' + evidence.path);
     process.exit(2);
   }

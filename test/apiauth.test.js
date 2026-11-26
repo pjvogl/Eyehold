@@ -33,12 +33,12 @@ A.eq(auth.requiresApiToken(req('GET', '/index.html')), false, 'static asset need
 A.eq(auth.requiresApiToken(req('GET', '/')), false, 'root needs no token');
 
 // ---- apiTokenOk: custom-header path, exact + constant-time ----
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': TOK }), TOK), true, 'correct header token accepted');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': TOK }), TOK), true, 'correct header token accepted');
 A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-skynet-token': TOK }), TOK), true, 'legacy header name accepted');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': 'b'.repeat(64) }), TOK), false, 'wrong token rejected');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': 'a'.repeat(63) }), TOK), false, 'length mismatch rejected (no throw)');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': 'b'.repeat(64) }), TOK), false, 'wrong token rejected');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': 'a'.repeat(63) }), TOK), false, 'length mismatch rejected (no throw)');
 A.eq(auth.apiTokenOk(req('POST', '/api/run', {}), TOK), false, 'missing header rejected');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': TOK }), ''), false, 'empty server token rejects everything');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': TOK }), ''), false, 'empty server token rejects everything');
 
 // ---- the master token in a QUERY STRING is refused everywhere (2026-09-25: URLs leak) ----
 A.eq(typeof auth.queryTokenOk, 'undefined', 'no query-token acceptor is exported any more');

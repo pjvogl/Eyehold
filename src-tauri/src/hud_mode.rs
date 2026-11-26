@@ -1,4 +1,4 @@
-//! HUD MODE — the main StarNet window as a small always-on-top corner panel.
+//! HUD MODE — the main Eyehold window as a small always-on-top corner panel.
 //!
 //! For the Commander who is gaming or watching something: the frontend (app/hudmode.js) folds the
 //! station down to the live-activity deck + the real COMMS panel, and these commands turn the
@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, LogicalSize, Manager, PhysicalPosition, PhysicalSize, State};
 
 /// Event the page listens for (hudmode.js) when the tray asks for the HUD / the full station.
-pub(crate) const HUD_EVENT: &str = "starnet-hud";
+pub(crate) const HUD_EVENT: &str = "eyehold-hud";
 
 /// Default HUD footprint in logical px, and its distance from the work-area corner.
 const HUD_DEFAULT_W: f64 = 400.0;
@@ -260,7 +260,7 @@ fn view(win: Option<&tauri::WebviewWindow>, g: &Inner) -> HudView {
 
 /// The HUD's current state (a reloaded page asks this to put its HUD layout back).
 #[tauri::command]
-pub fn starnet_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView {
+pub fn eyehold_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView {
     let g = lock(&state);
     let win = app.get_webview_window("main");
     view(win.as_ref(), &g)
@@ -268,7 +268,7 @@ pub fn starnet_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView
 
 /// Enter (`active: true`) or leave (`active: false`) HUD mode on the main window.
 #[tauri::command]
-pub fn starnet_hud_set(
+pub fn eyehold_hud_set(
     app: AppHandle,
     state: State<'_, HudState>,
     active: bool,
@@ -369,7 +369,7 @@ pub fn starnet_hud_set(
 
 /// Keep the HUD above other windows (or not). The answer is the window's read-back.
 #[tauri::command]
-pub fn starnet_hud_pin(
+pub fn eyehold_hud_pin(
     app: AppHandle,
     state: State<'_, HudState>,
     pinned: bool,
@@ -387,7 +387,7 @@ pub fn starnet_hud_pin(
 /// Fold the HUD down to its activity deck (`height` = the deck's measured logical height), re-fit a
 /// folded HUD to a new deck height, or unfold it back to the height it had before folding.
 #[tauri::command]
-pub fn starnet_hud_fold(
+pub fn eyehold_hud_fold(
     app: AppHandle,
     state: State<'_, HudState>,
     folded: bool,
@@ -439,8 +439,8 @@ pub(crate) fn is_active(app: &AppHandle) -> bool {
     app.try_state::<HudState>().map(|s| lock(&s).active).unwrap_or(false)
 }
 
-/// Tray entry points: ask the page to switch (it owns the layout and calls starnet_hud_set).
-/// `false` is only sent while the HUD is actually on, so Open StarNet stays a plain reveal otherwise.
+/// Tray entry points: ask the page to switch (it owns the layout and calls eyehold_hud_set).
+/// `false` is only sent while the HUD is actually on, so Open Eyehold stays a plain reveal otherwise.
 pub(crate) fn request(app: &AppHandle, active: bool) {
     if active || is_active(app) {
         let _ = app.emit_to("main", HUD_EVENT, serde_json::json!({ "active": active }));

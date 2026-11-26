@@ -1,7 +1,7 @@
 'use strict';
 // Real sidecar, saved managed link. The journey a player takes: ask for a prop, the station polls the cloud in
 // the background, the prop lands in the station's own folder, it is listed and its PNG served, and it SURVIVES A
-// RESTART. Unlinked stations are told to link (200-always). Optional STARNET_TEST_CLOUD_ROOT runs the same journey
+// RESTART. Unlinked stations are told to link (200-always). Optional EYEHOLD_TEST_CLOUD_ROOT runs the same journey
 // through the REAL cloud app (src/propgen.js pipeline + ledger) with a synthetic OpenRouter behind it.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -64,11 +64,11 @@ test('player props: generate on credits, land locally, list + serve, survive res
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const cloudUrl = 'http://127.0.0.1:' + server.address().port;
-  const env = { STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '', STARNET_CLOUD_URL: cloudUrl, SKYNET_AUX_BUDGET: '0' };
+  const env = { EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '', EYEHOLD_CLOUD_URL: cloudUrl, SKYNET_AUX_BUDGET: '0' };
   const fixture = new SidecarFixture({ prefix: 'userprops-e2e-', timeoutMs: 20000, env });
   try {
-    if (process.env.STARNET_TEST_CLOUD_ROOT) {
-      const root = path.resolve(process.env.STARNET_TEST_CLOUD_ROOT);
+    if (process.env.EYEHOLD_TEST_CLOUD_ROOT) {
+      const root = path.resolve(process.env.EYEHOLD_TEST_CLOUD_ROOT);
       const { createApp } = await import(pathToFileURL(path.join(root, 'src/app.js')));
       const { makeStore } = await import(pathToFileURL(path.join(root, 'src/store.js')));
       store = makeStore(path.join(fixture.workspace, 'proof-cloud.db'));

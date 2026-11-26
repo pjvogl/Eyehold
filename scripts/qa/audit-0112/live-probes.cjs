@@ -1,8 +1,8 @@
 'use strict';
 const fs=require('node:fs');
-const {chromium}=require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const {chromium}=require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 (async()=>{
- const browser=await chromium.launch({headless:true,...(process.env.STARNET_CHROME?{executablePath:process.env.STARNET_CHROME}:{})});
+ const browser=await chromium.launch({headless:true,...(process.env.EYEHOLD_CHROME?{executablePath:process.env.EYEHOLD_CHROME}:{})});
  const proof={source:'b3760c46ff3fe02790e6c3b0c50a23c30b5837a8',errors:[]};
  try {
  const page=await browser.newPage({viewport:{width:1280,height:900}});page.on('pageerror',e=>proof.errors.push(e.message));
@@ -17,7 +17,7 @@ const {chromium}=require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
  proof.race=await page.evaluate(async()=>{
   const old=Harness.apiFetch, oldList=Harness.listModels, applied=[];
   let release,startedResolve;const started=new Promise(r=>startedResolve=r);const hold=new Promise(r=>release=r);
-  const catalog=p=>({models:p==='ollama'?[{id:'qwen3:14b'}]:p==='starnet'?[{id:'anthropic/test-model'}]:[],...(['ollama','starnet'].includes(p)?{}:{error:'not configured'})});
+  const catalog=p=>({models:p==='ollama'?[{id:'qwen3:14b'}]:p==='eyehold'?[{id:'anthropic/test-model'}]:[],...(['ollama','eyehold'].includes(p)?{}:{error:'not configured'})});
   Harness.listModels=async()=>[];
   Harness.apiFetch=async url=>{
    if(url==='/api/models/ollama'){startedResolve();await hold;return new Response(JSON.stringify(catalog('ollama')),{status:200});}
@@ -27,7 +27,7 @@ const {chromium}=require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
   };
   Harness.setProv('ollama');Harness.setModel('qwen3:14b');
   const pending=ModelDock.refresh();await started;
-  Harness.setProv('starnet');Harness.setModel('anthropic/test-model');
+  Harness.setProv('eyehold');Harness.setModel('anthropic/test-model');
   const chosen={provider:Harness.getProv(),model:Harness.getModel()};release();await pending;
   const after={provider:Harness.getProv(),model:Harness.getModel()};
   Harness.apiFetch=old;Harness.listModels=oldList;

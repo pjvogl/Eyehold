@@ -1,4 +1,4 @@
-/* voice-live.js — persistent local speech session over whichever provider powers the active Starnet agent. */
+/* voice-live.js — persistent local speech session over whichever provider powers the active Eyehold agent. */
 'use strict';
 
 const VoiceLive = (() => {
@@ -25,10 +25,10 @@ const VoiceLive = (() => {
   let reconnectTimer = null, reconnectAttempt = 0, transientErrorTimer = null;
   let warmupNotice = false;
   const $ = id => document.getElementById(id);
-  const POSITION_KEY = 'starnet.liveVoice.position.v1';
+  const POSITION_KEY = 'eyehold.liveVoice.position.v1';
   // Which of the provider's voices speaks. Empty = the provider descriptor's default.
-  const LOCAL_VOICE_KEY = 'starnet.liveVoice.localVoice.v1';
-  const TURN_END_KEY = 'starnet.liveVoice.turnEndMs.v1';
+  const LOCAL_VOICE_KEY = 'eyehold.liveVoice.localVoice.v1';
+  const TURN_END_KEY = 'eyehold.liveVoice.turnEndMs.v1';
   // Start complete turns on the proven QUICK boundary. A partial that visibly trails off still gets the
   // existing +600ms continuation grace below, and NORMAL/PATIENT remain explicit Commander choices.
   const DEFAULT_TURN_END_MS = 1200;
@@ -133,7 +133,7 @@ const VoiceLive = (() => {
     panel.hidden = true;
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'false');
-    panel.setAttribute('aria-label', 'Starnet local live voice');
+    panel.setAttribute('aria-label', 'Eyehold local live voice');
     panel.innerHTML = [
       '<header class="lv-head">',
         '<span class="lv-brand">LOCAL LIVE</span>',
@@ -162,7 +162,7 @@ const VoiceLive = (() => {
         '<option value="2600">PATIENT · 2.6S</option>',
       '</select></label>',
       '<details class="lv-details"><summary>VOICE DETAILS</summary><dl class="lv-rail">',
-        '<div class="lv-row"><dt>ROUTE</dt><dd id="lv-route">LOCAL SPEECH · ACTIVE STARNET AGENT</dd></div>',
+        '<div class="lv-row"><dt>ROUTE</dt><dd id="lv-route">LOCAL SPEECH · ACTIVE EYEHOLD AGENT</dd></div>',
         '<div class="lv-row lv-row-dl"><dt>SPEECH</dt><dd id="lv-model">LOCAL MODELS: CHECKING</dd></div>',
         '<div class="lv-row"><dt>LATENCY</dt><dd id="lv-timing" title="First words: detected speech to transcript. Send: last voiced frame to submission. Speech start: latest spoken chunk queued to actual playback.">Speak to measure this turn.</dd></div>',
         '<div class="lv-row"><dt>TASK</dt><dd id="lv-task" class="lv-task">No active task detected.</dd></div>',
@@ -635,7 +635,7 @@ const VoiceLive = (() => {
       return true;
     }
     if (typeof Chat === 'undefined' || !Chat.sendOrQueue) {
-      setError('The signed-in Starnet agent is not ready yet.');
+      setError('The signed-in Eyehold agent is not ready yet.');
       return true;
     }
     const result = Chat.sendOrQueue(value);
@@ -1154,7 +1154,7 @@ const VoiceLive = (() => {
     button.setAttribute('aria-label', on ? 'Stop Local Live hands-free voice' : 'Start Local Live hands-free voice');
     button.title = on
       ? 'Stop Local Live hands-free voice'
-      : 'Local Live hands-free voice — local speech with your active Starnet agent';
+      : 'Local Live hands-free voice — local speech with your active Eyehold agent';
   }
 
   async function start(retry) {
@@ -1231,7 +1231,7 @@ const VoiceLive = (() => {
       // session (restored on exit if we were the ones who flipped it) — otherwise live voice opens silent and
       // looks broken until the Commander hunts down a toggle.
       if (Voice.forceSpeakOn) Voice.forceSpeakOn();
-      // Local Live is now Starnet's one hands-free surface. A legacy loop can still exist through
+      // Local Live is now Eyehold's one hands-free surface. A legacy loop can still exist through
       // older saved state or API callers; close it before attaching this persistent microphone.
       if (Voice.inVoiceMode && Voice.inVoiceMode() && Voice.stopConvo) Voice.stopConvo();
       if (Voice.setLocalTts) Voice.setLocalTts(true);
@@ -1335,7 +1335,7 @@ const VoiceLive = (() => {
     // 1) IDENTITY — the agent's own composed prompt, verbatim. It already carries persona, role, dossier and
     //    crew clause, so the spoken agent and the typed agent are the same character rather than two.
     if (agent && agent.systemPrompt) lines.push(String(agent.systemPrompt));
-    lines.push('You are ' + name + ', speaking aloud to the Commander in StarNet. You are the SAME agent they type to — same memory, same work, same voice of character. Never describe yourself as a separate voice assistant or a control layer.');
+    lines.push('You are ' + name + ', speaking aloud to the Commander in Eyehold. You are the SAME agent they type to — same memory, same work, same voice of character. Never describe yourself as a separate voice assistant or a control layer.');
     /* 2) THE PERSONALITY IS THE POINT, AND SPEAKING IT ALOUD MUST NOT SAND IT DOWN.
        This block used to say "speak naturally and briefly, a sentence or two at a time", which quietly
        overrode the persona above and produced a flat, careful assistant no matter which archetype was
@@ -1357,9 +1357,9 @@ const VoiceLive = (() => {
       lines.push('Open sessions: ' + ctx.streams.slice(0, 12).map(w => (w.title || 'General')).join('; ') + '.');
     }
     if (ctx.activeWs) lines.push('The active session is "' + (ctx.activeWs.title || 'General') + '".');
-    lines.push('Call get_starnet_status before answering any question about what is running, what is waiting for approval, or what the crew is doing — never guess or invent task state, tool results, approvals or files.');
-    lines.push('For anything requiring research, code, file changes, tools or sustained work, call start_starnet_task rather than claiming you did it yourself. Afterwards confirm in one short sentence and note that the work is visible in the session.');
-    lines.push('Use interrupt_starnet_task only when the Commander clearly asks to stop or change direction.');
+    lines.push('Call get_eyehold_status before answering any question about what is running, what is waiting for approval, or what the crew is doing — never guess or invent task state, tool results, approvals or files.');
+    lines.push('For anything requiring research, code, file changes, tools or sustained work, call start_eyehold_task rather than claiming you did it yourself. Afterwards confirm in one short sentence and note that the work is visible in the session.');
+    lines.push('Use interrupt_eyehold_task only when the Commander clearly asks to stop or change direction.');
     lines.push('Do not ask for credentials or read secrets aloud.');
     return lines.join('\n\n');
   }
@@ -1391,14 +1391,14 @@ const VoiceLive = (() => {
 
   // ---- the three tools the session config declares, answered from live station state ----
   async function runVoiceTool(name, args) {
-    if (name === 'get_starnet_status') {
+    if (name === 'get_eyehold_status') {
       const snap = statusSnapshot();
       if (!snap || snap.active === null && !(snap.workstreams || []).length) {
         return { ok: false, error: 'the station is still starting up — no workstreams are readable yet' };
       }
       return { ok: true, ...snap };
     }
-    if (name === 'start_starnet_task') {
+    if (name === 'start_eyehold_task') {
       const instruction = String((args && args.instruction) || '').trim();
       if (!instruction) return { ok: false, error: 'no instruction was given' };
       const dispatch = (typeof Chat !== 'undefined') && (Chat.sendOrQueue || Chat.send);
@@ -1414,7 +1414,7 @@ const VoiceLive = (() => {
         return { ok: false, error: String((error && error.message) || error) };
       }
     }
-    if (name === 'interrupt_starnet_task') {
+    if (name === 'interrupt_eyehold_task') {
       const stop = (typeof Chat !== 'undefined') && (Chat.stopActive || Chat.abort);
       if (!stop) return { ok: false, error: 'nothing to interrupt' };
       if (typeof Chat.isBusy === 'function' && !Chat.isBusy()) return { ok: true, interrupted: false, note: 'nothing was running' };

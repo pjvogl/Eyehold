@@ -11,18 +11,18 @@ import { providerKeyFromEnv } from './lib/provider-env.mjs';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const key = providerKeyFromEnv();
 if (!key) {
-  console.error('[phase5-workload] missing live key: set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY');
+  console.error('[phase5-workload] missing live key: set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY');
   process.exit(2);
 }
 
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE5_WORKLOAD_DIR || join(ROOT, '.dogfood', 'phase5-workload-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE5_WORKLOAD_DIR || join(ROOT, '.dogfood', 'phase5-workload-' + STAMP));
 const SCRATCH = join(OUT, 'workspace');
 const PROFILE = join(OUT, 'profile');
-const PORT = String(process.env.STARNET_PHASE5_WORKLOAD_PORT || 8955);
-const CDP_PORT = Number(process.env.STARNET_PHASE5_WORKLOAD_CDP || 9455);
+const PORT = String(process.env.EYEHOLD_PHASE5_WORKLOAD_PORT || 8955);
+const CDP_PORT = Number(process.env.EYEHOLD_PHASE5_WORKLOAD_CDP || 9455);
 const APP_URL = 'http://127.0.0.1:' + PORT + '/';
-const MODEL = process.env.SKYNET_SMOKE_MODEL || process.env.STARNET_SMOKE_MODEL || process.env.SKYNET_DEFAULT_MODEL || process.env.STARNET_DEFAULT_MODEL || DEFAULT_MODEL;
+const MODEL = process.env.SKYNET_SMOKE_MODEL || process.env.EYEHOLD_SMOKE_MODEL || process.env.SKYNET_DEFAULT_MODEL || process.env.EYEHOLD_DEFAULT_MODEL || DEFAULT_MODEL;
 const evidenceFile = join(ROOT, '.dogfood', 'phase5-evidence.json');
 const PROOF_PROPS = ['war_intelcab', 'gigs_servercart', 'workbench', 'comms_dish'];
 const REQUIRED_CAPS = ['cabinet', 'notebook', 'workbench', 'dish'];
@@ -69,7 +69,7 @@ async function waitExpr(cdp, expr, tries = 40, delay = 250) {
   return false;
 }
 async function api(cdp, path, init = {}) {
-  const expr = `(() => fetch(${J(path)}, Object.assign({ headers: Object.assign({ 'X-StarNet-Token': window.__STARNET_API_TOKEN__ || '' }, ${(J(init.headers || {}))}) }, ${J(init)})).then(async r => {
+  const expr = `(() => fetch(${J(path)}, Object.assign({ headers: Object.assign({ 'X-Eyehold-Token': window.__EYEHOLD_API_TOKEN__ || '' }, ${(J(init.headers || {}))}) }, ${J(init)})).then(async r => {
     const text = await r.text();
     let json = null; try { json = JSON.parse(text); } catch (_) {}
     return { status: r.status, ok: r.ok, json, text };
@@ -148,7 +148,7 @@ async function boot({ preserve = false } = {}) {
   if (await isUp(APP_URL)) throw new Error('proof port already in use: ' + PORT);
   // Proof runs are synthetic-only too. A QA script must never quietly widen the exact
   // physical-input authority production denies.
-  const env = { STARNET_COMPUTER_DRIVER: '0', STARNET_BROWSER_HEADLESS: '1' };
+  const env = { EYEHOLD_COMPUTER_DRIVER: '0', EYEHOLD_BROWSER_HEADLESS: '1' };
   const sidecar = bootSeededSidecar({ port: PORT, scratchDir: SCRATCH, key, model: MODEL, fullAccess: true, env });
   if (!(await waitUp(APP_URL))) throw new Error('sidecar failed to boot on :' + PORT);
   return sidecar;
@@ -207,7 +207,7 @@ async function main() {
       'Do not use web_search or web_fetch as a substitute for browser.navigate and browser.get_text.',
       'The Markdown file must include these exact lines:',
       '# Phase 5 the reference harness Workload',
-      'verdict: live StarNet workload proof',
+      'verdict: live Eyehold workload proof',
       'browser: example.com text captured',
       'input: synthetic-only (physical driver disabled)',
       'shell: live command attempted',

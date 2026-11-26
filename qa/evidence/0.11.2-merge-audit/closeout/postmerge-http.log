@@ -1,9 +1,9 @@
 
-> starnet-harness@0.11.1 test:http
+> eyehold-harness@0.11.1 test:http
 > node scripts/timeout.mjs --label test:http --timeout=1200000 -- npm run test:http:raw
 
 
-> starnet-harness@0.11.1 test:http:raw
+> eyehold-harness@0.11.1 test:http:raw
 > node scripts/run-test-list.mjs test/http.list
 
 provider-recovery.e2e: OK (15 assertions)

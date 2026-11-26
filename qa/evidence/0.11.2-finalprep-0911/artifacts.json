@@ -12,7 +12,7 @@
     "executableSize": 17864192
   },
   "installer": {
-    "path": ".dogfood/finalprep/canary-final/feed/StarNet Canary_0.11.2_x64-setup.exe",
+    "path": ".dogfood/finalprep/canary-final/feed/Eyehold Canary_0.11.2_x64-setup.exe",
     "sha256": "e8348e57cc053a905756e2d7ae4f4f3c5e050ad4d9960d0e8a9550200306ccc2",
     "bytes": 129819734
   },

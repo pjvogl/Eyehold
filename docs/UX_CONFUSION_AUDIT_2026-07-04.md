@@ -1,4 +1,4 @@
-# StarNet UX Confusion Audit — 2026-07-04
+# Eyehold UX Confusion Audit — 2026-07-04
 
 Walkthrough of every major user path, focused on where a **beginner** (the product's target
 user — less technical than a reference-harness user) gets confused, stuck, or loses trust. Produced by
@@ -15,7 +15,7 @@ These are the patterns that repeat across every path. Fixing a theme fixes ten s
 
 ### Theme 1: The jargon wall
 
-The app speaks fluent StarNet at users who have been here for zero minutes. Every path is
+The app speaks fluent Eyehold at users who have been here for zero minutes. Every path is
 gated by at least one unexplained term:
 
 | Term | Where a beginner first hits it | Ref |

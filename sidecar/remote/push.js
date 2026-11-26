@@ -75,7 +75,7 @@ function makePush(deps) {
   const now = deps.now;
   if (typeof now !== 'function') throw new Error('makePush needs an injected clock (deps.now)');
   const doFetch = deps.fetch;
-  const subject = deps.subject || 'https://starnetos.com';
+  const subject = deps.subject || 'https://eyehold.com';
   const extraHosts = Array.isArray(deps.extraHosts) ? deps.extraHosts.map(h => String(h).trim().toLowerCase()).filter(Boolean) : [];
   let state = null;
 
@@ -172,7 +172,7 @@ function makePush(deps) {
 
   async function send(deviceIds, msg) {
     const m = msg || {};
-    const payload = JSON.stringify({ title: String(m.title || 'StarNet').slice(0, 80), body: String(m.body || '').slice(0, 240),
+    const payload = JSON.stringify({ title: String(m.title || 'Eyehold').slice(0, 80), body: String(m.body || '').slice(0, 240),
       tag: String(m.tag || '').slice(0, 80), url: String(m.url || '').slice(0, 200) });
     if (Buffer.byteLength(payload) > MAX_PAYLOAD) return [];
     const ids = (Array.isArray(deviceIds) ? deviceIds : subscribed()).filter(has);

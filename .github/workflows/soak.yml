@@ -9,7 +9,7 @@
 #
 # WHY CI: the attended packaged-desktop soak owns the dev box for 15–48h and has no machine verdict
 # (the first v0.10.0 soak failed after ~15h with nothing to read). This runs anywhere, any length, and
-# writes soak-receipt.json (schema starnet.soak-receipt.v1) + SUMMARY.md. It does NOT replace the
+# writes soak-receipt.json (schema eyehold.soak-receipt.v1) + SUMMARY.md. It does NOT replace the
 # attended packaged soak (Tauri shell, WebView2, installer, real providers stay out of reach here) —
 # it is the mandatory machine verdict that runs BEFORE the human spends desktop hours.
 #

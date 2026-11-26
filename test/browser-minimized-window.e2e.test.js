@@ -29,7 +29,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const server = http.createServer((q, r) => { r.writeHead(200, { 'Content-Type': 'text/html' }); r.end('<!doctype html><body style="margin:0"><input id="f" style="position:absolute;left:50px;top:50px;width:400px;height:40px;font-size:20px"></body>'); });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/';
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-minimized-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-minimized-'));
   const d = T.makeCdpDriver({ chrome: full.path, headed: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir, timeoutMs: 20000, env: {} });
   d.allowLocal(base);
   let browser = null;

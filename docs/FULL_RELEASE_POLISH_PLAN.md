@@ -1,4 +1,4 @@
-# StarNet — Full-Release Polish Plan (2026-07-02)
+# Eyehold — Full-Release Polish Plan (2026-07-02)
 
 > The "fill in the walls, add the roof" plan: every layer verified against CODE (not stale
 > plan docs) by a 4-agent audit on trunk @95325fc. Goal: pristine full-release condition —
@@ -31,7 +31,7 @@
 |---|------|--------|--------|
 | P0-1 | Guardian back to GREEN | Vision-check the 12 golden-diff frames against the palette-sweep intent; re-bake goldens for accepted changes; investigate the 2 non-golden findings; close ledger entries | S |
 | P0-2 | zones.test → test:fast | Add `node test/zones.test.js` to `test:fast:raw` chain in package.json (long-standing task chip) | XS |
-| P0-3 | Delete 4 noise branches | `agent/starnet-api-gate` (superseded), `agent/starnet-tests-tauri` (obsolete WIP), `agent/side-priority` + `agent/starnet-release-gate` (doc-only) — after a 30-sec eyeball each | XS |
+| P0-3 | Delete 4 noise branches | `agent/eyehold-api-gate` (superseded), `agent/eyehold-tests-tauri` (obsolete WIP), `agent/side-priority` + `agent/eyehold-release-gate` (doc-only) — after a 30-sec eyeball each | XS |
 
 ## P1 — Land the stranded branches (the "walls")
 
@@ -49,10 +49,10 @@ Order (re-verify each before merging; demote to DELETE if trunk already has it):
 - **Tier 2 — features:** `slash-plan1..plan5-6` (ATOMIC series — merge in order, never
   cherry-pick), `skill-builder-gap`, `quick-model-selector` (check vs shipped P0-3 model
   chain), `prop-sprite-templates`.
-- **Tier 3 — hardening:** `starnet-memory-consent`, `starnet-hardening-5-6-memory-consent`,
-  `starnet-memory-loop`, `starnet-hardening-1-2-api-gate`,
-  `starnet-hardening-3-4-remote-files`, `starnet-remote-files`,
-  `starnet-hardening-7-8-tests-tauri`.
+- **Tier 3 — hardening:** `eyehold-memory-consent`, `eyehold-hardening-5-6-memory-consent`,
+  `eyehold-memory-loop`, `eyehold-hardening-1-2-api-gate`,
+  `eyehold-hardening-3-4-remote-files`, `eyehold-remote-files`,
+  `eyehold-hardening-7-8-tests-tauri`.
 - **Tier 4 — polish utilities:** `work-visibility` (fresh 07-01), `workstreams-sessions-ui`,
   `routine-run-now`, `cron-staylive`, `commission-redux` (verify test coverage),
   `ui-number-format`, `memory-cortex` (1-liner).
@@ -89,7 +89,7 @@ headline + BYOK secondary):
 
 | # | Item | Detail |
 |---|------|--------|
-| P4-1 | Rename debt | ✅ DONE (safe scope, merged 2026-07-02): launch.json names + main.rs user-facing strings. **DEFERRED TO 1.0 (do together, verified risky):** (1) Tauri identifier `ai.skynet.harness` — changes Windows app identity/AppData/updater continuity, needs appdata migrator + updater re-pin; (2) Cargo name `skynet-desktop` — installed exe is `StarNet\skynet-desktop.exe`, passive update shipping a differently-named exe orphans the old one + breaks shortcuts (t0 test proves the naming); (3) `~/Skynet/workspaces` read-forward fallbacks (guarded by desktop-workspace-migration.test) — removable only after installed base migrates. All `SKYNET_*` env/header/localStorage shims stay dual-accept |
+| P4-1 | Rename debt | ✅ DONE (safe scope, merged 2026-07-02): launch.json names + main.rs user-facing strings. **DEFERRED TO 1.0 (do together, verified risky):** (1) Tauri identifier `ai.skynet.harness` — changes Windows app identity/AppData/updater continuity, needs appdata migrator + updater re-pin; (2) Cargo name `skynet-desktop` — installed exe is `Eyehold\skynet-desktop.exe`, passive update shipping a differently-named exe orphans the old one + breaks shortcuts (t0 test proves the naming); (3) `~/Skynet/workspaces` read-forward fallbacks (guarded by desktop-workspace-migration.test) — removable only after installed base migrates. All `SKYNET_*` env/header/localStorage shims stay dual-accept |
 | P4-2 | v0.1.3 disposition | Built+signed+staged in release/. Attended playtest (gate 5) then upload (gate 7) — OR skip upload and cut v0.1.4 after P0-P2, one release with the polish in it |
 | P4-3 | G5 spectacle | Postcard/clip export (GTM growth engine per thesis). Design + build after P2; 20-30h |
 | P4-4 | Full-gate re-run | FULL `npm test` + shoot + golden + live-LLM smoke + fresh-install t0 on the final trunk before cutting the release build |
@@ -109,14 +109,14 @@ bulk (roughly a week of parallel lanes); P3 needs Andrew's demo-mode fork decisi
 | Phase | Status |
 |-------|--------|
 | P0 | ✅ DONE 2026-07-02 — Guardian findings vision-checked+dismissed, goldens superseded by newer parallel re-bless, zones.test chained (8b964a7); branch deletions pending Andrew's confirm |
-| P1 | ◐ ~70% — MERGED: prop-sprite-templates, hardening-7-8/1-2/3-4, sidecar-watchdog (cron-staylive salvage), memory-cortex ('full' contract fix), work-visibility, meeseeks proof harness. SUPERSEDED (verified in code, delete): quick-model-selector, commission-redux, routine-run-now, starnet-remote-files, 3 memory branches, workstreams-sessions-ui, ui-number-format (re-done fresh), parity-finish (MCP stdio on trunk), starnet-api-gate, starnet-tests-tauri. IN LANE (p1-integration): skill-builder-gap, slash-plan1..5-6, cortex-hermes-plus salvage, hermes-parity-loop verdict |
+| P1 | ◐ ~70% — MERGED: prop-sprite-templates, hardening-7-8/1-2/3-4, sidecar-watchdog (cron-staylive salvage), memory-cortex ('full' contract fix), work-visibility, meeseeks proof harness. SUPERSEDED (verified in code, delete): quick-model-selector, commission-redux, routine-run-now, eyehold-remote-files, 3 memory branches, workstreams-sessions-ui, ui-number-format (re-done fresh), parity-finish (MCP stdio on trunk), eyehold-api-gate, eyehold-tests-tauri. IN LANE (p1-integration): skill-builder-gap, slash-plan1..5-6, cortex-hermes-plus salvage, hermes-parity-loop verdict |
 | P2 | ◐ — A/B/C verified ALREADY SHIPPED (stale audit rows); D turn-refund MERGED (parity 11/11); E Discord full-duplex MERGED; F settings-P1 lane running |
 | P3 | ✅ DONE 2026-07-02 — ChatGPT-no-key default funnel + config-gated credits/STORE merged (scripted demo rejected as off-thesis) |
-| P4 | ✅ BUILD CUT — v0.1.4 built, signed (pubkey-matched), staged in release/ with manifest (t1/t3/t4/t5 gates all green on the staged artifacts); safe renames merged (risky trio deferred to 1.0, table above); FULL GATES GREEN on final trunk (npm test exit 0, shoot 17/17, GOLDEN PASS). Remaining = Andrew: attended playtest (~10 min, npm start) + upload release/StarNet_0.1.4_x64-setup.exe and release/latest.json to /desktop/ on updates.starnet.app. Deferred lanes: desktop-release-kit+macOS, session_search |
+| P4 | ✅ BUILD CUT — v0.1.4 built, signed (pubkey-matched), staged in release/ with manifest (t1/t3/t4/t5 gates all green on the staged artifacts); safe renames merged (risky trio deferred to 1.0, table above); FULL GATES GREEN on final trunk (npm test exit 0, shoot 17/17, GOLDEN PASS). Remaining = Andrew: attended playtest (~10 min, npm start) + upload release/Eyehold_0.1.4_x64-setup.exe and release/latest.json to /desktop/ on updates.eyehold.app. Deferred lanes: desktop-release-kit+macOS, session_search |
 
 **Branch cleanup remaining (needs Andrew to run or approve by name — permission-gated):**
 ```
-git branch -D agent/starnet-api-gate agent/starnet-tests-tauri agent/quick-model-selector agent/commission-redux agent/workstreams-sessions-ui agent/ui-number-format agent/cron-staylive agent/parity-finish agent/starnet-memory-consent agent/starnet-hardening-5-6-memory-consent agent/starnet-memory-loop agent/routine-run-now agent/starnet-remote-files agent/skill-builder-gap agent/slash-plan1 agent/slash-plan2 agent/slash-plan3 agent/slash-plan4 agent/slash-plan5-6
+git branch -D agent/eyehold-api-gate agent/eyehold-tests-tauri agent/quick-model-selector agent/commission-redux agent/workstreams-sessions-ui agent/ui-number-format agent/cron-staylive agent/parity-finish agent/eyehold-memory-consent agent/eyehold-hardening-5-6-memory-consent agent/eyehold-memory-loop agent/routine-run-now agent/eyehold-remote-files agent/skill-builder-gap agent/slash-plan1 agent/slash-plan2 agent/slash-plan3 agent/slash-plan4 agent/slash-plan5-6
 ```
 (each verified superseded-or-merged in this session's campaign; worktrees under gen-trees\ for these can go too: `remove-agent-tree.ps1 <name> -DeleteBranch`. KEEP: agent/cortex-hermes-plus — session_search salvage pending; agent/hermes-parity-loop — release-kit/macOS salvage pending.)
 

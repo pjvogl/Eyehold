@@ -9,7 +9,7 @@ focused campaign after the fast gate. The fast gate checks that this wiring rema
 ## Complete local execution journey
 
 `test/customer-journey.e2e.test.js` drives the production sidecar through five provider paths:
-managed StarNet, OpenRouter BYOK, custom compatible BYOK, native Gemini and Codex OAuth.
+managed Eyehold, OpenRouter BYOK, custom compatible BYOK, native Gemini and Codex OAuth.
 For each, save a roster/model and routine, connect using the real desktop key push seam
 (managed link and Codex token stores are fixtures), execute a sample, direct task and routine,
 perform a real filesystem tool call, send its result to a second inference, and require final

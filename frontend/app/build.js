@@ -1,4 +1,4 @@
-/* STARNET — build.js : the diegetic full-screen BUILD MODE (build) mode.
+/* EYEHOLD — build.js : the diegetic full-screen BUILD MODE (build) mode.
 
    Toggled from the dock. Dims the live sim and drops the Commander into an in-fiction
    station-editor over the SAME procedural art: pan/zoom camera, phosphor build grid,
@@ -84,7 +84,7 @@ const Build = (() => {
     });
   }
 
-  const SEEN_KEY = 'starnet.refit.seen';
+  const SEEN_KEY = 'eyehold.refit.seen';
   const PREVIEW_LABEL = '▶ TEST';   // 2026-09-28: ONE test control (the name kept: the guide and Field Manual quote it) — it opens the line's TEST view (WATCH IT free · STEP THROUGH · RUN ONE REAL JOB) and plays the free walkthrough   // the top-bar preview button — the guide and Field Manual name it by this constant
   // machines the BELT tool connects with two clicks (mirrors worldmodel CONNECTABLE)
   const CONNECT_TYPES = { intake: 1, bay: 1, outbox: 1, filter: 1, splitter: 1, merger: 1, joiner: 1, loop: 1 };
@@ -149,7 +149,7 @@ const Build = (() => {
      Commander who was building a line last time comes back to the Conveyors tab instead of the furniture catalog. Only that
      tab is remembered: every other session still starts on Props, where the tutorial expects it. */
   let pendingGroup = null;
-  const LAST_GROUP_KEY = 'starnet.refit.lastGroup';
+  const LAST_GROUP_KEY = 'eyehold.refit.lastGroup';
   const readLastGroup = () => { try { return localStorage.getItem(LAST_GROUP_KEY) === 'workflow' ? 'workflow' : null; } catch (e) { return null; } };
   const writeLastGroup = g => { try { localStorage.setItem(LAST_GROUP_KEY, g === 'workflow' ? 'workflow' : 'props'); } catch (e) {} };
   const propShelfScroll = new Map();
@@ -589,8 +589,8 @@ const Build = (() => {
     if (f) f.focus();
   }
 
-  /* MAKE A PROP (player-made props, userprops.js): type any object, StarNet draws it in the station's style on
-     StarNet credits, and it joins the catalog under MADE BY YOU as decoration. The status line reads ONLY the job
+  /* MAKE A PROP (player-made props, userprops.js): type any object, Eyehold draws it in the station's style on
+     Eyehold credits, and it joins the catalog under MADE BY YOU as decoration. The status line reads ONLY the job
      state the station reports (step, try n of 3, the cost the cloud actually billed); the job keeps running in
      the station if BUILD MODE closes, and this panel picks it back up on reopen. */
   let makeJob = null, makeMsg = null, makeWatching = '';
@@ -602,8 +602,8 @@ const Build = (() => {
     if (makeMsg) return makeMsg;
     if (!makeJob) {
       const bal = makeCredits && makeCredits.linked ? makeCredits.balanceUsd : null;
-      if (bal != null && bal > 0 && bal < MAKE_PRICE) return { text: 'StarNet credits \u00b7 $' + bal.toFixed(2) + ' left \u00b7 not enough to make a prop (about $0.35)', tone: 'bad', door: true };
-      return { text: (bal != null && bal > 0 ? 'StarNet credits \u00b7 $' + bal.toFixed(2) + ' left' : 'StarNet credits') + ' \u00b7 preview first (about 5\u00a2), then make it (about $0.35; a side view about $0.30)', tone: '' };
+      if (bal != null && bal > 0 && bal < MAKE_PRICE) return { text: 'Eyehold credits \u00b7 $' + bal.toFixed(2) + ' left \u00b7 not enough to make a prop (about $0.35)', tone: 'bad', door: true };
+      return { text: (bal != null && bal > 0 ? 'Eyehold credits \u00b7 $' + bal.toFixed(2) + ' left' : 'Eyehold credits') + ' \u00b7 preview first (about 5\u00a2), then make it (about $0.35; a side view about $0.30)', tone: '' };
     }
     const j = makeJob, spent = j.costUsd > 0 ? ' \u00b7 $' + j.costUsd.toFixed(2) + ' so far' : '';
     if (j.status === 'done' && j.kind === 'side') return { text: 'Side view made \u00b7 cost $' + (Number(j.costUsd) || 0).toFixed(2) + (j.costPending ? ' (final cost settling)' : '') + ' \u00b7 press R to turn it', tone: 'ok' };
@@ -633,8 +633,8 @@ const Build = (() => {
     if (cta) {
       cta.hidden = !need;
       if (need) {
-        cta.querySelector('span').textContent = need === 'link' ? 'Props are made with StarNet credits: about 5\u00a2 to preview, 35\u00a2 to make.' : 'You\u2019re out of StarNet credits. A prop is about 35\u00a2.';
-        cta.querySelector('button').textContent = need === 'link' ? 'GET STARNET CREDITS' : 'TOP UP CREDITS';
+        cta.querySelector('span').textContent = need === 'link' ? 'Props are made with Eyehold credits: about 5\u00a2 to preview, 35\u00a2 to make.' : 'You\u2019re out of Eyehold credits. A prop is about 35\u00a2.';
+        cta.querySelector('button').textContent = need === 'link' ? 'GET EYEHOLD CREDITS' : 'TOP UP CREDITS';
       }
     }
     if (door) door.hidden = !!need || !((makeMsg && makeMsg.door) || (!makeMsg && st.door));   // the card above already carries the door
@@ -796,10 +796,10 @@ const Build = (() => {
     const door = typeof Friendly !== 'undefined' && Friendly.actionButton && Friendly.actionButton({ action: 'store' });
     if (!door || !door.run) return;
     door.run();
-    // land ON the StarNet card (PROVIDERS opens at the top of a long list); it renders after its own credits read
+    // land ON the Eyehold card (PROVIDERS opens at the top of a long list); it renders after its own credits read
     let tries = 0;
     const seek = () => {
-      const card = document.querySelector('.prov-card[data-provider="starnet"]');
+      const card = document.querySelector('.prov-card[data-provider="eyehold"]');
       if (card && card.offsetParent) { try { card.scrollIntoView({ block: 'center' }); } catch (_) {} return; }
       if (++tries < 12) setTimeout(seek, 250);
     };
@@ -814,11 +814,11 @@ const Build = (() => {
       if (j && !makeJob) watchMakeJob(j);
       else if (!makeJob && !makeMsg && r && Array.isArray(r.recent)) {
         let seen = [];
-        try { seen = JSON.parse(localStorage.getItem('starnet.userprops.seen') || '[]'); } catch (_) { seen = []; }
+        try { seen = JSON.parse(localStorage.getItem('eyehold.userprops.seen') || '[]'); } catch (_) { seen = []; }
         const miss = r.recent.find((x) => x && x.status === 'failed' && !seen.includes(x.id));
         if (miss) {
           makeMsg = { text: 'While BUILD MODE was closed: ' + (miss.noun || 'a prop') + ' \u2014 ' + ((miss.error && miss.error.message) || 'it could not be made.'), tone: 'bad' };
-          try { localStorage.setItem('starnet.userprops.seen', JSON.stringify(seen.concat(r.recent.map((x) => x.id)).slice(-50))); } catch (_) { /* per-viewer convenience only */ }
+          try { localStorage.setItem('eyehold.userprops.seen', JSON.stringify(seen.concat(r.recent.map((x) => x.id)).slice(-50))); } catch (_) { /* per-viewer convenience only */ }
         }
       }
       paintMakeStatus();
@@ -876,13 +876,13 @@ const Build = (() => {
   }
   function makePropPanel() {
     const box = document.createElement('section'); box.className = 'refit-makeprop'; box.setAttribute('aria-label', 'Make a prop');
-    box.innerHTML = '<div class="refit-makeprop-head"><b>MAKE A PROP</b><small>Type any object. StarNet draws it in the station\u2019s style.</small></div>' +
+    box.innerHTML = '<div class="refit-makeprop-head"><b>MAKE A PROP</b><small>Type any object. Eyehold draws it in the station\u2019s style.</small></div>' +
       '<div class="refit-makeprop-cta" id="refit-makeprop-cta" hidden><span></span><button type="button" class="bb sm" id="refit-makeprop-cta-go"></button></div>' +
       '<div class="refit-makeprop-row"><input type="text" class="refit-input refit-searchfield" id="refit-makeprop-input" maxlength="60" spellcheck="false" autocomplete="off" aria-label="Object to make" placeholder="e.g. a grandfather clock">' +
       '<button type="button" class="bb sm" id="refit-makeprop-go">PREVIEW</button></div>' +
       '<div class="refit-makeprop-preview" id="refit-makeprop-preview" hidden></div>' +
       '<div class="refit-makeprop-foot"><span class="refit-makeprop-status" id="refit-makeprop-status" role="status" aria-live="polite"></span>' +
-      '<button type="button" class="bb sm" id="refit-makeprop-door" hidden>\u25b8 STARNET CREDITS</button></div>' +
+      '<button type="button" class="bb sm" id="refit-makeprop-door" hidden>\u25b8 EYEHOLD CREDITS</button></div>' +
       '<div class="refit-makeprop-size" id="refit-makeprop-size" hidden><span class="refit-makeprop-sizelbl">SIZE</span><button type="button" class="bb sm" data-size="-1" aria-label="Smaller">\u2212</button><b class="refit-makeprop-sizeval">100%</b><button type="button" class="bb sm" data-size="1" aria-label="Bigger">+</button></div>' +
       '<div class="refit-makeprop-actions"><button type="button" class="bb sm refit-makeprop-sidebtn" id="refit-makeprop-side" hidden>\u21bb MAKE SIDE VIEW</button>' +
       '<button type="button" class="bb sm" id="refit-makeprop-del" hidden>\u2715 DELETE</button></div>';
@@ -1157,7 +1157,7 @@ const Build = (() => {
     if (head) {
       head.setAttribute('role', 'button'); head.tabIndex = 0;
       head.setAttribute('aria-expanded', String(open));
-      head.dataset.tip = open ? 'Close MAKE A PROP' : 'Make your own prop: type any object, StarNet draws it in the station\u2019s style (StarNet credits)';
+      head.dataset.tip = open ? 'Close MAKE A PROP' : 'Make your own prop: type any object, Eyehold draws it in the station\u2019s style (Eyehold credits)';
       const toggle = () => {
         if (busy) return;   // a running job, a preview or a message keeps it open
         makeOpen = !box.classList.contains('is-compact') ? false : true;
@@ -1295,7 +1295,7 @@ const Build = (() => {
       if (propSection === 'decoration' && typeof UserProps !== 'undefined') browser.append(makePropMount());
       else if (typeof UserProps !== 'undefined') {   // the door to MAKE A PROP from the other shelves: one click to FURNITURE with the field focused
         const door = document.createElement('button'); door.type = 'button'; door.className = 'bb sm refit-makeprop-door';
-        door.innerHTML = '<b>MAKE A PROP</b><small>Type any object. StarNet draws it in the station\u2019s style.</small>';
+        door.innerHTML = '<b>MAKE A PROP</b><small>Type any object. Eyehold draws it in the station\u2019s style.</small>';
         door.onclick = () => { makeOpen = true; chooseLibrarySection('decoration'); setTimeout(() => { const f = root && root.querySelector('#refit-makeprop-input'); if (f) f.focus(); }, 0); sfx('click'); };
         browser.append(door);
       }
@@ -2254,7 +2254,7 @@ const Build = (() => {
       const c = Pipeline.lineComponents(st.projectGeometry()).find(x => x.props.indexOf(propId) >= 0);
       if (!c) return null;
       let text = '';
-      try { const o = JSON.parse(localStorage.getItem('starnet.refit.wftests.' + stationKeyOf(st)) || '{}'); const j = o && o.__jobs && o.__jobs[c.key]; if (typeof j === 'string') text = j.trim().slice(0, 2000); } catch (e) {}
+      try { const o = JSON.parse(localStorage.getItem('eyehold.refit.wftests.' + stationKeyOf(st)) || '{}'); const j = o && o.__jobs && o.__jobs[c.key]; if (typeof j === 'string') text = j.trim().slice(0, 2000); } catch (e) {}
       return { line: c.key, text };
     } catch (e) { return null; }
   }
@@ -2684,7 +2684,7 @@ const Build = (() => {
       const setup = document.createElement('button'); setup.className='bb'; setup.textContent='SET UP ' + String(current.title).toUpperCase();
       setup.onclick=openPresetExample; g.querySelector('.station-build-actions').prepend(setup);
     }
-    const backupKey = 'starnet.layoutBackup.' + station.doc().meta.createdAt;
+    const backupKey = 'eyehold.layoutBackup.' + station.doc().meta.createdAt;
     let selected = null, armed = false;
     const backupButton = g.querySelector('[data-restore-build]');
     try { backupButton.disabled = !localStorage.getItem(backupKey); } catch (_) { backupButton.disabled = true; }
@@ -3846,7 +3846,7 @@ const Build = (() => {
     try { const d = st && st.doc && st.doc(); if (d && d.meta && d.meta.createdAt) k = String(d.meta.createdAt); } catch (e) {}
     return k;
   }
-  const RIDE_KEY = () => 'starnet.refit.firstride.' + stationKeyOf(station);
+  const RIDE_KEY = () => 'eyehold.refit.firstride.' + stationKeyOf(station);
   function rideSeen() { try { return !!localStorage.getItem(RIDE_KEY()); } catch (e) { return true; } }   // broken storage → never risk a repeat
   function markRide() { try { localStorage.setItem(RIDE_KEY(), '1'); } catch (e) {} }
   let ridePending = false, rideTimer = 0, rideAgentId = null, ridePrevReach = null;
@@ -3938,7 +3938,7 @@ const Build = (() => {
      product crate delivers (world.js's delivery seam calls noteLineDelivered — event-driven).
      Line identity + membership come from Pipeline.lineComponents (key = smallest member prop id,
      stable in the save); retirement/dismissal persist in localStorage beside the first-ride flag. */
-  const FIN_KEY = st => 'starnet.refit.finline.' + stationKeyOf(st || station);
+  const FIN_KEY = st => 'eyehold.refit.finline.' + stationKeyOf(st || station);
   function finRead(st) {
     try { const o = JSON.parse(localStorage.getItem(FIN_KEY(st)) || '{}'); return (o && typeof o === 'object') ? o : {}; }
     catch (e) { return {}; }
@@ -3957,7 +3957,7 @@ const Build = (() => {
      probe is forbidden: when the seam exists a POST IS the paid sample dispatch. Fails SAFE: on any
      doubt the button renders disabled ("coming online soon") and no request can spend anything. */
   let finSample = null;   // null = unprobed/in flight · false = absent · true = present
-  const finApi = p => ((typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : '') + p;
+  const finApi = p => ((typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : '') + p;
   function probeSampleSeam() {
     if (finSample !== null || typeof fetch === 'undefined') return;
     try {
@@ -4013,7 +4013,7 @@ const Build = (() => {
      brings it back; ✕ still dismisses it forever for Commanders who know the drill. */
   // PER STATION, like every other one-shot here (stationKeyOf) — this shipped with no suffix at all, so
   // dismissing the card on one station silently dismissed it on every station the Commander ever builds.
-  const ORDERS_KEY = () => 'starnet.refit.orders.dis.' + stationKeyOf(station);
+  const ORDERS_KEY = () => 'eyehold.refit.orders.dis.' + stationKeyOf(station);
   const ordersDismissed = () => { try { return !!localStorage.getItem(ORDERS_KEY()); } catch (e) { return false; } };
   let ordersSeenDone = null;   // which steps were already done last render (so a NEW completion can chime)
 
@@ -7801,7 +7801,7 @@ const Build = (() => {
 
   function sfx(n) { if (typeof SFX !== 'undefined' && SFX[n]) SFX[n](); }
 
-  // DEV-ONLY test hook (gated on window.__STARNET_DEV__) — lets the audit harness prove the
+  // DEV-ONLY test hook (gated on window.__EYEHOLD_DEV__) — lets the audit harness prove the
   // object=capability moat (place a dish → web cap appears) by placing through the REAL
   // station.addProp path at a validated tile, instead of simulating fragile canvas-drag pixel
   // coordinates. Never attached in a shipped build (the dev flag is never set there).
@@ -7998,11 +7998,11 @@ const Build = (() => {
   // preview and thumbnails; selection, orientation and station data stay intact.
   if (typeof window !== 'undefined' && window.addEventListener) {
     // a made prop joined (or its art arrived): repaint the catalog so MADE BY YOU and its tile appear
-    window.addEventListener('starnet:userprops-changed', () => {
+    window.addEventListener('eyehold:userprops-changed', () => {
       if (!root || !(tool === 'prop' || (tool === 'select' && buildGroup === 'props'))) return;
       renderPalette();
     });
-    window.addEventListener('starnet:prop-art-ready', () => {
+    window.addEventListener('eyehold:prop-art-ready', () => {
       mountOrder = null; // Loaded support geometry can change host-relative sorting without an edit.
       if (!root) return;
       const host = root.querySelector('#refit-selected-prop');
@@ -8043,7 +8043,7 @@ const Build = (() => {
     // the WORKFLOWS window speaks the shelf's own words and shows the shelf's own art (one name per line, never a second one)
     lineWords: () => ({ plain: LINE_PLAIN, purpose: LINE_PURPOSE }), lineSchematic: bp => lineSchematic(bp), machineStill: t => machineStill(t),
     nagWhy: valWhy };   // nagLabel: the floor's own nag copy for a compiler code (ROUTINES RUN NOW refusal reads it); nagWhy: the full fix sentence the hover card + Workflow panel say (station.layout reads it)
-  if (typeof window !== 'undefined' && window.__STARNET_DEV__) api.__test__ = __test__;
+  if (typeof window !== 'undefined' && window.__EYEHOLD_DEV__) api.__test__ = __test__;
   return api;
 })();
 

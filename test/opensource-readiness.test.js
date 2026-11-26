@@ -18,8 +18,8 @@ assert.equal(lock.version, pkg.version, 'package-lock top-level version must agr
 assert.equal(lock.packages[''].version, pkg.version, 'package-lock root package version must agree');
 assert.equal(pkg.license, 'MIT');
 assert.equal(pkg.private, true, 'prevent accidental npm publication; GitHub visibility is independent');
-assert.match(pkg.repository.url, /github\.com\/androoAGI\/starnet(?:\.git)?$/,
-  'repository URL must point at the renamed public source repo (starnet)');
+assert.match(pkg.repository.url, /github\.com\/Eyehold\/eyehold(?:\.git)?$/,
+  'repository URL must point at the renamed public source repo (eyehold)');
 
 for (const required of [
   'LICENSE', 'README.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md',
@@ -47,7 +47,7 @@ assert.match(workflow, /551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b
 const operatorSurface = [
   read('scripts/release-cut.mjs'),
   read('docs/RELEASE_RUNBOOK.md'),
-  read('docs/STARNET_UPDATES.md')
+  read('docs/EYEHOLD_UPDATES.md')
 ].join('\n');
 assert.doesNotMatch(operatorSurface, /source repo stays private|Source repo \(private\)/,
   'release instructions must not contradict the public-source launch');

@@ -14,7 +14,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
   const fixture = SidecarFixture.create({
     prefix: 'sk-roster-',
-    env: { OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   // PRE-SEED a LEGACY roster file: the pre-P1.1 on-disk shape with NO updatedAt and an UNKNOWN field an older
@@ -31,7 +31,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   let apiToken = '';
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const r = await fetch(B + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };
@@ -75,7 +75,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const policy = await j('POST', '/api/execution/policy', { idleCleanupMinutes: 17 });
     A.eq(policy.body.idleCleanupMinutes, 17, 'owner can persist the idle-cell cleanup policy');
     A.eq(policy.body.deletesContainers, false, 'cleanup policy explicitly promises stop-only behavior');
-    const sshSaved = await j('POST', '/api/execution/ssh', { agentId: 'agent', host: 'buildbox', user: 'andrew', port: 2222, remoteRoot: '/srv/starnet/agent', probe: false });
+    const sshSaved = await j('POST', '/api/execution/ssh', { agentId: 'agent', host: 'buildbox', user: 'andrew', port: 2222, remoteRoot: '/srv/eyehold/agent', probe: false });
     A.ok(sshSaved.body.saved && !sshSaved.body.ready, 'owner can save an offline SSH target without a fake readiness claim');
     A.eq(sshSaved.body.target.host, 'buildbox', 'saved SSH response returns only the nonsecret destination');
     const syncRefused = await j('POST', '/api/execution/sync', { agentId: 'agent', direction: 'push' });
@@ -99,7 +99,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const B2 = fixture.baseUrl;
     const tok2 = fixture.token;
     const jj = async (m, p, body) => {
-      const headers = { 'Content-Type': 'application/json' }; if (tok2) headers['X-StarNet-Token'] = tok2;
+      const headers = { 'Content-Type': 'application/json' }; if (tok2) headers['X-Eyehold-Token'] = tok2;
       const r = await fetch(B2 + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
       const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
       return { status: r.status, body: v };
@@ -146,14 +146,14 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   // failure and rolls its freshness baseline back so a later, genuinely newer-than-disk push is still accepted.
   const fault = SidecarFixture.create({
     prefix: 'sk-roster-write-fault-',
-    env: { OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
   });
   await fault.start();
   try {
     const BF = fault.baseUrl;
     const tokF = fault.token;
     const jf = async (m, p, body) => {
-      const headers = { 'Content-Type': 'application/json' }; if (tokF) headers['X-StarNet-Token'] = tokF;
+      const headers = { 'Content-Type': 'application/json' }; if (tokF) headers['X-Eyehold-Token'] = tokF;
       const r = await fetch(BF + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
       const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
       return { status: r.status, body: v };
@@ -180,14 +180,14 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   // Block the roster replace and prove the route leaves both the live agent and its recoverable files untouched.
   const deleteFault = SidecarFixture.create({
     prefix: 'sk-agent-delete-write-fault-',
-    env: { OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
   });
   await deleteFault.start();
   try {
     const BD = deleteFault.baseUrl;
     const tokD = deleteFault.token;
     const jd = async (m, p, body) => {
-      const headers = { 'Content-Type': 'application/json' }; if (tokD) headers['X-StarNet-Token'] = tokD;
+      const headers = { 'Content-Type': 'application/json' }; if (tokD) headers['X-Eyehold-Token'] = tokD;
       const r = await fetch(BD + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
       const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
       return { status: r.status, body: v };

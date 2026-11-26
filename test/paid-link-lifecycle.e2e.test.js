@@ -32,9 +32,9 @@ for (const mode of ['pairing', 'keychain-recovery']) {
   test('unlink wins over an unfinished ' + mode + ' response and survives restart', { timeout: 30000 }, async () => {
     const cloud = await cloudFixture();
     const fixture = SidecarFixture.create({ prefix: 'paid-link-race-', timeoutMs: 15000, env: {
-      STARNET_CLOUD_URL: cloud.url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-      STARNET_CREDITS_TOKEN: mode === 'keychain-recovery' ? 'fixture-device-token' : '',
-      SKYNET_PROVIDER: 'replay', STARNET_PROVIDER: 'replay'
+      EYEHOLD_CLOUD_URL: cloud.url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
+      EYEHOLD_CREDITS_TOKEN: mode === 'keychain-recovery' ? 'fixture-device-token' : '',
+      SKYNET_PROVIDER: 'replay', EYEHOLD_PROVIDER: 'replay'
     } });
     fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
     let poll;
@@ -79,7 +79,7 @@ test('an old account response cannot return its zero balance after unlink', { ti
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'paid-balance-switch-', env: {
-    STARNET_CLOUD_URL: url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: ''
+    EYEHOLD_CLOUD_URL: url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: ''
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   fs.writeFileSync(path.join(fixture.workspace, '.secrets', 'credits.json'), JSON.stringify({ url, deviceToken: 'fixture-old-token', accountId: 'old-account' }));
@@ -102,7 +102,7 @@ test('an old account response cannot return its zero balance after unlink', { ti
 test('funded link diagnostics survive restart without exposing account or token', { timeout: 30000 }, async () => {
   const cloud = await cloudFixture(); cloud.release();
   const fixture = SidecarFixture.create({ prefix: 'paid-link-receipt-', env: {
-    STARNET_CLOUD_URL: cloud.url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: ''
+    EYEHOLD_CLOUD_URL: cloud.url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: ''
   } });
   try {
     await fixture.start();
@@ -145,8 +145,8 @@ test('a late first-link balance check cannot clear a newer funded link', { timeo
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const fixture = SidecarFixture.create({ prefix: 'paid-link-replaced-', env: {
-    STARNET_CLOUD_URL: 'http://127.0.0.1:' + server.address().port,
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: ''
+    EYEHOLD_CLOUD_URL: 'http://127.0.0.1:' + server.address().port,
+    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: ''
   } });
   let first;
   try {
@@ -174,7 +174,7 @@ test('managed HTTP 400 keeps local, relay and upstream correlation through resta
   const model = 'anthropic/claude-sonnet-5';
   const server = http.createServer((req, res) => {
     if (req.url.includes('/chat/completions')) {
-      res.writeHead(400, { 'Content-Type': 'application/json', 'X-StarNet-Request-Id': 'relay-fixture-123' });
+      res.writeHead(400, { 'Content-Type': 'application/json', 'X-Eyehold-Request-Id': 'relay-fixture-123' });
       res.end(JSON.stringify({ error: { message: 'Provider returned error. '.repeat(35),
         request_id: 'relay-fixture-123', upstream_request_id: 'upstream-fixture-456',
         metadata: { raw: 'PRIVATE PROMPT MUST NOT LEAK' } } })); return;
@@ -185,14 +185,14 @@ test('managed HTTP 400 keeps local, relay and upstream correlation through resta
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'paid-error-receipt-', env: {
-    STARNET_CLOUD_URL: url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: ''
+    EYEHOLD_CLOUD_URL: url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: ''
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   fs.writeFileSync(path.join(fixture.workspace, '.secrets', 'credits.json'), JSON.stringify({ url, deviceToken: 'fixture-managed-token', accountId: 'fixture-managed-account' }));
   try {
     await fixture.start();
-    await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'paid-proof', name: 'Proof', model, provider: 'starnet' }] });
-    const run = await fixture.json('POST', '/api/run', { agentId: 'paid-proof', provider: 'starnet', model,
+    await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'paid-proof', name: 'Proof', model, provider: 'eyehold' }] });
+    const run = await fixture.json('POST', '/api/run', { agentId: 'paid-proof', provider: 'eyehold', model,
       internal: true, isTask: false, messages: [{ role: 'user', content: 'Fixture request' }] });
     assert.equal(run.status, 200, run.text);
     const events = run.text.split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line));
@@ -227,8 +227,8 @@ test('a boot self-heal that met a down cloud retries on the next credits read on
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'paid-heal-retry-', timeoutMs: 15000, env: {
-    STARNET_CLOUD_URL: url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-    STARNET_CREDITS_TOKEN: 'fixture-keychain-token', STARNET_CREDITS_HEAL_RETRY_MS: '200'
+    EYEHOLD_CLOUD_URL: url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
+    EYEHOLD_CREDITS_TOKEN: 'fixture-keychain-token', EYEHOLD_CREDITS_HEAL_RETRY_MS: '200'
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   try {
@@ -270,7 +270,7 @@ test('a pairing start survives one cloud blip, and a dead cloud is reported with
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'paid-link-start-retry-', timeoutMs: 15000, env: {
-    STARNET_CLOUD_URL: url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: ''
+    EYEHOLD_CLOUD_URL: url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: ''
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   let closed = false;

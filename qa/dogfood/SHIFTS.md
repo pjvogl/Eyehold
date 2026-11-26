@@ -1,6 +1,6 @@
 # Dogfood shift log
 
-Dated entry per dogfood shift (`loops/dogfood.md`). One agent USES StarNet like a real user and
+Dated entry per dogfood shift (`loops/dogfood.md`). One agent USES Eyehold like a real user and
 files every anomaly. Verdict line = did the station survive being used? Silence is
 indistinguishable from a dead session — an entry is written every shift, clean or not.
 

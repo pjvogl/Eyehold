@@ -80,14 +80,14 @@ const { tmpdir } = require('node:os');
   const refusedForge = independent.applyIndependentParityGrades({ tasks: parityTasks, fixtures: parityFixtures, rows: forged });
   A.ok(!refusedForge[0].outcome.passed && refusedForge[0].outcome.violations.falseDone === 1,
     'a harness-provided pass cannot override a failed host observation');
-  const parity = cmp.compareHarnesses({ tasks: parityTasks, starnetRows: parityRows, referenceRows: parityRows, contract });
+  const parity = cmp.compareHarnesses({ tasks: parityTasks, eyeholdRows: parityRows, referenceRows: parityRows, contract });
   A.ok(parity.pass, 'a fully evidenced equal comparison passes all parity gates');
-  A.eq(parity.summary.starnetPassRatePct, 100, 'StarNet pass rate is calculated from active scenarios');
+  A.eq(parity.summary.eyeholdPassRatePct, 100, 'Eyehold pass rate is calculated from active scenarios');
   A.eq(parity.summary.violations, { falseDone: 0, wrongDestination: 0, duplicateMutation: 0, authorityEscape: 0 }, 'zero-tolerance events are counted explicitly');
 
   const unsafe = JSON.parse(JSON.stringify(parityRows));
   unsafe[0].outcome.violations.falseDone = 1;
-  const refused = cmp.compareHarnesses({ tasks: parityTasks, starnetRows: unsafe, referenceRows: parityRows, contract });
+  const refused = cmp.compareHarnesses({ tasks: parityTasks, eyeholdRows: unsafe, referenceRows: parityRows, contract });
   A.ok(!refused.pass && refused.checks.some(row => row.id === 'zero-falseDone' && !row.pass),
     'one false-done event fails the release comparison even when ordinary scoring is otherwise green');
 
@@ -109,21 +109,21 @@ const { tmpdir } = require('node:os');
   A.ok(!sourceReceipt.candidateBound && sourceReceipt.limitations.some(x => /not installed-candidate proof/.test(x)),
     'a source-only receipt names its limitation instead of impersonating installed proof');
   const installedReceipt = cmp.makeReceipt({ kind: 'parity', contract, subject: {
-    commit: 'b'.repeat(40), sourceTree: { algorithm: 'git-tree', value: 'tree' }, executable: { path: 'StarNet.exe', sha256: hash },
+    commit: 'b'.repeat(40), sourceTree: { algorithm: 'git-tree', value: 'tree' }, executable: { path: 'Eyehold.exe', sha256: hash },
     provenance: { verified: true }, dirty: false
   }, result: parity });
   A.ok(installedReceipt.candidateBound, 'verified clean provenance + commit + source tree + executable hash bind a receipt to a candidate');
   const unverifiedReceipt = cmp.makeReceipt({ kind: 'parity', contract, subject: {
-    commit: 'b'.repeat(40), sourceTree: { algorithm: 'git-tree', value: 'tree' }, executable: { path: 'StarNet.exe', sha256: hash }, dirty: false
+    commit: 'b'.repeat(40), sourceTree: { algorithm: 'git-tree', value: 'tree' }, executable: { path: 'Eyehold.exe', sha256: hash }, dirty: false
   }, result: parity });
   A.ok(!unverifiedReceipt.candidateBound, 'an executable hash cannot bind itself to an unrelated source commit without verified provenance');
 
-  const temp = mkdtempSync(join(tmpdir(), 'starnet-eval-wave-a-'));
+  const temp = mkdtempSync(join(tmpdir(), 'eyehold-eval-wave-a-'));
   try {
-    const starnetFile = join(temp, 'starnet.jsonl');
+    const eyeholdFile = join(temp, 'eyehold.jsonl');
     const referenceFile = join(temp, 'reference.jsonl');
     const faultFile = join(temp, 'fault.jsonl');
-    core.writeJsonl(starnetFile, parityRows); core.writeJsonl(referenceFile, parityRows); core.writeJsonl(faultFile, faultRows);
+    core.writeJsonl(eyeholdFile, parityRows); core.writeJsonl(referenceFile, parityRows); core.writeJsonl(faultFile, faultRows);
     const contractCli = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'contract'], { cwd: root, encoding: 'utf8' });
     A.eq(contractCli.status, 0, 'contract CLI exits zero');
     A.ok(/CONTRACT PASS claims=40 classified=40/.test(contractCli.stdout), 'contract CLI prints a compact additive-scope receipt');
@@ -134,9 +134,9 @@ const { tmpdir } = require('node:os');
     const keygenCli = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'keygen', '--private', privateKey, '--public', publicKey], { cwd: root, encoding: 'utf8' });
     A.eq(keygenCli.status, 0, 'receipt key generation exits zero');
     const parityReceipt = join(temp, 'parity.json');
-    const compareCli = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'compare', '--starnet', starnetFile, '--reference', referenceFile, '--receipt', parityReceipt, '--signing-key', privateKey], { cwd: root, encoding: 'utf8' });
+    const compareCli = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'compare', '--eyehold', eyeholdFile, '--reference', referenceFile, '--receipt', parityReceipt, '--signing-key', privateKey], { cwd: root, encoding: 'utf8' });
     A.eq(compareCli.status, 0, 'parity CLI exits zero for passing evidence');
-    A.ok(/PARITY PASS StarNet=100.0%/.test(compareCli.stdout), 'parity CLI prints the scored comparison');
+    A.ok(/PARITY PASS Eyehold=100.0%/.test(compareCli.stdout), 'parity CLI prints the scored comparison');
     const verifyCli = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'verify-receipt', '--receipt', parityReceipt], { cwd: root, encoding: 'utf8' });
     A.eq(verifyCli.status, 0, 'a signed receipt verifies through the CLI');
     A.ok(/SIGNATURE PASS/.test(verifyCli.stdout), 'signature verification prints the key identity');

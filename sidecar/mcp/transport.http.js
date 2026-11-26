@@ -19,7 +19,7 @@
   'use strict';
 
   const JSONRPC = '2.0';
-  const LOCAL_ERROR = Symbol.for('starnet.mcp.localTransportError');   // read by client.js safeRpcError
+  const LOCAL_ERROR = Symbol.for('eyehold.mcp.localTransportError');   // read by client.js safeRpcError
 
   // Node's fetch rejects with a bare "fetch failed"; the reason (DNS miss, refused, TLS) lives on e.cause.
   // Only the error CODE and our own wording are kept — never response text — so this stays transport-authored.

@@ -176,7 +176,7 @@ cross-device plan persistence and stronger artifact-specific milestone evidence 
 
 ## VERIFIED PROTOTYPE IN BRANCH — 2026-09-12 personal journey first loop (`agent/journey-first-loop-0912`)
 
-Owner direction: StarNet grows with the user's real ambitions. Explore, pursue and maintain
+Owner direction: Eyehold grows with the user's real ambitions. Explore, pursue and maintain
 are connected experiences, not mandatory modes. Validate a useful, enjoyable loop before
 adding a campaign entity, migrating all goal storage, or building a larger progression system.
 
@@ -528,7 +528,7 @@ Verified on integrated value-loop code: fast 707/707, HTTP 92/92, live creation/
 Three local gaps repaired; exact managed production error and customer spend still need evidence. Details and residual
 customer/production dependencies: [EMAIL_BUG_FOLLOWUP_2026-09-04.md](EMAIL_BUG_FOLLOWUP_2026-09-04.md).
 
-## VERIFIED 2026-09-04 — STARNET SAMPLE RUN + TIER CATALOG (`agent/model-catalogue-report`)
+## VERIFIED 2026-09-04 — EYEHOLD SAMPLE RUN + TIER CATALOG (`agent/model-catalogue-report`)
 
 The support report's successful Live Doctor inference and failed sample used different configuration
 sources. Samples now resolve the selected dock's roster provider/model/credential after routing, and
@@ -541,7 +541,7 @@ catalogues preserve selections and explicitly report unverified membership.
 
 Evidence: live seeded UI changed all three tier selections, closed/reopened Models, and observed exactly
 one correctly labeled selected option per tier, with no browser warnings/errors. The real-sidecar
-regression ran a StarNet entry and custom-provider hop without an environment default or OpenRouter key,
+regression ran a Eyehold entry and custom-provider hop without an environment default or OpenRouter key,
 verified their separate credentials, repeated after restart, and refused a missing roster model with
 zero inference requests. Existing sample coverage passed 99 assertions. Full gates on `431578620`:
 `test:fast` **697/697 GREEN**, `test:http` **89/89 GREEN**. The first HTTP attempt hit a transient
@@ -554,12 +554,12 @@ or publication has been performed. Customers need a desktop release containing t
 ## 2026-09-03 — POST-AUDIT: NEXT CUT MUSTS (owner-directed, audit items 1–5)
 
 The 2026-09-03 whole-repo audit (backend, frontend, release, process, product) found the harness solid
-at its seams and the funnel unproven: ~6 outsiders have tried StarNet, all six hit an onboarding or
+at its seams and the funnel unproven: ~6 outsiders have tried Eyehold, all six hit an onboarding or
 connector wall, none was watched. Andrew directed items 1–5 to execute. State:
 
 1. **Users answered.** Issues #6/#5/#2 got replies naming the fixes that ride v0.10.13
    (`5b5f50a1d` BYOK credit gate, `6adda1348` connector 401 → REAUTH + SSE, `977294cbc`/`03519b043`/
-   `1e651a03e` unreachable-station recovery). 49thMedia's residual "no STARNET key" banner is the keycta
+   `1e651a03e` unreachable-station recovery). 49thMedia's residual "no EYEHOLD key" banner is the keycta
    asking for the wrong provider after unlink — lane `agent/free-path-ollama` fixes the CTA.
 2. **macOS physical recovery proof — retroactively waived for 0.10.13** (record in
    `docs/RELEASE_CUT_CHECKLIST_v0.10.13.md` § Post-publish record). **It is the first MUST of the next cut.**
@@ -584,15 +584,15 @@ The UI now treats a successful catalog as authoritative, maps direct Anthropic
 and otherwise clears the stale selection instead of presenting an unexecutable pair. Reconciliation
 runs after provider changes and key saves; offline fallback rows are explicitly unverified.
 
-The managed proxy lane (`codex/provider-truth-0903`, cloud commit `b83271e`) adds a StarNet request id
+The managed proxy lane (`codex/provider-truth-0903`, cloud commit `b83271e`) adds a Eyehold request id
 and preserves only bounded, redacted upstream message/type/code/provider/request-id fields in both
 responses and structured logs. Deterministic proxy replays of the exact Sonnet 5 body, with and without
 `reasoning_effort`, pass, and the public route inventory reported nine active endpoints for the id on
 2026-09-03. Historical production-log correlation remains unclaimed because this workstation has no
 Fly.io authentication and the old client did not forward its run id to the cloud request.
 
-Proof: live seeded Windows UI selected the direct bare id, switched to StarNet, showed `MODEL UPDATED`,
-and reopened with StarNet owning `anthropic/claude-sonnet-5`; cloud tests are 221/221, `test:fast` is
+Proof: live seeded Windows UI selected the direct bare id, switched to Eyehold, showed `MODEL UPDATED`,
+and reopened with Eyehold owning `anthropic/claude-sonnet-5`; cloud tests are 221/221, `test:fast` is
 692/692, and `test:http` is 87/87. No cloud deployment or integration-tree merge was performed.
 
 ## 2026-09-02 — v0.10.13 SAME-NIGHT CUT EXCEPTION
@@ -616,7 +616,7 @@ at `5e7ff198`. The remote branch is now preserved under the unmistakable
 `archive/rc-0.10.13-rc.1-invalid` name, while the marker tag remains forensic evidence. Neither can be
 promoted. Its soak heartbeat is paused after a confirmed durable-store quarantine deadlock. The release
 repair lane fixes that deadlock, fails closed after an uncertain headed-browser teardown, retains rejected skill turn-ins,
-resets `starnet.tutorial.v1` for a genuinely new Commander, exposes screenshot-readable `SAVE-403` versus
+resets `eyehold.tutorial.v1` for a genuinely new Commander, exposes screenshot-readable `SAVE-403` versus
 `SAVE-NET` recovery diagnosis, and cleans rejected attachment uploads.
 
 The two unreviewed August 31 sweep batches (`5558a707a..422e38c6f` and
@@ -698,7 +698,7 @@ question is live or the one post-run slot is taken.
 (ranking, a belief, a routine). "close"/"noted" that writes nothing is a dead question — remove it
 or give it a consequence. Verify live: rate a run, reopen FOR YOU, the rated recipe moved.
 
-Reference: Hermes does correction→`skill_manage` write-back with a `pending/` approval gate; StarNet
+Reference: Hermes does correction→`skill_manage` write-back with a `pending/` approval gate; Eyehold
 already has the richer intake, it lacks the write-back.
 
 ## 2026-08-21 — RELEASE CUT IS TWO COMMANDS (`agent/rel-cut-ritual`)
@@ -754,7 +754,7 @@ website-mirror checks are green. `npm run test:http` is **76/76 GREEN** and `npm
 
 READY TO MERGE. The first preview repair updated the renderer mirror and stage crop but left the
 website-only captured save on the retired one-room `hull` material state. Worse, `demo-boot.js`
-seeded only when `starnet.save` was absent, so any returning visitor stayed pinned to that stale
+seeded only when `eyehold.save` was absent, so any returning visitor stayed pinned to that stale
 snapshot forever. The embed now upgrades its captured room to the current seeded-app material
 preset (`walnut/plank`, `ribbed`, `ember/brick`) and carries a versioned website-demo marker that
 refreshes stale localStorage exactly once. The homepage iframe, generated embed tag, and demo boot
@@ -768,7 +768,7 @@ exact, and the guarded website stage check would publish 3,901 files while holdi
 
 ## 2026-08-09 — CURRENT WEBSITE STATION PREVIEW (`agent/station-preview-current`)
 
-READY TO MERGE. The starnetos.com station preview was still clipping the embedded app with the
+READY TO MERGE. The eyehold.com station preview was still clipping the embedded app with the
 retired `666x744 @ 283,88` camera rectangle while the current shell renders the stage at
 `748x752 @ 252,84`. The homepage now measures the real same-origin `#stage` rectangle after iframe
 load and on later layout changes, then derives its crop offset, scale, and aspect ratio from that
@@ -814,18 +814,18 @@ claims refresh (`7a3f7aeb`) landed above the merge while the gate ran, so recove
 equal to snapshot `cdd9704e`. The terminal-output and real-recovery commits later landed on trunk; the comparison
 fixtures below remain the only unmerged portion of this lane.
 
-## 2026-08-08 — HERMES/STARNET OUTPUT RELIABILITY COMPARISON (`agent/hermes-starnet-benchmark-0807`)
+## 2026-08-08 — HERMES/EYEHOLD OUTPUT RELIABILITY COMPARISON (`agent/hermes-eyehold-benchmark-0807`)
 
 Five scenarios were run three times per harness against
-the same `openai-codex / gpt-5.6-luna` model. An initial 30-row wave exposed a real StarNet policy interaction:
+the same `openai-codex / gpt-5.6-luna` model. An initial 30-row wave exposed a real Eyehold policy interaction:
 generic external actions triggered verify-on-stop, but the only read-back exposed fixture setup, so correct
 pre-verification answers were replaced by truthful but false-negative terminal warnings. After adding one
-authoritative `fixture_status` read-back available to both harnesses, StarNet passed **14/15** and Hermes
-**13/15**. StarNet's one miss duplicated `RESULT=PASS-731` inside one terminal answer. Hermes made an unrequested
+authoritative `fixture_status` read-back available to both harnesses, Eyehold passed **14/15** and Hermes
+**13/15**. Eyehold's one miss duplicated `RESULT=PASS-731` inside one terminal answer. Hermes made an unrequested
 `fixture_deliver` call to `job-731` in two of three cancellation attempts; one of those outputs also omitted
 `RESUMED-731`. Both passed malformed-result recovery, timeout honesty, and real out-of-order worker attribution
 3/3. No driver error, fixture mutation, duplicate mutation, or authority escape occurred. Observed mean latency
-was 9.32s StarNet versus 12.32s Hermes, but three attempts per task are not a durable performance estimate.
+was 9.32s Eyehold versus 12.32s Hermes, but three attempts per task are not a durable performance estimate.
 Ignored raw evidence and the two-wave analysis live under `.dogfood/eval-runtime/campaign/output-reliability/`;
 temporary copied OAuth envelopes were deleted after capture. This is source-runtime comparison evidence, not
 installed-desktop or release-candidate proof.
@@ -844,9 +844,9 @@ current trunk with only its own commits so dropped artifact work was not silentl
 claims were re-locked for 205 surface files. Full `npm run test:fast` was **574/574 GREEN** both before merge and
 again on the exact merged trunk. Frontend-only: `test:http` was not required.
 
-## 2026-08-07 — STARNET 0.10 FINAL HERMES PARITY MAP (`agent/hermes-final-gap-audit`)
+## 2026-08-07 — EYEHOLD 0.10 FINAL HERMES PARITY MAP (`agent/hermes-final-gap-audit`)
 
-G0, G2, AND G3 LANE ACCEPTANCE COMPLETE; G1 PACKAGED BASELINE PARTIAL; INTEGRATION PENDING. The comparison is pinned to StarNet `0.9.0` at `fc452230` and Hermes Agent
+G0, G2, AND G3 LANE ACCEPTANCE COMPLETE; G1 PACKAGED BASELINE PARTIAL; INTEGRATION PENDING. The comparison is pinned to Eyehold `0.9.0` at `fc452230` and Hermes Agent
 `origin/main` at `10a2b3d7` (2026-08-07), rather than the stale July Hermes checkout. The full evidence map and
 observable exit tests live in `docs/HARNESS_GAP_2026-08-07.md`.
 
@@ -908,7 +908,7 @@ shipped 2026-08-08 in `3979605b4` (durable worker orchestration): generation-bou
 provider auth, A2A/MoA, wake word, bulk-corpus learning, and portable profiles require explicit build/defer/
 do-not-claim decisions; they are not automatic 0.10 blockers.
 
-Do not reopen the old generic claims that StarNet lacks a serious core loop, tool breadth, compaction/caching,
+Do not reopen the old generic claims that Eyehold lacks a serious core loop, tool breadth, compaction/caching,
 approvals, durable schedules, background delegation, session management, checkpoints, execution profiles,
 MCP OAuth/stdio, skills authoring, or provider breadth. Those are now confirmed peer capabilities. No row turns
 green from unit tests alone: final authority is a packaged live or fault-injection receipt at the exact release
@@ -928,11 +928,11 @@ event loop from exiting. The final implementation pairs that window event with o
 and prevents only its corresponding user exit request. Programmatic exits, updater exit, OS exit, and the
 short-lived second-instance reveal process are not trapped. An isolated Windows debug build under identifier
 `ai.skynet.harness.traytest` persisted `{startMinimized:true,closeToTray:true}` through real Tauri IPC; a real
-window close logged `close_to_tray=true`, hid StarNet, and left the exact shell and sidecar alive. On restart,
-Win32 top-level-title inspection saw no visible `StarNet` window; a second launch exited 0, revealed `StarNet`,
+window close logged `close_to_tray=true`, hid Eyehold, and left the exact shell and sidecar alive. On restart,
+Win32 top-level-title inspection saw no visible `Eyehold` window; a second launch exited 0, revealed `Eyehold`,
 and left the primary alive. The existing tray Open/Quit handlers were compiled and covered by the focused
 seam but were not mouse-clicked in this isolated proof. The disposable test profile and WebView data were
-moved to the Recycle Bin; the installed StarNet process/data were never touched.
+moved to the Recycle Bin; the installed Eyehold process/data were never touched.
 
 Verification: `npm run test:fast` is **573/573 GREEN**; desktop lifecycle preference coverage is 14 assertions,
 quitguard is 27, claims authority is 64, and native preference tests are 3/3. The isolated Tauri debug build
@@ -1029,8 +1029,8 @@ claims once, and rerun the canonical gate. No station-wide readiness claim is ma
 
 ## 2026-08-04 — COMPLETE STATION DISASTER RECOVERY P0 (`agent/disaster-recovery-p0`)
 
-READY TO MERGE. StarNet now has a versioned, offline complete-station recovery bundle and operator CLI.
-Capture inventories every non-ephemeral `WORKSPACES` file plus supplied browser-owned `starnet.*` state,
+READY TO MERGE. Eyehold now has a versioned, offline complete-station recovery bundle and operator CLI.
+Capture inventories every non-ephemeral `WORKSPACES` file plus supplied browser-owned `eyehold.*` state,
 binds every payload and the manifest with SHA-256, and refuses to publish a recovery point unless agents,
 rooms/props, conversations, memories, routines, loops, tasks, projects, deliverables, permissions, and
 connector references are all represented. Backups commit through temporary-file write, fsync, and rename.
@@ -1088,7 +1088,7 @@ new frontend modules with HTTP 200, and proved `queryspine.js` and `beatcard.js`
 test port was released. Keyless live TTS and STT each returned their required HTTP-200 fallback envelope.
 `credentials.rs` passes rustfmt and 258 focused native/static assertions. Full Cargo compilation could not be
 completed on this Windows host: both parallel and `-j1` attempts exhausted compiler memory while building the
-upstream `windows` crate (`0xc000012d` / `STATUS_STACK_BUFFER_OVERRUN`), before any StarNet source diagnostic.
+upstream `windows` crate (`0xc000012d` / `STATUS_STACK_BUFFER_OVERRUN`), before any Eyehold source diagnostic.
 No provider spend, external message/write, credential mutation, push, PR, deploy, tag, or publication occurred.
 
 ## 2026-08-03 — PROVIDER P2 REGISTER CLOSURE (`agent/cleanup-p0-providers`)
@@ -1254,7 +1254,7 @@ paths. No publish, push, PR, deployment, release, credential, or production-data
 
 ## 2026-08-01 — HARNESS SELF-AWARENESS (`agent/harness-self-awareness-reconcile`)
 
-RECONCILED against bridge trunk `25f8b053`. StarNet now gives every compute-capable agent a local, read-only,
+RECONCILED against bridge trunk `25f8b053`. Eyehold now gives every compute-capable agent a local, read-only,
 consent-free `station.inspect` tool backed by the same build, scheduler, connector, and diagnostic
 collectors as the UI APIs. Its output is bounded and allowlisted; secrets and filesystem paths do
 not cross the tool boundary, and any failed collector is labelled unavailable rather than rendered
@@ -1327,7 +1327,7 @@ readiness claim is made. External-site reach remains unmeasured without an autho
 
 ## 2026-07-31 — NEXT UPDATE PLAN: v0.9.0 LEGIBLE · SOLID · UNBLOCKED
 
-Andrew's mandate for the update after v0.8.0: (1) make StarNet dramatically easier for a
+Andrew's mandate for the update after v0.8.0: (1) make Eyehold dramatically easier for a
 beginner to understand — users are asking a lot of questions; (2) fix as many bugs as we can;
 (3) build a stealth engine so station browsing stops being misidentified as a bot. Full plan,
 with evidence re-grepped against trunk `129801b1`: **[docs/PLAN_v0.9.0.md](PLAN_v0.9.0.md)**.
@@ -1425,10 +1425,10 @@ one menu with Rename focused; Escape removed it and restored General. Regression
 ## 2026-07-29 — CODEX OAUTH MIGRATION ROOT BOUNDARY (`agent/quality-loop-0729c`)
 
 READY TO MERGE. The 07-29 token-leak fix rejected ordinary temporary workspaces, but its fallback
-still trusted any path whose tail was `StarNet/workspaces`; an isolated boot could therefore pull
+still trusted any path whose tail was `Eyehold/workspaces`; an isolated boot could therefore pull
 the Commander's ChatGPT OAuth token from a real legacy app-data home by choosing that directory
 shape. Reproduction returned `recognized:true`, four migration candidates, and the legacy token
-path for `C:\tmp\attacker\StarNet\workspaces`. Migration authority now requires an exact match
+path for `C:\tmp\attacker\Eyehold\workspaces`. Migration authority now requires an exact match
 against enumerated Local/Roaming/XDG app-data roots (plus the existing injected legacy/install
 roots), while both Windows app-data locations remain valid migration sources.
 
@@ -1558,10 +1558,10 @@ name `Model selector: claude haiku 4.5, High reasoning`. Regression: the focused
 58 assertions, website mirror is synced, syntax checks are green, and `test:fast` is 430/430 green.
 No push, merge, deploy, publish, PR, production-data, secret, or source-credential changes.
 
-## 2026-07-20 — PUBLIC-REPO RELEASE PREP (branch `claude/starnet-repo-release-prep-c41845`)
+## 2026-07-20 — PUBLIC-REPO RELEASE PREP (branch `claude/eyehold-repo-release-prep-c41845`)
 
 Getting the source repo release-shaped for the public flip (Andrew: "essentially ready for
-early release"). DONE this lane: GitHub repo **renamed `skynet-harness` → `starnet`** (still
+early release"). DONE this lane: GitHub repo **renamed `skynet-harness` → `eyehold`** (still
 PRIVATE; old URLs redirect) + description/homepage/topics set on BOTH repos; README rebuilt to
 the reference harness/OpenClaw-class presentation (wordmark hero + station render from the website branch, now
 committed under `.github/media/`, badges, feature table, importer section); all breaking slug
@@ -1574,10 +1574,10 @@ deletes your tracked copies — restore them as untracked files from the integra
 them automatically. The protocol itself is UNCHANGED — the files just live outside git.
 OPEN (operator, in order): **docs/PUBLIC_FLIP_CHECKLIST.md** — prune 50 merged remote branches,
 `--log-opts=--all` gitleaks run (19 unmerged remote-only branches were NEVER scanned — sole
-copies, do not delete), social-preview upload (og-card), push staged starnet-releases landing
+copies, do not delete), social-preview upload (og-card), push staged eyehold-releases landing
 page, re-mint RELEASES_TOKEN, then flip. Binary stays `skynet-desktop` (locked; update-path risk).
 
-## 2026-07-20 — v0.6.2 BUG SWEEP (branch `claude/starnet-context-update-32ae68`) — 4 Andrew reports
+## 2026-07-20 — v0.6.2 BUG SWEEP (branch `claude/eyehold-context-update-32ae68`) — 4 Andrew reports
 
 All four in-branch, gate 373/373 green (incl. new crt-glprobe lock), W0 re-stamped `ed73ba12`:
 - **Logo misaligned in windowed mode** (other hardware): positionLogo violated the TEXT SIZE
@@ -1624,7 +1624,7 @@ Mac architectures, run installed smoke plus the ≥48h real-provider dogfood soa
 Full-station polish sweep before the next update cut (Andrew will green-light + test on other
 hardware). Done this pass: 3-agent audit (frontend/backend/release) — frontend exceptionally
 clean (1 fix), backend error spine mature (no stack leaks); stdout quieted ([channel] payload
-log now opt-in STARNET_DEBUG_CHANNELS=1, [aux-governor] only on DEFERRED, [summon] dev-gated);
+log now opt-in EYEHOLD_DEBUG_CHANNELS=1, [aux-governor] only on DEFERRED, [summon] dev-gated);
 goldens re-blessed 17 frames after eyeball (clears Guardian golden RED); catalog-oauth lane
 MERGED 7dd5e465 (VIA-aggregator jump ported into extracted windows/connectors.js, live-proven
 :9186); W0 re-stamped d2677fd0; release-notes DRAFT at docs/RELEASE_NOTES_v0.6.0_DRAFT.md.
@@ -1687,7 +1687,7 @@ Andrew's report from other-hardware testing: session titles were "whatever the f
 user typed". Root cause: the quiet retitle call's `internal:true` never left the browser — the
 sidecar buried its "reply with ONLY a 3-6 word title" prompt under the operator manual / capability
 summary / skill catalog / memory fence; models answered chattily, cleanTitle rejected, the instant
-placeholder stayed forever. Fix (lane `claude/starnet-session-titling-343578` → merge `9fe9bbe1` +
+placeholder stayed forever. Fix (lane `claude/eyehold-session-titling-343578` → merge `9fe9bbe1` +
 W0 re-stamp `d839ccc9`): `internal` rides the /api/run body; runOnce keeps reason-only self-talk
 prompts VERBATIM (also: no memory fence — was faking memory.used stats — no transcript seed; away
 clock never stamped by self-talk). Applies to ALL internal callers (retitle/goal-judge/pitch/
@@ -1737,13 +1737,13 @@ clicking the rail row read "8h" not "now"):
 ## 2026-07-18 — v0.5.3 CUT + PUBLISHED (Windows) — desktop exe rebuild CLOSED
 
 v0.5.3 cut from trunk `e5e2d0dd` (tag `v0.5.3` local), signed, and **PUBLISHED to GitHub
-Releases** at `androoAGI/starnet-releases` (repo flipped PUBLIC — binaries
+Releases** at `Eyehold/eyehold-releases` (repo flipped PUBLIC — binaries
 only; old v0.4.0/v0.2.2 stay drafts=invisible). Proof chain: fast gate 369/369 green at built
 bytes; installed locally (0.5.2 → 0.5.3) with `qa:smoke:installed` **GREEN**;
 `verify-update-host` green on every windows-x86_64 check (manifest + signed exe live at the
 pinned `/download/v0.5.3/` URLs). Every merged lane's "OPEN: exe rebuild" through `e5e2d0dd`
 is now bundled and shipped. Fresh install on new hardware:
-https://github.com/androoAGI/starnet-releases/releases/latest
+https://github.com/Eyehold/eyehold-releases/releases/latest
 - Gate unblock (recorded): 4 stale `w0-candidate-*` source snapshots (2026-07-13) in
   `.dogfood/` made lint-evidence-secrets take 10min and fail on fixture keys; MOVED to
   `C:\Users\<you>\gen-trees\..\gen-quarantine\dogfood\` (nothing referenced them).
@@ -1753,11 +1753,11 @@ https://github.com/androoAGI/starnet-releases/releases/latest
   env trap (Tauri codesign-imports zero bytes) — fixed in-workflow (`adddaedf`, unset empty
   signing vars). All 4 platforms then built; CI publish job 403'd (RELEASES_TOKEN secret is
   a stale/underscoped PAT — needs re-mint) so artifacts were published from the operator
-  machine instead. Pre-release `test-v0.5.3-r3` LIVE on starnet-releases with both DMGs
+  machine instead. Pre-release `test-v0.5.3-r3` LIVE on eyehold-releases with both DMGs
   (aarch64 + x64) + exe + AppImage + deb; updater "latest" feed verified undisturbed.
   Gitleaks push-gate: 3 findings = test fixtures, reviewed into `.gitleaksignore`
   (`3f6f5384`), scan clean.
-- Still open (operator): re-mint RELEASES_TOKEN secret on the starnet source repo (CI publish);
+- Still open (operator): re-mint RELEASES_TOKEN secret on the eyehold source repo (CI publish);
   mac/linux platforms absent from the UPDATER manifest (5-platform bar = CI-train launch,
   unchanged); `v0.5.3` tag push (fires the blocked release-train) = Andrew's call;
   updater-key backup; Apple codesign/notarization secrets for public mac distribution.
@@ -1765,7 +1765,7 @@ https://github.com/androoAGI/starnet-releases/releases/latest
 ## 2026-07-18 — IMPORT AGENT from the reference harness/OpenClaw (branch `claude/agent-transfer-hermes-openclaw-9f0efb`)
 
 Andrew's ask: his community (thousands on the reference harness agent / OpenClaw) needs a one-click migration
-into StarNet — this is launch-conversion work. Shipped in this lane:
+into Eyehold — this is launch-conversion work. Shipped in this lane:
 - `sidecar/harness-import.js` (pure, UMD, injected-data): detectCandidates (env-built roots incl.
   REF-HARNESS_HOME/OPENCLAW_STATE_DIR overrides), filesWanted whitelist, scanProfile → normalized
   preview { name, persona, instructions, userContext, memory{curated,dailyCount}, model, warnings }.
@@ -1793,7 +1793,7 @@ agent staying at its workstation until the LAST run ends. Shipped:
   distinct-agent fan-out cap is unchanged. The workspace/shadow-git collision moved to a
   **run-scoped workspace lease** (`sidecar/workspace-lease.js`, unit-locked): taken at the first
   workspace-MUTATING tool, held to run end (contiguous checkpoint chains); a sibling's mutating
-  tool waits (`STARNET_WORKSPACE_LEASE_WAIT_MS`, default 45s) then fails truthfully naming the
+  tool waits (`EYEHOLD_WORKSPACE_LEASE_WAIT_MS`, default 45s) then fails truthfully naming the
   holder session. Chat/reasoning runs never touch the lease.
 - **COMMS soft gate** (chat.js): composer never disabled by a peer run; idle session reads
   `online · also running in <session>` + ALSO RUNNING IN row with VIEW ACTIVE RUN. Per-stream
@@ -1817,14 +1817,14 @@ connector) — a KEYS tab in TOOLSETS & CONNECTORS under CATALOG. Shipped in thi
   + custom rows (kill-switch, masked last4, env-var readout, docs link) + add-unlisted form.
 - Polish pass: RESERVED-ENV guard — a paste named after a model provider ('OpenRouter' →
   OPENROUTER_API_KEY) would have become billing credentials via providerRuntimeKey's process.env read;
-  upsert now refuses every registry keyEnv name (+ STARNET_/SKYNET_ scoped forms), applyEnv skips them
+  upsert now refuses every registry keyEnv name (+ EYEHOLD_/SKYNET_ scoped forms), applyEnv skips them
   as belt. KEYS lists re-poll on tab entry; one-click REMOVE (mc-row idiom). W0 re-stamped in-branch
   (65ffffde over shipped bytes 9638869c).
 - Gates: test:fast 363 green at final bytes; servicekeys.http e2e (28 asserts, restart round-trip +
   provider refusal) added to test:http. Live-proven on seed :9207 (add/mask/toggle/remove/platforms/
   provider-refusal DOM round-trips; no secret in responses; ⊟ glyph measured non-tofu).
 - [ ] Open: live proof of a real agent shell run reading the env var; per-agent scoping if wanted later.
-## 2026-07-18 — ARCHITECTURE AUDIT: Tier 1 landed (branch `claude/starnet-codebase-audit-ff0b4c`); Tier 2/3 backlog
+## 2026-07-18 — ARCHITECTURE AUDIT: Tier 1 landed (branch `claude/eyehold-codebase-audit-ff0b4c`); Tier 2/3 backlog
 
 Full-codebase cleanliness audit (4 parallel sweeps: sidecar, frontend, contract seams, dead code).
 Tier 1 executed in-branch, gate 364/364 green: `sidecar/respond.js` canonical json()/isAgentId
@@ -1916,12 +1916,12 @@ SHIPPED-with-liveProof-PENDING in qa/product-perfect/claims.json.
       runs an older installed build; EBWebView purge recipe applies on exe swap).
 - [ ] macOS runtime proof of the tray/autostart paths (cfg-clean + documented APIs only so far).
 - [x] **LAUNCH RUNBOOK: docs/LAUNCH_RUNBOOK.md** — MERGED to trunk (verified present 2026-07-17;
-      the claude/starnet-code-prompts-a9d3a7 copy is patch-identical). KEY FINDING: NOTHING 0.5.x was ever pushed/published —
-      origin tags stop at v0.4.0, starnet-releases 404s; launch = the CI train's FIRST live run
+      the claude/eyehold-code-prompts-a9d3a7 copy is patch-identical). KEY FINDING: NOTHING 0.5.x was ever pushed/published —
+      origin tags stop at v0.4.0, eyehold-releases 404s; launch = the CI train's FIRST live run
       (all 5 platforms) at v0.5.2. Andrew's chain: updater-key backup (NONE exists) + dev-key
       rotation → push trunk+tag → publish → verify-update-host → W1 second-user proof →
       per-platform canaries → Mac auto-update test → T0 evidence → certify:providers real keys.
-- [ ] Subscriptions/credits merge (claude/starnet-subscriptions-plan-4d56d1, 5 ahead / 314
+- [ ] Subscriptions/credits merge (claude/eyehold-subscriptions-plan-4d56d1, 5 ahead / 314
       behind trunk) + Stripe/domain/deploy — NEXT UPDATE, do not merge during launch.
 
 ## 2026-07-15 — POWER-USER DEEP-DIVE AUDIT (3 isolated agents, no fixes)
@@ -1942,7 +1942,7 @@ baseline `bf99df2a`; the subsequent power-user loop repairs merge (`8ce4c967`), 
 lane, the nightfocus validator, and the Task Brief chat.js waves closed every seam. Each has a
 dedicated regression test on trunk:
 
-- [x] **PU-03 P1:** backup.js `isCredentialKey` denylist (default-deny `starnet.byok.*`), export
+- [x] **PU-03 P1:** backup.js `isCredentialKey` denylist (default-deny `eyehold.byok.*`), export
       `secretsIncluded:false`, import guard. — [x] **PU-01 P1:** `validateNightFocusSteer`
       (index.js ~8368): 404 missing path, 403 unblessed, thread/goal checked; nothing persists on
       reject. — [x] **PU-02 P1:** disabled connectors are durable management rows (boot registers
@@ -1977,7 +1977,7 @@ pivots, completed-only learning, mutation gates, registry control preservation, 
 
 ## READY TO MERGE 2026-07-15 — TASK-CONTEXT ELICITATION (`agent/intent-engine`)
 
-StarNet now listens before it builds without turning every request into an interview: a shared
+Eyehold now listens before it builds without turning every request into an interview: a shared
 discover-before-ask doctrine; one natural 2–3 choice question only for material, non-discoverable
 gaps; a hard two-question task cap; and an explicit “use your judgment” escape. Answers resume the
 same durable Task Brief after reload/restart, remain task-local, flow into delegated workers, and only
@@ -1993,9 +1993,9 @@ worktree baseline in `qa-product-perfect-claims`; `test:http` fully green (404 s
 
 Signed release cut at trunk head (rc/0.5.1 content + docs + real RELEASE_NOTES.md; W0 surface
 re-stamped, claims authority PASS). minisign verify OK against the baked pubkey; artifacts staged
-in `release/` (StarNet_0.5.1_x64-setup.exe + .sig + latest.json, sha256 75bf43e4…). Installed on
+in `release/` (Eyehold_0.5.1_x64-setup.exe + .sig + latest.json, sha256 75bf43e4…). Installed on
 Andrew's machine (registry 0.5.1, exe ProductVersion 0.5.1, app relaunched, sidecar up + token-gated).
-- [ ] **Andrew: PUBLISH** — GitHub Release `v0.5.1` on `androoAGI/starnet-releases`
+- [ ] **Andrew: PUBLISH** — GitHub Release `v0.5.1` on `Eyehold/eyehold-releases`
       with the three `release/` assets (checklist in the release-cut output); then
       `node scripts/verify-update-host.mjs` + the public update canary.
 
@@ -2024,12 +2024,12 @@ REMAINING, honestly out of this machine's reach:
       / `virtual-machine` / `clean-machine` (this login doesn't qualify). Cheapest honest path on
       this PC: create a second Windows user, install the rc exe there, run the W1 driver attended
       (~15 min). Folds naturally into the 10-outside-installs step otherwise.
-- [ ] **Andrew: publish `starnet-releases` + key backups + dev-key rotation**, then the public
+- [ ] **Andrew: publish `eyehold-releases` + key backups + dev-key rotation**, then the public
       per-platform update canaries; 48h RC soak per docs/RELEASE_READINESS.md.
 - [x] Outside installs on other hardware — ATTESTED by Andrew 2026-07-15: installed on a separate
       Windows machine AND a Mac, both "worked perfectly" as a user. This clears the practical
       clean-machine concern; the FORMAL T0/T3.2 gates still want their evidence JSON captured
-      during such an install (`STARNET_T0_CLEAN_EVIDENCE` — see scripts/t0-clean-install.mjs) —
+      during such an install (`EYEHOLD_T0_CLEAN_EVIDENCE` — see scripts/t0-clean-install.mjs) —
       capture it on the next outside install rather than re-doing these.
 - [ ] Mac AUTO-UPDATE remains the one unproven mechanism (install ≠ update): one run of
       docs/MAC_UPDATE_TEST.md on that Mac after the next release publishes. The guaranteed manual
@@ -2056,7 +2056,7 @@ REMAINING, honestly out of this machine's reach:
    final trunk head: build + install + `qa:smoke:installed` AFTER this lane merges.
 
 
-## MERGED 2026-07-15 — SCHEDULER RELIABILITY (lane `claude/starnet-scheduler-audit-1b33c2`, trunk `5dcd3868`)
+## MERGED 2026-07-15 — SCHEDULER RELIABILITY (lane `claude/eyehold-scheduler-audit-1b33c2`, trunk `5dcd3868`)
 
 Four of the six 2026-07-15 scheduler-audit gaps closed in sidecar cron (digest in qa/STATUS.md):
 misfire policy (missed daily/cron work fires ONCE by default instead of being discarded —
@@ -2094,7 +2094,7 @@ through the real page, play() resolved). Installed exe picks this up at the next
       (VAD confirm stage, quiet-take discard, hallucination filter, single chunker), V-PROSODY
       (taste-gated) — ranked in the analysis doc.
 
-## 2026-07-15 — PROVIDER COMPATIBILITY (lane `claude/starnet-provider-compatibility-24131e`, MERGED `29fa54e2`)
+## 2026-07-15 — PROVIDER COMPATIBILITY (lane `claude/eyehold-provider-compatibility-24131e`, MERGED `29fa54e2`)
 
 The "all providers properly compatible?" audit's four concrete wire risks are FIXED on the shared
 openai-compatible seam (digest in qa/STATUS.md): reasoning_effort reaches the wire (was silently
@@ -2107,7 +2107,7 @@ Capability facts sourced from official provider docs 2026-07 (registry.js wire h
       provider — models → streamed chat → tool round-trip → mid-stream cancel → cost reconcile.
       Keys ONLY from the registry-documented env names; no credential = honest SKIP env-blocked;
       receipts land in gitignored `.dogfood/provider-certify/`. **OpenRouter: PASS all five steps
-      against the live endpoint** (343 models, streamed "OK" w/ usage, starnet_ping tool call
+      against the live endpoint** (343 models, streamed "OK" w/ usage, eyehold_ping tool call
       finish=tool_calls, clean abort, provider-reported cost reconciled).
 - [ ] **REAL-KEY runs for the other 12 keyed providers** — needs Andrew to export the documented
       env keys (or drop them where the app stores creds) and run `npm run certify:providers`;
@@ -2119,10 +2119,10 @@ Capability facts sourced from official provider docs 2026-07 (registry.js wire h
       compaction, connect screen not empty; deliberately UNPRICED (per-request search fees make
       token-only pricing dishonest).
 
-## 2026-07-14 — COMPREHENSIVE AUDIT ATTACK-ORDER (lane `claude/starnet-audit-80a98c`, Andrew-approved sequence)
+## 2026-07-14 — COMPREHENSIVE AUDIT ATTACK-ORDER (lane `claude/eyehold-audit-80a98c`, Andrew-approved sequence)
 
 Five-agent audit + the approved fix sequence, all lane-committed (digest lands in qa/STATUS.md at merge):
-- **QA watch RE-ARMED on the new PC**: `schtasks` had ZERO StarNet tasks (the EL-0 registrations died with
+- **QA watch RE-ARMED on the new PC**: `schtasks` had ZERO Eyehold tasks (the EL-0 registrations died with
   the old machine). Re-registered via `scripts/qa/register-watch.ps1 -Apply` against the integration tree
   (Guardian-Hourly / Beginner-Daily / Janitor-Weekly, verified in the scheduler) + a fresh manual cycle:
   **GREEN all 6 gates** @ trunk `38818fbc` (guardian-20260715-023723) — replaces the unreproducible
@@ -2231,7 +2231,7 @@ readiness gate declined every beat for hours with nothing in the UI saying why. 
 OPEN follow-ups: consider surfacing the readiness bars during onboarding (the first idle hours
 are still gated cold by design), and a COMMS nudge when drafts pile up unseen.
 
-## BUILT 2026-07-13 — QUEST V3 STANDING REFRESH (branch `claude/starnet-quest-system-25fae6`, `fd8823d8`)
+## BUILT 2026-07-13 — QUEST V3 STANDING REFRESH (branch `claude/eyehold-quest-system-25fae6`, `fd8823d8`)
 
 Andrew's report: a live save sat 3 days with an unchanged quest slate and a NEVER-created
 `_station.quests.json` — V2 made completion honest but generation passive (agents mint only mid-run,
@@ -2268,7 +2268,7 @@ boot/shutdown/E-STOP guardrails below are recovery layers and cannot prevent con
 This lane closes both reproduced routes:
 - Ordinary runs expose neither `computer.use` nor `desktop.open`; both are removed from capability
   telemetry/provider wire/dispatch, the computer driver is inert, physical input has a separate
-  danger class, and the packaged sidecar forces `STARNET_COMPUTER_DRIVER=0` + headless browsing.
+  danger class, and the packaged sidecar forces `EYEHOLD_COMPUTER_DRIVER=0` + headless browsing.
 - Local UI/game tests use owned `browser.test_*` only: the agent's running background-server handle
   and advertised origin are required; each run gets a private profile + ephemeral CDP port; pointer
   and keyboard locks are emulated before navigation; popups are paused/closed; arbitrary eval is not
@@ -2285,7 +2285,7 @@ The follow-up audit extends this from the FPS route to a harness-wide user-contr
 - Every custom MCP tool is `external-unknown` regardless of transport or server-supplied `readOnlyHint`.
   It is absent from autonomous runs and requires an exact live, non-cacheable confirmation per call in
   a watched run. MCP stdio defaults off and only a broker-proven isolated worker can enable it.
-- Child processes receive a minimal environment with StarNet/API/provider/channel credentials and
+- Child processes receive a minimal environment with Eyehold/API/provider/channel credentials and
   execution hooks stripped. Host safety pins force headless browsing, disable the computer driver and
   local MCP stdio, and preserve user control.
 - `verify.run` uses the same command decision seam as `shell.exec` and scans the exact nearest nested
@@ -2308,7 +2308,7 @@ lock live: foreground user Chrome titled `IRON & ASH — Free For All` owned cli
 started. The observer cannot attribute who opened that Chrome window, but it independently confirms
 why real-window routes cannot remain ordinary agent tools.
 
-Residual release blocker: supported/modelled StarNet paths are closed, but a hostile or obfuscated
+Residual release blocker: supported/modelled Eyehold paths are closed, but a hostile or obfuscated
 arbitrary binary in the same interactive Windows session cannot be made absolutely input-safe by regex,
 environment variables, or a Job Object. A literal unknown-code guarantee requires a restricted process
 token plus private non-input desktop/session, or a container/VM such as Windows Sandbox/Hyper-V. The
@@ -2352,7 +2352,7 @@ The catalog now has TWO shelves (`shared/specialties.js`):
 
 ## LANDED 2026-07-12 — BOOT/SHUTDOWN MOUSE-CONFINEMENT GUARDRAILS (merged as `c069cba3`)
 
-Incident: an agent-built pointer-lock FPS left a smoke browser + dev server alive after StarNet
+Incident: an agent-built pointer-lock FPS left a smoke browser + dev server alive after Eyehold
 was force-closed, and a stuck win32 ClipCursor walled the user's REAL mouse until cleared by hand
 (desktop-shell stop = TerminateProcess, so gracefulShutdown never ran). Four guardrails, gate 306
 green, boot-sweep + clip-release live-proven on an isolated sidecar (planted orphan reaped, decoy
@@ -2360,7 +2360,7 @@ chrome untouched, planted clip released):
 - sidecar/procledger.js — persistent child-PID ledger; NEXT boot sweeps force-kill orphans
   (token-wise cmdline match = PID-reuse guard). Wired: shell.bg + agent browser + boot.
 - sidecar/inputguard.js originally released global ClipCursor state at boot / shutdown / E-STOP. The
-  per-run lane supersedes that behavior with observation-only telemetry: StarNet must not mutate clip
+  per-run lane supersedes that behavior with observation-only telemetry: Eyehold must not mutate clip
   state it cannot prove it owns, including clip state belonging to the user's own game.
 - `shell.exec` originally blocked visible launches while allowing `--headless`; the per-run isolation
   lane above supersedes that exception because headless Chromium can still reach native pointer lock.
@@ -2407,12 +2407,12 @@ W1 read-only preflight (do not implement until W0 passes):
   `9298c52f` already replaces this with header-auth fetch streaming and timestamps keepalive bytes;
   audit and merge-forward it in W1 rather than rebuilding it.
 - `world.js` ownership must first be serialized with the stale
-  `link-down-starnet-b85d52`, chat-bubble, and conveyor worktrees; no lane may overlap them.
+  `link-down-eyehold-b85d52`, chat-bubble, and conveyor worktrees; no lane may overlap them.
 
 ## LANDED 2026-07-09 — LOST-WORK RESTORE: 7 built-but-unmerged features recovered to trunk (5b9cde3f) ✅
 
 Andrew noticed the new start menu + upgraded CREATE YOUR OVERSEER were missing from his build —
-root cause: the branch (claude/starnet-launch-overseer-ux-28d3f2) was **never merged**. A 6-agent
+root cause: the branch (claude/eyehold-launch-overseer-ux-28d3f2) was **never merged**. A 6-agent
 audit of EVERY unmerged branch + stale worktree then found six more finished features in the same
 state. All 7 restored, gates green on trunk, live-proven (see qa/STATUS.md 2026-07-09 digest):
 splash+overseer menus · CRT speech bubbles · scanlines toggle removed (Andrew: always-on) ·
@@ -2432,7 +2432,7 @@ channels, RC-soak doc-fiction, runbook staleness) · release-train provenance UN
 celebration round-trip PROVEN live (21/21, item closed below). GB-9 was REFUTED — already shipped
 as EL-11 FIX 1; 200 {ok:false,degraded:true} is a LOCKED test-asserted design, do not "fix" to 5xx.
 
-**Task Brief v2 (2026-07-16, branch `claude/starnet-context-extraction-a06d70`, docs/TASKBRIEF_V2_PLAN.md):**
+**Task Brief v2 (2026-07-16, branch `claude/eyehold-context-extraction-a06d70`, docs/TASKBRIEF_V2_PLAN.md):**
 - [x] Lanes A/B/C built + live-verified in-branch: marker-path questions persist honestly
       (no fabricated dimension/recommended), the host-validated recommendation renders on
       every question surface (COMMS gold ★ chip + why, restore, channel fallback), and six
@@ -2551,7 +2551,7 @@ as EL-11 FIX 1, the 200 {ok:false,degraded:true} shape is LOCKED + test-asserted
 All 4 qa:ready blockers cleared in one afternoon; every "P0" was the QA apparatus, not the
 product (pattern for docs/MISTAKES.md: before fixing "the app", prove the instrument):
 1. **Installed-exe smoke FIRST RUN → GREEN 6/6** (app 0.3.1). Initial BLOCKED was the probe
-   sending `Authorization: Bearer` — sidecar CORS only allows `X-StarNet-Token`, so the
+   sending `Authorization: Bearer` — sidecar CORS only allows `X-Eyehold-Token`, so the
    packaged cross-origin (tauri.localhost→127.0.0.1) preflight died pre-response. Probe fixed
    + EL-3 guard (Bearer forbidden in SMOKE_PROBE). Version chain PROVEN correct live
    (appSource:env). Merged 648d7212.
@@ -2562,7 +2562,7 @@ product (pattern for docs/MISTAKES.md: before fixing "the app", prove the instru
 3. **Guardian wedge = NO cross-process lock** (hourly × watch × manual raced the shared pin
    worktree + 8940-43 ports → all 4 BLOCKED P0s, all 3 "visual regressions" (within threshold
    clean — NO re-bless), work-tasks "failure" = overlapping teardown). Fixed: heartbeat
-   lockfile (%TEMP%/starnet-qa-guardian.lock, stale reclaim) + review-clean verdict (all-
+   lockfile (%TEMP%/eyehold-qa-guardian.lock, stale reclaim) + review-clean verdict (all-
    dismissed red gate ≠ red; BLOCKED never excused) mirrored into journeys.mjs; QA_STATION §2
    corrected. Guardian findings 10→0.
 4. **J7 slash INPUT-path truth journey** (12 assertions, non-vacuous: reintroduced 7/05 bug →
@@ -2571,7 +2571,7 @@ Ledger: 12 open P0/P1 → **0**. Remaining qa:ready reasons at session end = non
 (fresh guardian stamp on final head pending its cycle). OPEN (non-blocking): packaged
 /api/version `harness:""` blank; desktop exe orphans sidecar node processes on kill (chipped);
 installed exe on 0.3.1 vs v0.3.3 shipped (run the updater = also proves update path).
-**Andrew-only P0s unchanged and now THE critical path:** publish starnet-releases repo,
+**Andrew-only P0s unchanged and now THE critical path:** publish eyehold-releases repo,
 updater-key backup, dev-key rotation, 15-min attended playtest. Then RC freeze + 48h soak.
 
 ## LANDED 2026-07-08 — SCOUT: recruitment-bay recommendations actually evolve now
@@ -2610,7 +2610,7 @@ then hard-exits via `std::process::exit(0)`, which does NOT fire Tauri's `ExitRe
 handler — so `kill_sidecar()` never runs, the old `node.exe` sidecar stays alive holding a
 write lock, and NSIS FREEZES on "error opening file for writing: node.exe" (Retry/Abort/Ignore)
 forever. Every Windows user, every in-app update. FIX: wire the plugin's `on_before_exit` hook
-in `starnet_update_check` (main.rs) to set `shutting_down` + `kill_sidecar()` before the exit;
+in `eyehold_update_check` (main.rs) to set `shutting_down` + `kill_sidecar()` before the exit;
 the hook rides the pending Update into the install path. Compiles; being re-proven through the
 canary (rebuild old-with-fix → reinstall → drive to clean completion). The canary's `drive`
 was also hardened — it now requires installer-exited + app-relaunched, not just the version
@@ -2623,7 +2623,7 @@ audit-fix night wave:
 
 1. Forward-version save guard — LANDED; `save.js` now refuses `doc.version > CURRENT`,
    leaves the doc untouched, reports `{status:'future'}` to boot. (P0.3) ✅ code-verified.
-2. Frontend token leak — LANDED a17cb6b3; `X-StarNet-Token` scoped same-origin `/api` only
+2. Frontend token leak — LANDED a17cb6b3; `X-Eyehold-Token` scoped same-origin `/api` only
    (GROUND_UP 0.6) ✅ code-verified.
 3. `agent.tool_call` double-emit — LANDED d9a79c6c; chat.js synthetic re-emit dropped
    (GROUND_UP 0.4) ✅.
@@ -2640,14 +2640,14 @@ leak (0cccce2d), VT323 shipped locally (01570f17).
 
 ## P0 — Andrew only (nothing above matters to the public until these)
 
-- Publish `starnet-releases` repo (public updater currently 404s) + rescope RELEASES_TOKEN.
+- Publish `eyehold-releases` repo (public updater currently 404s) + rescope RELEASES_TOKEN.
   Pipeline hardening landed 2026-07-14 (update-blockers lane): signed `linux-x86_64-deb`
   manifest key (was: every .deb self-update failed on the AppImage fallback), real minisign
   crypto verification of every artifact/.sig in assemble (`npm run release:verify-sig`),
   published releases immutable to train re-runs. Next release train run exercises all three.
   Then run the older-install → publish → restart update canary per platform (Win NSIS, both
   mac arches, AppImage, .deb) — still ZERO public end-to-end update proofs.
-- Back up `~/.tauri/starnet-updater.key` to ≥2 offline locations (single point of total loss).
+- Back up `~/.tauri/eyehold-updater.key` to ≥2 offline locations (single point of total loss).
 - Rotate the dev OpenRouter key; support email swap.
 - **Attended 15-min playtest** (`docs/PLAYTEST_SCRIPT_GATE5.md`) — dodged since 7/02.
 - Then per `docs/ROADMAP_2026-07-04_BRUTAL.md`: 10 outside installs; days 8–30 = code-signing
@@ -2667,13 +2667,13 @@ leak (0cccce2d), VT323 shipped locally (01570f17).
 reflog ~30 days):** commission-redux 9f8cf7c2 (cherry-equiv in trunk) · cron-staylive
 d30dfdd0 (KeepAwake + watchdog in main.rs) · honest-states f1011fe0 (launch.json chore
 only) · messaging-platforms 16a0fadd (superseded by MCP connector catalog) ·
-starnet-api-gate e4a6fd28 (landed as 9574cb74) · cortex-hermes-plus 80583d9a
+eyehold-api-gate e4a6fd28 (landed as 9574cb74) · cortex-hermes-plus 80583d9a
 (memory-store/transcript/recall/skills all in trunk; its provider abstraction was
 abandoned) · hermes-parity-loop 8879b646 (42 commits of proof-plumbing superseded by
-release-train + t0–t5) · starnet-hardening-5-6-memory-consent 87b04cd7 +
-starnet-memory-consent 3b1470b1 (durable todo: keys + test in trunk) · starnet-memory-loop
+release-train + t0–t5) · eyehold-hardening-5-6-memory-consent 87b04cd7 +
+eyehold-memory-consent 3b1470b1 (durable todo: keys + test in trunk) · eyehold-memory-loop
 bb9369a3 (declined: store in trunk) · quick-model-selector 8a40ddd1 (modeldock + reasoning
-efforts in openrouter.js) · starnet-tests-tauri cbb155b9 (landed as 4c8b0f98) ·
+efforts in openrouter.js) · eyehold-tests-tauri cbb155b9 (landed as 4c8b0f98) ·
 workstreams-sessions-ui 9ae72942 (23-line net change, rail evolved past it).
 
 **Also torn down: 10 already-MERGED branches + worktrees** (byok-coldstart,
@@ -2699,7 +2699,7 @@ dirt — cron plan doc salvaged to docs/archive/).
 **Merged-but-DIRTY worktrees left in place** (real uncommitted code deltas — inspect
 before any teardown; `-Force` discards): auto-memory, bug-patterns, connector-spine (50
 files!), hermes-settings-audit, live-polish, mac-linux-support (23), meeseeks-subagents,
-skins (14), starnet-build-skills-crop, starnet-security-check, starnet-spend-model-honesty,
+skins (14), eyehold-build-skills-crop, eyehold-security-check, eyehold-spend-model-honesty,
 truth-chrome-instruments (tonight's; its orchestrator tears down).
 Rule stands: land it or delete it — an unmerged branch is a claim nobody verified.
 
@@ -2762,7 +2762,7 @@ Rule stands: land it or delete it — an unmerged branch is a claim nobody verif
   worktree + the SAME 8940-8943 ports, so overlapping runs raced on the shared
   `.git/worktrees/**/index.lock` (finding 90fe0bcc) and timed the visual gates out into BLOCKED
   P0s (9b077d5e/6fc6c002/328bc698/69eff742). Fix = a **machine-global cross-process lock** in
-  `guardian.mjs` (heartbeat lockfile at `%TEMP%/starnet-qa-guardian.lock`, PID-liveness +
+  `guardian.mjs` (heartbeat lockfile at `%TEMP%/eyehold-qa-guardian.lock`, PID-liveness +
   stale-reclaim; one-shot SKIPs when held, `--watch` skips-and-retries, `--wait` queues) — the
   three launch styles now serialize. Also: a red gate whose every finding is dismissed/known is
   now **review-clean** at the cycle verdict (mirrors golden), so the dismissed J2b panel-close
@@ -2791,7 +2791,7 @@ promise?" (sibling of "where's its UI?").
 
 **Queue:**
 - **EL-0 · Activate the watch** — ✅ DONE 2026-07-07 (Andrew-approved): 3 scheduled tasks
-  registered (`StarNet-QA-Guardian-Hourly` / `Beginner-Daily` / `Janitor-Weekly`, verified
+  registered (`Eyehold-QA-Guardian-Hourly` / `Beginner-Daily` / `Janitor-Weekly`, verified
   via schtasks) + session `qa:guardian:watch` running. STILL OPEN: the Overseer `/loop`
   session (QA_STATION §6, the digest+P0-notify half) and a reboot-surviving per-merge watch.
 - **EL-1 · Journey Corps** — ✅ MERGED 2026-07-07 (44a513e7, gate 260 green; orchestrator
@@ -2866,7 +2866,7 @@ promise?" (sibling of "where's its UI?").
     persistence, so the original error text is gone. If it recurs on a build with this lane,
     /api/diagnostics now carries the error across restarts; pin it then.
   - NOTE: his diagnostics said `App version: unknown / Mode: browser` — expected for npm
-    start/browser mode (packaged desktop sets STARNET_APP_VERSION + tauri origin). If he was
+    start/browser mode (packaged desktop sets EYEHOLD_APP_VERSION + tauri origin). If he was
     IN the installed exe, that's an origin-detection bug worth a look on a repro.
 
 ## EL-11 · STRANDED-USER SWEEP 2026-07-08 (5 live-driven domains; THE ship gate) — 12 STRANDED + 1 lock / 22 ROUGH
@@ -2911,8 +2911,8 @@ project-green while the Guardian sat RED; (b) nothing ever uses the product the 
 (installed exe · real providers · long multi-step work), so he is structurally the first tester;
 (c) no freeze — merging 10+ lanes/day means readiness is audited against a moving target.
 
-**The law (READY-GATE, mirror into starnet-verify + DECISIONS.md when EL-7 lands):** no session,
-report, or doc may claim StarNet is "ready", "perfect standing", or "go-public-able" without a
+**The law (READY-GATE, mirror into eyehold-verify + DECISIONS.md when EL-7 lands):** no session,
+report, or doc may claim Eyehold is "ready", "perfect standing", or "go-public-able" without a
 fresh `npm run qa:ready` receipt printed alongside the claim. Lane-level done stays lane-level:
 "lane X verified; station-wide status is whatever qa:ready says."
 
@@ -2921,7 +2921,7 @@ fresh `npm run qa:ready` receipt printed alongside the claim. Lane-level done st
   green): `npm run qa:ready` = one machine verdict READY/NOT-READY with per-check receipts
   (ledger P0/P1 via openBySeverity() · Guardian green+fresh+saw-current-trunk via git drift ·
   journeys · beginner · installed-smoke stamp ≤7d). No-fake-green. LOCKED LAW in DECISIONS.md +
-  starnet-verify: no "ready/perfect/go-public" claim without a pasted fresh qa:ready receipt.
+  eyehold-verify: no "ready/perfect/go-public" claim without a pasted fresh qa:ready receipt.
   First live trunk verdict: honest NOT READY — 5 reasons (6 P0 · 6 P1 open; runner stamps unwritten
   until each runner's next cycle; installed exe unverified).
 - **EL-8 · RC freeze + installed-exe soak (absorbs EL-4)** — ✅ MERGED 2026-07-07 (lane
@@ -3039,7 +3039,7 @@ Four-surface grep audit (COMMS / sessions / global-desktop / harness). Each item
 verified MISSING or slash-only on trunk 626c017f before listing. Claim an item here before
 building it (same law as Atlas areas).
 
-_**CLAIMED 2026-07-24 — command-doors lane** (`claude/starnet-command-improvements-753256`):
+_**CLAIMED 2026-07-24 — command-doors lane** (`claude/eyehold-command-improvements-753256`):
 adds a `dispatch:'server'` directive type to the slash registry (sidecar/slash.js +
 sidecar/slash-actions.js) so a command's door is DECLARED in the registry and EXECUTED in the
 sidecar, returning one honest text line — instead of a hand-wired `fetch()` per command in
@@ -3141,7 +3141,7 @@ E-STOP visibility + get-a-key link already chipped by Atlas — not re-listed.**
 LM Studio) + final corners. Convergence reached: 18/28 parity candidates and most corner items
 were already shipped or on GA/GB — the audit is saturated; below is the residue. AUDIT CLOSED.**
 
-*GC-T1 — the OS-integration layer (the entire theme parity surfaced; StarNet has none of it):*
+*GC-T1 — the OS-integration layer (the entire theme parity surfaced; Eyehold has none of it):*
 - GC-1 System tray + close-to-tray: app fully DIES on window close — contradicts the "agents
   keep working / 24-7 routines+channels" pitch. No TrayIcon anywhere in src-tauri.
 - GC-2 Global summon hotkey / quick-entry window (ChatGPT Alt+Space class; no global-shortcut
@@ -3297,7 +3297,7 @@ it." Structurally impossible today because:
   /pending → /decide gate: "found N bugs while you were away — approve and I'll commit."
   Approve applies to a branch in the user's repo (never main, never push); deny feeds learn.
   OPEN (Andrew, small): approve = auto-commit-to-branch (recommended) vs drop-the-.patch.
-- **NS-5c · Projects rail — ✅ MERGED 2026-07-08 b635cbab (trunk gates fast 281 + http full green).** SESSIONS↔PROJECTS toggle in the rail head; PROJECTS view lists GET /api/projects in the .ws-row vocabulary (git badge + last-touched); blessed:false rows render REVOKED (never hidden). + ADD → POST /api/projects/bless (new interactive-only route, pure projectbless.js core; native Tauri picker if the shell exposes one — it does not yet, so typed-path fallback like the KEEP flow, no allowlist widened). Row click jumps into a session anchored to the root (Chat.prefill 'work in <path> —'). Remove revokes the path grant via the existing /api/permissions/revoke; list mirrors the grant store. Live-proven in the dev app (:8879 DOM round-trips): toggle→ADD subdir→resolves git root→row blessed w/ git+now→same grant in /api/permissions→jump-in seeds session+composer→remove→grant gone server-side→row flips REVOKED. Tests: projectbless (16) + projects-view (32) + e2e.pathtrust bless route (live). OPEN: desktop native folder dialog (starnet_pick_folder not implemented in the shipped Tauri shell — falls back to typed path).
+- **NS-5c · Projects rail — ✅ MERGED 2026-07-08 b635cbab (trunk gates fast 281 + http full green).** SESSIONS↔PROJECTS toggle in the rail head; PROJECTS view lists GET /api/projects in the .ws-row vocabulary (git badge + last-touched); blessed:false rows render REVOKED (never hidden). + ADD → POST /api/projects/bless (new interactive-only route, pure projectbless.js core; native Tauri picker if the shell exposes one — it does not yet, so typed-path fallback like the KEEP flow, no allowlist widened). Row click jumps into a session anchored to the root (Chat.prefill 'work in <path> —'). Remove revokes the path grant via the existing /api/permissions/revoke; list mirrors the grant store. Live-proven in the dev app (:8879 DOM round-trips): toggle→ADD subdir→resolves git root→row blessed w/ git+now→same grant in /api/permissions→jump-in seeds session+composer→remove→grant gone server-side→row flips REVOKED. Tests: projectbless (16) + projects-view (32) + e2e.pathtrust bless route (live). OPEN: desktop native folder dialog (eyehold_pick_folder not implemented in the shipped Tauri shell — falls back to typed path).
 - **NS-5b · Focus resolver — ✅ MERGED 2026-07-08 (agent/ns5b-focus → 9fc6fccc, trunk gates fast 285 + http full green;
   full test:http green incl. a new live e2e). Landed: pure resolver sidecar/nightfocus.js
   (evidence-ranked single priority, steer-outranks-derived w/ ~7d stale, day-keyed persist) ·
@@ -3352,7 +3352,7 @@ a beat proposes THAT idea, citing the thread; decline it → it is never re-prop
 
 End every substantive session by:
 1. Updating THIS file (move landed items to DONE with the merge hash, add discoveries).
-2. If you merged to trunk: the `starnet-merge-ritual` digest in `qa/` (existing convention).
+2. If you merged to trunk: the `eyehold-merge-ritual` digest in `qa/` (existing convention).
 3. A 3-line summary in your final report: **Landed** (verified how) / **Open** (what you
    did NOT verify) / **Next** (the single highest-leverage follow-up).
 Do not create new `*_PLAN.md` files for work under ~a week; use this queue.
@@ -3400,21 +3400,21 @@ certificate, app-specific-password, secret, backup, and first-live-proof procedu
 LIVE SETUP: Apple issued Developer ID Application certificate `5XX554XKQT` for team
 `699UALS857` (expires 2031-08-01). The matching private key, certificate, PKCS#12 bundle,
 and recovery material are stored outside Git with user-only ACLs. A dedicated app-specific
-password and all six `APPLE_*` Actions secrets are installed in `androoAGI/starnet`.
+password and all six `APPLE_*` Actions secrets are installed in `Eyehold/eyehold`.
 
 FIRST CI PROOF: non-publishing `desktop-build` run `30606849654` exposed an OpenSSL 3
 PBES2/AES PKCS#12 compatibility failure in macOS `security import`. The certificate was
 re-exported as Apple-compatible SHA-1/3DES PKCS#12 and the secret replaced. Retry attempt
-2 imported one identity, found Andrew Sims's certificate, signed the bundled Node runtime,
-desktop executable, and `StarNet.app`, then submitted both Intel and Apple Silicon apps to
+2 imported one identity, found Eyehold's certificate, signed the bundled Node runtime,
+desktop executable, and `Eyehold.app`, then submitted both Intel and Apple Silicon apps to
 Apple notarization. Final Apple verdict and DMG artifacts are pending. Do not retire the
 unsigned-download warnings until both architectures pass this staged live proof and the
 DMGs receive a clean-Mac launch check.
 
 WINDOWS TRUST PROOF: the same non-publishing run used Azure Artifact Signing account
-`starnet-signing` / public-trust profile `starnet-public` and signed the app, NSIS
+`eyehold-signing` / public-trust profile `eyehold-public` and signed the app, NSIS
 components, and final installer with zero errors. The downloaded setup executable passed
-native Windows Authenticode validation as publisher Andrew Sims with a Microsoft verified
+native Windows Authenticode validation as publisher Eyehold with a Microsoft verified
 code-signing chain and timestamp. The checksum-verified bundled Node runtime independently
 passes as publisher OpenJS Foundation with a DigiCert timestamp. The tagged release train
 now fails closed on missing Azure credentials and checks all three timestamped signatures
@@ -3470,7 +3470,7 @@ Evidence on the isolated branch: the plist parses as XML, the touched JavaScript
 `node --check`, the focused desktop voice bundle test is green, and `npm run test:fast` is
 517/517 green. A macOS artifact build and a real allow/deny/reset microphone round-trip remain
 unverified on this Windows host; the next macOS release candidate must prove the generated
-`StarNet.app/Contents/Info.plist` contains the key and exercise the prompt on real hardware.
+`Eyehold.app/Contents/Info.plist` contains the key and exercise the prompt on real hardware.
 
 # READY TO MERGE 2026-08-04 — FIELD MANUAL SELECTION ACCESSIBILITY (`agent/quality-loop-0804d`)
 
@@ -3519,7 +3519,7 @@ sync: 8 assertions; `test:fast`: 539/539 steps green. Installed-desktop verifica
   refused; cleanup never deletes the container or its writable layer.
 - **8 · SSH backend:** `REMOTE SSH` is a real per-agent execution profile. It uses the OS OpenSSH agent/config,
   strict known-host verification, batch-only auth, bounded probes, remote cwd clamping, and no local-host fallback.
-  StarNet stores the destination and remote root, never a password or private key.
+  Eyehold stores the destination and remote root, never a password or private key.
 - **9 · Non-bind workspace sync:** SSH pushes the local agent workspace before a command and pulls the remote
   workspace back afterward using exact `scp` argv. Sync never deletes either side, reports its real state/error,
   and fails the tool call when outputs cannot be returned. Remote checkpointing is disabled through the backend
@@ -3650,7 +3650,7 @@ Focused update verification on unchanged installed 7f6c7b005: ten suites / 239 a
 
 ## IN PROGRESS — 2026-09-11 combined provider and session-marker merge (agent/session-failed-marker-0910)
 
-Owner authorized syncing, combining, fresh gates and merge. The isolated lane contains provider logos/status alignment/StarNet animation and the flashing failure X. Trunk baseline 7f6c7b005; pre-merge gate running. This lane claims the next serialized integration merge and its post-merge gate. Existing NEXT/STATUS/Rooms edits are preserved. No installer rebuild or publication requested.
+Owner authorized syncing, combining, fresh gates and merge. The isolated lane contains provider logos/status alignment/Eyehold animation and the flashing failure X. Trunk baseline 7f6c7b005; pre-merge gate running. This lane claims the next serialized integration merge and its post-merge gate. Existing NEXT/STATUS/Rooms edits are preserved. No installer rebuild or publication requested.
 
 
 **Combined provider/session-marker merge complete:** de06c1f22 contains both lanes. Combined pre-merge and post-merge fast gates passed 771/771; live combined UI passed. The serialized merge claim is released. Both worktrees remain for the owner preview; no installer build or publication performed.

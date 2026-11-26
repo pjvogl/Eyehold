@@ -1,4 +1,4 @@
-/* STARNET quick model selector. Lives in COMMS beside voice controls; transport state stays in Harness. */
+/* EYEHOLD quick model selector. Lives in COMMS beside voice controls; transport state stays in Harness. */
 'use strict';
 
 const ModelDock = (() => {
@@ -58,7 +58,7 @@ const ModelDock = (() => {
   };
   // CLAUDE CODE sits with the other subscription sign-ins (2026-10-02): at 15.5 its handful of models sank under
   // OpenRouter's whole catalog, and only an exact "claude code" search found them.
-  const PROVIDER_RANK = { starnet: -1, codex: 0, grok: 1, kimi: 2, 'claude-cli': 2.5, openrouter: 3, openai: 4, anthropic: 5, gemini: 6, xai: 7, groq: 8, mistral: 9, deepseek: 10, together: 11, fireworks: 12, perplexity: 13, cerebras: 14, ollama: 15, custom: 16 };
+  const PROVIDER_RANK = { eyehold: -1, codex: 0, grok: 1, kimi: 2, 'claude-cli': 2.5, openrouter: 3, openai: 4, anthropic: 5, gemini: 6, xai: 7, groq: 8, mistral: 9, deepseek: 10, together: 11, fireworks: 12, perplexity: 13, cerebras: 14, ollama: 15, custom: 16 };
 
   let opts = {};
   let wired = false;
@@ -81,9 +81,9 @@ const ModelDock = (() => {
   let advancedEffortsOpen = false;
   /* TIER BADGES (2026-09-29). The cloud's EDITORIAL tier list (GET /api/model-tiers → the linked cloud's
      /v1/tierlist) badges the rows it names: "S · agent", "A · cheap". Its ids are OpenRouter ids, so only rows
-     whose id space IS OpenRouter's (the managed starnet catalog and direct OpenRouter) are matched — a direct
+     whose id space IS OpenRouter's (the managed eyehold catalog and direct OpenRouter) are matched — a direct
      vendor id is never guessed onto a board. No list (cloud down / unlinked) = no badges, never invented ones. */
-  const TIER_ID_SPACE = { starnet: true, openrouter: true };
+  const TIER_ID_SPACE = { eyehold: true, openrouter: true };
   const TIER_REFRESH_MS = 10 * 60 * 1000;
   let tierIndex = new Map();
   let tierLoadedAt = 0, tierRequest = null;
@@ -133,7 +133,7 @@ const ModelDock = (() => {
   }
   function providerLabel(p) {
     p = normalizeProvider(p);
-    const map = { starnet: 'STARNET', codex: 'GPT / CODEX', grok: 'GROK OAUTH', kimi: 'KIMI OAUTH', openrouter: 'OPENROUTER', openai: 'OPENAI API', anthropic: 'ANTHROPIC', gemini: 'GEMINI', xai: 'XAI', groq: 'GROQ', mistral: 'MISTRAL', deepseek: 'DEEPSEEK', together: 'TOGETHER', fireworks: 'FIREWORKS', perplexity: 'PERPLEXITY', cerebras: 'CEREBRAS', ollama: 'OLLAMA', 'claude-cli': 'CLAUDE CODE', custom: 'CUSTOM' };
+    const map = { eyehold: 'EYEHOLD', codex: 'GPT / CODEX', grok: 'GROK OAUTH', kimi: 'KIMI OAUTH', openrouter: 'OPENROUTER', openai: 'OPENAI API', anthropic: 'ANTHROPIC', gemini: 'GEMINI', xai: 'XAI', groq: 'GROQ', mistral: 'MISTRAL', deepseek: 'DEEPSEEK', together: 'TOGETHER', fireworks: 'FIREWORKS', perplexity: 'PERPLEXITY', cerebras: 'CEREBRAS', ollama: 'OLLAMA', 'claude-cli': 'CLAUDE CODE', custom: 'CUSTOM' };
     return map[p] || String(p || 'openrouter').toUpperCase();
   }
   function normalizeProvider(p) {
@@ -154,7 +154,7 @@ const ModelDock = (() => {
     if (p === 'perplexity' || p === 'pplx' || p === 'sonar') return 'perplexity';
     if (p === 'cerebras') return 'cerebras';
     // managed credits — bearer is the linked device token (mirrors app.js + registry.js aliases)
-    if (p === 'starnet' || p === 'starnet-cloud' || p === 'managed') return 'starnet';
+    if (p === 'eyehold' || p === 'eyehold-cloud' || p === 'managed') return 'eyehold';
     if (p === 'ollama' || p === 'ollama-local') return 'ollama';
     if (p === 'claude-cli' || p === 'claude-code' || p === 'claude-code-cli') return 'claude-cli';
     if (p === 'custom' || p === 'openai-compatible' || p === 'local' || p === 'vllm' || p === 'lmstudio') return 'custom';
@@ -281,14 +281,14 @@ const ModelDock = (() => {
     const p = provider();
     // Preserve a saved current model only while the active catalog is unavailable. Once a successful catalog
     // says it is absent, reconcileCurrentModel() has either mapped it to a proven provider-native id or cleared
-    // it. Re-inserting it here was the stale-model bug: a bare Anthropic id appeared selectable under STARNET.
+    // it. Re-inserting it here was the stale-model bug: a bare Anthropic id appeared selectable under EYEHOLD.
     if (current && isAgentModel({ id: current, provider: p }) && !list.some(m => m.id === current && normalizeProvider(m.provider) === p) && !(catalogState[p] && catalogState[p].confirmed)) {
       list.unshift({ id: current, name: current, provider: p, fallback: true, unverifiedCurrent: true });
     }
     return list.filter(m => m && m.id && isAgentModel(m));
   }
 
-  // Return a catalog-confirmed equivalent for a model whose provider changed. Managed StarNet/OpenRouter ids
+  // Return a catalog-confirmed equivalent for a model whose provider changed. Managed Eyehold/OpenRouter ids
   // are vendor/model; Anthropic's direct API uses the bare tail. Never invent a slug: a candidate is returned
   // only when that exact id is present in the successful catalog.
   function catalogEquivalent(current, p, list) {
@@ -298,7 +298,7 @@ const ModelDock = (() => {
     if (!id) return '';
     if (rows.some(m => m && m.id === id)) return id;
     let candidate = '';
-    if ((p === 'starnet' || p === 'openrouter') && id.indexOf('/') < 0) {
+    if ((p === 'eyehold' || p === 'openrouter') && id.indexOf('/') < 0) {
       candidate = 'anthropic/' + id;
       // #93: a bare vendor id ('gpt-5.5' — the default a managed setup used to save) names its routed row
       // 'openai/gpt-5.5'. Map it only when EXACTLY ONE catalog row is <vendor>/<id>: two vendors serving the
@@ -531,8 +531,8 @@ const ModelDock = (() => {
         try {
           // The catalog must describe the SAME endpoint this provider's runs hit: a per-provider base URL rides every
           // run body (harness.js chat), so listing the default endpoint instead showed models — and reasoning dials —
-          // for a host the runs never reach. starnet's endpoint is its link, never a page override.
-          const override = (p !== 'starnet' && typeof Harness !== 'undefined' && Harness.getBaseUrl) ? Harness.getBaseUrl(p) : '';
+          // for a host the runs never reach. eyehold's endpoint is its link, never a page override.
+          const override = (p !== 'eyehold' && typeof Harness !== 'undefined' && Harness.getBaseUrl) ? Harness.getBaseUrl(p) : '';
           const q = override ? ('?baseUrl=' + encodeURIComponent(override)) : '';
           const r = await apiFetch('/api/models/' + encodeURIComponent(p) + q, { cache: 'no-store' });
           if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -579,9 +579,9 @@ const ModelDock = (() => {
     renderList();
     // Tier badges ride beside the catalog, never gate it: a slow/unreachable cloud leaves the list badge-less.
     loadTiers(!!force).then(() => { if (!loading && generation === fetchGeneration) renderList(); }).catch(() => {});
-    // 'starnet' first: a linked station's own credits are the most direct way to run, and its catalog is
+    // 'eyehold' first: a linked station's own credits are the most direct way to run, and its catalog is
     // the whole managed lineup. providerEnabled() keeps it out of the list when no credits are configured.
-    const ids = ['starnet', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
+    const ids = ['eyehold', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
     const active = provider();
     if (ids.indexOf(active) < 0) ids.unshift(active);
     const pending = ids.map(p => fetchProviderModels(p, force));
@@ -897,7 +897,7 @@ const ModelDock = (() => {
   }
   // first-run affordance: one subtle pulse so a new user notices the chip exists. Persisted
   // guard so it fires only until they've interacted (or seen it once).
-  const PULSE_KEY = 'starnet.modeldock.seen';
+  const PULSE_KEY = 'eyehold.modeldock.seen';
   function clearPulse() {
     const toggle = el('model-dock-toggle');
     if (toggle) toggle.classList.remove('first-run');
@@ -1016,9 +1016,9 @@ const ModelDock = (() => {
   // `ensure: { id, provider }` guarantees a specific model (e.g. an agent's own pin) is present even if the
   // provider is unconfigured, so the picker can always show + preselect it. Returns [{ id, name, provider, … }].
   async function computeCatalog(force, ensure) {
-    // #93: 'starnet' leads here exactly as in the dock — without it a per-agent picker offered managed credits only
+    // #93: 'eyehold' leads here exactly as in the dock — without it a per-agent picker offered managed credits only
     // while the FOCUSED agent already ran on them. providerEnabled() drops it (empty list) when the station is unlinked.
-    const ids = ['starnet', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
+    const ids = ['eyehold', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
     const active = provider();
     if (ids.indexOf(active) < 0) ids.unshift(active);
     const parts = await Promise.all(ids.map(p => fetchProviderModels(p, force).catch(() => [])));

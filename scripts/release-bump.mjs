@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * release-bump.mjs — one-command version bumper for a StarNet desktop release cut.
+ * release-bump.mjs — one-command version bumper for a Eyehold desktop release cut.
  *
  * Bumps the version in lockstep across every file the release train reads, scaffolds
  * fresh release notes, then commits + tags so a `v<version>` tag push can trigger the
@@ -39,8 +39,8 @@
  *   node scripts/release-bump.mjs <version> [--dry-run] [--no-tag]
  *
  * Env overrides (used by the unit test to run against a throwaway fixture repo):
- *   STARNET_BUMP_ROOT   default: repo root (parent of scripts/)
- *   STARNET_BUMP_GH     default: 'gh' — the GitHub CLI used for the published-floor query
+ *   EYEHOLD_BUMP_ROOT   default: repo root (parent of scripts/)
+ *   EYEHOLD_BUMP_GH     default: 'gh' — the GitHub CLI used for the published-floor query
  *                       (the unit test injects a fake `gh` here to exercise every branch offline)
  */
 
@@ -51,8 +51,8 @@ import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = process.env.STARNET_BUMP_ROOT
-  ? resolve(process.env.STARNET_BUMP_ROOT)
+const ROOT = process.env.EYEHOLD_BUMP_ROOT
+  ? resolve(process.env.EYEHOLD_BUMP_ROOT)
   : resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 // The Cargo package name of the desktop app — the only [[package]] block we rewrite.
@@ -113,7 +113,7 @@ function resolveReleasesRepo() {
   const endpoints = conf?.plugins?.updater?.endpoints;
   const url = Array.isArray(endpoints) ? endpoints.find(e => typeof e === 'string') : null;
   if (!url) return null;
-  // e.g. https://github.com/androoAGI/starnet-releases/releases/latest/...
+  // e.g. https://github.com/Eyehold/eyehold-releases/releases/latest/...
   const m = /github\.com\/([^/]+)\/([^/]+)/.exec(url);
   if (!m) return null;
   return m[1] + '/' + m[2];
@@ -125,10 +125,10 @@ function resolveReleasesRepo() {
 //   { ok: true,  floor: null }           repo reachable but genuinely has no releases
 //   { ok: false, reason: '...' }         could-not-check (offline / no gh / auth / 404) -> warn+fallback
 //
-// The gh binary is overridable via STARNET_BUMP_GH so the unit test can inject a fake gh
-// (same seam pattern as STARNET_BUMP_ROOT) and exercise every branch offline.
+// The gh binary is overridable via EYEHOLD_BUMP_GH so the unit test can inject a fake gh
+// (same seam pattern as EYEHOLD_BUMP_ROOT) and exercise every branch offline.
 function queryPublishedFloor(repo) {
-  const ghBin = process.env.STARNET_BUMP_GH || 'gh';
+  const ghBin = process.env.EYEHOLD_BUMP_GH || 'gh';
   // Drafts have no updater fleet behind them and may already reserve the in-tree version. Counting one as the
   // published floor makes the diagnostic false (and obscures a source-tag/draft mismatch), so query only releases
   // users can actually receive. Pre-releases remain included because an installed pre-release fleet is still a
@@ -233,7 +233,7 @@ function planCargoLock(version) {
 function planReleaseNotes(version) {
   const path = join(ROOT, 'RELEASE_NOTES.md');
   const before = existsSync(path) ? readText(path) : '';
-  const after = '# StarNet v' + version + '\n\n- TODO: summarize what changed in this release.\n';
+  const after = '# Eyehold v' + version + '\n\n- TODO: summarize what changed in this release.\n';
   return { path, before, after, current: null, label: 'RELEASE_NOTES.md (scaffold)' };
 }
 
@@ -252,7 +252,7 @@ function main() {
   if (!SEMVER_RE.test(version)) fail('"' + version + '" is not a valid SemVer version (expected X.Y.Z).');
 
   const confPath = join(ROOT, 'src-tauri', 'tauri.conf.json');
-  if (!existsSync(confPath)) fail('cannot find ' + confPath + ' (is STARNET_BUMP_ROOT correct?)');
+  if (!existsSync(confPath)) fail('cannot find ' + confPath + ' (is EYEHOLD_BUMP_ROOT correct?)');
   const current = readJson(confPath).version;
   if (!current) fail('tauri.conf.json has no current version');
   if (compareSemver(version, current) <= 0) {

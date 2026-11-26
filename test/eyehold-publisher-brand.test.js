@@ -5,10 +5,10 @@ const cfg=JSON.parse(fs.readFileSync(path.join(root,'src-tauri/tauri.conf.json')
 assert.equal(cfg.productName,'The Eyehold');
 const host=JSON.parse(fs.readFileSync(path.join(root,'eyehold.host.json'),'utf8'));
 assert.equal(cfg.bundle.publisher,'Eyehold');
-assert.notEqual(cfg.bundle.publisher,'Andrew Sims');
+assert.notEqual(cfg.bundle.publisher,'Eyehold');
 assert.equal(cfg.bundle.createUpdaterArtifacts,false);
 assert.deepEqual(cfg.plugins.updater.endpoints,['https://'+host.baseDomain+host.updaterPath]);
 const ui=fs.readFileSync(path.join(root,'frontend/app/updates.js'),'utf8');
-assert.doesNotMatch(ui,/androoAGI\/starnet-releases/);
+assert.doesNotMatch(ui,/Eyehold\/eyehold-releases/);
 assert.match(ui,/EYEHOLD_UPDATES_ENABLED = false/);
 console.log('Eyehold publisher and updater branding safeguards OK');

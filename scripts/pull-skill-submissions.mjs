@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* scripts/pull-skill-submissions.mjs — bring APPROVED Skill Market uploads into the catalog (2026-10-06).
 
-   Authors upload on account.starnetos.com (ACCOUNT › SKILLS); the operator approves or sends each back in
+   Authors upload on account.eyehold.com (ACCOUNT › SKILLS); the operator approves or sends each back in
    /admin/skills. Approving publishes nothing: the catalog is signed on this PC, so approved skills come here.
 
      node scripts/pull-skill-submissions.mjs              pull every approved upload into skills-catalog/skills/<slug>/,
@@ -13,13 +13,13 @@
    Then commit skills-catalog/, NOTICE.md and website/ (the build output), deploy the website (website-deploy, see
    docs/SKILL_MARKET_UPLOADS.md), run --mark-live, and `build-skill-catalog.mjs --pin-floor` as usual.
 
-   Refused, never overwritten: a name a StarNet Original or an adapted community pick already uses, and a name another
+   Refused, never overwritten: a name a Eyehold Original or an adapted community pick already uses, and a name another
    author's upload holds (the cloud's owner key must match the folder's). A package the skill guard rates dangerous
    is skipped and reported; nothing is written for it. An update to an author's own skill bumps its minor version
    (published versions are immutable).
 
-   Config: SKILL_REVIEW_TOKEN (or the file ~/.starnet-keys/skill-review.token), STARNET_CLOUD_URL
-   (default https://account.starnetos.com), STARNET_SKILL_MARKET_URL (default the live catalog on starnetos.com). */
+   Config: SKILL_REVIEW_TOKEN (or the file ~/.eyehold-keys/skill-review.token), EYEHOLD_CLOUD_URL
+   (default https://account.eyehold.com), EYEHOLD_SKILL_MARKET_URL (default the live catalog on eyehold.com). */
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -34,12 +34,12 @@ const market = require(join(ROOT, 'sidecar/skills/market-format.js'));
 const catalog = require(join(ROOT, 'sidecar/skills/catalog.js'));
 const guard = require(join(ROOT, 'sidecar/skills/guard.js'));
 
-const CLOUD = String(process.env.STARNET_CLOUD_URL || 'https://account.starnetos.com').replace(/\/+$/, '');
-const LIVE_INDEX = process.env.STARNET_SKILL_MARKET_URL || 'https://starnetos.com/.well-known/starnet-skills.json';
-const TOKEN_FILE = join(homedir(), '.starnet-keys', 'skill-review.token');
+const CLOUD = String(process.env.EYEHOLD_CLOUD_URL || 'https://account.eyehold.com').replace(/\/+$/, '');
+const LIVE_INDEX = process.env.EYEHOLD_SKILL_MARKET_URL || 'https://eyehold.com/.well-known/eyehold-skills.json';
+const TOKEN_FILE = join(homedir(), '.eyehold-keys', 'skill-review.token');
 const CATEGORIES = ['Communication', 'Creative', 'Engineering', 'Marketing', 'Planning', 'Productivity', 'Research', 'Writing'];
 const LICENSES = ['MIT', 'CC-BY-4.0'];
-const NOTICE_HEAD = '### Shared by StarNet users';
+const NOTICE_HEAD = '### Shared by Eyehold users';
 
 const str = (v) => (v == null ? '' : String(v));
 const sha = (s) => createHash('sha256').update(str(s), 'utf8').digest('hex');
@@ -69,10 +69,10 @@ export function planPull(submissions, ctx) {
     const bad = files.find((f) => !market.marketFileAllowed(f.path) || f.path.indexOf('..') >= 0 || f.content.indexOf('\u0000') >= 0);
     if (bad) { skip(bad.path + ' is not a file the market allows'); continue; }
     if (packageDigest(files) !== str(s.digest)) { skip('the package does not match the digest the reviewer approved'); continue; }
-    if (ctx.librarySlugs.has(slug)) { skip('a StarNet Original already uses this name'); continue; }
+    if (ctx.librarySlugs.has(slug)) { skip('a Eyehold Original already uses this name'); continue; }
     const prior = ctx.readMeta(slug);
     if (prior && !(prior.submission && prior.submission.owner === s.owner)) {
-      skip(prior.submission ? 'another author\'s upload already holds this name' : 'a skill StarNet publishes already uses this name');
+      skip(prior.submission ? 'another author\'s upload already holds this name' : 'a skill Eyehold publishes already uses this name');
       continue;
     }
     // the authoritative scan: the same guard and tier the catalog build applies (a dangerous package fails the build)
@@ -84,7 +84,7 @@ export function planPull(submissions, ctx) {
       continue;
     }
     const version = prior ? bumpMinor(prior.version) : '1.0.0';
-    const credit = plainCredit(s.credit) || 'StarNet user';
+    const credit = plainCredit(s.credit) || 'Eyehold user';
     const meta = {
       slug, version, shelf: 'community', category: s.category,
       tags: [s.category.toLowerCase(), 'shared'], requires: [], license: s.license, authors: [credit],
@@ -106,7 +106,7 @@ export function creditNotice(text, rows) {
     const next = lines.findIndex((l, i) => i > lines.indexOf('## Skill Market (skills-catalog/)') && /^## /.test(l));
     if (lines.indexOf('## Skill Market (skills-catalog/)') < 0 || next < 0) throw new Error('NOTICE.md has no "## Skill Market (skills-catalog/)" section to credit uploads in');
     lines.splice(next, 0, NOTICE_HEAD, '',
-      'Skills StarNet users shared through the Skill Market upload page (account.starnetos.com › ACCOUNT › SKILLS), each read and',
+      'Skills Eyehold users shared through the Skill Market upload page (account.eyehold.com › ACCOUNT › SKILLS), each read and',
       'approved before it was published. Each package ships its author\'s LICENSE.', '',
       '| Skill | Author | License |', '| --- | --- | --- |', '');
     at = lines.indexOf(NOTICE_HEAD);
@@ -202,7 +202,7 @@ async function markLive() {
   const token = reviewToken();
   const live = market.readCatalog(await getJson(LIVE_INDEX, {}));
   const bySlug = new Map(live.entries.map((e) => [e.slug, e]));
-  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'starnet-skills.json'), 'utf8'));
+  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'eyehold-skills.json'), 'utf8'));
   const localBySlug = new Map(local.skills.map((e) => [e.slug, e]));
   const published = [];
   for (const slug of existsSync(SKILLS_DIR) ? readdirSync(SKILLS_DIR) : []) {

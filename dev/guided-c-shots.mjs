@@ -66,7 +66,7 @@ async function main() {
   materializeSeedWorkspace(join(scratch, 'ws'), 'test/model');
   const side = bootSeededSidecar({
     port: PORT, model: 'test/model', key: 'sk-or-v1-guided-c-fake', scratchDir: join(scratch, 'ws'),
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base }
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base }
   });
   let chrome = null, cdp = null;
   const shots = [];

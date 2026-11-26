@@ -8,7 +8,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   const fixture = SidecarFixture.create({ entry: path.join(__dirname, 'helpers/save-read-fault-host.cjs'), timeoutMs: 20000 });
   const primary = path.join(fixture.workspace, 'audit.save.json');
   const control = path.join(fixture.workspace, 'save-read-fault.json');
-  const doc = { schema: 'starnet.save', version: 5, updatedAt: 100, agent: { id: 'audit', name: 'RETAIN ME' } };
+  const doc = { schema: 'eyehold.save', version: 5, updatedAt: 100, agent: { id: 'audit', name: 'RETAIN ME' } };
   try {
     await fixture.start();
     const saved = await fixture.json('POST', '/api/save', doc);

@@ -18,7 +18,7 @@ const SIDECAR = join(REPO, 'sidecar', 'index.js');
 
 // Mock UI tests only need a label, but live audit uses this model for a real provider call.
 export const DEFAULT_MODEL = process.env.SKYNET_DEFAULT_MODEL
-  || process.env.STARNET_DEFAULT_MODEL
+  || process.env.EYEHOLD_DEFAULT_MODEL
   || 'anthropic/claude-sonnet-4.6';
 export const PLACEHOLDER_KEY = process.env.SKYNET_OPENROUTER_KEY || 'sk-or-shoot-placeholder';
 
@@ -73,7 +73,7 @@ export async function waitUp(url, tries = 60) {
 // what defeats the cold-boot race (a fresh sidecar's FIRST page load can transiently show the
 // title screen with dev=false). We poll, reloading periodically, until the floor is truly up.
 export const READY_EXPR = `(() => { try {
-  if (!window.__STARNET_DEV__) return false;
+  if (!window.__EYEHOLD_DEV__) return false;
   const g = document.getElementById('screen-game');
   if (g && g.classList.contains('active')) return true;
   // fallback: dock visible and the title CTA is not

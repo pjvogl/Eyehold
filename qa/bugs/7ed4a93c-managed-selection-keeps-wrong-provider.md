@@ -42,7 +42,7 @@ Before 17b9e1341 selection could retain stale provider identity. model-provider-
 
 {
   "adapters": [
-    {"target":"starnet","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved starnet configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
+    {"target":"eyehold","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved eyehold configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"openrouter","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved openrouter configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"custom","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved custom configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"gemini","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved gemini configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},

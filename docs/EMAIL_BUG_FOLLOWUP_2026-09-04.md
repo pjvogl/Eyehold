@@ -17,7 +17,7 @@ merging another lane's fixes. Reporter identities and private diagnostics are de
 ## Reproduced gaps repaired here
 
 1. **Managed-compatible tool history.** The generic Chat Completions adapter, used by managed
-   StarNet, forwarded an orphan tool result with an empty call id. A local HTTP upstream enforcing
+   Eyehold, forwarded an orphan tool result with an empty call id. A local HTTP upstream enforcing
    the pair invariant returned `400 — Tool message must have either name or tool_call_id`.
    The existing direct-OpenRouter repair now lives once in `providers/provider.js`, and both
    adapters use it. Orphan information is retained as explicitly labeled recovery text; interrupted

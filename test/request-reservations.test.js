@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {makeRequestReservations}=require('../sidecar/request-reservations');
 (async()=>{
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-request-test-'));
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-request-test-'));
  const deps={fs,path,workspaces:root,now:()=>1000};
  let calls=0,release; const wait=new Promise(r=>release=r);
  const args={scope:'principal:session',key:'one',body:{b:2,a:1},runId:'first'};

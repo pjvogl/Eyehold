@@ -46,12 +46,12 @@ function eventsOf(text) {
 (async () => {
   const provider = await startProvider();
   const fixture = SidecarFixture.create({
-    prefix: 'starnet-tool-model-fallback-',
+    prefix: 'eyehold-tool-model-fallback-',
     env: {
       SKYNET_OPENROUTER_BASE: provider.baseUrl,
-      STARNET_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
       SKYNET_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
-      STARNET_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
       SKYNET_QUEST_REFRESH: '0'
     }
   });

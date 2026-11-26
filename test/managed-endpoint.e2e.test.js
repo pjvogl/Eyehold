@@ -25,8 +25,8 @@ test('managed chat ignores stale request endpoints and credentials across provid
   const stale = 'http://127.0.0.1:' + closed.address().port + '/v1';
   await new Promise(r => closed.close(r));
   const fixture = new SidecarFixture({ prefix: 'managed-endpoint-proof-', timeoutMs: 20000, env: {
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_CLOUD_URL: cloud, STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
     OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', SKYNET_AUX_BUDGET: '0', SKYNET_FULL_ACCESS: '1'
   } });
   const savedPath = path.join(fixture.workspace, '.secrets/credits.json');
@@ -40,8 +40,8 @@ test('managed chat ignores stale request endpoints and credentials across provid
   function done(events) { assert.equal(events.filter(e => e.name === 'agent.run.end').at(-1)?.payload.reason, 'done', JSON.stringify(events.filter(e => /error/.test(e.name)))); }
   try {
     await fixture.start();
-    done(await run('starnet'));
-    const reproduction = await run('starnet', { baseUrl: stale });
+    done(await run('eyehold'));
+    const reproduction = await run('eyehold', { baseUrl: stale });
     if (process.env.ENDPOINT_BASELINE === '1') {
       assert.match(JSON.stringify(reproduction), /ECONNREFUSED 127\.0\.0\.1/);
       console.log('BEFORE: linked managed chat succeeds; stale request endpoint reproduces fetch failed (ECONNREFUSED 127.0.0.1).');
@@ -52,20 +52,20 @@ test('managed chat ignores stale request endpoints and credentials across provid
       if (round) {
         const link = JSON.parse(fs.readFileSync(savedPath, 'utf8')); delete link.deviceToken;
         fs.writeFileSync(savedPath, JSON.stringify(link));
-        await fixture.restart({ STARNET_CREDITS_TOKEN: 'fixture-linked-token' });
+        await fixture.restart({ EYEHOLD_CREDITS_TOKEN: 'fixture-linked-token' });
       }
       done(await run('custom', { baseUrl: cloud + '/custom/v1', key: 'fixture-custom-key' }));
       assert.equal(calls.at(-1).key, 'Bearer fixture-custom-key');
       assert.equal(calls.at(-1).url, '/custom/v1/chat/completions');
-      done(await run('starnet', { base_url: stale, key: 'fixture-custom-key' }));
+      done(await run('eyehold', { base_url: stale, key: 'fixture-custom-key' }));
       assert.equal(calls.at(-1).key, 'Bearer fixture-linked-token');
       assert.equal(calls.at(-1).url, '/v1/chat/completions');
     }
     // Without a linked account, arbitrary request credentials must not impersonate managed access.
     fs.unlinkSync(savedPath);
-    await fixture.restart({ STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '' });
+    await fixture.restart({ EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '' });
     const beforeUnlinked = calls.length;
-    const unlinked = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'starnet', key: 'fixture-custom-key', baseUrl: cloud + '/v1', model: 'test/model', messages: [{ role: 'user', content: 'hello' }] }) });
+    const unlinked = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'eyehold', key: 'fixture-custom-key', baseUrl: cloud + '/v1', model: 'test/model', messages: [{ role: 'user', content: 'hello' }] }) });
     assert.equal(unlinked.status, 400);
     assert.equal(calls.length, beforeUnlinked, 'unlinked managed request must not reach a provider');
     console.log('AFTER: stale endpoint repaired; custom routing preserved; switching back uses linked endpoint/token; desktop-token restart passed.');
@@ -85,11 +85,11 @@ test('persisted frontend endpoints stay provider scoped across switching and rel
   let harness = load();
   await harness.setBaseUrl('http://127.0.0.1:9/v1', 'custom');
   harness.setProv('gemini'); assert.equal(harness.getBaseUrl('gemini'), '');
-  harness.setProv('starnet'); assert.equal(harness.getBaseUrl('starnet'), '', 'normal switching does not explain a managed override');
+  harness.setProv('eyehold'); assert.equal(harness.getBaseUrl('eyehold'), '', 'normal switching does not explain a managed override');
   // A pre-existing managed-scoped override DOES survive reload and is sent by the existing frontend.
-  await harness.setBaseUrl('http://127.0.0.1:9/v1', 'starnet');
+  await harness.setBaseUrl('http://127.0.0.1:9/v1', 'eyehold');
   harness = load();
-  assert.equal(harness.getBaseUrl('starnet'), 'http://127.0.0.1:9/v1');
+  assert.equal(harness.getBaseUrl('eyehold'), 'http://127.0.0.1:9/v1');
   assert.equal(harness.getBaseUrl('custom'), 'http://127.0.0.1:9/v1');
   assert.equal(harness.getBaseUrl('gemini'), '');
 });

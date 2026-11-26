@@ -1,8 +1,8 @@
 # T0 clean-install proof — install the exact staged release installer on a FRESH ephemeral
-# Windows VM (a genuinely clean machine: no dev tools, no prior StarNet state, brand-new user
+# Windows VM (a genuinely clean machine: no dev tools, no prior Eyehold state, brand-new user
 # profile), observe first launch via the WebView2 CDP port, and emit a
-# starnet.clean-install-proof.v1 evidence JSON for import on the operator machine with
-# STARNET_T0_CLEAN_EVIDENCE (scripts/t0-clean-install.mjs).
+# eyehold.clean-install-proof.v1 evidence JSON for import on the operator machine with
+# EYEHOLD_T0_CLEAN_EVIDENCE (scripts/t0-clean-install.mjs).
 #
 # WHY CI: the operator machine runs Windows 11 Home (no Windows Sandbox / Hyper-V), and a
 # dev box can never earn T0 by definition. Each GitHub-hosted runner is a one-shot clean VM.
@@ -77,8 +77,8 @@ jobs:
           if ($LASTEXITCODE -ne 0 -or $run.path -ne '.github/workflows/desktop-build.yml' -or $run.status -ne 'completed') { throw 'Not a completed desktop-build run' }
           # Checkout happens after first-launch proof and cleans GITHUB_WORKSPACE.
           # Keep the verified installer outside it for the later signature check.
-          $candidateDir = Join-Path $env:RUNNER_TEMP 'starnet-candidate'
-          gh run download $env:BUILD_RUN_ID --repo $env:GITHUB_REPOSITORY --name starnet-win-x64 --dir $candidateDir
+          $candidateDir = Join-Path $env:RUNNER_TEMP 'eyehold-candidate'
+          gh run download $env:BUILD_RUN_ID --repo $env:GITHUB_REPOSITORY --name eyehold-win-x64 --dir $candidateDir
           if ($LASTEXITCODE -ne 0) { throw 'Candidate artifact download failed' }
           $installers = @(Get-ChildItem -LiteralPath $candidateDir -Recurse -Filter '*-setup.exe')
           if ($installers.Count -ne 1) { throw 'Expected exactly one candidate installer' }
@@ -100,7 +100,7 @@ jobs:
           $p = Start-Process -FilePath $env:INSTALLER -ArgumentList '/S' -WindowStyle Hidden -PassThru -Wait
           if ($p.ExitCode -ne 0) { throw "installer exited $($p.ExitCode)" }
           $exe = Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter 'skynet-desktop.exe' -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -match 'StarNet' } | Select-Object -First 1
+            Where-Object { $_.FullName -match 'Eyehold' } | Select-Object -First 1
           if ($null -eq $exe) { throw "installed skynet-desktop.exe not found under LOCALAPPDATA" }
           "EXE=$($exe.FullName)" >> $env:GITHUB_ENV
           "INSTALL_DIR=$($exe.DirectoryName)" >> $env:GITHUB_ENV
@@ -140,7 +140,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $os = Get-CimInstance Win32_OperatingSystem
           $doc = [ordered]@{
-            schema      = 'starnet.clean-install-proof.v1'
+            schema      = 'eyehold.clean-install-proof.v1'
             generatedAt = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
             machineKind = 'github-hosted-ephemeral-windows-vm'
             cleanMachine = $true
@@ -172,7 +172,7 @@ jobs:
               cdpProven     = $true
             }
             notes = @(
-              'Fresh GitHub-hosted Windows runner: brand-new VM image, no prior StarNet state, no repo checkout, no dev toolchain used by the app.',
+              'Fresh GitHub-hosted Windows runner: brand-new VM image, no prior Eyehold state, no repo checkout, no dev toolchain used by the app.',
               'First launch proven by attaching to the WebView2 CDP endpoint and observing a live tauri.localhost page.',
               'Workspace observed under the roaming AppData identifier, outside the install directory.'
             )
@@ -244,7 +244,7 @@ jobs:
           if ($env:BASELINE_TAG -notmatch '^v\d+\.\d+\.\d+$') { throw 'Invalid baseline tag' }
           $release = gh release view $env:BASELINE_TAG --repo $env:REPO --json isDraft,isPrerelease | ConvertFrom-Json
           if ($LASTEXITCODE -ne 0 -or $release.isDraft -or $release.isPrerelease) { throw 'Baseline must be a published stable release' }
-          $baselineDir = Join-Path $env:RUNNER_TEMP 'starnet-public-baseline'
+          $baselineDir = Join-Path $env:RUNNER_TEMP 'eyehold-public-baseline'
           gh release download $env:BASELINE_TAG --repo $env:REPO --pattern '*-setup.exe' --dir $baselineDir
           if ($LASTEXITCODE -ne 0) { throw 'Public baseline download failed' }
           $files = @(Get-ChildItem -LiteralPath $baselineDir -Filter '*-setup.exe')

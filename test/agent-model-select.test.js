@@ -140,14 +140,14 @@ for (const file of ['frontend/app/stationui.js', 'website/app/app/stationui.js']
       nodes['#' + id] = { value: '', listeners: {}, addEventListener(event, callback) { this.listeners[event] = callback; } };
     }
     nodes['#ag-model-in'].value = 'fixture/managed';
-    nodes['#ag-prov-in'].value = 'starnet';
-    let selection = { model: 'fixture/managed', provider: 'starnet', effort: 'high' }, change;
+    nodes['#ag-prov-in'].value = 'eyehold';
+    let selection = { model: 'fixture/managed', provider: 'eyehold', effort: 'high' }, change;
     const saves = [];
     new Function('body', 'ModelPicker', 'access', 'a', 'sfx', 'rerender', handlers)(
       { querySelector: id => nodes[id] || null },
       { populate: () => Promise.resolve(), read: () => selection, onChange: (_, callback) => { change = callback; } },
       { config: { setModel: (...args) => { saves.push(args); return true; } } },
-      { id: 'worker', model: 'fixture/managed', provider: 'starnet' }, () => {}, () => {}
+      { id: 'worker', model: 'fixture/managed', provider: 'eyehold' }, () => {}, () => {}
     );
     return { nodes, saves, pick(value) { selection = value; change(value); }, save() { nodes['#ag-model-save'].listeners.click(); } };
   }
@@ -172,7 +172,7 @@ for (const file of ['frontend/app/app.js', 'website/app/app/app.js']) {
     { id: 'inherited', model: null, provider: null, reasoningEffort: null },
     { id: 'legacy', model: '' },
     { id: 'pinned', model: 'fixture/byok', provider: 'openrouter', reasoningEffort: 'low' }
-  ]) + ');')(agents, { model: 'fixture/managed', provider: 'starnet', reasoningEffort: 'high' }, { DEFAULT_SKIN: 'default' }, () => 'local', () => {}, () => '', () => {});
+  ]) + ');')(agents, { model: 'fixture/managed', provider: 'eyehold', reasoningEffort: 'high' }, { DEFAULT_SKIN: 'default' }, () => 'local', () => {}, () => '', () => {});
   for (const id of ['inherited', 'legacy']) {
     A.eq(agents.get(id).model, null, file + ': ' + id + ' stays unpinned after reload');
     A.eq(agents.get(id).provider, null, file + ': ' + id + ' does not acquire the managed provider on reload');

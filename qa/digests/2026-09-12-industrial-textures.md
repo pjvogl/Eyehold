@@ -77,7 +77,7 @@ no frontend, sidecar, shared-contract or package bytes relative to our tested
 source, and includes one additional website test.
 
 Authoritative post-merge proof: GitHub Actions run
-https://github.com/androoAGI/starnet/actions/runs/34728957569, independently read
+https://github.com/Eyehold/eyehold/actions/runs/34728957569, independently read
 with `gh run view`, reports `conclusion: success` for exact head `f8ddd9c36`.
 Its logs report **772 / 772 fast steps green** and **34 / 34 customer journeys
 green**. Log copy: `dev/industrial-textures/postmerge-ci.log`. This completed

@@ -12,7 +12,7 @@ function makeStationStore(o) {
 
   function validateStationDoc(nextDoc) {
     if (!nextDoc || typeof nextDoc !== 'object' || Array.isArray(nextDoc)) return { ok: false, error: 'station document required' };
-    if (nextDoc.schema && nextDoc.schema !== 'starnet.station') return { ok: false, error: 'unsupported station schema' };
+    if (nextDoc.schema && nextDoc.schema !== 'eyehold.station') return { ok: false, error: 'unsupported station schema' };
     if (!nextDoc.rooms || typeof nextDoc.rooms !== 'object' || Array.isArray(nextDoc.rooms)) return { ok: false, error: 'station rooms required' };
     if (!Array.isArray(nextDoc.order) || nextDoc.order.length < 1) return { ok: false, error: 'station must contain at least one room' };
     if (!Array.isArray(nextDoc.props)) return { ok: false, error: 'station props must be an array' };

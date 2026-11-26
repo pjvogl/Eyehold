@@ -76,7 +76,7 @@ function validateAsset(asset, { tag, distributionRepo, requireDownloadUrl }) {
 }
 
 export function buildMirrorPlan(rawRelease, options = {}) {
-  const distributionRepo = options.distributionRepo || 'androoAGI/starnet-releases';
+  const distributionRepo = options.distributionRepo || 'Eyehold/eyehold-releases';
   const release = normalizeRelease(rawRelease);
   if (release.draft) fail('the distribution release is still a draft');
   if (release.prerelease) fail('pre-releases must never become the source repository latest release');
@@ -111,7 +111,7 @@ export function buildMirrorPlan(rawRelease, options = {}) {
     '|---|---|',
     ...installers.map(asset => `| **${platformLabel(asset.name)}** | [${asset.name}](${asset.downloadUrl}) |`),
     '',
-    'These downloads are mirrored byte-for-byte from the validated StarNet distribution release. Already running StarNet? Update from inside the app; your crew, sessions, keys, and station remain in place.',
+    'These downloads are mirrored byte-for-byte from the validated Eyehold distribution release. Already running Eyehold? Update from inside the app; your crew, sessions, keys, and station remain in place.',
     '',
     '---',
     '',
@@ -121,7 +121,7 @@ export function buildMirrorPlan(rawRelease, options = {}) {
 
   return {
     tag: release.tag,
-    title: `StarNet ${release.tag}`,
+    title: `Eyehold ${release.tag}`,
     body: lines.join('\n'),
     distributionRepo,
     assets: installers.map(({ name, size, digest, downloadUrl }) => ({ name, size, digest: digest.toLowerCase(), downloadUrl }))
@@ -166,7 +166,7 @@ export function runCli(argv = process.argv.slice(2)) {
   const releaseJson = valueAfter(argv, '--release-json');
   const sourceReleaseJson = valueAfter(argv, '--source-release-json');
   const outDir = valueAfter(argv, '--out-dir');
-  const distributionRepo = valueAfter(argv, '--distribution-repo') || 'androoAGI/starnet-releases';
+  const distributionRepo = valueAfter(argv, '--distribution-repo') || 'Eyehold/eyehold-releases';
   if (!releaseJson || !outDir) {
     fail('usage: node scripts/source-release-mirror.mjs --release-json <file> [--source-release-json <file>] --out-dir <dir>');
   }

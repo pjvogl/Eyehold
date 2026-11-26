@@ -2,7 +2,7 @@
 
 Execution plan for [docs/UX_CONFUSION_AUDIT_2026-07-04.md](UX_CONFUSION_AUDIT_2026-07-04.md).
 Written as marching orders for parallel implementation lanes (Opus agents in worktrees,
-orchestrator merge-gates per `starnet-merge-ritual`). Read the audit first; this doc only
+orchestrator merge-gates per `eyehold-merge-ritual`). Read the audit first; this doc only
 says WHO builds WHAT in WHICH order.
 
 ## Operating principles for every lane
@@ -16,7 +16,7 @@ says WHO builds WHAT in WHICH order.
    No aspirational copy.
 4. **Sandbox law.** Nothing in this plan adds gating, grind, or permission walls. All fixes are
    explanation, routing, and honesty — power stays full from minute one.
-5. **Done = observed live** (starnet-verify): DOM round-trip in the running app + green
+5. **Done = observed live** (eyehold-verify): DOM round-trip in the running app + green
    `npm run test:fast`. Copy changes still need a live render check (esc/HTML injection,
    layout overflow — see the turnin-grid lesson).
 6. **Commit pathspecs only; stay in your worktree; never touch `shared/events.js`/`shared/schema.js`.**
@@ -47,7 +47,7 @@ Cross-file exceptions are called out per lane and must be single, small, coordin
   else in the plan proceeds without it.
 - **Terminology ruling (non-blocking, default provided):** the plan renames user-facing
   "OWN PC" → "its own desk" and explains (not renames) "workstream", "REFIT", "CLEARANCE".
-  Internal keys/schemas untouched (same rule as the StarNet rebrand). Object if wrong.
+  Internal keys/schemas untouched (same rule as the Eyehold rebrand). Object if wrong.
 
 ### 0.2 Shared primitive: hint/glossary helper (lane P, tiny, merges FIRST)
 
@@ -191,7 +191,7 @@ grant off errors visibly; digest rows dismiss individually. Mock-cron seed
 ### Wave-1 merge order
 
 P (hint helper) → A → C → F → D → E → B last (largest chat.js surface rebases onto everything
-else). Full `starnet-merge-ritual` per branch; grep-symbols check after B (chat.js hotfile
+else). Full `eyehold-merge-ritual` per branch; grep-symbols check after B (chat.js hotfile
 rule from the Codex-coexistence lesson).
 
 ---

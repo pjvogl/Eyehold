@@ -377,7 +377,7 @@ test/qa-claims-streaming.test.js
 test/website-pricing-hold.test.js
 test/website-docs-navigation.test.js
 test/website-skill-market.test.js
-test/genesis-starnet-link.test.js
+test/genesis-eyehold-link.test.js
 test/credits-status-wait.test.js
 test/qa-product-perfect-provenance.test.js
 test/qa-cartographer.test.js
@@ -1114,8 +1114,8 @@ test/userprops.test.js
 test/userprops-catalog.test.js
 test/userprops-side.test.js
 test/userprops-sweep.test.js
-test/starnet-door-names.test.js
-test/starnet-run-id-header.test.js
+test/eyehold-door-names.test.js
+test/eyehold-run-id-header.test.js
 test/tierlist.test.js
 test/model-tier-badges.test.js
 test/remote.core.test.js

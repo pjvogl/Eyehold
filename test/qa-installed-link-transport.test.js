@@ -22,7 +22,7 @@ const PROBE_HASH = 'd'.repeat(64);
 const CHALLENGE = 'w1-' + 'e'.repeat(64);
 const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'qa', 'installed', 'smoke-unit-link', 'receipt.json');
-const ARTIFACT = { path: 'C:\\Program Files\\StarNet\\skynet-desktop.exe', sha256: HASH, size: 456789 };
+const ARTIFACT = { path: 'C:\\Program Files\\Eyehold\\skynet-desktop.exe', sha256: HASH, size: 456789 };
 const ENDPOINT = { endpointOrigin: 'http://127.0.0.1:8787', endpointPath: '/api/channels/events' };
 const INVOCATION = {
   challenge: CHALLENGE, outputPath: OUTPUT, candidateCommit: SHA, candidateTree: TREE,
@@ -252,13 +252,13 @@ function clock(start = 1000, end = 51000) {
   A.ok(/CommandLine[^\n]+sidecar[^\n]+index/.test(source), 'process seam requires the packaged sidecar entry');
   A.ok(!/new\s+EventSource\s*\(/.test(source), 'probe never creates a synthetic page EventSource');
   A.ok(!/World[.]init\s*\(/.test(source), 'probe never initializes the product world to manufacture a bridge');
-  A.ok(!/__STARNET_API_TOKEN__/.test(source), 'probe never reads the launch token');
+  A.ok(!/__EYEHOLD_API_TOKEN__/.test(source), 'probe never reads the launch token');
   A.ok(!/endpointUrl/.test(source), 'raw token-bearing request URLs are never serialized');
   A.ok(/sidecar-recovery/.test(source) && /recovery-transport-data/.test(source), 'probe leaves the same desktop recovered for the following journey');
   A.eq((source.match(/await cycleProductBridge\(cdp\)/g) || []).length, 1, 'bridge is cycled only for initial measurement; recovery remains the product native retry');
 
   if (process.platform === 'win32') {
-    const missingArtifact = path.join(os.tmpdir(), 'starnet-definitely-missing-' + process.pid + '.exe');
+    const missingArtifact = path.join(os.tmpdir(), 'eyehold-definitely-missing-' + process.pid + '.exe');
     const processSeam = inspectWindowsSidecarProcess(missingArtifact, 65534);
     A.eq(processSeam.code, 'desktop-process-count', 'Windows CIM process seam parses and safely refuses a missing desktop');
     const strippedEnv = {};

@@ -372,7 +372,7 @@ A.ok(/function invalidateFit\(\) \{ fitProjects = null; fitChannels = null; fitP
   const id4 = reloaded.noteRecommendation('recruit', CARD, { why: 'because you have launched this 3×' });
   A.eq(id4, id3, '…and the re-mint suppression inside the window is untouched');
   reloaded.reset();
-  A.eq(mem['starnet.prospects.shown.v1'], undefined, 'reset clears the impression memory with everything else');
+  A.eq(mem['eyehold.prospects.shown.v1'], undefined, 'reset clears the impression memory with everything else');
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════════════════════════════════

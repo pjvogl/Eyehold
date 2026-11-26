@@ -125,12 +125,12 @@
       // merge UNDER any caller-supplied runtime headers (e.g. the dynamic X-Msh-Device-Id / X-Msh-Os-Version).
       const isDeviceOAuth = profile.authType === 'oauth_device_code';
       // Endpoint truth: the adapter no longer defaults an empty base URL to api.openai.com (it used to,
-      // which silently rerouted an unlinked starnet run — credential included — to OpenAI and produced that
+      // which silently rerouted an unlinked eyehold run — credential included — to OpenAI and produced that
       // vendor's "invalid model ID"; 2026-08-25 stranded-user incident). Refuse HERE, where the provider id
       // is known, so the error names the actual remedy instead of a generic construction failure.
       if (!(opts.baseUrl || profile.baseUrl)) {
-        throw new Error(id === 'starnet'
-          ? 'STARNET is not linked on this station — link it in SETTINGS to run on credits (relink if you recently unlinked or reinstalled)'
+        throw new Error(id === 'eyehold'
+          ? 'EYEHOLD is not linked on this station — link it in SETTINGS to run on credits (relink if you recently unlinked or reinstalled)'
           : 'provider ' + id + ' has no endpoint configured (base URL missing)');
       }
       const mergedHeaders = (profile.extraHeaders || opts.headers)
@@ -175,7 +175,7 @@
         maxCtx: resolveMaxOutputTokens(profile, 'maxCtx'),
         defaultContext: opts.defaultContext,
         headers: mergedHeaders,
-        // run attribution header (starnet only — the profile names it; see openai-compatible requestHeaders)
+        // run attribution header (eyehold only — the profile names it; see openai-compatible requestHeaders)
         runIdHeader: typeof profile.runIdHeader === 'string' ? profile.runIdHeader : undefined
       });
     }

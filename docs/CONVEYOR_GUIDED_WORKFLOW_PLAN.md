@@ -4,7 +4,7 @@
 > in the AI space — but today we ship the SHAPE of a workflow without the WORKFLOW. A stamped line
 > is topology; the user still faces three invisible questions: *what work comes in? who does each
 > step? what do I do to make it real?* This plan makes every element of the floor answer its own
-> question, with StarNet holding the workflow in its head FOR the user.
+> question, with Eyehold holding the workflow in its head FOR the user.
 
 **Prior art on trunk (2026-08-04):** conveyor audit closed 11/11; blueprint shelf (`⇉ LINES`,
 tool 9, `WorldModel.BLUEPRINTS`/`stampBlueprint`), self-narrating first ride (fires at BINDING,

@@ -9,13 +9,13 @@ const { writeFileDurable } = require('../sidecar/durable-write.js');
 const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
 
 (async () => {
-  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-update-prep-'));
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-update-prep-'));
   const workspace = path.join(sandbox, 'workspaces');
   fs.mkdirSync(workspace);
   fs.writeFileSync(path.join(workspace, 'agent.save.json'), JSON.stringify({ version: 5, updatedAt: 99, agent: { id: 'agent' } }));
-  fs.writeFileSync(path.join(workspace, '.starnet-workspace-owner.json'), JSON.stringify({ version: 1, pid: 1, nonce: 'runtime-only' }));
-  fs.mkdirSync(path.join(workspace, '.starnet-workspace-owner.json.generations'));
-  fs.writeFileSync(path.join(workspace, '.starnet-workspace-owner.json.generations', '0.json'), '{}');
+  fs.writeFileSync(path.join(workspace, '.eyehold-workspace-owner.json'), JSON.stringify({ version: 1, pid: 1, nonce: 'runtime-only' }));
+  fs.mkdirSync(path.join(workspace, '.eyehold-workspace-owner.json.generations'));
+  fs.writeFileSync(path.join(workspace, '.eyehold-workspace-owner.json.generations', '0.json'), '{}');
   let clock = 1000;
   let releaseOnSleep = null;
   let live = 0;
@@ -35,7 +35,7 @@ const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
     A.eq(inFlight.ok, true, 'mutation starts before the barrier');
     releaseOnSleep = inFlight.release;
     const made = await prep.prepare({
-      targetVersion: '1.3.0', browserStore: { 'starnet.save': JSON.stringify({ version: 5, updatedAt: 100 }) }
+      targetVersion: '1.3.0', browserStore: { 'eyehold.save': JSON.stringify({ version: 5, updatedAt: 100 }) }
     });
     A.eq(made.ok, true, 'prepare waits for the in-flight mutation and succeeds');
     A.eq(made.receipt.activeMutations, 0, 'receipt proves there were no active HTTP mutations');
@@ -47,10 +47,10 @@ const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
     A.ok(fs.existsSync(made.receipt.receiptFile), 'durable receipt exists beside it');
 
     const bundle = Recovery.readBundle(made.receipt.snapshot.file);
-    A.eq(bundle.browser.length, 1, 'snapshot carries browser-owned StarNet state');
+    A.eq(bundle.browser.length, 1, 'snapshot carries browser-owned Eyehold state');
     A.eq(bundle.files.some(row => row.path === 'agent.save.json'), true, 'snapshot carries canonical workspace state');
-    A.eq(bundle.files.some(row => row.path === '.starnet-workspace-owner.json'), false, 'runtime owner claim is excluded from recovery state');
-    A.eq(bundle.files.some(row => row.path.startsWith('.starnet-workspace-owner.json.generations/')), false, 'runtime generations cannot strand restored profiles');
+    A.eq(bundle.files.some(row => row.path === '.eyehold-workspace-owner.json'), false, 'runtime owner claim is excluded from recovery state');
+    A.eq(bundle.files.some(row => row.path.startsWith('.eyehold-workspace-owner.json.generations/')), false, 'runtime generations cannot strand restored profiles');
     A.eq(prep.beginRequest('POST', '/api/roster').code, 'UPDATE_MUTATIONS_FROZEN', 'new mutations fail closed after the receipt');
     A.eq(prep.beginRequest('GET', '/api/save?agent=agent').ok, true, 'read-only recovery access remains available');
     A.eq(prep.cancel().frozen, false, 'failed native install can unfreeze the live app');

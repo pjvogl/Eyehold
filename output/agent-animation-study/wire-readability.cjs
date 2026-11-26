@@ -5,7 +5,7 @@ const injected=`  // This file is an isolated snapshot for the development art r
   // Mannequins are render-only: never roster members, tasks, or persisted station objects.
   let skinReview = null;
   function showSkinReview(enabled, zoom, id='secretagent') {
-    if (!window.__STARNET_DEV__ || !geo || !agent || !cache) return false;
+    if (!window.__EYEHOLD_DEV__ || !geo || !agent || !cache) return false;
     if (!enabled) { skinReview = null; return true; }
     const deskRef = (geo.props || []).find(p => p.t === 'desk') || {x:tileOf(agent.px,agent.py).x,y:tileOf(agent.px,agent.py).y,w:2,h:1};
     let spot = null;

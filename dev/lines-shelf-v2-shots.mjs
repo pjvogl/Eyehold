@@ -72,7 +72,7 @@ async function main() {
     // it renders 15% past the glass (the known dock/zoom trait, app.css ~3274). Pin the REAL
     // setting to 100% and reload so the shots show the default-text-size presentation.
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.station.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));

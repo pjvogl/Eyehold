@@ -1,4 +1,4 @@
-/* STARNET — tutorial.js : THE FIRST COMMAND + coachmarks + Field Manual (diegetic onboarding, P0–P3).
+/* EYEHOLD — tutorial.js : THE FIRST COMMAND + coachmarks + Field Manual (diegetic onboarding, P0–P3).
 
    The default station starts furnished with five essential capability props. The
    optional tour explains the workstation, reads the actual equipment in the agent's
@@ -8,7 +8,7 @@
    Bus-timed beats narrate agent.run.start / permission.prompt / agent.run.end.
 
    Lifecycle: fires once, right after the awakening lands (app.js passes Onboarding.start({ taught })).
-   Fully skippable; a self-owned localStorage flag (starnet.tutorial.v1) means it never repeats.
+   Fully skippable; a self-owned localStorage flag (eyehold.tutorial.v1) means it never repeats.
    P2 = just-in-time coachmarks (seen()/markSeen()); P3 = the Field Manual codex + Station Briefing. */
 'use strict';
 
@@ -74,7 +74,7 @@ function connectOffers(texts) {
 function connectorUp(list) { return Array.isArray(list) && list.some(c => c && c.state === 'up'); }
 
 const Tutorial = (() => {
-  const KEY = 'starnet.tutorial.v1';
+  const KEY = 'eyehold.tutorial.v1';
   let state = load();
   let active = false, wired = false, finished = false, replayMode = false;
   let agentName = 'AGENT';
@@ -159,7 +159,7 @@ const Tutorial = (() => {
   /* ================= THE FIRST COMMAND ================= */
   // The file task is offered when the actual floor has file equipment. The real
   // preflight, permission settings and run events govern what happens next.
-  const TASK = 'create a new file called starnet-welcome.txt containing "starnet online", then read it back and show me. If that file already exists, read it without changing it.';
+  const TASK = 'create a new file called eyehold-welcome.txt containing "eyehold online", then read it back and show me. If that file already exists, read it without changing it.';
 
   // the capability gear the kit-out walks through, in order. `grant` is the power-word grantLabelForProp returns
   // when its prop lands; `prop` is the catalog id we point at. The display LABEL and the CATEGORY tab are resolved
@@ -515,7 +515,7 @@ const Tutorial = (() => {
       }
       spotlight('#chat-panel');
       say([
-        seg('this example asks me to create starnet-welcome.txt and read it back. an existing file will be left unchanged.', 52, 280),
+        seg('this example asks me to create eyehold-welcome.txt and read it back. an existing file will be left unchanged.', 52, 280),
         seg('  you may see an approval prompt depending on your access settings. review the tool activity and result in COMMS.', 52, 0)
       ], () => {
         clearSpot();
@@ -533,7 +533,7 @@ const Tutorial = (() => {
     });
   }
   // the demo is a REAL run — only attempt it when it can actually land: a configured brain AND a reachable sidecar.
-  // Without both, Chat.send throws a raw "no key" / "cannot reach the STARNET sidecar" line and the run never walks
+  // Without both, Chat.send throws a raw "no key" / "cannot reach the EYEHOLD sidecar" line and the run never walks
   // (the user's "the end test fails" report). Preflight, and if it can't run, narrate the truth and teach on.
   function demoPreflight() {
     const model = (typeof Harness !== 'undefined' && Harness.getModel) ? Harness.getModel() : '';
@@ -554,7 +554,7 @@ const Tutorial = (() => {
     if (!active) return;
     const line = (why === 'brain')
       ? 'the file example hasn’t started. choose a model in COMMS and check its connection in SYSTEM › SETTINGS, then try again. adding more equipment won’t fix a model connection.'
-      : 'the file example hasn’t started because the local service isn’t responding. reconnect or restart StarNet, then try again. your station does not need rebuilding.';
+      : 'the file example hasn’t started because the local service isn’t responding. reconnect or restart Eyehold, then try again. your station does not need rebuilding.';
     say([seg(line, 52, 0)], () => finishOrientation(true));
   }
   /* ---- the kit-out spotlight: a coach bubble PINNED to a safe zone (.tut-coach.kit — so it can never cover the

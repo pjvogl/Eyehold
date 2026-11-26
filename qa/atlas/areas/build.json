@@ -4507,7 +4507,7 @@
       "missing": false,
       "selector": "#refit-guide-go",
       "state": "build-station",
-      "notes": "Live: #refit-guide-go dismisses the .refit-guide card and persists starnet.refit.seen=1 (localStorage). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
+      "notes": "Live: #refit-guide-go dismisses the .refit-guide card and persists eyehold.refit.seen=1 (localStorage). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
       "id": "ui/build/refit-help",

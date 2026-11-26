@@ -13,9 +13,9 @@
  * THE FRESH BOOT (the key difference from shootRun.mjs): we boot a sidecar WITHOUT SKYNET_DEV
  * and against a THROWAWAY EMPTY temp workspace. Re-derived from dev/seed.js + sidecar/index.js:
  *   - SKYNET_WORKSPACES=<temp dir>  → the sidecar persists into our scratch, NEVER the real
- *     %LOCALAPPDATA%\StarNet\workspaces. An EMPTY dir means no agent.save.json → app.js init()
+ *     %LOCALAPPDATA%\Eyehold\workspaces. An EMPTY dir means no agent.save.json → app.js init()
  *     finds no save → startCreation() → the CREATE YOUR OVERSEER connect screen shows.
- *   - NO SKYNET_DEV: with DEV_MODE off the served index.html does NOT inject window.__STARNET_DEV__,
+ *   - NO SKYNET_DEV: with DEV_MODE off the served index.html does NOT inject window.__EYEHOLD_DEV__,
  *     so harness.js does not treat the origin as pre-configured and does NOT auto-resume. The
  *     connect screen and awakening run for real — exactly what a first-timer sees.
  *   - SKYNET_PORT in the 8950-8959 lane (Part-3 port registry).
@@ -28,7 +28,7 @@
  *     reachable UI-only. WAKE's mandatory wire preflight is aimed at a deterministic local OpenRouter;
  *     the FIRST task /api/run is still the tutorial's first-command (Chat.send(TASK)). That is the
  *     explicit UI-only boundary: reaching it is a PASS (we do not fake a task reply).
- *   --live: a real key from env ONLY (SKYNET_OPENROUTER_KEY / STARNET_OPENROUTER_KEY, or
+ *   --live: a real key from env ONLY (SKYNET_OPENROUTER_KEY / EYEHOLD_OPENROUTER_KEY, or
  *     --key-env <NAME>). Never committed, never echoed, never written into any evidence file.
  *     Drives the full path to a first visible deliverable. Run `npm run lint:evidence-secrets`
  *     over the run dir as part of the gate (the CLI does this automatically after a --live run).
@@ -114,7 +114,7 @@ export function uiOnlyProviderBaseEnv(mode, base) {
   if (mode !== 'ui-only' || !String(base || '').trim()) return {};
   return {
     SKYNET_OPENROUTER_BASE: String(base),
-    STARNET_OPENROUTER_BASE: String(base),
+    EYEHOLD_OPENROUTER_BASE: String(base),
   };
 }
 
@@ -353,8 +353,8 @@ if (INVOKED_DIRECTLY) (async () => {
   const has = (f) => argv.includes(f);
   const val = (f, d) => { const i = argv.indexOf(f); return i > -1 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = has('--live') ? 'live' : 'ui-only';
-  const PORT = Number(val('--port', process.env.STARNET_BEGINNER_PORT || '8950'));
-  const CDP_PORT = Number(val('--cdp-port', process.env.STARNET_BEGINNER_CDP || '9350'));
+  const PORT = Number(val('--port', process.env.EYEHOLD_BEGINNER_PORT || '8950'));
+  const CDP_PORT = Number(val('--cdp-port', process.env.EYEHOLD_BEGINNER_CDP || '9350'));
   const KEEP = has('--keep');                         // keep the temp workspace + browser profile
   const KEY_ENV = val('--key-env', 'SKYNET_OPENROUTER_KEY');
   const STEP_SCALE = Number(val('--step-scale', '1')) || 1;   // multiply per-step budgets (slow machines)
@@ -370,23 +370,23 @@ if (INVOKED_DIRECTLY) (async () => {
   // touches the real user workspace. Empty → the connect screen shows.
   // Recovery also inspects a workspace's sibling update-snapshots directory.
   // Own the parent, so unrelated campaigns in the OS temp root are not lineage.
-  const TEMP_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-beginner-ws-'));
+  const TEMP_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-beginner-ws-'));
   const TEMP_WS = path.join(TEMP_ROOT, 'workspaces');
   fs.mkdirSync(TEMP_WS);
-  const PROFILE = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-beginner-profile-'));
-  const OS_DATA_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-beginner-osdata-'));
+  const PROFILE = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-beginner-profile-'));
+  const OS_DATA_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-beginner-osdata-'));
   const OS_DATA_ENV = isolatedOsDataEnv(OS_DATA_ROOT, path);
   for (const dir of Object.values(OS_DATA_ENV)) fs.mkdirSync(dir, { recursive: true });
 
-  const PLACEHOLDER_MODEL = process.env.STARNET_DEFAULT_MODEL || process.env.SKYNET_DEFAULT_MODEL || 'anthropic/claude-3.5-sonnet';
+  const PLACEHOLDER_MODEL = process.env.EYEHOLD_DEFAULT_MODEL || process.env.SKYNET_DEFAULT_MODEL || 'anthropic/claude-3.5-sonnet';
   const UI_ONLY_KEY = 'sk-or-beginner-ui-only-placeholder';   // dummy; never a real secret
 
   // --live: source the REAL key from env ONLY. Never echo it, never write it to evidence.
   let liveKey = '';
   if (MODE === 'live') {
-    liveKey = String(process.env[KEY_ENV] || process.env.STARNET_OPENROUTER_KEY || '').trim();
+    liveKey = String(process.env[KEY_ENV] || process.env.EYEHOLD_OPENROUTER_KEY || '').trim();
     if (!liveKey) {
-      console.error('[qa:beginner] --live needs a real key in env ' + KEY_ENV + ' (or STARNET_OPENROUTER_KEY). None found — refusing to run.');
+      console.error('[qa:beginner] --live needs a real key in env ' + KEY_ENV + ' (or EYEHOLD_OPENROUTER_KEY). None found — refusing to run.');
       // nothing has booted yet (no sidecar/chrome); just drop the just-created scratch dirs. Don't call
       // cleanup() here — its `let sidecar/chromeProc/cdp` are still in the TDZ at this point.
       if (!KEEP) { try { fs.rmSync(TEMP_WS, { recursive: true, force: true }); } catch {} try { fs.rmSync(PROFILE, { recursive: true, force: true }); } catch {} try { fs.rmSync(OS_DATA_ROOT, { recursive: true, force: true }); } catch {} try { fs.rmSync(RUN_DIR, { recursive: true, force: true }); } catch {} }
@@ -407,13 +407,13 @@ if (INVOKED_DIRECTLY) (async () => {
       SKYNET_DEFAULT_MODEL: PLACEHOLDER_MODEL,
       SKYNET_OPENROUTER_KEY: (MODE === 'live' ? liveKey : UI_ONLY_KEY),
     });
-    // CRITICAL: strip SKYNET_DEV / STARNET_DEV so the served page does NOT auto-resume — the connect
+    // CRITICAL: strip SKYNET_DEV / EYEHOLD_DEV so the served page does NOT auto-resume — the connect
     // screen + awakening must run for real (this is the whole point of the fresh path).
-    delete env.SKYNET_DEV; delete env.STARNET_DEV;
+    delete env.SKYNET_DEV; delete env.EYEHOLD_DEV;
     // Also strip SKYNET_FULL_ACCESS so we exercise the same consent posture a first-timer has, unless
     // a live run needs it to complete the first directive without a manual approval; keep it off for
     // ui-only (we stop before any tool run) and on for live (so the first deliverable isn't blocked).
-    if (MODE === 'live') env.SKYNET_FULL_ACCESS = '1'; else { delete env.SKYNET_FULL_ACCESS; delete env.STARNET_FULL_ACCESS; }
+    if (MODE === 'live') env.SKYNET_FULL_ACCESS = '1'; else { delete env.SKYNET_FULL_ACCESS; delete env.EYEHOLD_FULL_ACCESS; }
     return spawn(process.execPath, [SIDECAR], { cwd: REPO, env, stdio: 'ignore' });
   }
 

@@ -10,16 +10,16 @@
  *   (including its cryptographic artifact/.sig verification) — only the asset-base
  *   URL differs from production.
  *
- * ISOLATION: canary builds carry productName "StarNet Canary" + identifier
- *   ai.skynet.harness.canary, so they install SIDE BY SIDE with the real StarNet —
+ * ISOLATION: canary builds carry productName "Eyehold Canary" + identifier
+ *   ai.skynet.harness.canary, so they install SIDE BY SIDE with the real Eyehold —
  *   different install dir, different %APPDATA% workspace. Your real install and data
- *   are untouched. Uninstall "StarNet Canary" from Windows when done.
+ *   are untouched. Uninstall "Eyehold Canary" from Windows when done.
  *
  * USAGE (Windows, in order):
  *   node scripts/update-canary.mjs build-old    # OLD installer @ current version, endpoint = localhost
  *   node scripts/update-canary.mjs build-new    # NEW installer @ patch-bumped version + signed feed
  *   node scripts/update-canary.mjs serve        # serve the feed on 127.0.0.1:8799 (leave running)
- *   → run .canary/old/*.exe to install, open StarNet Canary, SYSTEM → UPDATE CENTER →
+ *   → run .canary/old/*.exe to install, open Eyehold Canary, SYSTEM → UPDATE CENTER →
  *     CHECK NOW → INSTALL UPDATE. Watch the serve log take the hits; the app restarts
  *     as the bumped version (title/Update Center show it).
  *   node scripts/update-canary.mjs status       # what's staged + the next step
@@ -34,7 +34,7 @@
  *          --cdp-port <n> (default 9333, installed-smoke convention)
  *
  * NOTES:
- *   - Needs the updater private key at ~/.tauri/starnet-updater.key (or
+ *   - Needs the updater private key at ~/.tauri/eyehold-updater.key (or
  *     TAURI_SIGNING_PRIVATE_KEY in the env). Same key as production — that's the point.
  *   - Each build is a full Rust release build (10–30 min; first run in a fresh worktree
  *     is slowest). A rustc ctor-race crash = re-run the same command, the cache resumes.
@@ -84,7 +84,7 @@ function bumpPatch(v) {
 function signingEnv() {
   const env = Object.assign({}, process.env);
   if (!env.TAURI_SIGNING_PRIVATE_KEY) {
-    const keyFile = join(homedir(), '.tauri', 'starnet-updater.key');
+    const keyFile = join(homedir(), '.tauri', 'eyehold-updater.key');
     if (!existsSync(keyFile)) fail('no TAURI_SIGNING_PRIVATE_KEY in env and no ' + keyFile);
     env.TAURI_SIGNING_PRIVATE_KEY = readFileSync(keyFile, 'utf8').trim();
   }
@@ -96,7 +96,7 @@ function signingEnv() {
 // (side-by-side install) and a localhost updater endpoint.
 function overlayFor(version) {
   return {
-    productName: 'StarNet Canary',
+    productName: 'Eyehold Canary',
     identifier: 'ai.skynet.harness.canary',
     version,
     plugins: {
@@ -119,15 +119,15 @@ function buildCanary(version, destDir) {
   execFileSync(process.execPath, [join(ROOT, 'scripts', 'prepare-node.mjs'), 'win-x64'], { cwd: ROOT, stdio: 'inherit' });
   execFileSync(process.execPath, [join(ROOT, 'scripts', 'stage-voice-deps.mjs'), '--target', 'win-x64'], { cwd: ROOT, stdio: 'inherit' });
 
-  log('building StarNet Canary v' + version + ' (full Rust release build — 10-30 min; a rustc ctor-race crash = just re-run)…');
+  log('building Eyehold Canary v' + version + ' (full Rust release build — 10-30 min; a rustc ctor-race crash = just re-run)…');
   const r = spawnSync('npm', ['run', 'tauri', '--', 'build', '--bundles', 'nsis', '--config', overlayPath],
     { cwd: ROOT, stdio: 'inherit', env: signingEnv(), shell: true });
   if (r.status !== 0) fail('tauri build failed (exit ' + r.status + '). If rustc crashed (ctor race), re-run this exact command — the cache resumes.');
 
   // Locate the produced canary installer (+ .sig) and stage it.
   const nsisDir = join(ROOT, 'src-tauri', 'target', 'release', 'bundle', 'nsis');
-  const made = readdirSync(nsisDir).filter(f => f.startsWith('StarNet Canary_' + version + '_') && f.endsWith('-setup.exe'));
-  if (made.length !== 1) fail('expected exactly one StarNet Canary_' + version + '_*-setup.exe in ' + nsisDir + ', found ' + made.length);
+  const made = readdirSync(nsisDir).filter(f => f.startsWith('Eyehold Canary_' + version + '_') && f.endsWith('-setup.exe'));
+  if (made.length !== 1) fail('expected exactly one Eyehold Canary_' + version + '_*-setup.exe in ' + nsisDir + ', found ' + made.length);
   const exe = made[0];
   copyFileSync(join(nsisDir, exe), join(destDir, exe));
   if (existsSync(join(nsisDir, exe + '.sig'))) copyFileSync(join(nsisDir, exe + '.sig'), join(destDir, exe + '.sig'));
@@ -142,7 +142,7 @@ function assembleFeed(version) {
     join(ROOT, 'scripts', 'release-assemble-manifest.mjs'),
     '--dist', FEED,
     '--version', version,
-    '--repo', 'androoAGI/starnet-releases',
+    '--repo', 'Eyehold/eyehold-releases',
     '--tag', 'v' + version,
     '--asset-base', 'http://127.0.0.1:' + PORT + '/',
     '--allow-missing', 'darwin-aarch64,darwin-x86_64,linux-x86_64,linux-x86_64-deb',
@@ -170,7 +170,7 @@ function serve() {
   });
   server.listen(PORT, '127.0.0.1', () => {
     log('canary feed serving on http://127.0.0.1:' + PORT + '/latest.json — leave this running.');
-    log('Now: install ' + OLD + '\\*.exe, open StarNet Canary, SYSTEM → UPDATE CENTER → CHECK NOW → INSTALL.');
+    log('Now: install ' + OLD + '\\*.exe, open Eyehold Canary, SYSTEM → UPDATE CENTER → CHECK NOW → INSTALL.');
     log('Every request the installed app makes is logged below — that log IS the canary evidence.');
   });
 }
@@ -187,7 +187,7 @@ function status() {
 }
 
 const CDP_PORT = +argVal('--cdp-port', '9333');
-const INSTALL_DIR = join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'StarNet Canary');
+const INSTALL_DIR = join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'Eyehold Canary');
 // NSIS keeps the crate's mainBinaryName — the productName only names the install dir/shortcuts.
 const INSTALLED_EXE = join(INSTALL_DIR, 'skynet-desktop.exe');
 
@@ -220,7 +220,7 @@ function installOld() {
   if (r.status !== 0) fail('installer exited ' + r.status);
   const v = installedVersion();
   if (!v) fail('install finished but ' + INSTALLED_EXE + ' is missing');
-  log('installed StarNet Canary v' + v + ' at ' + INSTALL_DIR);
+  log('installed Eyehold Canary v' + v + ' at ' + INSTALL_DIR);
   launchWithCdp();
   log('next: keep serve running, then `node scripts/update-canary.mjs drive`');
 }
@@ -256,8 +256,8 @@ async function seedPopulatedState(cdp) {
     const body=await response.json();
     if(!response.ok||!body||body.ok!==true)throw new Error('durable canary seed refused: '+JSON.stringify(body));
     save._saveRevision=body.revision;save._saveDirty=false;save.updatedAt=body.updatedAt;
-    localStorage.setItem('starnet.save',JSON.stringify(save));
-    localStorage.setItem('starnet.canary.continuity',JSON.stringify({nonce:${JSON.stringify(nonce)},purpose:'update-continuity'}));
+    localStorage.setItem('eyehold.save',JSON.stringify(save));
+    localStorage.setItem('eyehold.canary.continuity',JSON.stringify({nonce:${JSON.stringify(nonce)},purpose:'update-continuity'}));
     return true;
   })()`;
   await evalJS(cdp, source);
@@ -281,7 +281,7 @@ async function seedPopulatedState(cdp) {
 }
 
 async function snapshotPopulatedState(cdp) {
-  const raw = await evalJS(cdp, `(async()=>{let local=null,sentinel=null;try{local=JSON.parse(localStorage.getItem('starnet.save')||'null');sentinel=JSON.parse(localStorage.getItem('starnet.canary.continuity')||'null')}catch(_){}const response=await fetch('/api/save?agent=agent',{cache:'no-store'});const body=await response.json();return JSON.stringify({local,durable:body&&body.save||null,sentinel});})()`);
+  const raw = await evalJS(cdp, `(async()=>{let local=null,sentinel=null;try{local=JSON.parse(localStorage.getItem('eyehold.save')||'null');sentinel=JSON.parse(localStorage.getItem('eyehold.canary.continuity')||'null')}catch(_){}const response=await fetch('/api/save?agent=agent',{cache:'no-store'});const body=await response.json();return JSON.stringify({local,durable:body&&body.save||null,sentinel});})()`);
   return JSON.parse(raw || '{}');
 }
 
@@ -292,7 +292,7 @@ async function provePreparationFailure(cdp, startVersion) {
   if (snap.phase !== 'available' || !/recovery point|verification/i.test(String(snap.error || ''))) {
     fail('prepare-failure injection did not fail closed: ' + result);
   }
-  writeFileSync(RECEIPT_FILE, JSON.stringify({ schema: 'starnet.update-canary-failure.v1', generatedAt: new Date().toISOString(), injection: 'prepare-failure', outcome: 'pass', installedVersion: startVersion, phase: snap.phase, errorClass: 'recovery-point-refused' }, null, 2) + '\n');
+  writeFileSync(RECEIPT_FILE, JSON.stringify({ schema: 'eyehold.update-canary-failure.v1', generatedAt: new Date().toISOString(), injection: 'prepare-failure', outcome: 'pass', installedVersion: startVersion, phase: snap.phase, errorClass: 'recovery-point-refused' }, null, 2) + '\n');
   log('FAIL-CLOSED CANARY PROVEN: preparation unavailable; installer not invoked; current version stayed open.');
   log('receipt: ' + RECEIPT_FILE);
   process.exit(0);
@@ -353,7 +353,7 @@ async function drive() {
     fail('UPDATE HUNG: version flipped to ' + after + ' but the NSIS installer is STILL RUNNING past the deadline.\n' +
       '  This is the sidecar-lock hang — the running node.exe sidecar blocks NSIS from overwriting node.exe.\n' +
       '  Diagnostic: ' + hangDiagnostic() + '\n' +
-      '  The fix is on_before_exit killing the sidecar before the plugin exits (src-tauri/src/main.rs, starnet_update_check).');
+      '  The fix is on_before_exit killing the sidecar before the plugin exits (src-tauri/src/main.rs, eyehold_update_check).');
   }
   if (!relaunched) log('NOTE: version flipped and installer exited, but no relaunched app seen yet (it may still be starting).');
   if (!relaunched) fail('new version did not relaunch; state parity cannot be proven');
@@ -384,7 +384,7 @@ async function drive() {
   log(' populated state      : byte-stable semantic fingerprint ' + receipt.state.afterFingerprint);
   log(' exact receipt        : ' + RECEIPT_FILE);
   log('================================================');
-  log('CLEAN UPDATE PROVEN end-to-end. Uninstall "StarNet Canary" from Windows when done.');
+  log('CLEAN UPDATE PROVEN end-to-end. Uninstall "Eyehold Canary" from Windows when done.');
   process.exit(0);
 }
 
@@ -403,7 +403,7 @@ function appRunning() {
 }
 function hangDiagnostic() {
   const r = spawnSync('powershell', ['-NoProfile', '-Command',
-    "$n=(Get-Process node -ErrorAction SilentlyContinue | Where-Object Path -like '*StarNet Canary*' | Measure-Object).Count; \"orphan sidecar node.exe still alive: $n\""],
+    "$n=(Get-Process node -ErrorAction SilentlyContinue | Where-Object Path -like '*Eyehold Canary*' | Measure-Object).Count; \"orphan sidecar node.exe still alive: $n\""],
     { encoding: 'utf8' });
   return (r.stdout || '').trim() || 'unavailable';
 }

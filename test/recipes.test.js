@@ -203,7 +203,7 @@ R.removeCustom(garbage.id);
 const authored = R.saveCustom({ name: 'Standup', task: 'Summarize {project} progress and flag blockers.' });
 A.eq(authored.params.map(p => p.key), ['project'], 'a saved custom auto-derives its params from the template');
 A.eq(R.requiredMissing(authored.id, {}), ['project'], 'the derived param gates launch');
-A.ok(R.fillTask(authored.id, { project: 'StarNet' }).indexOf('Summarize StarNet progress') >= 0, 'the authored custom fills + launches via the same primitive');
+A.ok(R.fillTask(authored.id, { project: 'Eyehold' }).indexOf('Summarize Eyehold progress') >= 0, 'the authored custom fills + launches via the same primitive');
 R.removeCustom(authored.id);
 
 // explicit params still win over derivation (back-compat for an imported custom that supplies its own)
@@ -347,7 +347,7 @@ A.ok((catCounts.ops || 0) > 0, 'ops recipes keep their bucket: ' + (catCounts.op
 /* exportRecipe(): a portable, format-marked, deep-copied object carrying only the authoring surface. */
 A.eq(R.exportRecipe('no-such-recipe'), null, 'exportRecipe of an unknown id is null');
 const exp = R.exportRecipe('morning-brief');
-A.eq(exp.starnetRecipe, R.EXPORT_FORMAT, 'an exported recipe carries the format marker (starnetRecipe)');
+A.eq(exp.eyeholdRecipe, R.EXPORT_FORMAT, 'an exported recipe carries the format marker (eyeholdRecipe)');
 A.eq(exp.name, R.get('morning-brief').name, 'the export carries the recipe name');
 A.eq(exp.task, R.get('morning-brief').task, 'the export carries the task template verbatim');
 A.eq(exp.category, 'research', 'the export carries the browse category');
@@ -567,7 +567,7 @@ A.eq(R.goalKeywordScore({ name: 'X', tagline: '', blurb: '', tags: { general: 1 
 A.eq(R.goalKeywordHits(gr, 'memory and time').join(','), 'memory,time', 'the matched keywords are reported in goal order');
 A.eq(R.goalKeywordHits(gr, 'MEMORY').join(','), 'memory', 'matching is case-insensitive');
 // the whole-catalog effect: a vague, real-world goals belief must not light up most of the library.
-const vague = 'Be the always-ready dev test agent for StarNet — a fully-onboarded general assistant a developer can talk to the instant the station boots.';
+const vague = 'Be the always-ready dev test agent for Eyehold — a fully-onboarded general assistant a developer can talk to the instant the station boots.';
 const lit = R.builtins().filter(r => R.goalKeywordScore(r, vague) > 0).length;
 A.ok(lit <= 10, 'a vague goal lights up at most a handful of the catalog, not most of it: got ' + lit + '/' + R.builtins().length);
 

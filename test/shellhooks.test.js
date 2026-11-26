@@ -13,7 +13,7 @@ const { spawn } = require('child_process');
 const { makeHooks } = require('../sidecar/hooks.js');
 const { makeShellHooks, _internals } = require('../sidecar/shellhooks.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-shellhooks-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-shellhooks-' + process.pid);
 const HOOKS = path.join(DIR, 'hooks.json');
 const ALLOW = path.join(DIR, 'allow.json');
 const NODE = JSON.stringify(process.execPath);

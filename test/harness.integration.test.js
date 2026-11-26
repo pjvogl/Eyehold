@@ -45,7 +45,7 @@ const { makeCapCtx } = require('../sidecar/capability/capGate.js');
 const { makeConsentBroker } = require('../sidecar/permissions.js');
 const { renderRecall, injectRecall, rank } = require('../sidecar/context.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-itest-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-itest-' + process.pid);
 
 // canned web: a DDG results page for search, and the ARTICLE ITSELF for fetch. (No real network.)
 // The article is served on the DIRECT url, not through r.jina.ai, because that is the path a default

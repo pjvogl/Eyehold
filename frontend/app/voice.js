@@ -1,4 +1,4 @@
-/* STARNET — voice.js : two-way voice for the COMMS panel.
+/* EYEHOLD — voice.js : two-way voice for the COMMS panel.
 
    INPUT  (click-to-talk): click the mic once to start recording and again to finish; the completed take feeds the text
           straight through Chat.send — identical to typing — so all of chat.js's
@@ -36,8 +36,8 @@ const Voice = (() => {
     forceRecorder = /(?:^|[?&])stt=recorder(?:&|$)/.test(location.search);
     forceWebSpeech = /(?:^|[?&])stt=web(?:&|$)/.test(location.search);
   } catch (_) {}
-  const LS_SPEAK = 'starnet.voice.speak';
-  const LS_CONVO = 'starnet.voice.convo';   // remembers the user WAS hands-free, so a refresh can offer one-tap resume
+  const LS_SPEAK = 'eyehold.voice.speak';
+  const LS_CONVO = 'eyehold.voice.convo';   // remembers the user WAS hands-free, so a refresh can offer one-tap resume
   const REARM_DELAY = 150;                 // ms after the agent stops talking before the mic re-opens (echo guard).
                                            // Neural <audio> stops synchronously on teardown, so a short guard is enough.
   const MAX_EMPTY = 3;                      // consecutive silent listens before the loop goes passive
@@ -671,8 +671,8 @@ const Voice = (() => {
   let preferLocalTts = false;
   /* Which built-in voice speaks. Saved per station; empty falls back to the engine's default (male).
      Read at SPEAK time, not cached, so changing it in Settings takes effect on the very next line. */
-  const LOCAL_VOICE_KEY = 'starnet.liveVoice.localVoice.v1';
-  const AGENT_VOICE_KEY = 'starnet.liveVoice.agentVoice.v1:';
+  const LOCAL_VOICE_KEY = 'eyehold.liveVoice.localVoice.v1';
+  const AGENT_VOICE_KEY = 'eyehold.liveVoice.agentVoice.v1:';
   function currentAgentId() {
     try {
       const bound = typeof VoiceLive !== 'undefined' && VoiceLive.boundSessionId ? VoiceLive.boundSessionId() : null;
@@ -697,7 +697,7 @@ const Voice = (() => {
     const desktop = !!(window.__TAURI__ || window.__TAURI_INTERNALS__);
     const mac = /Mac/i.test(navigator.platform || navigator.userAgent || '');
     return desktop && mac
-      ? 'Microphone blocked — enable StarNet in System Settings → Privacy & Security → Microphone, then quit and reopen StarNet. If it is missing or still blocked, install the latest StarNet build.'
+      ? 'Microphone blocked — enable Eyehold in System Settings → Privacy & Security → Microphone, then quit and reopen Eyehold. If it is missing or still blocked, install the latest Eyehold build.'
       : desktop ? 'Microphone blocked — allow microphone access for desktop apps in your system privacy settings, then try again.'
         : 'Microphone blocked — allow microphone access for this page in your browser, then try again.';
   }
@@ -1334,7 +1334,7 @@ const Voice = (() => {
       /* CHECK r.ok. `fetch` RESOLVES on 4xx/5xx, and the route's honest 200-degrade envelope is not the only
          thing that can come back: rejectBadApiToken answers 403 with the plain text 'forbidden token' BEFORE
          the route table is reached — the documented state after a sidecar respawn, where the page still holds
-         the old X-StarNet-Token — and any 5xx/HTML/empty error body behaves the same. r.json() then rejects,
+         the old X-Eyehold-Token — and any 5xx/HTML/empty error body behaves the same. r.json() then rejects,
          the catch yields {}, and an UNREACHABLE endpoint was laundered into a CONFIRMED-EMPTY transcript:
          the user's spoken sentence disappeared with no error and no diagnostic, byte-identical to having said
          nothing into a dead room. An unknown is not an empty. */

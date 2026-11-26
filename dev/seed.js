@@ -1,4 +1,4 @@
-/* dev/seed.js — the one-command dev launcher: boot a StarNet sidecar that is ALREADY onboarded.
+/* dev/seed.js — the one-command dev launcher: boot a Eyehold sidecar that is ALREADY onboarded.
 
    Why this exists: every fresh sidecar launch (a new SKYNET_WORKSPACES dir + a new browser origin/port)
    used to drop you at the title screen → connect screen (paste key, pick model) → the WAKE ceremony,
@@ -171,7 +171,7 @@ async function main() {
   const url = 'http://127.0.0.1:' + port;
   console.log('');
   console.log('  ╔══════════════════════════════════════════════════════════╗');
-  console.log('  ║  StarNet DEV SEED — booting a pre-onboarded station        ║');
+  console.log('  ║  Eyehold DEV SEED — booting a pre-onboarded station        ║');
   console.log('  ╚══════════════════════════════════════════════════════════╝');
   console.log('   agent     : NOVA (seeded, no setup needed)');
   console.log('   model     : ' + model);

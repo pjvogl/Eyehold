@@ -1,9 +1,9 @@
 /* node test/auxmodel.e2e.test.js — TRUE end-to-end proof of the AUX MODEL/EFFORT TIER (aux-tier lane).
 
-   WHAT THIS LOCKS: STARNET_AUX_MODEL points every auxiliary LLM pass at a cheap model while the MAIN run keeps
+   WHAT THIS LOCKS: EYEHOLD_AUX_MODEL points every auxiliary LLM pass at a cheap model while the MAIN run keeps
    its own. Three arms against the REAL sidecar + a mock OpenRouter that records every model call:
 
-     ARM A — routing: with STARNET_AUX_MODEL=aux/cheap (declared reasoning-capable but NOT tool-capable in the
+     ARM A — routing: with EYEHOLD_AUX_MODEL=aux/cheap (declared reasoning-capable but NOT tool-capable in the
              catalog) and the governor off, one substantial task run fires the aux passes. The single-shot
              passes (reflection · study · thread-mine · scout) must ride aux/cheap with per-request reasoning
              effort 'low'; the SKILL REVIEW fork — a nested TOOL loop — must FALL BACK to the run model because
@@ -134,7 +134,7 @@ const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
       prefix: 'sk-auxmodel-a-',
       // SKYNET_SKILL_REVIEW_EVERY 1: the skill review rides the skill nudge (turns since the skillbase last changed),
       // so a bar of 1 makes this one-turn run DUE and the review fork fires for the routing assertions below.
-      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, STARNET_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_SKILL_REVIEW_EVERY: '1' }, COMMON)
+      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_SKILL_REVIEW_EVERY: '1' }, COMMON)
     });
     await fixture.start();
     try {
@@ -164,7 +164,7 @@ const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
     const mock = await startMock({ runContext: 10, toolTurn: true });
     const fixture = SidecarFixture.create({
       prefix: 'sk-auxmodel-b-',
-      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, STARNET_AUX_MODEL: AUX_MODEL }, COMMON)
+      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL }, COMMON)
     });
     await fixture.start();
     try {

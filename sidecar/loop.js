@@ -761,7 +761,7 @@
       ? Object.create(o.context, { estimateMessages: { value: (msgs) => o.context.estimateMessages(evictStaleScreenshots(msgs, TOOL_IMAGE_KEEP, m => (screenshotMeta ? screenshotMeta.get(m) : null))) } })
       : o.context;
     const summarize = o.summarize;
-    const microCompaction = o.microCompaction !== false;   // the free elision tier (STARNET_COMPACT_MICRO=0 turns it off at the host)
+    const microCompaction = o.microCompaction !== false;   // the free elision tier (EYEHOLD_COMPACT_MICRO=0 turns it off at the host)
     // OPTIONAL provider FALLBACK chain — the consumer for errorClass's shouldFallback/shouldRotateCredential hints
     // (previously computed then discarded). On a classified failover (overloaded/5xx/auth/billing/rate-limit/
     // model-not-found) the loop advances to the next entry and RETRIES the same turn instead of dying — the
@@ -1084,7 +1084,7 @@
       try { onRecovery(Object.assign({ sequence: ++recoveryAttemptSequence }, row || {})); } catch (e) { failNote('loop.onRecovery', e); }
     }
     // mid-stream retry backoff schedule (same shape as the adapters' pre-stream RETRY_DELAYS).
-    // Widened 2026-08-11 after the installed Hermes parity run: ~16.6s still lost all three StarNet
+    // Widened 2026-08-11 after the installed Hermes parity run: ~16.6s still lost all three Eyehold
     // attempts inside one real Codex overload window while valid Hermes turns took up to ~102s. The
     // final 30s/60s rungs give the same model turn ~106s of bounded patience. This never re-dispatches
     // completed tools: the retry loop sits wholly inside the current model call, after prior tool
@@ -1492,7 +1492,7 @@
           const message = b.cause === 'unsettled'
             ? 'An earlier run was interrupted before its spend was recorded, so the spending limits you set can’t be checked. Settle it in SETTINGS › SPENDING LIMITS.'
             : b.cause === 'write'
-              ? 'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart StarNet to recover it.'
+              ? 'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart Eyehold to recover it.'
               : 'Spend history could not be read, so the spending limits you set can’t be checked. See SETTINGS › SPENDING LIMITS.';
           emit('agent.run.error', { agentId, runId, message, transient: false });
           return end('error', { failureStage: 'budget', failureCode: 'spend_history_unavailable' });
@@ -1612,7 +1612,7 @@
         try {
           const req = { model, messages: wireMessages(), tools, signal, stream: true };   // stale screen captures -> placeholders
           if (typeof o.isTask === 'boolean') req.isTask = o.isTask;
-          if (o.runId) req.runId = o.runId;   // run attribution: only a profile that names a runIdHeader sends it (starnet)
+          if (o.runId) req.runId = o.runId;   // run attribution: only a profile that names a runIdHeader sends it (eyehold)
           if (o.cacheSystemPrefix) req.cacheSystemPrefix = o.cacheSystemPrefix;
           if (outputCapTokens > 0) req.maxTokens = outputCapTokens;   // the ceiling a provider named (output_cap)
           if (retriesUsed > 0) req.preStreamRetries = 0;              // the ladder owns pacing: one request per rung

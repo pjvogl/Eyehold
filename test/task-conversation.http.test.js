@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {SidecarFixture}=require('./helpers/sidecar-fixture.js');
 const {makeTaskBriefStore}=require('../sidecar/taskbrief-store.js');
 (async()=>{
-  const fixture=SidecarFixture.create({prefix:'starnet-context-'});
+  const fixture=SidecarFixture.create({prefix:'eyehold-context-'});
   try {
     const store=makeTaskBriefStore({fs,path,workspaces:fixture.workspace});
     const original='Help me collect client updates';

@@ -29,7 +29,7 @@ export const LINK_RECEIPT_SCHEMA = 1;
 export const RESULTS = Object.freeze({ PASS: 'PASS', FAIL: 'FAIL', BLOCKED: 'BLOCKED' });
 export const FIRST_TASK_ID = 'tutorial-hello-file-v1';
 export const FIRST_TASK_PATH = 'hello.txt';
-export const FIRST_TASK_CONTENT = 'starnet online';
+export const FIRST_TASK_CONTENT = 'eyehold online';
 export const TAURI_ORIGINS = new Set([
   'tauri://localhost', 'http://tauri.localhost', 'https://tauri.localhost', 'app://localhost'
 ]);
@@ -555,7 +555,7 @@ export const INSTALLED_IDENTITY_PROBE = `(async () => {
   try {
     const core = window.__TAURI__ && window.__TAURI__.core;
     if (!core || typeof core.invoke !== 'function') return out;
-    out.shell = await core.invoke('starnet_build_info');
+    out.shell = await core.invoke('eyehold_build_info');
   } catch (_) {}
   try {
     const r = await fetch('/api/version', { cache: 'no-store' });
@@ -572,9 +572,9 @@ export const INSTALLED_IDENTITY_PROBE = `(async () => {
 })()`;
 
 const OBSERVER_INSTALL = `(() => {
-  if (window.__STARNET_W1_OBS__) return true;
+  if (window.__EYEHOLD_W1_OBS__) return true;
   if (typeof U === 'undefined' || !U.bus) return false;
-  const out = window.__STARNET_W1_OBS__ = { seq: 0, starts: [], ends: [], calls: [], results: [], deliverables: [], permissions: [], responses: [] };
+  const out = window.__EYEHOLD_W1_OBS__ = { seq: 0, starts: [], ends: [], calls: [], results: [], deliverables: [], permissions: [], responses: [] };
   const cap = (a, v) => { v.seq = ++out.seq; a.push(v); if (a.length > 40) a.shift(); };
   U.bus.on('agent.run.start', p => cap(out.starts, { runId: String(p && p.runId || ''), agentId: String(p && p.agentId || ''), model: String(p && p.model || '') }));
   U.bus.on('agent.run.end', p => cap(out.ends, { runId: String(p && p.runId || ''), agentId: String(p && p.agentId || ''), reason: String(p && p.reason || '') }));
@@ -674,7 +674,7 @@ export function makeCdpInstalledDriver(options = {}) {
         return await evalJS(cdp, `(() => {
           const visible = e => { if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
           const caps = (() => { try { return (World.heroCaps('agent') || []).map(c => typeof c === 'string' ? c : String(c && c.id || '')); } catch (_) { return []; } })();
-          const obs = window.__STARNET_W1_OBS__ || { starts: [], ends: [], deliverables: [], permissions: [], responses: [] };
+          const obs = window.__EYEHOLD_W1_OBS__ || { starts: [], ends: [], deliverables: [], permissions: [], responses: [] };
           const option = Array.from(document.querySelectorAll('#chat-panel .fnv-opts button.fnv-opt')).find(b => visible(b) && !b.classList.contains('skip') && !b.classList.contains('custom'));
           const consent = Array.from(document.querySelectorAll('.cmsg.consent .consent-btn')).find(b => visible(b) && String(b.textContent || '').trim() === 'Approve once');
           const link = Array.from(document.querySelectorAll('.cmsg.deliverable .deliverable-link, .cmsg.recap .deliverable-link')).find(a => visible(a) && /(^|[\\/])hello\.txt$/i.test(String(a.title || a.textContent || '').trim()));
@@ -717,7 +717,7 @@ export function makeCdpInstalledDriver(options = {}) {
             const bytes = new Uint8Array(await r.arrayBuffer());
             const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))).map(b => b.toString(16).padStart(2, '0')).join('');
             const text = new TextDecoder().decode(bytes);
-            return { known: true, exists: true, path: 'hello.txt', sha256: hash, size: bytes.byteLength, contentVerified: text.trim() === 'starnet online' };
+            return { known: true, exists: true, path: 'hello.txt', sha256: hash, size: bytes.byteLength, contentVerified: text.trim() === 'eyehold online' };
           } catch (_) { return { known: false, exists: null }; }
         })()`);
       }
@@ -896,21 +896,21 @@ export function makeCdpInstalledDriver(options = {}) {
           // command — instrument the invoke bridge to capture the handed URL, then bind that URL to the
           // exact task bytes by fetching it IN-PAGE (which also proves the ?ticket= auth the link relies on).
           await evalJS(cdp, `(() => {
-            if (window.__STARNET_W1_OPEN_INSTRUMENTED__) return true;
+            if (window.__EYEHOLD_W1_OPEN_INSTRUMENTED__) return true;
             const core = window.__TAURI__ && window.__TAURI__.core;
             if (!core || typeof core.invoke !== 'function') return false;
             const original = core.invoke.bind(core);
-            window.__STARNET_W1_INVOKE_ORIGINAL__ = core.invoke;
-            window.__STARNET_W1_OPEN_CALLS__ = [];
+            window.__EYEHOLD_W1_INVOKE_ORIGINAL__ = core.invoke;
+            window.__EYEHOLD_W1_OPEN_CALLS__ = [];
             core.invoke = function(cmd, args) {
               if (String(cmd) !== 'open_external_url') return original(cmd, args);
               const url = String((args && args.url) || '');
               let scheme = ''; try { scheme = new URL(url, location.href).protocol; } catch (_) {}
               const rec = { accepted: false, scheme, url };
-              window.__STARNET_W1_OPEN_CALLS__.push(rec);
+              window.__EYEHOLD_W1_OPEN_CALLS__.push(rec);
               return original(cmd, args).then(v => { rec.accepted = true; return v; });
             };
-            window.__STARNET_W1_OPEN_INSTRUMENTED__ = true;
+            window.__EYEHOLD_W1_OPEN_INSTRUMENTED__ = true;
             return true;
           })()`);
           const expectedSha256 = lower(deliverable && deliverable.sha256);
@@ -919,7 +919,7 @@ export function makeCdpInstalledDriver(options = {}) {
           if (!clicked) return { pointerClick: false, opened: false, deliverableSha256: '', deliverableSize: 0, targetBoundToBytes: false };
           const observed = await waitValue(async () => {
             const proof = await evalJS(cdp, `(async () => {
-              const calls = window.__STARNET_W1_OPEN_CALLS__ || [];
+              const calls = window.__EYEHOLD_W1_OPEN_CALLS__ || [];
               const call = calls.length ? calls[calls.length - 1] : null;
               if (!call || !call.url || call.accepted !== true) return null;
               const res = await fetch(call.url, { cache: 'no-store' });   // auth rides the URL itself — no header
@@ -949,9 +949,9 @@ export function makeCdpInstalledDriver(options = {}) {
         async close() {
           try {
             await evalJS(cdp, `(() => {
-              if (window.__STARNET_W1_OPEN_INSTRUMENTED__ && window.__STARNET_W1_INVOKE_ORIGINAL__ && window.__TAURI__ && window.__TAURI__.core) window.__TAURI__.core.invoke = window.__STARNET_W1_INVOKE_ORIGINAL__;
-              delete window.__STARNET_W1_INVOKE_ORIGINAL__;
-              delete window.__STARNET_W1_OPEN_CALLS__; delete window.__STARNET_W1_OPEN_INSTRUMENTED__;
+              if (window.__EYEHOLD_W1_OPEN_INSTRUMENTED__ && window.__EYEHOLD_W1_INVOKE_ORIGINAL__ && window.__TAURI__ && window.__TAURI__.core) window.__TAURI__.core.invoke = window.__EYEHOLD_W1_INVOKE_ORIGINAL__;
+              delete window.__EYEHOLD_W1_INVOKE_ORIGINAL__;
+              delete window.__EYEHOLD_W1_OPEN_CALLS__; delete window.__EYEHOLD_W1_OPEN_INSTRUMENTED__;
               return true;
             })()`);
           } catch (_) {}
@@ -1024,15 +1024,15 @@ export function runtimeIsolation(authority, cdpPort) {
     machineVerified = runtimeOwnerMatches && /virtual|vmware|hyper-v|virtualbox|kvm|qemu|parallels|xen/i.test(system);
     proof = machineVerified ? 'hypervisor-detected' : '';
   } else if (authority === 'clean-machine') {
-    // "Clean" is StarNet state, not Windows age. The CDP listener must belong to this principal here;
+    // "Clean" is Eyehold state, not Windows age. The CDP listener must belong to this principal here;
     // readFreshState then independently proves empty browser + sidecar stores before any mutation.
     machineVerified = runtimeOwnerMatches;
-    proof = machineVerified ? 'runtime-owner-plus-empty-starnet-stores' : '';
+    proof = machineVerified ? 'runtime-owner-plus-empty-eyehold-stores' : '';
   }
   return {
     id: authority + '-' + principalSha256.slice(0, 12), authority,
-    freshProfile: process.env.STARNET_FIRST_RUN_FRESH_PROFILE === '1',
-    attended: process.env.STARNET_FIRST_RUN_ATTENDED === '1',
+    freshProfile: process.env.EYEHOLD_FIRST_RUN_FRESH_PROFILE === '1',
+    attended: process.env.EYEHOLD_FIRST_RUN_ATTENDED === '1',
     machineVerified, proof, principalSha256, profileSha256, runtimeOwnerSha256, repositoryOwnerSha256
   };
 }
@@ -1040,25 +1040,25 @@ export function runtimeIsolation(authority, cdpPort) {
 if (INVOKED_DIRECTLY) (async () => {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const repo = path.resolve(here, '..', '..');
-  const candidateCommit = lower(process.env.STARNET_PRODUCT_PERFECT_CANDIDATE_SHA || process.env.STARNET_FIRST_RUN_EXPECTED_HEAD);
+  const candidateCommit = lower(process.env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA || process.env.EYEHOLD_FIRST_RUN_EXPECTED_HEAD);
   const candidateTree = (() => {
     if (!SHA40.test(candidateCommit)) return '';
     const result = spawnSync('git', ['rev-parse', candidateCommit + '^{tree}'], { cwd: repo, encoding: 'utf8', windowsHide: true });
     const value = lower(result.stdout);
     return result.status === 0 && SHA40.test(value) ? value : '';
   })();
-  const artifactObserved = hashFile(process.env.STARNET_FIRST_RUN_ARTIFACT || process.env.STARNET_SMOKE_ARTIFACT || '');
-  const expectedArtifactSha256 = lower(process.env.STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SHA256);
-  const expectedArtifactSize = Number(process.env.STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SIZE);
+  const artifactObserved = hashFile(process.env.EYEHOLD_FIRST_RUN_ARTIFACT || process.env.EYEHOLD_SMOKE_ARTIFACT || '');
+  const expectedArtifactSha256 = lower(process.env.EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SHA256);
+  const expectedArtifactSize = Number(process.env.EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SIZE);
   const artifact = artifactObserved && SHA256.test(expectedArtifactSha256) && Number.isSafeInteger(expectedArtifactSize) && expectedArtifactSize > 0 &&
     artifactObserved.sha256 === expectedArtifactSha256 && artifactObserved.size === expectedArtifactSize ? artifactObserved : null;
-  const port = Number(process.env.STARNET_FIRST_RUN_CDP_PORT || process.env.STARNET_SMOKE_CDP_PORT) || 9333;
-  const attended = process.env.STARNET_FIRST_RUN_ATTENDED === '1';
-  const isolation = runtimeIsolation(process.env.STARNET_FIRST_RUN_ISOLATION_AUTHORITY, port);
+  const port = Number(process.env.EYEHOLD_FIRST_RUN_CDP_PORT || process.env.EYEHOLD_SMOKE_CDP_PORT) || 9333;
+  const attended = process.env.EYEHOLD_FIRST_RUN_ATTENDED === '1';
+  const isolation = runtimeIsolation(process.env.EYEHOLD_FIRST_RUN_ISOLATION_AUTHORITY, port);
   const provider = {
-    id: lower(process.env.STARNET_FIRST_RUN_PROVIDER || 'openrouter'),
-    model: str(process.env.STARNET_FIRST_RUN_MODEL).trim(),
-    credential: str(process.env.STARNET_FIRST_RUN_PROVIDER_SECRET),
+    id: lower(process.env.EYEHOLD_FIRST_RUN_PROVIDER || 'openrouter'),
+    model: str(process.env.EYEHOLD_FIRST_RUN_MODEL).trim(),
+    credential: str(process.env.EYEHOLD_FIRST_RUN_PROVIDER_SECRET),
     attended
   };
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -1097,15 +1097,15 @@ if (INVOKED_DIRECTLY) (async () => {
   io.log('candidate=' + (candidateCommit || '(missing)') + ' cdp=127.0.0.1:' + port +
     ' isolation=' + (isolation.authority || '(missing)') + '/' + (isolation.id || '(missing)') +
     ' provider=' + (provider.id || '(missing)'));
-  if (!artifact) io.log('BLOCKED — artifact path bytes must match gate-minted STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SHA256/SIZE');
+  if (!artifact) io.log('BLOCKED — artifact path bytes must match gate-minted EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SHA256/SIZE');
   if (!ISOLATION_AUTHORITIES.has(isolation.authority)) {
     io.log('BLOCKED — isolation authority must be separate-windows-user, virtual-machine, or clean-machine; APPDATA/LOCALAPPDATA process redirection is not isolation');
   }
   if (ISOLATION_AUTHORITIES.has(isolation.authority) && !isolation.machineVerified) {
     io.log('BLOCKED — isolation authority was not machine-verified (the installed CDP listener must belong to this principal; separate-user mode also requires a different repository owner, VM mode requires detected virtualization)');
   }
-  if (!provider.model) io.log('BLOCKED — set STARNET_FIRST_RUN_MODEL');
-  if (BYOK_PROVIDERS.has(provider.id) && !provider.credential) io.log('BLOCKED — set STARNET_FIRST_RUN_PROVIDER_SECRET in the attended shell (its value is never logged or written)');
+  if (!provider.model) io.log('BLOCKED — set EYEHOLD_FIRST_RUN_MODEL');
+  if (BYOK_PROVIDERS.has(provider.id) && !provider.credential) io.log('BLOCKED — set EYEHOLD_FIRST_RUN_PROVIDER_SECRET in the attended shell (its value is never logged or written)');
 
   const runner = makeInstalledFirstRun({
     driver: makeCdpInstalledDriver({ port }), candidateCommit, candidateTree, artifact,

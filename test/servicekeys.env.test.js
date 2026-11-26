@@ -24,7 +24,7 @@ function harness(hostEnv, getKeys) {
   // runProcess calls spawn(file, opts) when args is not an Array, spawn(file, args, opts) when it is.
   const spawn = (file, a, b) => { captured = (Array.isArray(a) ? b : a).env; return child; };
   const env = makeEnvironmentManager({
-    spawn, fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/starnet-sk-env-test',
+    spawn, fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/eyehold-sk-env-test',
     env: hostEnv,
     // the sidecar edge wires the RUN's surface through (index.js): the backend forwards execute({surface}).
     serviceEnv: (surface) => K.runEnv(getKeys(), hostEnv, { reservedEnv: RESERVED, surface: surface })
@@ -128,8 +128,8 @@ function harness(hostEnv, getKeys) {
   A.eq(withKey.PATH, 'p', 'ordinary inherited vars survive the merge');
 
   // host authority is not overridable by a pasted row
-  A.eq(withKey.STARNET_USER_CONTROL_MODE, 'preserve', 'reserved safety pin intact after the merge');
-  A.eq(withKey.STARNET_COMPUTER_DRIVER, '0', 'computer-driver pin intact after the merge');
+  A.eq(withKey.EYEHOLD_USER_CONTROL_MODE, 'preserve', 'reserved safety pin intact after the merge');
+  A.eq(withKey.EYEHOLD_COMPUTER_DRIVER, '0', 'computer-driver pin intact after the merge');
 
   keys = K.setEnabled(keys, 'printify', false, 2).list;
   apply();
@@ -147,8 +147,8 @@ function harness(hostEnv, getKeys) {
   const host = { PATH: 'p' };
   // hand the merge a hostile map directly — runEnv's reserved filter is one guard, mergeServiceEnv is the other.
   const hostile = {
-    STARNET_COMPUTER_DRIVER: '1',        // would re-enable physical input
-    STARNET_MCP_STDIO: '1',              // would re-enable unsandboxed local MCP children
+    EYEHOLD_COMPUTER_DRIVER: '1',        // would re-enable physical input
+    EYEHOLD_MCP_STDIO: '1',              // would re-enable unsandboxed local MCP children
     NODE_OPTIONS: '--require=/tmp/evil',  // would hijack every node child
     COMSPEC: 'C:\\evil.exe',
     GOOD_API_KEY: 'ok'
@@ -156,12 +156,12 @@ function harness(hostEnv, getKeys) {
   const h = harness(host, () => []);
   const { mergeServiceEnv } = makeEnvironmentManager({
     spawn: () => ({ on() {}, kill() {}, stdout: { on() {} }, stderr: { on() {} } }),
-    fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/starnet-sk-env-test', env: host
+    fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/eyehold-sk-env-test', env: host
   })._internals;
 
   const merged = mergeServiceEnv(sanitizeChildEnv(host), hostile);
-  A.eq(merged.STARNET_COMPUTER_DRIVER, '0', 'a pasted var cannot re-enable the computer driver');
-  A.eq(merged.STARNET_MCP_STDIO, '0', 'a pasted var cannot re-enable local MCP children');
+  A.eq(merged.EYEHOLD_COMPUTER_DRIVER, '0', 'a pasted var cannot re-enable the computer driver');
+  A.eq(merged.EYEHOLD_MCP_STDIO, '0', 'a pasted var cannot re-enable local MCP children');
   A.ok(!('NODE_OPTIONS' in merged), 'a pasted var cannot set an execution hook');
   A.ok(!merged.COMSPEC || !/evil/i.test(merged.COMSPEC), 'a pasted var cannot repoint COMSPEC');
   A.eq(merged.GOOD_API_KEY, 'ok', 'an ordinary service var still merges');
@@ -185,13 +185,13 @@ async function dockerKeyCase() {
     setImmediate(() => {
       let out = 'ok\n', code = 0;
       if (call.args && call.args[0] === 'inspect') code = 1;
-      if (call.args && call.args[0] === 'exec' && call.args[call.args.length - 1].indexOf('starnet-ready') >= 0) out = 'starnet-ready';
+      if (call.args && call.args[0] === 'exec' && call.args[call.args.length - 1].indexOf('eyehold-ready') >= 0) out = 'eyehold-ready';
       child.stdout.emit('data', Buffer.from(out)); child.emit('close', code);
     });
     return child;
   };
   const env = makeEnvironmentManager({
-    spawn, fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/starnet-sk-docker-test',
+    spawn, fs: require('fs'), pathMod: require('path'), root: OS.tmpdir() + '/eyehold-sk-docker-test',
     env: host, config: { backend: 'docker' },
     serviceEnv: () => K.runEnv(keys, host, { reservedEnv: RESERVED })
   });
@@ -206,7 +206,7 @@ async function dockerKeyCase() {
   A.ok(argv.indexOf('docker-secret-xyz') < 0, 'THE CORE PROPERTY: the secret is NEVER on the docker argv');
   A.eq(captured.opts.env.PRINTIFY_API_KEY, 'docker-secret-xyz', 'the value rides the docker client env instead');
   A.ok(!('OPENROUTER_API_KEY' in captured.opts.env), 'a provider/billing key still never reaches a container');
-  A.eq(captured.opts.env.STARNET_USER_CONTROL_MODE, 'preserve', 'host safety pins survive the merge');
+  A.eq(captured.opts.env.EYEHOLD_USER_CONTROL_MODE, 'preserve', 'host safety pins survive the merge');
 
   // revoked -> gone on the very next call, and with no keys the argv gains no -e flags at all
   keys = K.setEnabled(keys, 'printify', false).list;

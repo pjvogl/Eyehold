@@ -9,7 +9,7 @@ found: 2026-08-22
 lane: reliability-followup
 fix: c364e991d8d9c0c4d446c9978b8d31c33fcbe09d
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/2
+report: https://github.com/Eyehold/eyehold/issues/2
 affected: Reported Mac installation; exact failing artifact unverified
 family: recovery-truth
 installer: unverified

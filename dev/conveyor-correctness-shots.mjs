@@ -115,7 +115,7 @@ async function main() {
 
     // pin default text size (the known zoom trap) + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.station.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -128,7 +128,7 @@ async function main() {
     /* ---------- #2 the station has a DURABLE id, and the latches hang off it ---------- */
     const ident = await evalJS(cdp, `JSON.stringify((() => {
       const d = World.stationDoc();
-      return { createdAt: d && d.meta && d.meta.createdAt, saved: (JSON.parse(localStorage.getItem('starnet.save') || '{}').station || {}).meta };
+      return { createdAt: d && d.meta && d.meta.createdAt, saved: (JSON.parse(localStorage.getItem('eyehold.save') || '{}').station || {}).meta };
     })())`);
     const id = JSON.parse(ident);
     console.log('STATION IDENTITY:', ident);
@@ -166,7 +166,7 @@ async function main() {
     const writerId = stamped.bays.find(b => b.role === 'WRITER').id;
 
     /* ---------- #3 ESC over a STEP card: the brief is SAVED, the guide is NOT marked seen ---------- */
-    await evalJS(cdp, `(() => { try { localStorage.removeItem('starnet.refit.seen'); } catch (e) {} return 'cleared'; })()`);
+    await evalJS(cdp, `(() => { try { localStorage.removeItem('eyehold.refit.seen'); } catch (e) {} return 'cleared'; })()`);
     await evalJS(cdp, `Build.openAssign(${JSON.stringify(bayId)})`);
     await sleep(500);
     await evalJS(cdp, typeNoBlur('#step-brief', BRIEF));
@@ -174,7 +174,7 @@ async function main() {
       cardUp: !!document.querySelector('.refit-step-card'),
       draft: (document.querySelector('#step-brief') || {}).value,
       savedOnProp: Build.__test__.station().propById(${JSON.stringify(bayId)}).brief || null,
-      guideSeen: !!localStorage.getItem('starnet.refit.seen')
+      guideSeen: !!localStorage.getItem('eyehold.refit.seen')
     })`);
     console.log('BEFORE ESC:', beforeEsc);
     const pre = JSON.parse(beforeEsc);
@@ -186,7 +186,7 @@ async function main() {
     const afterEsc = await evalJS(cdp, `JSON.stringify({
       cardUp: !!document.querySelector('.refit-step-card'),
       savedOnProp: Build.__test__.station().propById(${JSON.stringify(bayId)}).brief || null,
-      guideSeen: !!localStorage.getItem('starnet.refit.seen'),
+      guideSeen: !!localStorage.getItem('eyehold.refit.seen'),
       refitStillOpen: Build.isOpen()
     })`);
     console.log('AFTER ESC:', afterEsc);
@@ -309,22 +309,22 @@ async function main() {
     /* ---------- #2b a station with a DIFFERENT id sees ORDERS again (per-station latch, survives reload) ---------- */
     await evalJS(cdp, OPEN_REFIT);
     await sleep(800);
-    const keysNow = await evalJS(cdp, `JSON.stringify(Object.keys(localStorage).filter(k => /starnet\\.refit\\.(orders|firstride|finline)/.test(k)))`);
+    const keysNow = await evalJS(cdp, `JSON.stringify(Object.keys(localStorage).filter(k => /eyehold\\.refit\\.(orders|firstride|finline)/.test(k)))`);
     console.log('PER-STATION LATCH KEYS:', keysNow);
     /* THE LAW: every REFIT latch key carries a station-id suffix. The bare family names
-       ('starnet.refit.orders.dis', '…firstride', '…finline') are what shipped, and a key that ENDS at the
+       ('eyehold.refit.orders.dis', '…firstride', '…finline') are what shipped, and a key that ENDS at the
        family name is the bug — whichever station writes it, every other station then inherits it. */
     const latchKeys = JSON.parse(keysNow);
-    const bare = latchKeys.filter(k => /^starnet\.refit\.(orders\.dis|firstride|finline)$/.test(k));
+    const bare = latchKeys.filter(k => /^eyehold\.refit\.(orders\.dis|firstride|finline)$/.test(k));
     claim(bare.length === 0, 'no REFIT latch is stored under a bare GLOBAL key (' + JSON.stringify(latchKeys) + ')');
     claim(latchKeys.every(k => /\.\d+$/.test(k)), 'every latch key that exists is suffixed with a station id');
     // dismiss ORDERS on this station, then give the SAVE a different station id and reload = a new station
-    await evalJS(cdp, `(() => { try { localStorage.setItem('starnet.refit.orders.dis.' + ${JSON.stringify(String(id.createdAt))}, '1'); } catch (e) {} return 'dismissed'; })()`);
+    await evalJS(cdp, `(() => { try { localStorage.setItem('eyehold.refit.orders.dis.' + ${JSON.stringify(String(id.createdAt))}, '1'); } catch (e) {} return 'dismissed'; })()`);
     await evalJS(cdp, `Build.close()`);
     await sleep(600);
     const NEWID = id.createdAt + 999999;
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.save';
+      const KEY = 'eyehold.save';
       const r = JSON.parse(localStorage.getItem(KEY) || '{}');
       if (!r.station || !r.station.meta) return 'no-station-in-save';
       r.station.meta.createdAt = ${NEWID};
@@ -337,8 +337,8 @@ async function main() {
     const fresh = await evalJS(cdp, `JSON.stringify((() => {
       const d = World.stationDoc();
       return { id: d && d.meta && d.meta.createdAt,
-               oldDismissal: !!localStorage.getItem('starnet.refit.orders.dis.' + ${JSON.stringify(String(id.createdAt))}),
-               newDismissal: !!localStorage.getItem('starnet.refit.orders.dis.' + ${NEWID}) };
+               oldDismissal: !!localStorage.getItem('eyehold.refit.orders.dis.' + ${JSON.stringify(String(id.createdAt))}),
+               newDismissal: !!localStorage.getItem('eyehold.refit.orders.dis.' + ${NEWID}) };
     })())`);
     console.log('AFTER SWITCHING TO A NEW STATION ID:', fresh);
     const fr = JSON.parse(fresh);

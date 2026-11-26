@@ -187,7 +187,7 @@ const clock = { now: () => clk };
   const trustedCompletion = trustedStore.record({ runId: 'host-verified', completionEvidence: {
     _completionAuthority: authority,
     completionVerdict: 'completed_verified', effectVerdict: 'mechanically_verified', effects: [],
-    contract: { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'file', type: 'artifact_exists', path: 'out.txt' }] },
+    contract: { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'file', type: 'artifact_exists', path: 'out.txt' }] },
     checks: [{ id: 'file', type: 'artifact_exists', status: 'passed', code: 'artifact_exists' }]
   } }).completionEvidence;
   A.eq(trustedCompletion.completionVerdict, 'completed_verified', 'matching in-process authority plus complete mechanical checks may persist verification');

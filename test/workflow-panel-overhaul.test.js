@@ -1,6 +1,6 @@
 /* test/workflow-panel-overhaul.test.js — THE WORKFLOW PANEL, OVERHAULED (Andrew, 2026-09-30: "an atrocious UX disaster. tiny
    text, doesnt … match the new gorgeous buttons and new style … the crate is ugly … easy to use, simplified, and the system
-   viewer or wireframe view should look better as well … a UX overhaul clean experience consistent with the rest of starnet").
+   viewer or wireframe view should look better as well … a UX overhaul clean experience consistent with the rest of eyehold").
 
    What that became, locked here so it cannot drift back:
      · READABLE — the panel speaks at the station's size: 17px body, nothing a Commander reads under 14px, and the pieces it

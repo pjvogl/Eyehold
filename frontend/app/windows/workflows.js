@@ -1,4 +1,4 @@
-/* STARNET — windows/workflows.js : WORK › AUTOMATE › WORKFLOWS (2026-09-30 — Andrew: "the easiest conveyor system we can possibly put together.
+/* EYEHOLD — windows/workflows.js : WORK › AUTOMATE › WORKFLOWS (2026-09-30 — Andrew: "the easiest conveyor system we can possibly put together.
    It should be clear as day to the user how to use it").
 
    ONE PATH, in its own docked window — never inside Build Mode:
@@ -23,7 +23,7 @@ const WorkflowsWindow = (() => {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const sfx = k => { try { const h = H(); if (h && h.sfx) h.sfx(k); } catch (_) {} };
   const notify = (t, kind) => { try { const h = H(); if (h && h.notify) h.notify(t, kind || ''); } catch (_) {} };
-  const api = p => ((typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : '') + p;
+  const api = p => ((typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : '') + p;
   const getJSON = p => fetch(api(p), { cache: 'no-store' }).then(r => r.json().catch(() => null).then(j => ({ status: r.status, j })));
   const postJSON = (p, b) => fetch(api(p), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b || {}) })
     .then(r => r.json().catch(() => null).then(j => ({ status: r.status, j })));

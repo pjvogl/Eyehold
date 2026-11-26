@@ -58,7 +58,7 @@ function stubBridge(impl) {
     A.ok(/^REFUSED:/.test(out.content), tool.name + ' without a bridge refuses explicitly');
     A.ok(/do not report this action as done/.test(out.content), 'and tells the model not to claim it');
   }
-  const down = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'no station page answered — open StarNet to run station commands', unattended: true })) });
+  const down = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'no station page answered — open Eyehold to run station commands', unattended: true })) });
   const out = await down.createTool.run({ title: 'research' });
   A.ok(/REFUSED: no station page answered/.test(out.content), 'an unattended station (cron/Night Shift) is named, not papered over');
   const refused = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'a session called "research" already exists — delegate into it, focus it, or pick another name' })) });
@@ -84,7 +84,7 @@ function stubBridge(impl) {
   A.eq((await quiet.statusTool.run({})).summary, '1 session(s), 0 busy', 'no approval clause when nothing waits');
   const starting = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'the station is still starting up — no sessions are readable yet' })) });
   A.ok(/^REFUSED: the station is still starting up/.test((await starting.statusTool.run({})).content), "the page's not-ready refusal reaches the model, never an empty 'all quiet'");
-  const headless = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'no station page answered — open StarNet to run station commands', unattended: true })) });
+  const headless = makeStationTools({ station: stubBridge(() => ({ ok: false, error: 'no station page answered — open Eyehold to run station commands', unattended: true })) });
   A.ok(/^REFUSED: no station page answered/.test((await headless.statusTool.run({})).content), 'no live page → explicit REFUSED, no implied station state');
   A.eq([t.statusTool.capability, t.statusTool.scope, t.statusTool.requiresConsent].join(','), 'orchestrator,read,false', 'lead-only, read-only, consent-free');
   A.ok(/never infer other sessions/i.test(t.statusTool.description), 'its description carries the anti-guessing rule');

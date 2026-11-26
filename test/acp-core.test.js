@@ -1,4 +1,4 @@
-/* node test/acp-core.test.js — StarNet's ACP agent core (sidecar/acp/core.js).
+/* node test/acp-core.test.js — Eyehold's ACP agent core (sidecar/acp/core.js).
 
    ACP is the EDITOR surface: a client (Zed, Neovim, …) spawns the bridge and speaks JSON-RPC 2.0 both ways.
    This drives the core with a fake sidecar and a fake client, so every protocol decision is pinned without a
@@ -63,7 +63,7 @@ function harness(opts) {
     A.eq(r.jsonrpc, '2.0', 'responses are JSON-RPC 2.0');
     A.eq(r.id, 1, 'the response carries the request id');
     A.eq(r.result.protocolVersion, 1, 'the agent answers with the protocol version it implements');
-    A.eq(r.result.agentInfo.name, 'starnet', 'the agent identifies itself');
+    A.eq(r.result.agentInfo.name, 'eyehold', 'the agent identifies itself');
     A.eq(r.result.agentInfo.version, '9.9.9', 'and reports the real harness version, not a literal');
     A.eq(r.result.agentCapabilities.loadSession, true, 'loadSession is advertised');
     A.eq(r.result.authMethods.length, 0, 'no auth methods are advertised (the station token already fences /api)');
@@ -94,7 +94,7 @@ function harness(opts) {
   {
     const h = harness();
     const sid = await h.open();
-    A.ok(/^starnet-/.test(sid), 'a session id is minted: ' + sid);
+    A.ok(/^eyehold-/.test(sid), 'a session id is minted: ' + sid);
     const second = await h.core.handleRpc(rpc(9, 'session/new', { cwd: 'C:/other' }));
     A.ok(second.result.sessionId !== sid, 'each session/new mints a distinct id');
 
@@ -104,7 +104,7 @@ function harness(opts) {
 
     /* session/load for an id this PROCESS does not hold must fail honestly — editors persist session ids
        across restarts, and answering ok would hand the user a silently empty history. */
-    const load = await h.core.handleRpc(rpc(11, 'session/load', { sessionId: 'starnet-from-a-previous-life', cwd: 'C:/x' }));
+    const load = await h.core.handleRpc(rpc(11, 'session/load', { sessionId: 'eyehold-from-a-previous-life', cwd: 'C:/x' }));
     A.ok(load.error && /not held by this bridge process/.test(load.error.message),
       'loading a session from a previous process is refused, not faked');
   }
@@ -128,7 +128,7 @@ function harness(opts) {
 
     const tc = h.updates().find(u => u.sessionUpdate === 'tool_call');
     A.ok(tc, 'a tool call is announced to the editor');
-    A.eq(tc.toolCallId, 'c1', 'the ACP tool-call id is StarNet\'s callId, so updates correlate');
+    A.eq(tc.toolCallId, 'c1', 'the ACP tool-call id is Eyehold\'s callId, so updates correlate');
     A.eq(tc.kind, 'read', 'fs.read is classified as a READ (the icon/scan-ability the editor keys on)');
     A.eq(tc.title, 'Read sidecar/loop.js', 'the title is human, not "fs.read"');
     A.eq(tc.status, 'in_progress', 'an announced call is in progress');
@@ -248,12 +248,12 @@ function harness(opts) {
 
   /* ---- 9. a broken run still ENDS the turn ----------------------------------------------------- */
   {
-    const h = harness({ runThrows: 'StarNet is not running' });
+    const h = harness({ runThrows: 'Eyehold is not running' });
     const sid = await h.open();
     const r = await h.core.handleRpc(rpc(3, 'session/prompt', { sessionId: sid, prompt: [{ type: 'text', text: 'go' }] }));
     A.eq(r.result.stopReason, 'end_turn', 'a transport failure still resolves the prompt (a never-resolving turn hangs the editor)');
     A.ok(/could not complete this turn/.test(h.text()), 'and the user is told, in the transcript');
-    A.ok(/StarNet is not running/.test(h.text()), 'with the real reason');
+    A.ok(/Eyehold is not running/.test(h.text()), 'with the real reason');
   }
 
   /* ---- 10. one turn at a time; cancel reaches the run ----------------------------------------- */
@@ -356,7 +356,7 @@ function harness(opts) {
     A.eq(K('notebook.write'), 'think', 'notebook.* -> think');
     A.eq(K('mcp__github__x'), 'other', 'a connector tool -> other');
     A.eq(K('brand.new.tool'), 'other', 'an unknown tool falls back to other, never to a wrong claim');
-    /* browser.test_* drives StarNet's OWN synthetic UI harness — it EXECUTES locally, it does not fetch the
+    /* browser.test_* drives Eyehold's OWN synthetic UI harness — it EXECUTES locally, it does not fetch the
        web. Ordered before the browser. prefix for exactly this reason. */
     A.eq(K('browser.test_input'), 'execute', 'browser.test_* is local execution, not a fetch');
 
@@ -425,7 +425,7 @@ function harness(opts) {
     /* The FOLDER-TRUST ask is not a model tool call — it is the station's "work in <root>?" gate, and because an
        ACP session sends its cwd as the project root it is very often the FIRST card a user ever sees. It read
        "path.trust" before this. */
-    A.eq(I.titleOf('path.trust', I.permArgs('C:/proj/thing')), 'Allow StarNet to work in C:/proj/thing',
+    A.eq(I.titleOf('path.trust', I.permArgs('C:/proj/thing')), 'Allow Eyehold to work in C:/proj/thing',
       'the folder-trust card reads as a sentence, not as a tool id');
     A.eq(I.locationsOf(I.permArgs('C:/proj/thing'))[0].path, 'C:/proj/thing', 'and a Windows path still resolves as a location');
   }

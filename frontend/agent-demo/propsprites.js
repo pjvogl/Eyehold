@@ -1,4 +1,4 @@
-/* STARNET — propsprites.js : the canonical PROP (furniture) art + catalog.
+/* EYEHOLD — propsprites.js : the canonical PROP (furniture) art + catalog.
 
    v7's sprites.js drew ~85 furniture pieces as detailed PROCEDURAL pixel art — outlined
    casings, 2–3 tone shading, contact shadows, and animated emissive bits (a TV cycling
@@ -11819,7 +11819,7 @@ const PropSprites = (() => {
       // rebake is the existing public render invalidation; it does not edit the save.
       if (typeof World !== 'undefined' && typeof World.rebake === 'function') World.rebake();
       if (typeof window !== 'undefined' && window.dispatchEvent && typeof CustomEvent !== 'undefined')
-        window.dispatchEvent(new CustomEvent('starnet:prop-art-ready',{detail:{revision:PropRemaster.revision()}}));
+        window.dispatchEvent(new CustomEvent('eyehold:prop-art-ready',{detail:{revision:PropRemaster.revision()}}));
     });
   }
 

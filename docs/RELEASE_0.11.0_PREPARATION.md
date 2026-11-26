@@ -1,4 +1,4 @@
-# StarNet 0.11.0 preparation
+# Eyehold 0.11.0 preparation
 
 Current checkpoint: all five version pins are 0.11.0, Google Desktop registration is staged, and the replacement owner-test installer includes the four reported UI fixes plus approved room colour. See [the current candidate receipt](RELEASE_0.11.0_TEST_CANDIDATE.md). The sections below retain the chronological preparation history; their earlier missing-registration and unbumped-version observations are historical. Public release remains pending.
 
@@ -23,7 +23,7 @@ Do not close a customer report based only on a related merged fix or a passing m
 | --- | --- |
 | `acb47320` idle usage | Affected run ledger, provider/model, armed work and expected cadence |
 | `c2a6c3c8` missing ONCE routine | Affected job ID and sanitized create/list/restart diagnostics |
-| `e5d4b743` Google sign-in | StarNet-owned Google Desktop OAuth registration, approval, real consent and installed acceptance |
+| `e5d4b743` Google sign-in | Eyehold-owned Google Desktop OAuth registration, approval, real consent and installed acceptance |
 | `eaaa3ec8` Mac paid onboarding | Exact signed Apple Silicon installer, link/unlink/relink and keychain/restart proof |
 | `72af29f4` funded station zero warning | Affected account's authoritative balance compared with banner after refresh/restart |
 | `fd9c4b4d` managed Sonnet HTTP 400 | Fresh sanitized correlation and deployed-route trace for the affected installed request |
@@ -43,7 +43,7 @@ the two station-level detector findings. The fresh release worktree has a separa
 directory, so its zero ledger count must not be presented as the integration ledger's count.
 
 The live repository-secret inventory on 2026-09-06 also confirms that
-`STARNET_GOOGLE_DESKTOP_CLIENT_JSON` is absent. The official release train invokes
+`EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON` is absent. The official release train invokes
 `scripts/stage-google-client.mjs` without `--optional`, so the build would stop on that
 missing publisher registration. Updater key, release token and Azure signing secret
 names are present; only names/presence were inspected, never secret values. Repository
@@ -107,7 +107,7 @@ behavior, real-account recovery, or the absence of every possible defect.
 
 ## Proposed user-facing notes (not yet published)
 
-StarNet 0.11.0 brings a refreshed station and a clearer way to work with your crew.
+Eyehold 0.11.0 brings a refreshed station and a clearer way to work with your crew.
 
 - Refined station materials, room lighting, wall and doorway depth, and space backdrops.
 - Updated dock menus, recruitment gallery, quest journal, and compact connected-app widgets.
@@ -216,13 +216,13 @@ Logs: `readiness-hud-final.log`, `preflight-hud-final.log`, `gate-hud-trunk-fast
 
 ### Google setup is now located and concretely prepared
 
-The signed-in Cloud Console contains the existing **StarNet** project `starnet-505202`,
-with one Web application client named **StarNet Account**. Its audience is External / In
+The signed-in Cloud Console contains the existing **Eyehold** project `eyehold-505202`,
+with one Web application client named **Eyehold Account**. Its audience is External / In
 production, but no Workspace API scopes are declared, the five needed Workspace APIs are
 not enabled, and branding policy/homepage links are empty. Existing account sign-in
 configuration does not establish the new desktop Workspace connections.
 
-A **Desktop app** client named **StarNet Desktop** is prepared in the browser form.
+A **Desktop app** client named **Eyehold Desktop** is prepared in the browser form.
 Create has not been clicked: explicit approval was requested for credential creation and
 storing its registration in the release secret. No Google settings, credentials, public
 policy, releases or updater feed were changed. The setup and draft disclosure are in

@@ -86,7 +86,7 @@ isolation via `test/understanding.test.js`.
 
 > **PIVOT (2026-07-03, locked by Andrew):** no dedicated visual surface. The ambient-star concept was
 > built, live-verified, and REJECTED — "it needs to be the daily usage and gameplay… that will better
-> improve the experience due to StarNet adapting to the user." The engine drives BEHAVIOR (question
+> improve the experience due to Eyehold adapting to the user." The engine drives BEHAVIOR (question
 > targeting, meter math), presented in the simplest way possible (the existing COMMANDER panel meter).
 > Do not rebuild a star/fog/gauge hero visual for this feature.
 
@@ -106,7 +106,7 @@ do not build without his go.)
 
 | # | Build | Status |
 |---|---|---|
-| **R2** | **Ratings → preference signal.** 👍/👌/👎 verdicts feed the style-model confidence via a direct `UnderstandingStore.noteRating` hand-off in `rateWork` (👍 +1, 👎 −1, 👌 nothing; clamped ±6, persisted `starnet.understanding.v1`, new-hero reset). Engine gained SIGNED corroboration (floored at 0). Complements the 3-streak taste beat (that mints a belief; this moves confidence). | ✅ SHIPPED (1bc80b85 + c366ab7c; live-verified: style 0.51 → two 👎 → 0, overall 0.383→0.34, restored by 👍) |
+| **R2** | **Ratings → preference signal.** 👍/👌/👎 verdicts feed the style-model confidence via a direct `UnderstandingStore.noteRating` hand-off in `rateWork` (👍 +1, 👎 −1, 👌 nothing; clamped ±6, persisted `eyehold.understanding.v1`, new-hero reset). Engine gained SIGNED corroboration (floored at 0). Complements the 3-streak taste beat (that mints a belief; this moves confidence). | ✅ SHIPPED (1bc80b85 + c366ab7c; live-verified: style 0.51 → two 👎 → 0, overall 0.383→0.34, restored by 👍) |
 | **R5** | **Rhythm → routine offers.** Pure engine over run history (tag × time-of-day × recurrence ≥3 distinct days) → ONE one-tap routine offer via existing seeds/cron + earned-beat gates. | own lane — spawned (agent/rhythm-routines brief) |
 | **R3** | **Suggestions as silent belief probes (realizes P4 drift).** `probeTarget()` names a north-star-critical belief whose conf sagged <0.45; suggeststore aims the next earned idea at it (additive `Pitch.buildDirective` probe line, silent aiming); accept/decline → `noteProbe` ±1. | ✅ SHIPPED (3f954cd1; store loop live-verified w/ 90-day clock shift; aimed beat through a live LLM not yet driven) |
 | **R4** | **Payoff receipts.** `Chat.briefingReceipt(dim)` — "◈ briefing updated — every agent on this station now knows your <dim>" at both commit sites (curiosity answer = previously zero acknowledgment; kept study observation). No veto (COMMANDER panel owns undo). | ✅ SHIPPED (ff6f3b48; live-verified render) |
@@ -119,6 +119,6 @@ attended live-LLM check of the aimed suggestion beat; merge to trunk (full `test
 ## Verification (per doctrine)
 - **P1 done** = `node test/understanding.test.js` green + the module appended to `test:fast:raw` and
   the full gate green before merge. Pure engine, no live-app surface yet.
-- Later phases: live-app DOM round-trip proof per `starnet-verify` before any "done" claim.
+- Later phases: live-app DOM round-trip proof per `eyehold-verify` before any "done" claim.
 - **Ownership:** never edit `shared/events.js`/`shared/schema.js` (owned, additive-only by request).
   P2's corroboration event, if needed, is requested from the `cortex-memory` workstream.

@@ -1,5 +1,5 @@
 /* node test/channels.keychain-all.e2e.test.js — true-sidecar proof that Slack + Matrix credentials follow the
-   Telegram/Discord keychain law on the desktop build (STARNET_DESKTOP_SHELL=1).
+   Telegram/Discord keychain law on the desktop build (EYEHOLD_DESKTOP_SHELL=1).
 
    The shell (src-tauri/src/credentials.rs) migrates plaintext channel tokens into the OS keychain BEFORE the
    sidecar spawns and injects them as SKYNET_<ID>_TOKEN. This test boots the REAL sidecar in the three states that
@@ -35,7 +35,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -69,11 +69,11 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
   const file = path.join(ws, 'channels', 'secrets.json');
   fs.writeFileSync(file, JSON.stringify(secrets));
   const env = Object.assign({
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
-    STARNET_DESKTOP_SHELL: '1', SKYNET_DESKTOP_SHELL: '1',
-    SKYNET_IPC_TOKEN: IPC, STARNET_IPC_TOKEN: IPC,
-    SKYNET_SLACK_TOKEN: '', STARNET_SLACK_TOKEN: '', SKYNET_MATRIX_TOKEN: '', STARNET_MATRIX_TOKEN: '',
-    SKYNET_OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '',
+    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_DESKTOP_SHELL: '1', SKYNET_DESKTOP_SHELL: '1',
+    SKYNET_IPC_TOKEN: IPC, EYEHOLD_IPC_TOKEN: IPC,
+    SKYNET_SLACK_TOKEN: '', EYEHOLD_SLACK_TOKEN: '', SKYNET_MATRIX_TOKEN: '', EYEHOLD_MATRIX_TOKEN: '',
+    SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
     APPDATA: path.join(home, 'Roaming'), LOCALAPPDATA: path.join(home, 'Local'), USERPROFILE: home, HOME: home
   }, extraEnv);
   let child = null;
@@ -83,7 +83,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
     const B = 'http://' + HOST + ':' + booted.port;
     const token = await bootToken(B, B);
     const api = (method, url, body, headers) => fetch(B + url, {
-      method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B }, headers || {}),
+      method, headers: Object.assign({ 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B }, headers || {}),
       body: body === undefined ? undefined : JSON.stringify(body)
     }).then(async r => ({ status: r.status, j: await r.json().catch(() => ({})) }));
     const disk = () => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -117,7 +117,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
     // the shell later manages to store it (keychain unlocked) and pushes it -> now durable -> the next save strips
     const noIpc = await api('POST', '/api/channels/token', { channel: 'slack', token: SLACK });
     A.eq(noIpc.status, 403, 'the keychain push refuses a caller without the per-launch IPC token');
-    const push = await api('POST', '/api/channels/token', { channel: 'slack', token: SLACK }, { 'X-StarNet-Token': IPC });
+    const push = await api('POST', '/api/channels/token', { channel: 'slack', token: SLACK }, { 'X-Eyehold-Token': IPC });
     A.ok(push.status === 200 && push.j.configured === true, 'keychain push for Slack accepted');
     A.ok(JSON.stringify(push.j).indexOf(SLACK) < 0, 'the push response never echoes the token');
     const sync2 = await api('POST', '/api/channels/slack/sync', { agentName: 'NOVA-3' });
@@ -131,7 +131,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
 
   // ---- 2. migration SUCCEEDED: token-free file + keychain env -> configured, and nothing is written back ----
   await withSidecar('ok', 9410, baseRecords(false), {
-    SKYNET_SLACK_TOKEN: SLACK, STARNET_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: MATRIX, STARNET_MATRIX_TOKEN: MATRIX
+    SKYNET_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: MATRIX, EYEHOLD_MATRIX_TOKEN: MATRIX
   }, async ({ api, disk }) => {
     const st = (await api('GET', '/api/channels/status')).j;
     A.ok(st.slack.configured === true && st.slack.durable === true, 'migrated: Slack configured + durable from the keychain env');
@@ -145,7 +145,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
 
   // ---- 3. keychain written but the shell's strip-write failed: the sidecar finishes the strip at boot ----
   await withSidecar('strip', 9460, baseRecords(true), {
-    SKYNET_SLACK_TOKEN: SLACK, STARNET_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: 'syt_DIFFERENT', STARNET_MATRIX_TOKEN: 'syt_DIFFERENT'
+    SKYNET_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: 'syt_DIFFERENT', EYEHOLD_MATRIX_TOKEN: 'syt_DIFFERENT'
   }, async ({ api, disk }) => {
     const d = disk();
     A.ok(!('token' in d.slack), 'leftover: a plaintext copy matching the keychain env is stripped at boot');

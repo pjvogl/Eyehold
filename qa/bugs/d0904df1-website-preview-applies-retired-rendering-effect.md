@@ -10,7 +10,7 @@ lane: agent/website-demo-0921
 fix: 8be5cf230
 origin: owner
 report: Owner screenshot and website request, 2026-09-21
-affected: starnetos.com production on 2026-09-21
+affected: eyehold.com production on 2026-09-21
 family: website-preview
 installer: not-applicable
 installerEvidence: Website-only preview and generation changes; desktop binaries are unchanged.
@@ -25,7 +25,7 @@ Owner reports an ugly, inaccurate website demo. The deployed starter room appear
 
 ## Repro
 
-1. Open https://starnetos.com/#station before deployment of this lane.
+1. Open https://eyehold.com/#station before deployment of this lane.
 2. Observe the embedded station and its live-preview caption.
 3. Compare website/app/demo-boot.js overrides to frontend/app/worldrenderer.js PHOSPHOR settings.
 
@@ -35,7 +35,7 @@ Owner screenshot 2026-09-21; live browser reproduction on production and local s
 
 ## Verdict
 
-Source changes culminate in 8be5cf230. Generate the real starter layout from WorldModel.starterDoc() and derive its saved-preview revision from the layout hash. Removed retired CRT overrides and duplicate page glass, framed the complete hull with the actual renderer camera, and labeled the offline starter layout. Local desktop/mobile rendering verified; Cloudflare preview is https://723f4bea.starnet-site.pages.dev. Production deployment and final gate receipt are recorded separately in this lane's digest. Owner visual acceptance remains unconfirmed.
+Source changes culminate in 8be5cf230. Generate the real starter layout from WorldModel.starterDoc() and derive its saved-preview revision from the layout hash. Removed retired CRT overrides and duplicate page glass, framed the complete hull with the actual renderer camera, and labeled the offline starter layout. Local desktop/mobile rendering verified; Cloudflare preview is https://723f4bea.eyehold-site.pages.dev. Production deployment and final gate receipt are recorded separately in this lane's digest. Owner visual acceptance remains unconfirmed.
 
 ## Regression
 

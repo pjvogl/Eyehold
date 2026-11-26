@@ -129,11 +129,11 @@ A.ok(/const isHall = tool === 'hall'/.test(commitDrawBlock) && /feedback\(res, e
   'the feedback label reads the tool captured BEFORE deselect — a hallway commit must never flash "room placed"');
 
 /* ---------- 6. per-station latches + session-state hygiene ---------- */
-A.ok(/const ORDERS_KEY = \(\) => 'starnet\.refit\.orders\.dis\.' \+ stationKeyOf\(station\)/.test(build),
+A.ok(/const ORDERS_KEY = \(\) => 'eyehold\.refit\.orders\.dis\.' \+ stationKeyOf\(station\)/.test(build),
   'the ORDERS dismissal is namespaced per station (it shipped global, with no suffix at all)');
 A.ok(/localStorage\.setItem\(ORDERS_KEY\(\), '1'\)/.test(build), '…and the writer uses the same per-station key');
-A.ok(/'starnet\.refit\.firstride\.' \+ stationKeyOf\(station\)/.test(build), 'the first ride is per station');
-A.ok(/'starnet\.refit\.finline\.' \+ stationKeyOf\(st \|\| station\)/.test(build), 'the finish-the-line registry is per station');
+A.ok(/'eyehold\.refit\.firstride\.' \+ stationKeyOf\(station\)/.test(build), 'the first ride is per station');
+A.ok(/'eyehold\.refit\.finline\.' \+ stationKeyOf\(st \|\| station\)/.test(build), 'the finish-the-line registry is per station');
 
 const openBlock = build.slice(build.indexOf('function open() {'), build.indexOf('function open() {') + 2500);
 A.ok(/for \(const k in layerFailed\) delete layerFailed\[k\];/.test(openBlock),

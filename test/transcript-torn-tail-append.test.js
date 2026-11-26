@@ -13,7 +13,7 @@ const A = require('./_assert.js');
 const { makeSegmentedTranscriptIo } = require('../sidecar/transcript-history.js');
 const { makeTranscriptStore } = require('../sidecar/transcriptstore.js');
 
-const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-torn-tail-'));
+const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-torn-tail-'));
 const ROOT = path.join(DIR, 'history');
 const SEG = path.join(ROOT, 'segment-000001.jsonl');
 let t = 0;

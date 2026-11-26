@@ -1,4 +1,4 @@
-# StarNet release runbook
+# Eyehold release runbook
 
 Solo, 2am, tired: follow this top to bottom. Every step is a command to paste or an exact
 click. Nothing here says "ensure that" — if a step is judgment, it tells you the exact thing
@@ -15,18 +15,18 @@ GitHub. The release train only ever stages a **DRAFT**. Until you publish, zero 
 see or download anything.
 
 **Fixed facts (from the code, do not retype from memory):**
-- Public source repo: `androoAGI/starnet` — where you run
+- Public source repo: `Eyehold/eyehold` — where you run
   `release:bump` and where the train workflow lives.
-- Public releases repo: `androoAGI/starnet-releases` — installers live here,
+- Public releases repo: `Eyehold/eyehold-releases` — installers live here,
   and this is what the updater points at.
 - Updater endpoint baked into every shipped binary
   (`src-tauri/tauri.conf.json` → `plugins.updater.endpoints[0]`):
-  `https://github.com/androoAGI/starnet-releases/releases/latest/download/latest.json`
-- Updater signing key: `~/.tauri/starnet-updater.key` (see section 4 — this is the single
+  `https://github.com/Eyehold/eyehold-releases/releases/latest/download/latest.json`
+- Updater signing key: `~/.tauri/eyehold-updater.key` (see section 4 — this is the single
   most dangerous thing to lose in the whole project).
 - Release state is live data, not a fact to freeze in this runbook. Read the current in-tree version from
   the five pins listed in `docs/BRAIN.md`; list publicly receivable distribution releases with
-  `gh release list -R androoAGI/starnet-releases --exclude-drafts`; and inspect drafts separately before
+  `gh release list -R Eyehold/eyehold-releases --exclude-drafts`; and inspect drafts separately before
   selecting a version. A source tag or distribution draft already bearing that version is a collision even
   when no updater fleet can see it. (The version numbers used as examples below are illustrative.)
 
@@ -60,16 +60,16 @@ exists because of a law; the law is cited so you know why you can't wave it thro
 | working tree clean | FAIL on modified tracked files; WARN on untracked | the tag must name a tree you can rebuild; foreign untracked files have blocked the claims re-lock guard |
 | Guardian `qa/STATUS.md` row refresh | WARN, named | the Guardian's periodic status row is benign dirt — commit it as `qa: record …` or stash it; never fold it into the release commit |
 | five version pins agree | FAIL | `package.json`, `package-lock.json` root, `tauri.conf.json`, `Cargo.toml`, `Cargo.lock` `skynet-desktop` (`docs/BRAIN.md`); `release:bump` moves all five; a straggler breaks `cargo build --locked` on CI |
-| tag not local / not on origin / no release on `starnet-releases` | FAIL (SKIP "unverified: offline" when unreachable) | a tag already on origin has **already fired the train**; a draft on the releases repo reserves the version; tags are never force-moved (§2.3) — spent versions get `--next patch` |
+| tag not local / not on origin / no release on `eyehold-releases` | FAIL (SKIP "unverified: offline" when unreachable) | a tag already on origin has **already fired the train**; a draft on the releases repo reserves the version; tags are never force-moved (§2.3) — spent versions get `--next patch` |
 | claims lock current for HEAD | FAIL | `qa/product-perfect/claims.json` pins bytes of the release surface (incl. `RELEASE_NOTES.md`, `website/app`); the audit **reads the COMMIT, never the tree** — an uncommitted re-lock is invisible |
 | `website/app` mirror in sync | FAIL | the live demo is a GENERATED verbatim copy of `frontend/` (`sync:website --check`); drift is a truthfulness bug, and it is inside the locked claims surface |
 | `test:fast` green at HEAD | WARN pre-bump, **FAIL post-bump** | `MISTAKES.md` "Gate order": gate AFTER the bump, BEFORE the tag push. The receipt is `.dogfood/gate-receipts/<sha>.fast.json`, written only by the ritual after verifying a gate LOG's last line |
-| `test:http` green at HEAD | WARN (`--require-http` → FAIL) | `starnet-backend-law`: owed whenever sidecar/ship/route code changed since the last cut |
+| `test:http` green at HEAD | WARN (`--require-http` → FAIL) | `eyehold-backend-law`: owed whenever sidecar/ship/route code changed since the last cut |
 | T0 clean-install · G1 packaged-lifecycle | WARN "owed" until a complete receipt for the target exists | post-draft RELEASE BLOCKERS (§1.7a); pre-tag they can only be owed — the row makes the debt explicit so it is never silently forgotten |
 | installed-exe smoke | PASS only for a fresh GREEN stamp naming the target version | short startup/interaction evidence; exact candidate and executable binding are enforced by `qa:ready` |
 | 48-hour installed soak acceptance | WARN — manual evidence review remains owed | review elapsed duration, real-provider workload and final readiness under `docs/RELEASE_READINESS.md`; a smoke stamp does not prove the soak. An explicit owner hotfix waiver must be recorded in `RELEASE_NOTES`/`NEXT.md` |
 | `qa:ready` verdict | FAIL on NOT READY or unrunnable | READY-GATE law (`docs/RELEASE_READINESS.md`, `docs/DECISIONS.md`): no version is cut against a red house. No-fake-green: an unrunnable `qa:ready` is NOT READY |
-| updater signing key present | FAIL | `~/.tauri/starnet-updater.key` — lose it and no installed StarNet can ever update again (§4). Presence only; the file is never read or printed |
+| updater signing key present | FAIL | `~/.tauri/eyehold-updater.key` — lose it and no installed Eyehold can ever update again (§4). Presence only; the file is never read or printed |
 | updater key backed up offline ≥2 copies | SKIP — human attestation | §4.1; no machine can verify a USB stick |
 | `RELEASE_NOTES.md` for the target | WARN pre-bump, **FAIL post-bump** if still the TODO scaffold | the notes are the GitHub release body AND the in-app UPDATE CENTER text |
 | trunk vs `origin` | WARN if ahead | informational: push the branch WITH the tag so the source-release mirror can find the commit |
@@ -86,7 +86,7 @@ merge, tag on the merge):
    `RELEASE_NOTES.md`, commits `release: v<ver>` by pathspec. `--no-tag` on purpose: the tag goes on
    the re-lock commit (tag-after-stamp is what made the v0.6.5 train pass first try).
    `release-bump` also refuses a version ≤ the highest **published** release (the fleet floor) when
-   `gh` can reach `starnet-releases`, and warns loudly when it can't.
+   `gh` can reach `eyehold-releases`, and warns loudly when it can't.
 3. **release notes — STOP** until `RELEASE_NOTES.md` has no `TODO: summarize` line. Write the real
    user-facing notes, then `git add RELEASE_NOTES.md && git commit --amend --no-edit` (the
    `release: v<ver>` commit must be HEAD). Re-run.
@@ -120,7 +120,7 @@ merge, tag on the merge):
 
 - Pushing the `v*` tag **fires `.github/workflows/release-train.yml`**: gate → build (Windows + both
   Mac legs, updater signing REQUIRED) → assemble one multi-platform `latest.json` → stage a **DRAFT**
-  on `starnet-releases`. A draft is invisible to users; nothing ships until you click Publish (§1.8).
+  on `eyehold-releases`. A draft is invisible to users; nothing ships until you click Publish (§1.8).
 - The stage-draft job uploads with `--clobber`: re-pushing or force-moving the tag **overwrites the
   staged installer/.sig** for that version. Never force-move a tag CI may have built from — bump a
   patch instead (§2.3).
@@ -184,7 +184,7 @@ real `shell_exec` tool run, a cron routine firing on its own, `/api/diagnostics`
 RSS, health latency, the fail-open swallowed-error tally, the diagnostics error ring, and workspace growth.
 
 The receipt (`.dogfood/soak/<timestamp>/soak-receipt.json` + `SUMMARY.md`, schema
-`starnet.soak-receipt.v1`) carries one PASS/FAIL per rule WITH the numbers and the threshold's reason: run
+`eyehold.soak-receipt.v1`) carries one PASS/FAIL per rule WITH the numbers and the threshold's reason: run
 errors (tolerance 0 — the mock never errors), routine never fired, swallowed-error growth over the last third,
 RSS leak trend over the last half, health p95 > 500 ms, any persisted entity (agent / routine / run / turn)
 lost across a restart, an unplanned exit or orphaned child, an incomplete soak, the **routine ACCOUNTING**
@@ -231,7 +231,7 @@ ritual passes `--no-tag` so the tag lands on the claims re-lock commit instead (
 
 ### 1.2 Write the real release notes
 
-`release:bump` scaffolds `RELEASE_NOTES.md` with a `# StarNet v0.2.0` header and a TODO
+`release:bump` scaffolds `RELEASE_NOTES.md` with a `# Eyehold v0.2.0` header and a TODO
 bullet. Open it and replace the TODO with the actual user-facing changes — these notes become
 the GitHub release body AND the text a user sees in the in-app UPDATE CENTER. Then amend them
 into the release commit so the tag points at the final notes:
@@ -303,14 +303,14 @@ C4 it runs four jobs in sequence; each must go green before the next starts:
    `release-assemble-manifest.mjs` to build ONE multi-platform `latest.json`, then runs
    `verify-update-host.mjs --manifest release/latest.json` against that local manifest.
 4. **stage-draft** — creates (or re-syncs) a **DRAFT** release `v0.2.0` on
-   `starnet-releases` with all installers + `.sig` files + `latest.json` attached, and prints a
+   `eyehold-releases` with all installers + `.sig` files + `latest.json` attached, and prints a
    go/no-go summary ending in "DRAFT staged — nothing is live until you click Publish."
 
 If any job is red, go to **section 2**.
 
 ### 1.7 Review the DRAFT release
 
-Open: `https://github.com/androoAGI/starnet-releases/releases` → the draft
+Open: `https://github.com/Eyehold/eyehold-releases/releases` → the draft
 tagged **v0.2.0** (it has a grey "Draft" badge; it is NOT yet the public "latest").
 
 Checklist — eyeball all of these before you publish:
@@ -318,7 +318,7 @@ Checklist — eyeball all of these before you publish:
 - **Notes** are your real `RELEASE_NOTES.md` text, not the TODO scaffold.
 - **Assets count.** You should see, at minimum:
   - `latest.json` (exactly one)
-  - Windows: `StarNet_0.2.0_x64-setup.exe` + its `.sig`
+  - Windows: `Eyehold_0.2.0_x64-setup.exe` + its `.sig`
   - macOS Apple Silicon: an `.app.tar.gz` (aarch64) + its `.sig`, and the `.dmg`
   - macOS Intel: an `.app.tar.gz` (x64) + its `.sig`, and the `.dmg`
   - Rule of thumb: **every updater artifact has a matching `.sig`** and **there is exactly one
@@ -332,17 +332,17 @@ what no dev box and no `test:fast` step can: the installed exe on a clean machin
 do not publish.**
 
 - **T0 clean-install proof** — Actions → `t0-clean-install-proof` → Run workflow → `tag` = `v0.2.0`.
-  Artifact `clean-install-proof-<tag>` (schema `starnet.clean-install-proof.v1`). Proves first launch
-  on a machine with no prior StarNet state.
+  Artifact `clean-install-proof-<tag>` (schema `eyehold.clean-install-proof.v1`). Proves first launch
+  on a machine with no prior Eyehold state.
 - **G1 packaged-lifecycle** — Actions → `g1-packaged-lifecycle` → Run workflow → `tag` = `v0.2.0`
   (blank = latest *published* release; `cases` defaults to all three). Artifact
   `packaged-lifecycle-<tag>` holds `packaged-lifecycle-receipt.json`
-  (schema `starnet.packaged-lifecycle-receipt.v1`, per-case PASS/FAIL + reasons + timings + process
+  (schema `eyehold.packaged-lifecycle-receipt.v1`, per-case PASS/FAIL + reasons + timings + process
   snapshots + the close branch the shell logged) plus the shell's `startup.log`. The job is red on any
   miss. What it proves, case by case:
   1. `idle-close` — default prefs, real `WM_CLOSE`: `skynet-desktop.exe` exits, **no orphan
      `<install>\node.exe`**, `startup.log` shows the idle branch (`close_to_tray=false`, no "staying
-     resident"), relaunch shows a visible `StarNet` window and `/api/health` answers. This is the
+     resident"), relaunch shows a visible `Eyehold` window and `/api/health` answers. This is the
      branch 0.10.5 / 0.10.6 escaped through.
   2. `close-to-tray` — `%APPDATA%\ai.skynet.harness\lifecycle.json` set to
      `{"version":1,"startMinimized":false,"closeToTray":true}` while the app is down, launch, `WM_CLOSE`:
@@ -371,13 +371,13 @@ The moment you publish, GitHub repoints `releases/latest` at v0.2.0, and every c
 
 ### 1.8a Source repository release mirror (automatic)
 
-Do **not** create a second release by hand on `androoAGI/starnet`. The
+Do **not** create a second release by hand on `Eyehold/eyehold`. The
 `sync-source-release` workflow in the source repository checks the dedicated distribution
 repository every 15 minutes (and also supports **Run workflow** for an immediate sync).
 After the distribution release is published it automatically:
 
-1. reads only `starnet-releases/releases/latest` (drafts and prereleases are ineligible),
-2. requires the matching immutable `v<version>` tag to exist in `androoAGI/starnet`,
+1. reads only `eyehold-releases/releases/latest` (drafts and prereleases are ineligible),
+2. requires the matching immutable `v<version>` tag to exist in `Eyehold/eyehold`,
 3. downloads each human installer and verifies its GitHub SHA-256 digest,
 4. creates the source release as a draft, uploads the byte-identical installers, and only
    then publishes it as the source repository's **Latest** release, and
@@ -404,12 +404,12 @@ Pin the expected version to catch a stale "latest":
 npm run release:verify-host -- --expect-version 0.2.0
 ```
 
-### 1.10 Canary proof (an actually-installed older StarNet takes the update)
+### 1.10 Canary proof (an actually-installed older Eyehold takes the update)
 
 `verify-host` proves the *feed* is correct; the canary proves the *client* consumes it. Do
-this on a machine (or VM) that already has an **older** StarNet installed (e.g. 0.1.9):
+this on a machine (or VM) that already has an **older** Eyehold installed (e.g. 0.1.9):
 
-1. Launch that older installed StarNet (the packaged desktop app, not a browser/dev build).
+1. Launch that older installed Eyehold (the packaged desktop app, not a browser/dev build).
 2. Open **Settings** → **UPDATES** section → click **UPDATE CENTER**.
 3. In the UPDATE CENTER, click **CHECK NOW**.
 4. Confirm the card shows **AVAILABLE v0.2.0** with your release notes.
@@ -452,7 +452,7 @@ it re-uploads/overwrites without erroring on the assets already there.
 ### 2.3 "Tag already exists" when re-running
 
 The tag `v0.2.0` already exists on the source repo (you pushed it) and possibly a draft
-release exists on `starnet-releases`. Decide by whether the *artifacts* are wrong:
+release exists on `eyehold-releases`. Decide by whether the *artifacts* are wrong:
 
 - **Artifacts are fine, only the draft is messy/half-uploaded** → keep the tag. Just re-run
   **stage-draft** (2.2). `gh release create` in the train is written to reuse an existing draft
@@ -463,7 +463,7 @@ release exists on `starnet-releases`. Decide by whether the *artifacts* are wron
   ```
   npm run release:bump 0.2.1
   ```
-  If a broken **draft** for the old version is lying around on `starnet-releases`, delete it
+  If a broken **draft** for the old version is lying around on `eyehold-releases`, delete it
   first (drafts are invisible to users, so this is harmless):
   `Releases → the v0.2.0 draft → Delete`.
 - Only force-move a tag (`git tag -f` + `git push -f origin v0.2.0`) if **nothing** has been
@@ -503,7 +503,7 @@ A bad version is live and users are pulling it. You have two independent populat
 
 ### 3.1 Users who have NOT updated yet — roll back the feed
 
-Delete the bad release on `starnet-releases`:
+Delete the bad release on `eyehold-releases`:
 `Releases → v0.2.0 (the bad one) → Delete release`.
 
 GitHub immediately repoints `releases/latest` at the **previous** published release (e.g.
@@ -529,7 +529,7 @@ users get 0.2.1 on their next check; not-yet-updated users were already protecte
 ### 3.3 Comms template (paste into your channel / release notes)
 
 ```
-StarNet 0.2.0 had a problem and has been pulled. If you're still on an earlier
+Eyehold 0.2.0 had a problem and has been pulled. If you're still on an earlier
 version you'll stay there — nothing to do. If you already updated to 0.2.0, a fix
 (0.2.1) is on the way; your app will offer it automatically within a few hours, or
 open Settings → UPDATES → UPDATE CENTER → CHECK NOW to grab it immediately.
@@ -540,11 +540,11 @@ Sorry for the noise.
 
 ## 4. KEY MANAGEMENT (read this before you ever need it)
 
-`~/.tauri/starnet-updater.key` is the updater signing key. Its **public** half is baked into
-**every StarNet binary ever shipped** (`tauri.conf.json` → `plugins.updater.pubkey`). The
+`~/.tauri/eyehold-updater.key` is the updater signing key. Its **public** half is baked into
+**every Eyehold binary ever shipped** (`tauri.conf.json` → `plugins.updater.pubkey`). The
 endpoint is fixed and the pubkey in installed apps can't be changed remotely. Therefore:
 
-> **If you lose this key, no installed StarNet can ever update again — on any machine, forever.**
+> **If you lose this key, no installed Eyehold can ever update again — on any machine, forever.**
 > There is no re-signing path for already-shipped binaries. This is the single highest-
 > consequence item in the whole project. Back it up before you do anything else tonight.
 
@@ -555,11 +555,11 @@ The key is a small text file. Copy it to at least two places that are **not** th
 
 ```
 # see it exists
-ls -l ~/.tauri/starnet-updater.key
+ls -l ~/.tauri/eyehold-updater.key
 
 # copy to two removable/offline destinations (adjust drive letters)
-cp ~/.tauri/starnet-updater.key /d/backups/starnet-updater.key      # e.g. a USB stick
-cp ~/.tauri/starnet-updater.key /e/backups/starnet-updater.key      # e.g. a second stick / drive
+cp ~/.tauri/eyehold-updater.key /d/backups/eyehold-updater.key      # e.g. a USB stick
+cp ~/.tauri/eyehold-updater.key /e/backups/eyehold-updater.key      # e.g. a second stick / drive
 ```
 
 Also record the key's password. It is **empty** (that's deliberate — see the header of
@@ -572,13 +572,13 @@ never pasted into chat.
 
 The train signs on CI, so the key also lives as two Actions secrets on the **source** repo
 (Settings → Secrets and variables → Actions):
-- `TAURI_SIGNING_PRIVATE_KEY` — the **entire contents** of `~/.tauri/starnet-updater.key`
+- `TAURI_SIGNING_PRIVATE_KEY` — the **entire contents** of `~/.tauri/eyehold-updater.key`
   (the whole file, not a path).
 - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` — an **empty** string.
 
 To refresh (e.g. new machine, or you rotated): open each secret → Update → paste the file
 contents / leave the password empty → Save. The publish token
-`RELEASES_TOKEN` (fine-grained PAT with Contents:write on `starnet-releases`) also lives here;
+`RELEASES_TOKEN` (fine-grained PAT with Contents:write on `eyehold-releases`) also lives here;
 refresh it the same way if it expires.
 
 ### 4.3 Rotation plan (only if the key is compromised — it is a big deal)
@@ -603,9 +603,9 @@ right answer is: **don't lose the key** (4.1).
 ## 5. STANDING RULES (violate these and you break the feed for real users)
 
 1. **Only the release train attaches `latest.json`.** `latest.json` is the updater feed. The
-   train is the *only* thing that should ever put a `latest.json` on `starnet-releases`. Never
+   train is the *only* thing that should ever put a `latest.json` on `eyehold-releases`. Never
    hand-upload one.
-2. **Anything else published on `starnet-releases` must be a PRE-release.** GitHub never points
+2. **Anything else published on `eyehold-releases` must be a PRE-release.** GitHub never points
    `releases/latest` at a prerelease, so test/beta builds (e.g. `desktop-build.yml`'s
    `publish-test`) can't disturb the live feed. If you publish a *non*-prerelease without a
    `latest.json`, the endpoint 404s and every client's check errors until you fix it.
@@ -642,7 +642,7 @@ being built by parallel lanes when the runbook was first written:
   run green end to end for every public cut since; most recently v0.12.4 (2026-09-20): release-train run
   35503655947 staged the draft, then t0-clean-install-proof 35505964904 and g1-packaged-lifecycle
   35506471983 passed against it, and `releases/latest` resolves to the newest published release. Read
-  the current state with `gh release list -R androoAGI/starnet-releases`, never from this file.
+  the current state with `gh release list -R Eyehold/eyehold-releases`, never from this file.
 - **The exact top-level click to reach Settings** in the packaged app was not pinned from code;
   the verified path *inside* Settings is `UPDATES` section → `UPDATE CENTER` button → then
   `CHECK NOW` / `INSTALL UPDATE` (`frontend/app/updates.js`). Confirm the Settings entry point
@@ -656,19 +656,19 @@ compare → download → minisign verification against the baked pubkey → NSIS
 restart as the new version. The manifest comes from the REAL `release-assemble-manifest.mjs`
 (crypto verification included) with only the asset base swapped to `127.0.0.1`.
 
-Canary builds are `StarNet Canary` / `ai.skynet.harness.canary` — side-by-side install,
-separate `%APPDATA%` workspace; your real StarNet install and data are untouched. Uninstall
-"StarNet Canary" from Windows afterwards.
+Canary builds are `Eyehold Canary` / `ai.skynet.harness.canary` — side-by-side install,
+separate `%APPDATA%` workspace; your real Eyehold install and data are untouched. Uninstall
+"Eyehold Canary" from Windows afterwards.
 
 ```powershell
 node scripts/update-canary.mjs build-old   # installer @ current version, endpoint = localhost
 node scripts/update-canary.mjs build-new   # installer @ patch+1 + signed feed (latest.json)
 node scripts/update-canary.mjs serve       # leave running; logs every request the app makes
-# install .canary\old\*.exe → open StarNet Canary → Settings → UPDATES → UPDATE CENTER →
+# install .canary\old\*.exe → open Eyehold Canary → Settings → UPDATES → UPDATE CENTER →
 # CHECK NOW → INSTALL UPDATE → app restarts as the bumped version. The serve log is the receipt.
 ```
 
 Each build is a full Rust release build (10–30 min; rustc ctor-race crash = re-run, the cache
-resumes). Requires `~/.tauri/starnet-updater.key` (same key as production — deliberately).
+resumes). Requires `~/.tauri/eyehold-updater.key` (same key as production — deliberately).
 This canary does NOT replace the public-path proof (older install → published release →
 restart); it de-risks everything except the literal production URL before anything goes public.

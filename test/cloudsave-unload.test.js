@@ -7,7 +7,7 @@
    close/minimize while the save-dot claimed "backed up" — the exact loss a member reported on v0.6.5.
 
    This locks the fixed contract:
-     1. the beacon aims at the ABSOLUTE sidecar URL (window.__STARNET_API__) with a SINGLE-USE save ticket
+     1. the beacon aims at the ABSOLUTE sidecar URL (window.__EYEHOLD_API__) with a SINGLE-USE save ticket
         (?ticket=) — never the master token in the URL (2026-09-25);
      2. the blob is text/plain (CORS-simple — a cross-origin application/json beacon would demand a preflight
         sendBeacon never performs, i.e. it would be silently dropped);
@@ -23,8 +23,8 @@ const A = require('./_assert.js');
 // ---- browser-global stubs, installed BEFORE requiring cloudsave.js ----
 const listeners = { window: {}, document: {} };
 global.window = {
-  __STARNET_API__: 'http://127.0.0.1:9999',
-  __STARNET_API_TOKEN__: 't0ken/with+specials',
+  __EYEHOLD_API__: 'http://127.0.0.1:9999',
+  __EYEHOLD_API_TOKEN__: 't0ken/with+specials',
   crypto: require('node:crypto').webcrypto,
   addEventListener: (ev, fn) => { listeners.window[ev] = fn; }
 };
@@ -51,7 +51,7 @@ global.fetch = (url, init) => {
 };
 
 const CloudSave = require('../frontend/app/cloudsave.js');
-const doc = (updatedAt) => ({ schema: 'starnet.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
+const doc = (updatedAt) => ({ schema: 'eyehold.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
 
 (async () => {
   CloudSave.installUnloadFlush();
@@ -63,7 +63,7 @@ const doc = (updatedAt) => ({ schema: 'starnet.save', version: 3, updatedAt, age
   listeners.window.pagehide();             // simulate the close
   A.eq(beaconCalls.length, 1, 'sendBeacon fired for the pending doc');
   const bUrl = String(beaconCalls[0].url);
-  A.ok(bUrl.indexOf('http://127.0.0.1:9999/api/save?ticket=') === 0, 'beacon URL is ABSOLUTE (window.__STARNET_API__) and carries a ?ticket=: ' + bUrl.slice(0, 50));
+  A.ok(bUrl.indexOf('http://127.0.0.1:9999/api/save?ticket=') === 0, 'beacon URL is ABSOLUTE (window.__EYEHOLD_API__) and carries a ?ticket=: ' + bUrl.slice(0, 50));
   A.ok(bUrl.indexOf(encodeURIComponent('t0ken/with+specials')) < 0 && bUrl.indexOf('t0ken') < 0 && !/[?&]token=/.test(bUrl), 'the master token is NOT in the beacon URL');
   const bTicket = new URL(bUrl).searchParams.get('ticket');
   const guard = Tickets.replayGuard();

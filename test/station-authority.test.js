@@ -19,7 +19,7 @@ function stationDoc(agentId, withWorkstation) {
 
 {
   const store = makeStationStore();
-  const accepted = store.setSaveDoc({ schema: 'starnet.save', station: stationDoc('coder', true) });
+  const accepted = store.setSaveDoc({ schema: 'eyehold.save', station: stationDoc('coder', true) });
   A.ok(accepted.ok, 'a SaveDoc with a valid station is accepted');
   A.ok(store.hasStation(), 'accepted SaveDoc.station installs the authoritative station');
   const objs = store.bayObjects('coder');
@@ -31,14 +31,14 @@ function stationDoc(agentId, withWorkstation) {
   const store = makeStationStore();
   const accepted = store.setSaveDoc({ station: stationDoc('coder', true) });
   A.ok(accepted.ok, 'valid SaveDoc.station installs as last-good');
-  const bad = store.setSaveDoc({ station: { schema: 'starnet.station', version: 1, rooms: {}, order: [], props: [] } });
+  const bad = store.setSaveDoc({ station: { schema: 'eyehold.station', version: 1, rooms: {}, order: [], props: [] } });
   A.ok(!bad.ok, 'invalid SaveDoc.station is refused');
   A.ok(hasCap(store.bayObjects('coder'), 'computer'), 'last-good station survives invalid SaveDoc update');
 }
 
 {
   const store = makeStationStore();
-  const missing = store.setSaveDoc({ schema: 'starnet.save' });
+  const missing = store.setSaveDoc({ schema: 'eyehold.save' });
   A.ok(!missing.ok, 'SaveDoc without station is refused for authority installation');
   A.ok(!store.hasStation(), 'missing SaveDoc.station does not install authority');
 }

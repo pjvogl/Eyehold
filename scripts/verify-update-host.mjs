@@ -134,10 +134,10 @@ async function validateManifest(manifest, version, checkUrls) {
     }
     if (checkUrls && hasUrl && /^https:\/\//i.test(plat.url)) {
       try {
-        let res = await fetchWithTimeout(plat.url, { method: 'HEAD', headers: { 'User-Agent': 'starnet-verify-update-host' } });
+        let res = await fetchWithTimeout(plat.url, { method: 'HEAD', headers: { 'User-Agent': 'eyehold-verify-update-host' } });
         // Some CDNs reject HEAD; fall back to a ranged GET for 1 byte.
         if (!res.ok && (res.status === 403 || res.status === 405)) {
-          res = await fetchWithTimeout(plat.url, { method: 'GET', headers: { 'User-Agent': 'starnet-verify-update-host', Range: 'bytes=0-0' } });
+          res = await fetchWithTimeout(plat.url, { method: 'GET', headers: { 'User-Agent': 'eyehold-verify-update-host', Range: 'bytes=0-0' } });
         }
         check('platform["' + name + '"] asset reachable (HTTP ' + res.status + ')', res.ok || res.status === 206,
           res.ok ? '' : 'status ' + res.status);
@@ -182,7 +182,7 @@ async function mainLive() {
 
   let manifest = null;
   try {
-    const res = await fetchWithTimeout(ENDPOINT, { headers: { 'User-Agent': 'starnet-verify-update-host' } });
+    const res = await fetchWithTimeout(ENDPOINT, { headers: { 'User-Agent': 'eyehold-verify-update-host' } });
     check('latest.json is reachable (HTTP ' + res.status + ')', res.ok, res.ok ? '' : 'status ' + res.status);
     if (res.ok) {
       const text = await res.text();

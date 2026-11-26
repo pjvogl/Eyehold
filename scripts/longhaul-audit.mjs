@@ -3,7 +3,7 @@
 
 /* Deterministic, disposable 30-90 day storage audit.
  *
- * This generator never reads the user's StarNet data root. Every run creates its own
+ * This generator never reads the user's Eyehold data root. Every run creates its own
  * mkdtemp workspace, fills it with schema-compatible synthetic state, measures the real
  * sidecar plus the frontend Workstreams store, and removes the temp tree unless --keep is
  * supplied. The fixed seed/content makes before/after receipts comparable.
@@ -29,7 +29,7 @@ const scalesArg = (args.find(a => a.startsWith('--scales=')) || '').slice('--sca
 const scales = (scalesArg || '250,1000,3000').split(',').map(Number).filter(n => Number.isInteger(n) && n > 0);
 const outArg = (args.find(a => a.startsWith('--out=')) || '').slice('--out='.length);
 const enforceBudgets = args.includes('--enforce-budgets');
-const baseRoot = outArg ? path.resolve(outArg) : fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-longhaul-'));
+const baseRoot = outArg ? path.resolve(outArg) : fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-longhaul-'));
 const token = 'longhaul-audit-token';
 const BUDGETS_AT_3000 = Object.freeze({
   startupMs: 2500, rssBytes: 130 * 1024 * 1024, shutdownMs: 250,
@@ -177,7 +177,7 @@ async function waitHealth(port, child, timeoutMs = 60000) {
 }
 async function requestMs(port, url, samples = 5) {
   return timed(async () => {
-    const r = await fetch('http://127.0.0.1:' + port + url, { headers: { 'X-StarNet-Token': token } });
+    const r = await fetch('http://127.0.0.1:' + port + url, { headers: { 'X-Eyehold-Token': token } });
     const text = await r.text(); if (!r.ok) throw new Error(url + ' -> ' + r.status + ' ' + text.slice(0, 120));
     return text.length;
   }, samples);
@@ -186,7 +186,7 @@ async function postSave(port, doc) {
   const start = performance.now();
   try {
     const r = await fetch('http://127.0.0.1:' + port + '/api/save', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token }, body: JSON.stringify(doc)
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token }, body: JSON.stringify(doc)
     });
     const text = await r.text();
     let body = null; try { body = JSON.parse(text); } catch (_) {}
@@ -198,9 +198,9 @@ async function postSave(port, doc) {
 async function measureSidecar(root, count, index, doc) {
   const port = 19200 + index;
   const env = Object.assign({}, process.env, {
-    STARNET_WORKSPACES: root, STARNET_PORT: String(port), STARNET_API_TOKEN: token,
-    STARNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0', STARNET_CRON_ARMED: '0',
-    STARNET_OPENROUTER_KEY: '', STARNET_DEFAULT_MODEL: 'replay/audit'
+    EYEHOLD_WORKSPACES: root, EYEHOLD_PORT: String(port), EYEHOLD_API_TOKEN: token,
+    EYEHOLD_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0', EYEHOLD_CRON_ARMED: '0',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_DEFAULT_MODEL: 'replay/audit'
   });
   const child = spawn(process.execPath, [path.join(repo, 'sidecar', 'index.js')], { cwd: repo, env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
   let stderr = '', stdout = '';
@@ -229,7 +229,7 @@ async function measureScale(count, index) {
   const root = path.join(baseRoot, 'scale-' + count);
   const generated = await timed(() => generate(root, count));
   const saveText = JSON.stringify(generated.value.doc);
-  const backupText = JSON.stringify({ schema: 'starnet.backup', version: 1, app: 'starnet', exportedAt: 1710000000000, agentName: 'LONGHAUL', secretsIncluded: false, secretPolicy: 'credentials-excluded', store: { 'starnet.save': saveText }, notebook: [] });
+  const backupText = JSON.stringify({ schema: 'eyehold.backup', version: 1, app: 'eyehold', exportedAt: 1710000000000, agentName: 'LONGHAUL', secretsIncluded: false, secretPolicy: 'credentials-excluded', store: { 'eyehold.save': saveText }, notebook: [] });
 
   const uiInit = await timed(() => Workstreams.init({ workstreams: generated.value.workstreams, activeId: generated.value.workstreams[count - 1].id, generalId: generated.value.workstreams[0].id }), 3);
   const uiList = await timed(() => Workstreams.list({ archived: false }), 10);
@@ -278,7 +278,7 @@ function budgetViolations(result) {
   return Object.keys(BUDGETS_AT_3000).filter(k => !(actual[k] <= BUDGETS_AT_3000[k])).map(k => ({ metric: k, actual: actual[k], budget: BUDGETS_AT_3000[k] }));
 }
 
-const report = { schema: 'starnet.longhaul-audit', version: 1, deterministicEpoch: 1710000000000, tempRoot: baseRoot, kept: keep, budgetsAt3000: BUDGETS_AT_3000, results: [] };
+const report = { schema: 'eyehold.longhaul-audit', version: 1, deterministicEpoch: 1710000000000, tempRoot: baseRoot, kept: keep, budgetsAt3000: BUDGETS_AT_3000, results: [] };
 try {
   for (let i = 0; i < scales.length; i++) {
     if (!jsonOnly) process.stderr.write('[longhaul] generating + measuring scale ' + scales[i] + '\n');
@@ -290,6 +290,6 @@ try {
 } finally {
   if (!keep && !outArg) {
     const resolved = path.resolve(baseRoot), temp = path.resolve(os.tmpdir());
-    if (resolved.startsWith(temp + path.sep) && path.basename(resolved).startsWith('starnet-longhaul-')) fs.rmSync(resolved, { recursive: true, force: true });
+    if (resolved.startsWith(temp + path.sep) && path.basename(resolved).startsWith('eyehold-longhaul-')) fs.rmSync(resolved, { recursive: true, force: true });
   }
 }

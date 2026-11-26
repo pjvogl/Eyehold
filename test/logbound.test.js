@@ -14,7 +14,7 @@ const pathMod = require('path');
 const { tailLines, loadBounded, rotateIfLarge, appendJsonlDurable } = require('../sidecar/logbound.js');
 const { makeRunStore } = require('../sidecar/runstore.js');
 
-const DIR = pathMod.join(os.tmpdir(), 'starnet-logbound-' + process.pid);
+const DIR = pathMod.join(os.tmpdir(), 'eyehold-logbound-' + process.pid);
 realFs.mkdirSync(DIR, { recursive: true });
 const cleanup = () => { try { for (const f of realFs.readdirSync(DIR)) realFs.unlinkSync(pathMod.join(DIR, f)); realFs.rmdirSync(DIR); } catch (_) {} };
 

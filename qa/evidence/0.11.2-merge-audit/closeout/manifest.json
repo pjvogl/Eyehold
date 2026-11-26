@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.release-closeout-evidence.v1",
+  "schema": "eyehold.release-closeout-evidence.v1",
   "generatedAt": "2026-09-10T22:44:24.543Z",
   "runtimeCandidate": "afd1da77fb4a489151b45b5a6c53e60ada4ca1f4",
   "officialVersion": "0.11.1",

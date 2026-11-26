@@ -11,7 +11,7 @@ const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 const { parsePatch } = require('../sidecar/tools/builtin/patchparse.js');
 const { fuzzyFindAndReplace } = require('../sidecar/tools/builtin/fuzzymatch.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-fs-patch-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-fs-patch-' + process.pid);
 const tools = makeFsTools({ fsp, pathMod: path, root: ROOT, limits: { writeBytes: 4096, readReturn: 4096 } });
 const { writeTool, readTool, patchTool } = tools;
 const ctx = { agentId: 'ag' };

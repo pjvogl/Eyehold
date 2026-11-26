@@ -19,7 +19,7 @@
    - schedule(fn, ms)     : setTimeout in production (the exit is deferred so the fault is observable).
    - quiesce()            : best-effort immediate hook that stops work/timers/transports while health is degraded.
    - release()            : best-effort sync hook (lock release / owner claim drop) immediately before exit.
-   - keepAlive            : test-only opt-out (STARNET_UNCAUGHT_KEEP_SERVING=1): surface + mark degraded, but
+   - keepAlive            : test-only opt-out (EYEHOLD_UNCAUGHT_KEEP_SERVING=1): surface + mark degraded, but
                             never exit — so a harness that deliberately provokes a throw can keep asserting.
    - BENIGN allowlist     : EPIPE / ERR_STREAM_DESTROYED on a stdio write (the desktop shell or a test runner
                             closed our stdout pipe) is not a torn-state event; those stay surface-only. */

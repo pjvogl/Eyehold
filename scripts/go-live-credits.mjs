@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * go-live-credits.mjs — open StarNet Credits to members, in one reviewable step.
+ * go-live-credits.mjs — open Eyehold Credits to members, in one reviewable step.
  *
  * WHY THIS EXISTS. Turning the paid tier on used to be a hand-run checklist spread across a sidecar
  * constant, two flags in one browser file, a list inside another script, and a topnav link that had
@@ -23,7 +23,7 @@
  *   node scripts/go-live-credits.mjs --check --no-probe   # skip the network call (the gate uses this)
  *
  * It does NOT cut a release, run the gate, or deploy the site — those stay deliberate acts. It
- * prints them, in order, when it finishes. Full context: starnet-cloud/LAUNCH.md
+ * prints them, in order, when it finishes. Full context: eyehold-cloud/LAUNCH.md
  */
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
@@ -146,7 +146,7 @@ async function probe(url) {
 
 /* ---------- run ------------------------------------------------------------------------------- */
 const url = bakedCloudUrl();
-console.log('StarNet Credits go-live');
+console.log('Eyehold Credits go-live');
 console.log('  baked service URL (sidecar/index.js CLOUD_URL_DEFAULT): ' + url + '\n');
 
 /* --no-probe exists for the test gate, which runs offline and is asking a different question: not
@@ -207,7 +207,7 @@ if (!APPLY) {
 if (!health.ok && !(health.degraded && FORCE)) {
   console.error('\nRefusing to go live: ' + (health.degraded
     ? 'the service is DEGRADED. Fix it, or pass --force if you have read the flags above and accept them.'
-    : 'nothing is answering at ' + health.target + '. Deploy starnet-cloud first (see starnet-cloud/LAUNCH.md).'));
+    : 'nothing is answering at ' + health.target + '. Deploy eyehold-cloud first (see eyehold-cloud/LAUNCH.md).'));
   console.error('Nothing was written.');
   process.exit(1);
 }

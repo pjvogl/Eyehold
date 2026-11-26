@@ -24,7 +24,7 @@ A.ok(breaksMachineState('pkill -9 node'), 'pkill blocked');
 A.ok(breaksMachineState('killall Safari'), 'killall blocked');
 A.ok(breaksMachineState('Stop-Process -Name explorer'), 'Stop-Process cmdlet blocked');
 
-// ---- BLOCKED: persistence that outlives StarNet ----
+// ---- BLOCKED: persistence that outlives Eyehold ----
 A.ok(breaksMachineState('schtasks /create /tn evil /tr calc.exe /sc onlogon'), 'schtasks create blocked');
 A.ok(breaksMachineState('schtasks /change /tn x /tr y'), 'schtasks change blocked');
 A.ok(breaksMachineState('reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v x /d game.exe'), 'reg add Run key blocked');
@@ -83,7 +83,7 @@ A.ok(breaksMachineState('format.com d:'), 'the real Windows format.com utility r
 A.ok(breaksMachineState('powershell -Command "shutdown /r /t 0"'), 'powershell -Command shutdown blocked');
 A.ok(breaksMachineState('powershell /Command "shutdown /r /t 0"'), 'powershell slash /Command shutdown blocked');
 A.ok(breaksMachineState('powershell shutdown /r /t 0'), 'PowerShell default command payload shutdown blocked');
-A.eq(breaksMachineState('powershell Write-Output STARNET_SAFE'), null, 'safe PowerShell default command payload allowed');
+A.eq(breaksMachineState('powershell Write-Output EYEHOLD_SAFE'), null, 'safe PowerShell default command payload allowed');
 A.ok(breaksMachineState('cmd /c "shutdown /r /t 0"'), 'quoted whole cmd /c shutdown payload blocked');
 A.ok(breaksMachineState('powershell -NoProfile -Command "Stop-Computer"'), 'powershell -Command Stop-Computer blocked');
 A.ok(breaksMachineState('pwsh -c "Restart-Computer"'), 'pwsh -c Restart-Computer blocked');
@@ -118,10 +118,10 @@ A.ok(breaksMachineState("Write-Output 'x`' ; shutdown -h now", 'powershell'), 'P
 A.eq(breaksMachineState('Write-Output "x`" ; shutdown -h now"', 'powershell'), null, 'PowerShell backtick inside double quotes escapes the quote and keeps shutdown as string data');
 
 // cmd expansion is too broad to emulate safely. Fail closed only when the whole executable head is dynamic.
-A.ok(breaksMachineState('set "STARNET_VERB=shutdown" & call %STARNET_VERB% /r /t 0'), 'call-expanded %VAR% executable head refused');
-A.ok(breaksMachineState('cmd /v:on /c "set STARNET_VERB=shutdown&!STARNET_VERB! /r /t 0"'), 'delayed !VAR! executable head refused');
+A.ok(breaksMachineState('set "EYEHOLD_VERB=shutdown" & call %EYEHOLD_VERB% /r /t 0'), 'call-expanded %VAR% executable head refused');
+A.ok(breaksMachineState('cmd /v:on /c "set EYEHOLD_VERB=shutdown&!EYEHOLD_VERB! /r /t 0"'), 'delayed !VAR! executable head refused');
 A.eq(breaksMachineState('echo %PATH%'), null, 'ordinary percent expansion as an argument remains allowed');
-A.eq(breaksMachineState('echo !STARNET_VERB!'), null, 'ordinary delayed expansion as an argument remains allowed');
+A.eq(breaksMachineState('echo !EYEHOLD_VERB!'), null, 'ordinary delayed expansion as an argument remains allowed');
 
 // Windows PowerShell accepts every unambiguous prefix below. Drive only a SAFE payload on this host, then assert
 // the parser rejects the same executable switches before an opaque/dangerous payload can ever reach PowerShell.
@@ -147,50 +147,50 @@ if (process.platform === 'win32') {
   const psExe = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
   const cmdExe = process.env.ComSpec || path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'cmd.exe');
   const outputLines = (s) => String(s || '').split(/\r?\n/).filter(Boolean);
-  const caretSafe = spawnSync(cmdExe, ['/d', '/s', '/c', 'echo "x^" & echo STARNET_CMD_SECOND'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+  const caretSafe = spawnSync(cmdExe, ['/d', '/s', '/c', 'echo "x^" & echo EYEHOLD_CMD_SECOND'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
   A.eq(caretSafe.status, 0, 'harmless host cmd caret/quote probe executed');
-  A.ok(outputLines(caretSafe.stdout).includes('STARNET_CMD_SECOND'), 'host cmd confirms caret inside quotes did not hide the second command');
+  A.ok(outputLines(caretSafe.stdout).includes('EYEHOLD_CMD_SECOND'), 'host cmd confirms caret inside quotes did not hide the second command');
   for (const dynamic of [
-    { args: ['/d', '/c', 'call %STARNET_VERB% STARNET_CALL_SECOND'], line: 'STARNET_CALL_SECOND' },
-    { args: ['/d', '/v:on', '/c', '!STARNET_VERB! STARNET_DELAYED_SECOND'], line: 'STARNET_DELAYED_SECOND' }
+    { args: ['/d', '/c', 'call %EYEHOLD_VERB% EYEHOLD_CALL_SECOND'], line: 'EYEHOLD_CALL_SECOND' },
+    { args: ['/d', '/v:on', '/c', '!EYEHOLD_VERB! EYEHOLD_DELAYED_SECOND'], line: 'EYEHOLD_DELAYED_SECOND' }
   ]) {
-    const safe = spawnSync(cmdExe, dynamic.args, { encoding: 'utf8', timeout: 10000, windowsHide: true, env: Object.assign({}, process.env, { STARNET_VERB: 'echo' }) });
+    const safe = spawnSync(cmdExe, dynamic.args, { encoding: 'utf8', timeout: 10000, windowsHide: true, env: Object.assign({}, process.env, { EYEHOLD_VERB: 'echo' }) });
     A.eq(safe.status, 0, 'harmless host cmd dynamic-head probe executed');
     A.ok(outputLines(safe.stdout).includes(dynamic.line), 'host cmd confirms dynamic executable head expansion');
   }
-  const psSingleQuote = spawnSync(psExe, ['-NoProfile', '-NonInteractive', '-Command', "Write-Output 'x`' ; Write-Output STARNET_PS_SINGLE_SECOND"], { encoding: 'utf8', timeout: 10000, windowsHide: true });
-  A.ok(outputLines(psSingleQuote.stdout).includes('STARNET_PS_SINGLE_SECOND'), 'host PowerShell confirms backtick is literal inside single quotes');
-  const psDoubleQuote = spawnSync(psExe, ['-NoProfile', '-NonInteractive', '-Command', 'Write-Output "x`" ; Write-Output STARNET_PS_DOUBLE_SECOND"'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
-  A.ok(!outputLines(psDoubleQuote.stdout).includes('STARNET_PS_DOUBLE_SECOND'), 'host PowerShell confirms backtick escapes a quote inside double quotes');
+  const psSingleQuote = spawnSync(psExe, ['-NoProfile', '-NonInteractive', '-Command', "Write-Output 'x`' ; Write-Output EYEHOLD_PS_SINGLE_SECOND"], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+  A.ok(outputLines(psSingleQuote.stdout).includes('EYEHOLD_PS_SINGLE_SECOND'), 'host PowerShell confirms backtick is literal inside single quotes');
+  const psDoubleQuote = spawnSync(psExe, ['-NoProfile', '-NonInteractive', '-Command', 'Write-Output "x`" ; Write-Output EYEHOLD_PS_DOUBLE_SECOND"'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+  A.ok(!outputLines(psDoubleQuote.stdout).includes('EYEHOLD_PS_DOUBLE_SECOND'), 'host PowerShell confirms backtick escapes a quote inside double quotes');
   const gitSh = 'C:\\Program Files\\Git\\bin\\sh.exe';
   if (require('fs').existsSync(gitSh)) {
-    const posixSingleQuote = spawnSync(gitSh, ['-c', "printf '%s\\n' 'x\\' ; printf '%s\\n' STARNET_POSIX_SECOND"], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+    const posixSingleQuote = spawnSync(gitSh, ['-c', "printf '%s\\n' 'x\\' ; printf '%s\\n' EYEHOLD_POSIX_SECOND"], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(posixSingleQuote.status, 0, 'harmless Git sh single-quote probe executed');
-    A.ok(outputLines(posixSingleQuote.stdout).includes('STARNET_POSIX_SECOND'), 'Git sh confirms backslash is literal inside POSIX single quotes');
+    A.ok(outputLines(posixSingleQuote.stdout).includes('EYEHOLD_POSIX_SECOND'), 'Git sh confirms backslash is literal inside POSIX single quotes');
   }
-  const defaultSafe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', 'Write-Output', 'STARNET_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+  const defaultSafe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', 'Write-Output', 'EYEHOLD_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
   A.eq(defaultSafe.status, 0, 'host accepts a safe implicit/default PowerShell command payload');
-  A.ok(/STARNET_SAFE/.test(defaultSafe.stdout || ''), 'safe implicit/default PowerShell payload executed as expected');
+  A.ok(/EYEHOLD_SAFE/.test(defaultSafe.stdout || ''), 'safe implicit/default PowerShell payload executed as expected');
   for (const flag of PS_COMMAND_FLAGS) {
-    const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, 'Write-Output STARNET_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+    const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, 'Write-Output EYEHOLD_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(safe.status, 0, 'host accepts PowerShell ' + flag + ' for a safe command payload');
-    A.ok(/STARNET_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' payload executed as expected');
+    A.ok(/EYEHOLD_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' payload executed as expected');
   }
-  const safeEncoded = Buffer.from('Write-Output STARNET_SAFE', 'utf16le').toString('base64');
+  const safeEncoded = Buffer.from('Write-Output EYEHOLD_SAFE', 'utf16le').toString('base64');
   for (const flag of PS_ENCODED_FLAGS) {
     const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, safeEncoded], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(safe.status, 0, 'host accepts PowerShell ' + flag + ' for a safe encoded payload');
-    A.ok(/STARNET_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' encoded payload executed as expected');
+    A.ok(/EYEHOLD_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' encoded payload executed as expected');
   }
   for (const flag of PS_SLASH_COMMAND_FLAGS) {
-    const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, 'Write-Output STARNET_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+    const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, 'Write-Output EYEHOLD_SAFE'], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(safe.status, 0, 'host accepts PowerShell ' + flag + ' for a safe command payload');
-    A.ok(/STARNET_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' payload executed as expected');
+    A.ok(/EYEHOLD_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' payload executed as expected');
   }
   for (const flag of PS_SLASH_ENCODED_FLAGS) {
     const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', flag, safeEncoded], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(safe.status, 0, 'host accepts PowerShell ' + flag + ' for a safe encoded payload');
-    A.ok(/STARNET_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' encoded payload executed as expected');
+    A.ok(/EYEHOLD_SAFE/.test(safe.stdout || ''), 'safe PowerShell ' + flag + ' encoded payload executed as expected');
   }
   for (const fileFlag of ['-FilePath:cmd.exe', '-F:cmd.exe']) {
     // The claim under test is PARSER SEMANTICS: the colon form binds FilePath and LAUNCHES the named
@@ -198,10 +198,10 @@ if (process.platform === 'win32') {
     // claim — under a Task-Scheduler batch-logon token (the hourly Guardian) $p.ExitCode reads
     // unreliably for -NoNewWindow children and turned this probe RED in every scheduled cycle while
     // interactive runs stayed green (2026-07-15). Assert launch, not child exit hygiene.
-    const script = "$p=Start-Process " + fileFlag + " -ArgumentList '/d /c exit 0' -NoNewWindow -Wait -PassThru; if (-not $p -or $p.Id -le 0) { exit 9 }; Write-Output STARNET_SAFE; Write-Output (\"STARNET_CHILD_EXIT=[\" + $p.ExitCode + \"]\")";
+    const script = "$p=Start-Process " + fileFlag + " -ArgumentList '/d /c exit 0' -NoNewWindow -Wait -PassThru; if (-not $p -or $p.Id -le 0) { exit 9 }; Write-Output EYEHOLD_SAFE; Write-Output (\"EYEHOLD_CHILD_EXIT=[\" + $p.ExitCode + \"]\")";
     const safe = spawnSync(psExe, ['-NoProfile', '-NonInteractive', '-Command', script], { encoding: 'utf8', timeout: 10000, windowsHide: true });
     A.eq(safe.status, 0, 'host accepts safe inline Start-Process ' + fileFlag + ' form (process launched)');
-    A.ok(/STARNET_SAFE/.test(safe.stdout || '') && !/ParameterBindingException/.test(safe.stderr || ''), 'safe inline ' + fileFlag + ' target launched hidden with the flag bound as FilePath');
+    A.ok(/EYEHOLD_SAFE/.test(safe.stdout || '') && !/ParameterBindingException/.test(safe.stderr || ''), 'safe inline ' + fileFlag + ' target launched hidden with the flag bound as FilePath');
   }
   // Query metadata only (no process is launched): for every value-taking Start-Process parameter this host
   // actually exposes, derive its shortest unambiguous abbreviation and prove the parser consumes that value

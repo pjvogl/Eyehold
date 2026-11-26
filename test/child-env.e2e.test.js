@@ -21,7 +21,7 @@ const SERVICE_KEY = 'svcKeyCanaryPw4417Exported0Value';
   try { execFileSync('git', ['--version'], { stdio: 'ignore' }); } catch (_) { gitOk = false; }
   if (!gitOk) { A.ok(true, 'git unavailable here — skipped'); return A.report('child-env.e2e.test'); }
 
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-childenv-'));
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-childenv-'));
   const repo = path.join(scratch, 'repo');
   const dump = path.join(scratch, 'fsmonitor-env.txt');
   const hook = path.join(scratch, 'fsmonitor.sh');
@@ -32,8 +32,8 @@ const SERVICE_KEY = 'svcKeyCanaryPw4417Exported0Value';
   try { fs.chmodSync(hook, 0o755); } catch (_) { /* Windows: git runs it through sh */ }
   execFileSync('git', ['config', 'core.fsmonitor', hook.replace(/\\/g, '/')], { cwd: repo });
 
-  const fixture = SidecarFixture.create({ prefix: 'starnet-childenv-', timeoutMs: 20000, env: {
-    STARNET_PLANTED_STATION_SECRET: STATION_CANARY, SKYNET_PLANTED_STATION_SECRET: STATION_CANARY,
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-childenv-', timeoutMs: 20000, env: {
+    EYEHOLD_PLANTED_STATION_SECRET: STATION_CANARY, SKYNET_PLANTED_STATION_SECRET: STATION_CANARY,
     HERMES_HOME: path.join(scratch, 'hermes-home'),
     MY_USER_VAR: 'user-value-keep-me', NPM_TOKEN: 'npm-user-own-token-keep-me',
     SKYNET_ENV_DISCOVERY: '1'
@@ -50,7 +50,7 @@ const SERVICE_KEY = 'svcKeyCanaryPw4417Exported0Value';
     const names = seen.split(/\r?\n/).map(l => l.split('=')[0]);
     A.ok(seen.indexOf(STATION_CANARY) < 0, 'the planted station secret never reached the repo');
     A.ok(seen.indexOf(SERVICE_KEY) < 0, 'the exported service key never reached the repo');
-    A.eq(names.filter(n => /^(STARNET|SKYNET)_/i.test(n)), [], 'no STARNET_/SKYNET_ variable reached the repo (API/IPC tokens, keys, workspace)');
+    A.eq(names.filter(n => /^(EYEHOLD|SKYNET)_/i.test(n)), [], 'no EYEHOLD_/SKYNET_ variable reached the repo (API/IPC tokens, keys, workspace)');
     A.ok(names.some(n => /^PATH$/i.test(n)), 'PATH is kept');
     A.ok(/MY_USER_VAR=user-value-keep-me/.test(seen), 'the user\'s own var is kept');
     A.ok(/NPM_TOKEN=npm-user-own-token-keep-me/.test(seen), 'the user\'s own NPM_TOKEN is kept (theirs, not the station\'s)');

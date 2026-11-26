@@ -1,13 +1,13 @@
 /* Isolated dev/seed.js --keep only. Real UI/stores, controlled delivery and connector/model transport.
-   STARNET_PLAYWRIGHT_MODULE and STARNET_CHROME select local test dependencies.
+   EYEHOLD_PLAYWRIGHT_MODULE and EYEHOLD_CHROME select local test dependencies.
    --baseline serves the original workshop/chat sources from 1cbd6384d to prove the reported failure. */
 'use strict';
 const assert=require('node:assert/strict');
 const cp=require('node:child_process');
-const {chromium}=require(process.env.STARNET_PLAYWRIGHT_MODULE||'playwright');
+const {chromium}=require(process.env.EYEHOLD_PLAYWRIGHT_MODULE||'playwright');
 (async()=>{
   const baseline=process.argv.includes('--baseline');
-  const browser=await chromium.launch({headless:true,...(process.env.STARNET_CHROME?{executablePath:process.env.STARNET_CHROME}:{})});
+  const browser=await chromium.launch({headless:true,...(process.env.EYEHOLD_CHROME?{executablePath:process.env.EYEHOLD_CHROME}:{})});
   try {
     const page=await browser.newPage(), errors=[], proof={baseline,transport:'controlled local fixtures; no paid model',source:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()};
     page.on('pageerror',e=>errors.push(e.message));

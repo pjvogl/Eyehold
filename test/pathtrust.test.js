@@ -10,7 +10,7 @@ const path = require('path');
 const os = require('os');
 const { makePathTrust } = require('../sidecar/pathtrust.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-pathtrust-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-pathtrust-' + process.pid);
 
 async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' — did NOT reject'); } catch (e) { A.ok(true, msg); } }
 

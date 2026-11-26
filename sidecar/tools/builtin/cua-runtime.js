@@ -25,8 +25,8 @@ async function connect({ binary, signal, clock, timeoutMs = 20000 }) {
   if (!clock || typeof clock.now !== 'function') throw new Error('Computer runtime requires a host clock');
   if (signal?.aborted) throw new Error('Computer control cancelled');
   const env = childEnv();
-  const socket = '\\\\.\\pipe\\starnet-cua-' + randomUUID();
-  const session = 'starnet-' + randomUUID();
+  const socket = '\\\\.\\pipe\\eyehold-cua-' + randomUUID();
+  const session = 'eyehold-' + randomUUID();
   let daemon, proxy, client, closed = false, closePromise, failure;
   const children = new Set();
   const launch = args => {

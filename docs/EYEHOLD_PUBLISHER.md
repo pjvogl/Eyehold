@@ -12,7 +12,7 @@
 
 The desktop data directory stays `ai.skynet.harness` so existing stations keep their files. That identifier is not the public app id.
 
-The feed is this fork's own host. It is not `starnetos.com`, not `github.com/androoAGI`, and not a route on `babelbook.net`. Hosting is a separate Eyehold Worker with the custom domain `eyehold.babelbook.net`. Do not attach it to the babelbook-staging Worker.
+The feed is this fork's own host. It is not `eyehold.com`, not `github.com/Eyehold`, and not a route on `babelbook.net`. Hosting is a separate Eyehold Worker with the custom domain `eyehold.babelbook.net`. Do not attach it to the babelbook-staging Worker.
 
 `bundle.createUpdaterArtifacts` stays false, and `EYEHOLD_UPDATES_ENABLED` stays false. The app will not check for updates until the signing key below is replaced.
 

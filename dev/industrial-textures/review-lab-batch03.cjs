@@ -7,7 +7,7 @@ const {fit}=require('../../frontend/app/propremaster.js');
  const records=JSON.parse(fs.readFileSync(at('frontend/assets/industrial/batch03/lab/export-checks.json'))).records;
  const floor=await loadImage(at('frontend/assets/industrial/remaster/floors/plate.png'));
  const sheet=createCanvas(1440,800),g=sheet.getContext('2d');g.fillStyle='#10191a';g.fillRect(0,0,1440,800);
- g.fillStyle='#c8bd9a';g.font='22px sans-serif';g.fillText('STARNET · LAB & FABRICATION · NATIVE FOOTPRINT PROOF',24,35);
+ g.fillStyle='#c8bd9a';g.font='22px sans-serif';g.fillText('EYEHOLD · LAB & FABRICATION · NATIVE FOOTPRINT PROOF',24,35);
  const checks=[];
  for(const [index,a]of records.filter(a=>a.id!=='fabricator_carriage').entries()){
   const spec=geometry.props[a.id].views.s,im=await loadImage(at(a.output)),box=fit(spec.bounds,{width:im.width,height:im.height});

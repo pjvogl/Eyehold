@@ -198,12 +198,12 @@ async function settle(state, stableMs, maxMs) {
   // so what fires — and what does NOT — is decided ONLY by the failure-review gate under test.
   const fixture = SidecarFixture.create({
     prefix: 'sk-failreview-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' }
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' }
   });
   // PROJECT TIER (arm 7): two blessed project roots, granted the way the projects rail grants them (the same
   // files project-root.e2e writes) so /api/run's projectRoot passes isBlessedRoot and rides into the run.
-  const projA = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-frproj-a-'));
-  const projB = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-frproj-b-'));
+  const projA = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-frproj-a-'));
+  const projB = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-frproj-b-'));
   {
     const gA = 'path:' + path.resolve(projA), gB = 'path:' + path.resolve(projB);
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({ version: 1, allow: [gA, gB], meta: { [gA]: { grantedAt: 1 }, [gB]: { grantedAt: 1 } } }), 'utf8');

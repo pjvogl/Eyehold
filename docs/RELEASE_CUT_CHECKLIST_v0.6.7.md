@@ -4,7 +4,7 @@
 > Corrections are marked **[07-26]** inline. Summary:
 > 1. §A's state table was stale in your favour: Guardian and journeys are green **at the exact
 >    current head** right now, and trunk is 28 commits ahead of origin, not 197.
-> 2. §C step 8's claim that the branch push publishes starnetos.com is **wrong** — re-measured
+> 2. §C step 8's claim that the branch push publishes eyehold.com is **wrong** — re-measured
 >    today. It doesn't, and it doesn't need to. See **[07-26] §C8**.
 > 3. Version is **0.6.7**, re-confirmed by Andrew 2026-07-26. (This worktree is misleadingly
 >    named `update-0-7-7-release`; there is no 0.7.7.)
@@ -53,8 +53,8 @@ last step before the bump, not the first.
 | Ledger | 0 P0 · 0 P1 · 0 P2 |
 | Installed-exe smoke | **BLOCKED**, v0.6.3 bytes, stamped 2026-07-20 |
 | Unpushed on trunk | **197 commits** ahead of `origin/feat/harness-backend` (`0b48a904`) |
-| Updater signing key | present at `~/.tauri/starnet-updater.key` (+ `.pub`) |
-| Actions secrets on `androoAGI/starnet` | `RELEASES_TOKEN` (2026-07-22), `TAURI_SIGNING_PRIVATE_KEY`, `AZURE_TENANT_ID`/`CLIENT_ID`/`CLIENT_SECRET` |
+| Updater signing key | present at `~/.tauri/eyehold-updater.key` (+ `.pub`) |
+| Actions secrets on `Eyehold/eyehold` | `RELEASES_TOKEN` (2026-07-22), `TAURI_SIGNING_PRIVATE_KEY`, `AZURE_TENANT_ID`/`CLIENT_ID`/`CLIENT_SECRET` |
 
 </details>
 
@@ -81,8 +81,8 @@ The release actually carries only five files: `latest.json`, the exe, the exe `.
 DMGs. So:
 
 - `windows-x86_64` → exe + `.sig` present → **HTTP 200, works.**
-- `darwin-aarch64` → `StarNet_darwin-arm64.app.tar.gz` → **HTTP 404.**
-- `darwin-x86_64` → `StarNet_darwin-x64.app.tar.gz` → **HTTP 404.**
+- `darwin-aarch64` → `Eyehold_darwin-arm64.app.tar.gz` → **HTTP 404.**
+- `darwin-x86_64` → `Eyehold_darwin-x64.app.tar.gz` → **HTTP 404.**
 - both `linux-*` → **HTTP 404.**
 
 A Mac user on v0.6.5 who opens UPDATE CENTER and clicks INSTALL UPDATE gets a download failure.
@@ -196,20 +196,20 @@ the train's gate job is green.
 
 ### 8. Push — branch and tag together
 
-> ### [07-26] CORRECTION — the branch push does NOT publish starnetos.com
+> ### [07-26] CORRECTION — the branch push does NOT publish eyehold.com
 >
 > Everything below about `release-train.yml` is right. The website half is **wrong**, and it was
 > re-measured today, not inferred:
 >
-> - `curl -o /dev/null -w '%{http_code}' https://api.github.com/repos/androoAGI/starnet/pages`
+> - `curl -o /dev/null -w '%{http_code}' https://api.github.com/repos/Eyehold/eyehold/pages`
 >   → **404**. GitHub Pages was never enabled. `deploy-website.yml` fires on the push and
 >   **fails red every time**. Expect that X in Actions; it is noise, not a broken release.
-> - `curl -sI https://starnetos.com` → `Server: cloudflare`. The live site is **Cloudflare Pages
+> - `curl -sI https://eyehold.com` → `Server: cloudflare`. The live site is **Cloudflare Pages
 >   direct upload**, which has no git integration. It only moves when someone runs
->   `wrangler pages deploy website --project-name starnet-site`.
+>   `wrangler pages deploy website --project-name eyehold-site`.
 >
 > **The good news: the release does not need a site deploy.** `website/site.js` fetches
-> `api.github.com/repos/androoAGI/starnet-releases/releases/latest` on page load and rewrites
+> `api.github.com/repos/Eyehold/eyehold-releases/releases/latest` on page load and rewrites
 > both the version strings (`#ver-badge`, `#ver-foot`, `.ver`) and every download button's
 > `href` from the live release assets. The download page follows the new release on its own,
 > within minutes of publishing, with no deploy at all.
@@ -246,7 +246,7 @@ be separated if anything goes wrong mid-cut:
   — the **branch** publishes the site.
 
 Trunk is 197 commits ahead of origin, and **16 of those touch `website/`**, so the branch push is
-what puts **starnetos.com** (`website/CNAME`) live: the rewritten landing page, the live
+what puts **eyehold.com** (`website/CNAME`) live: the rewritten landing page, the live
 in-browser app preview, ten docs pages, the legal pages. Watch the `deploy-website` run in Actions
 alongside the train.
 
@@ -263,7 +263,7 @@ red leg is usually a runner flake — Re-run failed jobs. `stage-draft` is idemp
 
 ### 10. Review + publish the draft
 
-Draft lands on `androoAGI/starnet-releases`. Before publishing:
+Draft lands on `Eyehold/eyehold-releases`. Before publishing:
 
 - version/tag exactly `v0.6.7`; notes are the real body, not the TODO scaffold
 - every updater artifact has a matching `.sig`; exactly one `latest.json`
@@ -271,19 +271,19 @@ Draft lands on `androoAGI/starnet-releases`. Before publishing:
 **Strip exactly four assets** (the linux ones), and nothing else:
 
 ```
-StarNet_0.6.7_amd64.AppImage        + .sig
-StarNet_0.6.7_amd64.deb             + .sig
+Eyehold_0.6.7_amd64.AppImage        + .sig
+Eyehold_0.6.7_amd64.deb             + .sig
 ```
 
 **Keep attached** — this is the B1 fix, and it is the difference between mac auto-update working
 and 404ing:
 
 ```
-StarNet_0.6.7_x64-setup.exe         + .sig     (windows updater + manual download)
-StarNet_darwin-arm64.app.tar.gz     + .sig     (mac updater feed, Apple Silicon)
-StarNet_darwin-x64.app.tar.gz       + .sig     (mac updater feed, Intel)
-StarNet_0.6.7_aarch64.dmg                      (manual download, Apple Silicon)
-StarNet_0.6.7_x64.dmg                          (manual download, Intel)
+Eyehold_0.6.7_x64-setup.exe         + .sig     (windows updater + manual download)
+Eyehold_darwin-arm64.app.tar.gz     + .sig     (mac updater feed, Apple Silicon)
+Eyehold_darwin-x64.app.tar.gz       + .sig     (mac updater feed, Intel)
+Eyehold_0.6.7_aarch64.dmg                      (manual download, Apple Silicon)
+Eyehold_0.6.7_x64.dmg                          (manual download, Intel)
 latest.json
 ```
 
@@ -303,12 +303,12 @@ manifest. Those two are known and accepted for this cut (B1).
 > returning assets alphabetically. One command:
 >
 > ```bash
-> curl -s https://api.github.com/repos/androoAGI/starnet-releases/releases/latest | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const a=(JSON.parse(d).assets||[]).map(x=>x.name);const w=a.find(n=>n.includes('x64-setup.exe'));const m=a.find(n=>n.includes('aarch64.dmg'));console.log('win ->',w,w&&!w.endsWith('.sig')?'OK':'BAD');console.log('mac ->',m,m?'OK':'BAD');})"
+> curl -s https://api.github.com/repos/Eyehold/eyehold-releases/releases/latest | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const a=(JSON.parse(d).assets||[]).map(x=>x.name);const w=a.find(n=>n.includes('x64-setup.exe'));const m=a.find(n=>n.includes('aarch64.dmg'));console.log('win ->',w,w&&!w.endsWith('.sig')?'OK':'BAD');console.log('mac ->',m,m?'OK':'BAD');})"
 > ```
 
 ### 11. Post-publish
 
-- Mirror the release on `androoAGI/starnet` (source repo) with exe + both DMGs.
+- Mirror the release on `Eyehold/eyehold` (source repo) with exe + both DMGs.
 - Delete the v0.6.6 release + tags on **both** repos — only the current version stays downloadable.
   Published-release deletion is classifier-blocked for me; it is a manual UI step (each repo →
   Releases → v0.6.6 → Delete, then Tags → v0.6.6 → delete).
@@ -318,9 +318,9 @@ manifest. Those two are known and accepted for this cut (B1).
   release exactly), so the delete is unblocked:
 
   ```
-  StarNet_0.6.6_x64-setup.exe   ef4974f957b2bf45dc3604b5d10b8a09be0fd7a8a7c1b022d24b4dbb97c75fcd
-  StarNet_0.6.6_aarch64.dmg     4ec54423501053b8df452e928cb7471632e2ede5a6045fbb2c5fff05ad22c067
-  StarNet_0.6.6_x64.dmg         f68c1250856d67ed592c2257bdc4573280c3b08e433242ef81dbabfea4f1a39b
+  Eyehold_0.6.6_x64-setup.exe   ef4974f957b2bf45dc3604b5d10b8a09be0fd7a8a7c1b022d24b4dbb97c75fcd
+  Eyehold_0.6.6_aarch64.dmg     4ec54423501053b8df452e928cb7471632e2ede5a6045fbb2c5fff05ad22c067
+  Eyehold_0.6.6_x64.dmg         f68c1250856d67ed592c2257bdc4573280c3b08e433242ef81dbabfea4f1a39b
   ```
   (plus the exe `.sig` and `latest.json`.)
 - The live v0.6.6 release bodies still carry x64-for-all mac wording — patch at this cut.
@@ -358,7 +358,7 @@ a successful v0.6.5 → v0.6.6 update in production**:
 | Thing | Value | Changed? |
 |---|---|---|
 | `identifier` | `ai.skynet.harness` | no |
-| `productName` | `StarNet` | no |
+| `productName` | `Eyehold` | no |
 | NSIS `installMode` | `passive` | no |
 | Updater `endpoints` | `releases/latest/download/latest.json` | no |
 | Updater `pubkey` | `dW50cnVzdGVk…` (minisign) | no |

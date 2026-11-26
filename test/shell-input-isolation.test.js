@@ -15,7 +15,7 @@ function put(root, rel, text) {
   fs.writeFileSync(p, text);
 }
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-input-floor-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-input-floor-'));
 try {
   put(root, 'src/game.js', 'canvas.requestPointerLock();\n');
   put(root, 'scripts/runtime-smoke.mjs', "import puppeteer from 'puppeteer-core';\nawait puppeteer.launch({headless:true});\n");
@@ -71,7 +71,7 @@ try {
   A.eq(inputIsolationRisk('echo SetCursorPos is forbidden', { cwd: root, fs, pathMod: path }), null, 'API words as inert echo arguments do not false-trip');
 
   // Issue #50: GUI runtimes are judged as launched PROGRAMS, not as words anywhere in a referenced script.
-  const plain = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-gui-words-'));
+  const plain = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-gui-words-'));
   try {
     const at = { cwd: plain, fs, pathMod: path };
     put(plain, 'routine.mjs', '// Re-read before each write so a new pause or external assignment wins.\n' +
@@ -103,11 +103,11 @@ try {
     fs.rmSync(plain, { recursive: true, force: true });
   }
 
-  const ordinary = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-browser-safe-'));
+  const ordinary = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-browser-safe-'));
   try {
     put(ordinary, 'src/app.js', 'document.body.textContent = "hello";\n');
     put(ordinary, 'scripts/smoke.mjs', "import puppeteer from 'puppeteer-core';\nawait puppeteer.launch({headless:true});\n");
-    A.ok(inputIsolationRisk('node scripts/smoke.mjs', { cwd: ordinary, fs, pathMod: path }), 'all browser automation routes through StarNet\'s owned synthetic session');
+    A.ok(inputIsolationRisk('node scripts/smoke.mjs', { cwd: ordinary, fs, pathMod: path }), 'all browser automation routes through Eyehold\'s owned synthetic session');
   } finally {
     fs.rmSync(ordinary, { recursive: true, force: true });
   }
@@ -118,7 +118,7 @@ try {
 // Tool-boundary integration: unsafe foreground and background commands are rejected before
 // either the command spawner or background manager receives them.
 {
-  const toolRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-input-tool-'));
+  const toolRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-input-tool-'));
   const agentRoot = path.join(toolRoot, 'ag');
   let spawned = 0, backgroundStarted = 0;
   try {

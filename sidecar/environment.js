@@ -2,7 +2,7 @@
 
    The reference harness' terminal layer is built around an environment boundary: the tool asks an
    environment to execute, while the environment decides whether that means host
-   shell, Docker, SSH, or a cloud sandbox. StarNet's first parity step is the same
+   shell, Docker, SSH, or a cloud sandbox. Eyehold's first parity step is the same
    seam. This module keeps the local backend behavior-compatible, and adds a
    Docker backend that runs commands in one durable, per-agent container against
    the same workspace bind mount.
@@ -60,13 +60,13 @@
   }
   /* The `_`-boundary requirement meant a CONCATENATED name never matched, so the ambient secrets people
      actually have leaked straight into every task child's env: STRIPE_APIKEY, ANTHROPIC_APIKEY, GITHUB_PAT,
-     FOO_ACCESSTOKEN. (StarNet's own KEYS vars always end in _API_KEY, which is why this never showed up in
+     FOO_ACCESSTOKEN. (Eyehold's own KEYS vars always end in _API_KEY, which is why this never showed up in
      our own fixtures.) Keep the boundary form for the words that read as prose (PASS, AUTH, KEY) and add
      the glued spellings that are unambiguous on their own. */
   const SECRET_ENV_NAME_RE = /(?:^|_)(?:TOKEN|KEY|SECRET|PASSWORD|PASS|AUTH|BEARER|COOKIE|CREDENTIAL)(?:_|$)|(?:APIKEY|ACCESSTOKEN|ACCESSKEY|SECRETKEY|AUTHTOKEN|APITOKEN|PRIVATEKEY|PASSWD)|(?:^|_)PAT(?:_|$)/i;
-  const INTERNAL_ENV_NAME_RE = /^(?:STARNET|SKYNET)_/i;
+  const INTERNAL_ENV_NAME_RE = /^(?:EYEHOLD|SKYNET)_/i;
   const EXECUTION_HOOK_ENV_RE = /^(?:NODE_OPTIONS|NODE_PATH|npm_config_script_shell|COMSPEC)$/i;
-  /* Agent-driven commands: the shared station-secret strip (child-env.js — StarNet's own names, the service-key
+  /* Agent-driven commands: the shared station-secret strip (child-env.js — Eyehold's own names, the service-key
      names the sidecar exported, any held secret VALUE), then every secret-SHAPED name on top. */
   function sanitizeChildEnv(base) {
     const src = stationChildEnv(base || {});
@@ -78,10 +78,10 @@
     }
     // Reserved safety pins are host authority. A task command/project hook cannot inherit or
     // override a switch that re-enables physical input, headed browsing, or local MCP children.
-    out.STARNET_USER_CONTROL_MODE = 'preserve';
-    out.STARNET_COMPUTER_DRIVER = '0';
-    out.STARNET_BROWSER_HEADLESS = '1';
-    out.STARNET_MCP_STDIO = '0';
+    out.EYEHOLD_USER_CONTROL_MODE = 'preserve';
+    out.EYEHOLD_COMPUTER_DRIVER = '0';
+    out.EYEHOLD_BROWSER_HEADLESS = '1';
+    out.EYEHOLD_MCP_STDIO = '0';
     out.BROWSER = 'none';
     if (src.SystemRoot) out.ComSpec = String(src.SystemRoot).replace(/[\\/]+$/, '') + '\\System32\\cmd.exe';
     return out;
@@ -91,7 +91,7 @@
      promises. sanitizeChildEnv's blanket scrub strips every one of them (servicekeys.deriveEnvVar always
      ends in _API_KEY), which silently severed the entire feature. They are merged back in per call, but
      stay subordinate to host authority: a pasted var may never become a reserved safety pin
-     (STARNET_/SKYNET_*) or an execution hook (NODE_OPTIONS/COMSPEC/…), so a KEYS row can't re-enable
+     (EYEHOLD_/SKYNET_*) or an execution hook (NODE_OPTIONS/COMSPEC/…), so a KEYS row can't re-enable
      physical input or hijack the shell. Callers supply only provider-key-filtered maps (servicekeys.runEnv). */
   function mergeServiceEnv(base, extra) {
     if (!extra) return base;
@@ -106,7 +106,7 @@
     return out;
   }
   function backendFromEnv(env) {
-    return firstEnv(env, ['STARNET_EXEC_BACKEND', 'SKYNET_EXEC_BACKEND'], 'local').trim().toLowerCase();
+    return firstEnv(env, ['EYEHOLD_EXEC_BACKEND', 'SKYNET_EXEC_BACKEND'], 'local').trim().toLowerCase();
   }
   // Case-fold on Windows — the second copy of the same defect fixed in shell.js withinJail. The cwd compared
   // here is a REMEMBERED one (getCwd/rememberCwd), so a path that IS inside the workspace but spells a segment
@@ -290,17 +290,17 @@
     const backend = (overrides.backend || backendFromEnv(env) || 'local').trim().toLowerCase();
     return {
       backend: backend,
-      dockerBin: overrides.dockerBin || firstEnv(env, ['STARNET_DOCKER_BIN', 'SKYNET_DOCKER_BIN'], 'docker'),
-      dockerImage: overrides.dockerImage || firstEnv(env, ['STARNET_DOCKER_IMAGE', 'SKYNET_DOCKER_IMAGE'], DEFAULT_DOCKER_IMAGE),
-      dockerWorkspace: overrides.dockerWorkspace || firstEnv(env, ['STARNET_DOCKER_WORKSPACE'], '/workspace'),
-      dockerNetwork: overrides.dockerNetwork != null ? overrides.dockerNetwork : firstEnv(env, ['STARNET_DOCKER_NETWORK'], ''),
-      dockerSecurity: overrides.dockerSecurity != null ? !!overrides.dockerSecurity : toBool(firstEnv(env, ['STARNET_DOCKER_SECURITY'], 'true'), true),
-      dockerCpus: overrides.dockerCpus || firstEnv(env, ['STARNET_DOCKER_CPUS'], ''),
-      dockerMemory: overrides.dockerMemory || firstEnv(env, ['STARNET_DOCKER_MEMORY'], ''),
-      dockerExtraArgs: Array.isArray(overrides.dockerExtraArgs) ? overrides.dockerExtraArgs : readListEnv(firstEnv(env, ['STARNET_DOCKER_EXTRA_ARGS'], '')),
-      sshBin: overrides.sshBin || firstEnv(env, ['STARNET_SSH_BIN'], 'ssh'),
-      scpBin: overrides.scpBin || firstEnv(env, ['STARNET_SCP_BIN'], 'scp'),
-      sshConnectTimeoutSeconds: clamp(overrides.sshConnectTimeoutSeconds || firstEnv(env, ['STARNET_SSH_CONNECT_TIMEOUT_SECONDS'], '10'), 3, 60)
+      dockerBin: overrides.dockerBin || firstEnv(env, ['EYEHOLD_DOCKER_BIN', 'SKYNET_DOCKER_BIN'], 'docker'),
+      dockerImage: overrides.dockerImage || firstEnv(env, ['EYEHOLD_DOCKER_IMAGE', 'SKYNET_DOCKER_IMAGE'], DEFAULT_DOCKER_IMAGE),
+      dockerWorkspace: overrides.dockerWorkspace || firstEnv(env, ['EYEHOLD_DOCKER_WORKSPACE'], '/workspace'),
+      dockerNetwork: overrides.dockerNetwork != null ? overrides.dockerNetwork : firstEnv(env, ['EYEHOLD_DOCKER_NETWORK'], ''),
+      dockerSecurity: overrides.dockerSecurity != null ? !!overrides.dockerSecurity : toBool(firstEnv(env, ['EYEHOLD_DOCKER_SECURITY'], 'true'), true),
+      dockerCpus: overrides.dockerCpus || firstEnv(env, ['EYEHOLD_DOCKER_CPUS'], ''),
+      dockerMemory: overrides.dockerMemory || firstEnv(env, ['EYEHOLD_DOCKER_MEMORY'], ''),
+      dockerExtraArgs: Array.isArray(overrides.dockerExtraArgs) ? overrides.dockerExtraArgs : readListEnv(firstEnv(env, ['EYEHOLD_DOCKER_EXTRA_ARGS'], '')),
+      sshBin: overrides.sshBin || firstEnv(env, ['EYEHOLD_SSH_BIN'], 'ssh'),
+      scpBin: overrides.scpBin || firstEnv(env, ['EYEHOLD_SCP_BIN'], 'scp'),
+      sshConnectTimeoutSeconds: clamp(overrides.sshConnectTimeoutSeconds || firstEnv(env, ['EYEHOLD_SSH_CONNECT_TIMEOUT_SECONDS'], '10'), 3, 60)
     };
   }
 
@@ -480,7 +480,7 @@
     }
     function containerName(agentId) {
       const aid = safeAgentId(agentId || 'agent');
-      return 'starnet-' + rootIdentity + '-' + stableHash(aid) + '-' + aid.toLowerCase();
+      return 'eyehold-' + rootIdentity + '-' + stableHash(aid) + '-' + aid.toLowerCase();
     }
     function ensureWorkspace(agentId) {
       const dir = workspaceRoot(agentId);
@@ -527,12 +527,12 @@
       if (cfg.dockerCpus) args.push('--cpus', String(cfg.dockerCpus));
       if (cfg.dockerMemory) args.push('--memory', String(cfg.dockerMemory));
       for (let i = 0; i < (cfg.dockerExtraArgs || []).length; i++) args.push(String(cfg.dockerExtraArgs[i]));
-      // Put identity after owner-configurable extras so duplicate --name/--label flags cannot make StarNet
+      // Put identity after owner-configurable extras so duplicate --name/--label flags cannot make Eyehold
       // lose the deterministic handle or ownership receipt it later verifies before reuse.
       args.push('--name', containerName(agentId),
-        '--label', 'ai.starnet.managed=1',
-        '--label', 'ai.starnet.workspace=' + rootIdentity,
-        '--label', 'ai.starnet.agent=' + agentId);
+        '--label', 'ai.eyehold.managed=1',
+        '--label', 'ai.eyehold.workspace=' + rootIdentity,
+        '--label', 'ai.eyehold.agent=' + agentId);
       args.push('--volume', hostRoot + ':' + containerRoot);
       args.push('--workdir', containerRoot);
       args.push(String(cfg.dockerImage || DEFAULT_DOCKER_IMAGE));
@@ -584,10 +584,10 @@
       }
       // These host-owned values are the defense-in-depth floor inside the MCP server too. They are
       // added after the connector overlay, so a saved connector can never replace them.
-      forwarded.STARNET_USER_CONTROL_MODE = 'preserve';
-      forwarded.STARNET_COMPUTER_DRIVER = '0';
-      forwarded.STARNET_BROWSER_HEADLESS = '1';
-      forwarded.STARNET_MCP_STDIO = '0';
+      forwarded.EYEHOLD_USER_CONTROL_MODE = 'preserve';
+      forwarded.EYEHOLD_COMPUTER_DRIVER = '0';
+      forwarded.EYEHOLD_BROWSER_HEADLESS = '1';
+      forwarded.EYEHOLD_MCP_STDIO = '0';
       forwarded.BROWSER = 'none';
 
       const args = ['exec', '-i'];
@@ -627,7 +627,7 @@
     }
 
     function inspectContainer(agentId) {
-      const format = '{{.State.Running}}\t{{index .Config.Labels "ai.starnet.workspace"}}\t{{index .Config.Labels "ai.starnet.agent"}}';
+      const format = '{{.State.Running}}\t{{index .Config.Labels "ai.eyehold.workspace"}}\t{{index .Config.Labels "ai.eyehold.agent"}}';
       return dockerRun(['inspect', '--format', format, containerName(agentId)], { timeoutMs: 10000, maxBytes: 4096 })
         .then(function (r) {
           if (r.exitCode !== 0) return { exists: false, running: false };
@@ -660,9 +660,9 @@
           });
         });
       }).then(function (state) {
-        return dockerRun(['exec', '--workdir', containerRoot, containerName(aid), 'sh', '-lc', 'test -d . && printf starnet-ready'], { timeoutMs: 10000, maxBytes: 4096 })
+        return dockerRun(['exec', '--workdir', containerRoot, containerName(aid), 'sh', '-lc', 'test -d . && printf eyehold-ready'], { timeoutMs: 10000, maxBytes: 4096 })
           .then(function (probe) {
-            if (probe.exitCode !== 0 || String(probe.out || '').indexOf('starnet-ready') < 0) {
+            if (probe.exitCode !== 0 || String(probe.out || '').indexOf('eyehold-ready') < 0) {
               throw new Error('persistent Docker environment failed its startup probe');
             }
             ready.add(aid);
@@ -921,9 +921,9 @@
       }
     }
     function assertRemoteTreeSafe(row, opts) {
-      const script = 'if find ' + quote(row.remoteRoot) + ' -type l -print -quit | grep -q .; then printf starnet-sync-symlink; exit 96; fi\nprintf starnet-sync-safe\n';
+      const script = 'if find ' + quote(row.remoteRoot) + ' -type l -print -quit | grep -q .; then printf eyehold-sync-symlink; exit 96; fi\nprintf eyehold-sync-safe\n';
       return runSsh(row, script, { timeoutMs: opts.timeoutMs, maxTimeoutMs: opts.maxTimeoutMs, maxBytes: 4096, signal: opts.signal }).then(function (result) {
-        if (result.exitCode !== 0 || String(result.out || '').indexOf('starnet-sync-safe') < 0) throw new Error('workspace pull refused: remote tree contains a symbolic link or could not be verified');
+        if (result.exitCode !== 0 || String(result.out || '').indexOf('eyehold-sync-safe') < 0) throw new Error('workspace pull refused: remote tree contains a symbolic link or could not be verified');
       });
     }
     function manifestFile(agentId) { return P.join(ROOT, '.execution', 'ssh', safeAgentId(agentId) + '.manifest.json'); }
@@ -947,7 +947,7 @@
       return out;
     }
     async function remoteManifest(row, opts) {
-      const script = 'cd ' + quote(row.remoteRoot) + ' || exit 97\nfind . -type f ! -path "./.starnet/*" -exec sha256sum {} \\;\n';
+      const script = 'cd ' + quote(row.remoteRoot) + ' || exit 97\nfind . -type f ! -path "./.eyehold/*" -exec sha256sum {} \\;\n';
       const result = await runSsh(row, script, { timeoutMs: opts.timeoutMs || 60000, maxTimeoutMs: opts.maxTimeoutMs, maxBytes: 4 << 20, signal: opts.signal });
       if (result.exitCode !== 0 || result.truncated) throw new Error('workspace sync refused: remote manifest could not be proven completely');
       const out = {};
@@ -969,11 +969,11 @@
       if (state.availability === 'ready' && state.signature === sig) return Promise.resolve({ ok: true, reused: true, backend: 'ssh', agentId: aid });
       state.availability = 'checking'; state.error = null; state.signature = sig;
       const script = 'mkdir -p ' + quote(row.remoteRoot) + '\n' +
-        'test -d ' + quote(row.remoteRoot) + ' && printf starnet-ssh-ready\n';
+        'test -d ' + quote(row.remoteRoot) + ' && printf eyehold-ssh-ready\n';
       return runSsh(row, script, { timeoutMs: Math.max(10000, (cfg.sshConnectTimeoutSeconds || 10) * 1000 + 3000), maxBytes: 4096 })
         .then(function (result) {
           state.lastProbeAt = nowMs();
-          if (result.exitCode !== 0 || String(result.out || '').indexOf('starnet-ssh-ready') < 0) {
+          if (result.exitCode !== 0 || String(result.out || '').indexOf('eyehold-ssh-ready') < 0) {
             throw new Error('SSH readiness probe failed' + (result.out ? ': ' + String(result.out).trim().slice(0, 200) : ''));
           }
           state.availability = 'ready'; state.error = null;
@@ -1037,10 +1037,10 @@
           }
         } catch (_) {}
       }
-      out.STARNET_USER_CONTROL_MODE = 'preserve';
-      out.STARNET_COMPUTER_DRIVER = '0';
-      out.STARNET_BROWSER_HEADLESS = '1';
-      out.STARNET_MCP_STDIO = '0';
+      out.EYEHOLD_USER_CONTROL_MODE = 'preserve';
+      out.EYEHOLD_COMPUTER_DRIVER = '0';
+      out.EYEHOLD_BROWSER_HEADLESS = '1';
+      out.EYEHOLD_MCP_STDIO = '0';
       out.BROWSER = 'none';
       return out;
     }
@@ -1048,10 +1048,10 @@
       opts = opts || {};
       const aid = safeAgentId(agentId || 'agent'), row = target(aid);
       const id = 'sshcp_' + stableHash(aid + '\n' + nowMs() + '\n' + (++jobSeq) + '\n' + String(opts.label || 'checkpoint'));
-      const dir = row.remoteRoot + '/.starnet/checkpoints', archive = dir + '/' + id + '.tar';
-      const script = 'mkdir -p ' + quote(dir) + '\ncd ' + quote(row.remoteRoot) + ' || exit 97\ntar -cf ' + quote(archive) + ' --exclude=./.starnet . || exit 98\ndigest=$(sha256sum ' + quote(archive) + ' | cut -d" " -f1)\nbytes=$(wc -c < ' + quote(archive) + ')\nprintf %s "$digest" > ' + quote(dir + '/' + id + '.sha256') + '\nprintf %s ' + quote(String(nowMs())) + ' > ' + quote(dir + '/' + id + '.at') + '\nprintf "STARNET_CHECKPOINT\\t' + id + '\\t%s\\t%s\\n" "$digest" "$bytes"\n';
+      const dir = row.remoteRoot + '/.eyehold/checkpoints', archive = dir + '/' + id + '.tar';
+      const script = 'mkdir -p ' + quote(dir) + '\ncd ' + quote(row.remoteRoot) + ' || exit 97\ntar -cf ' + quote(archive) + ' --exclude=./.eyehold . || exit 98\ndigest=$(sha256sum ' + quote(archive) + ' | cut -d" " -f1)\nbytes=$(wc -c < ' + quote(archive) + ')\nprintf %s "$digest" > ' + quote(dir + '/' + id + '.sha256') + '\nprintf %s ' + quote(String(nowMs())) + ' > ' + quote(dir + '/' + id + '.at') + '\nprintf "EYEHOLD_CHECKPOINT\\t' + id + '\\t%s\\t%s\\n" "$digest" "$bytes"\n';
       const result = await runSsh(row, script, { timeoutMs: opts.timeoutMs || 120000, maxBytes: 4096, signal: opts.signal });
-      const m = /STARNET_CHECKPOINT\t(sshcp_[a-f0-9]{8})\t([a-f0-9]{64})\t(\d+)/.exec(String(result.out || ''));
+      const m = /EYEHOLD_CHECKPOINT\t(sshcp_[a-f0-9]{8})\t([a-f0-9]{64})\t(\d+)/.exec(String(result.out || ''));
       if (result.exitCode !== 0 || !m) throw new Error('remote checkpoint could not be verified');
       return { id: m[1], digest: m[2], bytes: Number(m[3]), createdAt: nowMs(), backend: 'ssh', created: true };
     }
@@ -1061,11 +1061,11 @@
     function listCheckpoints(agentId) {
       const aid = safeAgentId(agentId || 'agent');
       return enqueue(aid, async function () {
-        const row = target(aid), dir = row.remoteRoot + '/.starnet/checkpoints';
-        const script = 'test -d ' + quote(dir) + ' || exit 0\nfor f in ' + quote(dir) + '/sshcp_*.tar; do test -f "$f" || continue; id=${f##*/}; id=${id%.tar}; digest=$(cat ' + quote(dir) + '/"$id".sha256 2>/dev/null || true); at=$(cat ' + quote(dir) + '/"$id".at 2>/dev/null || true); bytes=$(wc -c < "$f"); printf "STARNET_CHECKPOINT\\t%s\\t%s\\t%s\\t%s\\n" "$id" "$digest" "$bytes" "$at"; done\n';
+        const row = target(aid), dir = row.remoteRoot + '/.eyehold/checkpoints';
+        const script = 'test -d ' + quote(dir) + ' || exit 0\nfor f in ' + quote(dir) + '/sshcp_*.tar; do test -f "$f" || continue; id=${f##*/}; id=${id%.tar}; digest=$(cat ' + quote(dir) + '/"$id".sha256 2>/dev/null || true); at=$(cat ' + quote(dir) + '/"$id".at 2>/dev/null || true); bytes=$(wc -c < "$f"); printf "EYEHOLD_CHECKPOINT\\t%s\\t%s\\t%s\\t%s\\n" "$id" "$digest" "$bytes" "$at"; done\n';
         const result = await runSsh(row, script, { timeoutMs: 60000, maxBytes: 64000 });
         if (result.exitCode !== 0) throw new Error('remote checkpoints could not be listed');
-        return String(result.out || '').split(/\r?\n/).map(line => { const m = /^STARNET_CHECKPOINT\t(sshcp_[a-f0-9]{8})\t([a-f0-9]{64})\t(\d+)\t(\d*)$/.exec(line); return m ? { id: m[1], digest: m[2], bytes: Number(m[3]), createdAt: Number(m[4]) || 0, backend: 'ssh' } : null; }).filter(Boolean);
+        return String(result.out || '').split(/\r?\n/).map(line => { const m = /^EYEHOLD_CHECKPOINT\t(sshcp_[a-f0-9]{8})\t([a-f0-9]{64})\t(\d+)\t(\d*)$/.exec(line); return m ? { id: m[1], digest: m[2], bytes: Number(m[3]), createdAt: Number(m[4]) || 0, backend: 'ssh' } : null; }).filter(Boolean);
       });
     }
     function restoreCheckpoint(agentId, snapshotId, opts) {
@@ -1073,11 +1073,11 @@
       const aid = safeAgentId(agentId || 'agent');
       if (!/^sshcp_[a-f0-9]{8}$/.test(String(snapshotId || ''))) return Promise.resolve(false);
       return enqueue(aid, async function () {
-        const row = target(aid), dir = row.remoteRoot + '/.starnet/checkpoints', archive = dir + '/' + snapshotId + '.tar';
-        const script = 'test -f ' + quote(archive) + ' || exit 44\nwant=$(cat ' + quote(dir + '/' + snapshotId + '.sha256') + ' 2>/dev/null || true)\ngot=$(sha256sum ' + quote(archive) + ' | cut -d" " -f1)\ntest -n "$want" && test "$want" = "$got" || exit 45\nfind ' + quote(row.remoteRoot) + ' -mindepth 1 -maxdepth 1 ! -name .starnet -exec rm -rf -- {} + || exit 46\ntar -xf ' + quote(archive) + ' -C ' + quote(row.remoteRoot) + ' || exit 47\nprintf starnet-checkpoint-restored\n';
+        const row = target(aid), dir = row.remoteRoot + '/.eyehold/checkpoints', archive = dir + '/' + snapshotId + '.tar';
+        const script = 'test -f ' + quote(archive) + ' || exit 44\nwant=$(cat ' + quote(dir + '/' + snapshotId + '.sha256') + ' 2>/dev/null || true)\ngot=$(sha256sum ' + quote(archive) + ' | cut -d" " -f1)\ntest -n "$want" && test "$want" = "$got" || exit 45\nfind ' + quote(row.remoteRoot) + ' -mindepth 1 -maxdepth 1 ! -name .eyehold -exec rm -rf -- {} + || exit 46\ntar -xf ' + quote(archive) + ' -C ' + quote(row.remoteRoot) + ' || exit 47\nprintf eyehold-checkpoint-restored\n';
         const result = await runSsh(row, script, { timeoutMs: opts.timeoutMs || 120000, maxBytes: 4096 });
         if (result.exitCode === 44) return false;
-        if (result.exitCode !== 0 || String(result.out || '').indexOf('starnet-checkpoint-restored') < 0) throw new Error('remote checkpoint restore could not be verified');
+        if (result.exitCode !== 0 || String(result.out || '').indexOf('eyehold-checkpoint-restored') < 0) throw new Error('remote checkpoint restore could not be verified');
         const local = ensureWorkspace(aid), rootResolved = P.resolve(ROOT), localResolved = P.resolve(local);
         if (!hostInside(P, localResolved, rootResolved) || localResolved === rootResolved) throw new Error('local SSH mirror boundary could not be proven');
         for (const name of fs.readdirSync(local)) fs.rmSync(P.join(local, name), { recursive: true, force: true });
@@ -1114,10 +1114,10 @@
     }
     function remoteJobDir(row, bgId) {
       if (!/^sshbg_[a-f0-9]{8,32}$/.test(String(bgId || ''))) throw new Error('bad SSH background id');
-      return row.remoteRoot + '/.starnet/jobs/' + String(bgId);
+      return row.remoteRoot + '/.eyehold/jobs/' + String(bgId);
     }
     function parseJobLine(out, cmd) {
-      const line = String(out || '').split(/\r?\n/).find(x => x.indexOf('STARNET_JOB\t') === 0);
+      const line = String(out || '').split(/\r?\n/).find(x => x.indexOf('EYEHOLD_JOB\t') === 0);
       if (!line) return null;
       const p = line.split('\t');
       return { bgId: p[1], pid: Number(p[2]) || null, running: p[3] === 'running', lost: p[3] === 'lost', exitCode: p[4] === '' ? null : Number(p[4]), killed: p[4] === 'killed', ms: 0, cmd: String(cmd || 'remote background process'), tail: '' };
@@ -1138,7 +1138,7 @@
           + '( cd ' + quote(cwd) + ' && sh ' + quote(dir + '/cmd') + ' > ' + quote(dir + '/out') + ' 2> ' + quote(dir + '/err') + '; ec=$?; printf %s "$ec" > ' + quote(dir + '/exit') + ' ) < /dev/null > /dev/null 2>&1 &\n'
           + 'pid=$!; printf %s "$pid" > ' + quote(dir + '/pid') + '\n'
           + 'identity=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1); test -n "$identity" || exit 91; printf %s "$identity" > ' + quote(dir + '/identity') + '\n'
-          + "printf 'STARNET_JOB\\t" + bgId + "\\t%s\\trunning\\t\\n' \"$pid\"\n";
+          + "printf 'EYEHOLD_JOB\\t" + bgId + "\\t%s\\trunning\\t\\n' \"$pid\"\n";
         const result = await runSsh(row, script, { timeoutMs: 30000, maxBytes: 4096 });
         const job = parseJobLine(result.out, cmd);
         if (result.exitCode !== 0 || !job) return { ok: false, error: 'remote background start could not be verified' };
@@ -1148,19 +1148,19 @@
     function statusBackground(agentId, bgId) {
       const aid = safeAgentId(agentId || 'agent');
       return enqueue(aid, async function () {
-        const row = target(aid), root = row.remoteRoot + '/.starnet/jobs';
+        const row = target(aid), root = row.remoteRoot + '/.eyehold/jobs';
         if (!bgId) {
-          const script = 'test -d ' + quote(root) + ' || exit 0\nfor d in ' + quote(root) + '/sshbg_*; do test -d "$d" || continue; id=${d##*/}; pid=$(cat "$d/pid" 2>/dev/null || true); want=$(cat "$d/identity" 2>/dev/null || true); got=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1); if test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then st=running; ec=; elif test -f "$d/exit"; then st=exited; ec=$(cat "$d/exit" 2>/dev/null || true); else st=lost; ec=; fi; printf "STARNET_JOB\\t%s\\t%s\\t%s\\t%s\\n" "$id" "$pid" "$st" "$ec"; done\n';
+          const script = 'test -d ' + quote(root) + ' || exit 0\nfor d in ' + quote(root) + '/sshbg_*; do test -d "$d" || continue; id=${d##*/}; pid=$(cat "$d/pid" 2>/dev/null || true); want=$(cat "$d/identity" 2>/dev/null || true); got=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1); if test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then st=running; ec=; elif test -f "$d/exit"; then st=exited; ec=$(cat "$d/exit" 2>/dev/null || true); else st=lost; ec=; fi; printf "EYEHOLD_JOB\\t%s\\t%s\\t%s\\t%s\\n" "$id" "$pid" "$st" "$ec"; done\n';
           const result = await runSsh(row, script, { timeoutMs: 30000, maxBytes: 64000 });
           if (result.exitCode !== 0) return [];
           return String(result.out || '').split(/\r?\n/).map(x => parseJobLine(x, '')).filter(Boolean);
         }
         const dir = remoteJobDir(row, bgId);
-        const script = 'test -d ' + quote(dir) + ' || exit 44\npid=$(cat ' + quote(dir + '/pid') + ' 2>/dev/null || true)\nwant=$(cat ' + quote(dir + '/identity') + ' 2>/dev/null || true)\ngot=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1)\nif test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then st=running; ec=; elif test -f ' + quote(dir + '/exit') + '; then st=exited; ec=$(cat ' + quote(dir + '/exit') + ' 2>/dev/null || true); else st=lost; ec=; fi\nprintf "STARNET_JOB\\t' + bgId + '\\t%s\\t%s\\t%s\\n" "$pid" "$st" "$ec"\nprintf "STARNET_TAIL\\n"\ntail -c 2000 ' + quote(dir + '/out') + ' ' + quote(dir + '/err') + ' 2>/dev/null || true\n';
+        const script = 'test -d ' + quote(dir) + ' || exit 44\npid=$(cat ' + quote(dir + '/pid') + ' 2>/dev/null || true)\nwant=$(cat ' + quote(dir + '/identity') + ' 2>/dev/null || true)\ngot=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1)\nif test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then st=running; ec=; elif test -f ' + quote(dir + '/exit') + '; then st=exited; ec=$(cat ' + quote(dir + '/exit') + ' 2>/dev/null || true); else st=lost; ec=; fi\nprintf "EYEHOLD_JOB\\t' + bgId + '\\t%s\\t%s\\t%s\\n" "$pid" "$st" "$ec"\nprintf "EYEHOLD_TAIL\\n"\ntail -c 2000 ' + quote(dir + '/out') + ' ' + quote(dir + '/err') + ' 2>/dev/null || true\n';
         const result = await runSsh(row, script, { timeoutMs: 30000, maxBytes: 8192 });
         if (result.exitCode === 44) return null;
         const job = parseJobLine(result.out, 'remote background process');
-        if (job) { job.tail = String(result.out || '').split('STARNET_TAIL\n').slice(1).join('STARNET_TAIL\n'); if (job.lost) job.remoteBoundary = 'saved SSH pid no longer matches its original process identity; completion is unconfirmed'; }
+        if (job) { job.tail = String(result.out || '').split('EYEHOLD_TAIL\n').slice(1).join('EYEHOLD_TAIL\n'); if (job.lost) job.remoteBoundary = 'saved SSH pid no longer matches its original process identity; completion is unconfirmed'; }
         if (job && !job.running) { try { await syncWorkspaceRaw(aid, { direction: 'pull' }); } catch (_) {} }
         return job;
       });
@@ -1184,7 +1184,7 @@
       const aid = safeAgentId(agentId || 'agent');
       return enqueue(aid, async function () {
         const row = target(aid), dir = remoteJobDir(row, bgId);
-        const script = 'test -d ' + quote(dir) + ' || exit 44\npid=$(cat ' + quote(dir + '/pid') + ' 2>/dev/null || true)\nwant=$(cat ' + quote(dir + '/identity') + ' 2>/dev/null || true)\ngot=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1)\nif test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null || exit 45; elif test ! -f ' + quote(dir + '/exit') + '; then exit 46; fi\nprintf killed > ' + quote(dir + '/exit') + '\nprintf starnet-killed\n';
+        const script = 'test -d ' + quote(dir) + ' || exit 44\npid=$(cat ' + quote(dir + '/pid') + ' 2>/dev/null || true)\nwant=$(cat ' + quote(dir + '/identity') + ' 2>/dev/null || true)\ngot=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1)\nif test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null || exit 45; elif test ! -f ' + quote(dir + '/exit') + '; then exit 46; fi\nprintf killed > ' + quote(dir + '/exit') + '\nprintf eyehold-killed\n';
         const result = await runSsh(row, script, { timeoutMs: 30000, maxBytes: 4096 });
         return result.exitCode === 0 ? { ok: true, bgId: String(bgId), killed: true } : { ok: false, error: result.exitCode === 44 ? 'no such background process' : 'remote kill could not be verified' };
       });
@@ -1195,10 +1195,10 @@
       let row = null;
       try { row = target(aid); } catch (_) { return Promise.resolve(0); }
       return enqueue(aid, async function () {
-        const root = row.remoteRoot + '/.starnet/jobs';
-        const script = 'n=0\nfor d in ' + quote(root) + '/sshbg_*; do test -d "$d" || continue; pid=$(cat "$d/pid" 2>/dev/null || true); want=$(cat "$d/identity" 2>/dev/null || true); got=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1); if test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null && n=$((n+1)); printf killed > "$d/exit"; fi; done\nprintf "STARNET_KILLED\\t%s\\n" "$n"\n';
+        const root = row.remoteRoot + '/.eyehold/jobs';
+        const script = 'n=0\nfor d in ' + quote(root) + '/sshbg_*; do test -d "$d" || continue; pid=$(cat "$d/pid" 2>/dev/null || true); want=$(cat "$d/identity" 2>/dev/null || true); got=$(ps -o lstart= -p "$pid" 2>/dev/null | sha256sum | cut -d" " -f1); if test -n "$pid" && test -n "$want" && test "$want" = "$got" && kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null && n=$((n+1)); printf killed > "$d/exit"; fi; done\nprintf "EYEHOLD_KILLED\\t%s\\n" "$n"\n';
         const result = await runSsh(row, script, { timeoutMs: 30000, maxBytes: 4096 });
-        const m = /STARNET_KILLED\t(\d+)/.exec(String(result.out || '')); return m ? Number(m[1]) : 0;
+        const m = /EYEHOLD_KILLED\t(\d+)/.exec(String(result.out || '')); return m ? Number(m[1]) : 0;
       });
     }
     // Station-wide (no agentId: E-STOP / Quit / shutdown): remote jobs are per agent (per-agent target +

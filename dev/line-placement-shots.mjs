@@ -41,7 +41,7 @@ const FRESH_FLOOR = `(() => {
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
-  localStorage.removeItem('starnet.refit.orders.dis');
+  localStorage.removeItem('eyehold.refit.orders.dis');
   return { belts: st.belts().length, lineParts: st.props().filter(p => WF[p.t]).length };
 })()`;
 
@@ -107,7 +107,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.station.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));

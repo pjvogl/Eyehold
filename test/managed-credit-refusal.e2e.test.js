@@ -1,12 +1,12 @@
 'use strict';
-/* node test/managed-credit-refusal.e2e.test.js — a funded StarNet-credit station must never be told it is out of
+/* node test/managed-credit-refusal.e2e.test.js — a funded Eyehold-credit station must never be told it is out of
    credits (customer report 2026-10-06: "$79.24 on my account, but it says I'm out of credits and must top up").
    Two seams told that lie before this test existed:
      • a balance check that FAILED (cloud slow / 5xx / timeout) left the cached balance null, the uncapped
        admission read Number(null) as a known $0 and refused with "Out of managed credit";
      • a positive per-run cap ABOVE the wallet (a $100 cap on a $79 wallet) was reserved verbatim, so admission
        refused it as exhausted instead of capping the run at what the wallet holds.
-   Boots the REAL sidecar against a fake StarNet cloud and proves, per case, what the run error says AND what the
+   Boots the REAL sidecar against a fake Eyehold cloud and proves, per case, what the run error says AND what the
    COMMS copy (friendlyerror.js) turns it into:
      1. /v1/balance 503 -> "couldn't check your balance" (retryable), never "out of credits";
      2. /v1/balance 401 (revoked / other account) -> "relink", never "out of credits";
@@ -43,16 +43,16 @@ const Friendly = require('../frontend/app/friendlyerror.js');
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const fixture = SidecarFixture.create({ prefix: 'starnet-credit-refusal-', timeoutMs: 30000, env: {
-    STARNET_CLOUD_URL: base, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-    SKYNET_BUDGET_PER_RUN: '', STARNET_BUDGET_PER_RUN: '', SKYNET_BUDGET_MANAGED_PER_RUN: '', STARNET_BUDGET_MANAGED_PER_RUN: '',
-    STARNET_FULL_ACCESS: '1', SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0'
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-credit-refusal-', timeoutMs: 30000, env: {
+    EYEHOLD_CLOUD_URL: base, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
+    SKYNET_BUDGET_PER_RUN: '', EYEHOLD_BUDGET_PER_RUN: '', SKYNET_BUDGET_MANAGED_PER_RUN: '', EYEHOLD_BUDGET_MANAGED_PER_RUN: '',
+    EYEHOLD_FULL_ACCESS: '1', SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0'
   } });
   fixture.env.USERPROFILE = fixture.profile; fixture.env.HOME = fixture.profile;
   const reset = (bal, status) => { balance = bal; balanceStatus = status || 200; debits.length = 0; chatCalls = 0; };
   const reserveOf = () => { const d = debits.find(x => x && x.meta && x.meta.kind === 'managed.reserve'); return d ? d.usd : null; };
   const run = async (label) => {
-    const r = await fixture.json('POST', '/api/run', { provider: 'starnet', model: 'test/model', agentId: 'agent', messages: [{ role: 'user', content: 'say hello (' + label + ')' }] });
+    const r = await fixture.json('POST', '/api/run', { provider: 'eyehold', model: 'test/model', agentId: 'agent', messages: [{ role: 'user', content: 'say hello (' + label + ')' }] });
     const events = r.text.split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean);
     const end = events.filter(e => e.name === 'agent.run.end' && e.payload.agentId === 'agent').at(-1);
     const err = events.filter(e => e.name === 'agent.run.error' && e.payload.agentId === 'agent').at(-1);
@@ -63,12 +63,12 @@ const Friendly = require('../frontend/app/friendlyerror.js');
       (message ? '\n    sidecar: ' + message + '\n    COMMS:   [' + copy.kind + (copy.retryable ? ', retry' : '') + '] ' + copy.userMessage : ''));
     return { end: end.payload, err: err && err.payload, message, copy };
   };
-  const OUT_OF_CREDITS = /out of (?:managed |starnet )?credit/i;
+  const OUT_OF_CREDITS = /out of (?:managed |eyehold )?credit/i;
   try {
     fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
     fs.writeFileSync(path.join(fixture.workspace, '.secrets/credits.json'), JSON.stringify({ url: base, deviceToken: 'refusal-fixture', accountId: 'fixture', linkedAt: Date.now() }));
     await fixture.start();
-    await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'agent', provider: 'starnet', model: 'test/model', approvalMode: 'full' }] });
+    await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'agent', provider: 'eyehold', model: 'test/model', approvalMode: 'full' }] });
 
     // ---- 1. the cloud cannot answer the balance check: say so, never "out of credits" ----
     reset(79.24, 503);

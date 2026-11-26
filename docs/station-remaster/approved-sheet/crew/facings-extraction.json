@@ -8,12 +8,12 @@
   "repairProvenance": {
     "partition": {
       "prompt": "docs/station-remaster/approved-sheet/crew/partition-opposite.prompt.txt",
-      "primaryReference": "frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png",
+      "primaryReference": "frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png",
       "secondaryReference": "frontend/assets/industrial/approved-sheet/facings-source.png"
     },
     "longtable": {
       "prompt": "docs/station-remaster/approved-sheet/crew/longtable-e.prompt.txt",
-      "primaryReference": "frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png",
+      "primaryReference": "frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png",
       "secondaryReference": "docs/station-remaster/approved-sheet/storage/repair-sheet-source.png",
       "matchingCell": "top row far right bare longtable"
     }

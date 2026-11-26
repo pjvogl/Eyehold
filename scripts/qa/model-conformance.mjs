@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* scripts/qa/model-conformance.mjs — per-MODEL harness conformance smoke.
  *
- * WHY THIS EXISTS (model-consistency lane, 2026-07-17): StarNet's promise is that every model the
+ * WHY THIS EXISTS (model-consistency lane, 2026-07-17): Eyehold's promise is that every model the
  * Commander picks rides the SAME rails — same run lifecycle, same tool wire, same cost truth, same
  * error surfacing. Model families break in family-specific ways (Kimi K3's narrate-then-stop, the
  * <tool_call>-as-text class, broken argument JSON, missing usage frames), and today the only way to
@@ -141,7 +141,7 @@ async function main() {
   if (!model) { console.error('usage: node scripts/qa/model-conformance.mjs --provider <id> --model <id> [--key <apiKey>] [--base url] [--token apiToken] [--json]'); process.exit(2); }
 
   const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['x-starnet-token'] = token;
+  if (token) headers['x-eyehold-token'] = token;
   const common = { provider: providerId, model, agentId: 'conformance-probe' };
   if (key) common.key = key;
 

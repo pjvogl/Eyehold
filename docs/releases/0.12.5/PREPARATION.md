@@ -1,4 +1,4 @@
-# StarNet 0.12.5 — release preparation
+# Eyehold 0.12.5 — release preparation
 
 Prepared 2026-09-26/27 on `agent/release-0125`, forked from trunk `003a63ee8`, then synced with trunk `3912c8d57` (three
 merges on 09-27, see "Final round"). Baseline: public `v0.12.4` (`f00aa04df`, published 2026-09-20). Scope: every trunk
@@ -84,7 +84,7 @@ source-checkout tool, not part of the desktop app.
 | Desktop Rust tests (Windows) | 74 passed, 2 ignored |
 | `fast-gate` on Linux, run 36300551769 | green |
 | `desktop-build`, run 36300555783 (`publish-test=false`, `require_signed_mac=true`) | green: signed Windows NSIS, macOS arm64 + x64 built and notarized, Linux, Intel macOS installed acceptance |
-| Windows installer | `StarNet_0.12.5_x64-setup.exe`, 382,048,280 bytes (0.12.4: 640,524,832), SHA-256 `323c7c44ff83ab0f88b550f33c7f8ab9257cdd972f35099ad2ddeea4a4761605`; Authenticode Valid (Andrew Sims, timestamped); updater signature verified against the baked public key |
+| Windows installer | `Eyehold_0.12.5_x64-setup.exe`, 382,048,280 bytes (0.12.4: 640,524,832), SHA-256 `323c7c44ff83ab0f88b550f33c7f8ab9257cdd972f35099ad2ddeea4a4761605`; Authenticode Valid (Eyehold, timestamped); updater signature verified against the baked public key |
 | `t0-clean-install-proof`, run 36336468910 (that installer, `baseline_tag=v0.12.4`, static level on) | green: silent clean install, first launch with the packaged UI up over CDP, shell close/reopen, a populated v0.12.4 station upgraded with its data preserved, installed provider fallback, delegated connectors and session continuity |
 | `secret-history` (full reachable history, run 36336596755) | green |
 
@@ -116,9 +116,9 @@ Defects found in those merges and fixed in this lane, each with a regression tes
 | Commit | Defect |
 | --- | --- |
 | `e55dac774` | A specialist set to Follow station default was refused ("has no roster model") in workflow line hops, RUN A SAMPLE and chat channels; it now resolves the station default like COMMS. |
-| `27ba92fa3` | A Settings provider switch left the Overseer (the station default) on the old provider, so unpinned agents and their roster rows kept following it (#24 symptom via StarNet credits -> own key). Proven live in the real page: without the fix the Overseer and the unpinned roster row stayed stale; with it both follow. |
-| `50547192d`, `031e5d325` | Upgrade migration: 0.12.4 showed OpenAI-API/xAI/Grok/DeepSeek/StarNet Managed models locked at OFF while sending nothing. Without the migration 0.12.5 would have turned their reasoning OFF (OpenAI/xAI/DeepSeek) and switched paid thinking ON (Managed, from the onboarding MEDIUM). A one-time, save-marked migration keeps what each station actually ran. Proven live on a 0.12.4-shaped save. |
-| `18039e4e4` | StarNet's own spend-ledger errors ("...before continuing with spending limits") were shown as "your provider account is out of credit". |
+| `27ba92fa3` | A Settings provider switch left the Overseer (the station default) on the old provider, so unpinned agents and their roster rows kept following it (#24 symptom via Eyehold credits -> own key). Proven live in the real page: without the fix the Overseer and the unpinned roster row stayed stale; with it both follow. |
+| `50547192d`, `031e5d325` | Upgrade migration: 0.12.4 showed OpenAI-API/xAI/Grok/DeepSeek/Eyehold Managed models locked at OFF while sending nothing. Without the migration 0.12.5 would have turned their reasoning OFF (OpenAI/xAI/DeepSeek) and switched paid thinking ON (Managed, from the onboarding MEDIUM). A one-time, save-marked migration keeps what each station actually ran. Proven live on a 0.12.4-shaped save. |
+| `18039e4e4` | Eyehold's own spend-ledger errors ("...before continuing with spending limits") were shown as "your provider account is out of credit". |
 | `40c58b406` | Setup-error copy pointed at Settings cards that do not exist and read "No OPENAI API API key"; a missing base URL fell back to the generic message. |
 | `894cdca6f` | Any catalog `capabilities` block without reasoning levels read as "no dial", silently dropping Mistral's reasoning_effort once its catalog loaded. |
 
@@ -126,7 +126,7 @@ The Linux fast gate caught one regression from these fixes before any build (`pe
 lifted-source tests do not see; `031e5d325`).
 
 Still owed after publication (not blockers): run headers record the REQUESTED effort, not the one sent; the #24 reporter
-must re-save Follow station default once (0.12.5 cannot clean a pin 0.12.4 saved); new StarNet Managed stations start at
+must re-save Follow station default once (0.12.5 cannot clean a pin 0.12.4 saved); new Eyehold Managed stations start at
 the onboarding MEDIUM reasoning (0.12.4 never sent it) — a product default to review.
 
 ## Validation of the final candidate (`cde296a42`)
@@ -140,7 +140,7 @@ the onboarding MEDIUM reasoning (0.12.4 never sent it) — a product default to 
 | `fast-gate` on Linux, run 36360793008 | green |
 | `secret-history` (full reachable history), run 36360794483 | green |
 | `desktop-build`, run 36361499855 (`publish-test=false`, `require_signed_mac=true`) | green: signed Windows NSIS, macOS arm64 + x64 built and notarized, Linux, Intel macOS installed acceptance |
-| Windows installer | `StarNet_0.12.5_x64-setup.exe`, 382,175,192 bytes, SHA-256 `a13fca01e81680d25701c69f9f65540161fdea2a784e683a0d5f6d0439b2a94b`; Authenticode Valid (timestamped); updater signature verified against the baked public key. The installed `skynet-desktop.exe` is 10,194,696 bytes (0.12.4: 274 MB), SHA-256 `78f3e8ad…778f`, Authenticode Valid |
+| Windows installer | `Eyehold_0.12.5_x64-setup.exe`, 382,175,192 bytes, SHA-256 `a13fca01e81680d25701c69f9f65540161fdea2a784e683a0d5f6d0439b2a94b`; Authenticode Valid (timestamped); updater signature verified against the baked public key. The installed `skynet-desktop.exe` is 10,194,696 bytes (0.12.4: 274 MB), SHA-256 `78f3e8ad…778f`, Authenticode Valid |
 | `t0-clean-install-proof`, run 36364223578 (that installer, `baseline_tag=v0.12.4`, static level on) | green: clean install, first launch with the packaged UI up over CDP, shell close/reopen, a populated v0.12.4 station upgraded with its data preserved, installed provider fallback, delegated connectors and session continuity, installed smoke GREEN |
 | `qa:ready`, pinned to the candidate (`ready.json`) | **READY**: ledger 0 P0/P1, bug register 0 P0/P1, Guardian GREEN on the exact head, journeys 139/139, Beginner PASS, installed smoke GREEN (imported from run 36364223578, only the artifact path relocated: `installed-receipt-import.json`) |
 

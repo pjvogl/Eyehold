@@ -11,9 +11,9 @@
   orchestrator's explicit final activation step, NEVER performed by the lane that wrote this file.
 
   IT REGISTERS (headless, no secret, no judgement -- safe unattended):
-    StarNet-QA-Guardian-Hourly   npm run qa:guardian    hourly     (belt-and-suspenders trunk gate)
-    StarNet-QA-Beginner-Daily    npm run qa:beginner    daily 09:00 (fresh-user --ui-only path)
-    StarNet-QA-Janitor-Weekly    npm run qa:janitor     Sun 09:15  (hygiene sweep, propose-only)
+    Eyehold-QA-Guardian-Hourly   npm run qa:guardian    hourly     (belt-and-suspenders trunk gate)
+    Eyehold-QA-Beginner-Daily    npm run qa:beginner    daily 09:00 (fresh-user --ui-only path)
+    Eyehold-QA-Janitor-Weekly    npm run qa:janitor     Sun 09:15  (hygiene sweep, propose-only)
 
   IT DELIBERATELY DOES NOT REGISTER (these are NOT Task-Scheduler jobs -- see qa/QA_STATION.md):
     - the per-merge Guardian (`npm run qa:guardian:watch`) -- a STANDING PROCESS, started once,
@@ -45,7 +45,7 @@ if (-not $RepoRoot -or $RepoRoot.Trim() -eq '') {
   $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 }
 if (-not (Test-Path (Join-Path $RepoRoot 'package.json'))) {
-  Write-Error ("RepoRoot '" + $RepoRoot + "' has no package.json. Pass -RepoRoot pointing at the StarNet repo.")
+  Write-Error ("RepoRoot '" + $RepoRoot + "' has no package.json. Pass -RepoRoot pointing at the Eyehold repo.")
   exit 1
 }
 
@@ -56,12 +56,12 @@ $npmPath = if ($npmCmd) { $npmCmd.Source } else { 'npm.cmd' }
 
 # The three headless tasks. Each runs `cmd /c npm run <script>` with the repo as the working dir.
 $tasks = @(
-  @{ Name = 'StarNet-QA-Guardian-Hourly'; Script = 'qa:guardian'; When = 'hourly';  Desc = 'StarNet QA: hourly trunk green-gate (test:fast + shoot + golden + audit).' }
-  @{ Name = 'StarNet-QA-Beginner-Daily';  Script = 'qa:beginner'; When = 'daily';   Desc = 'StarNet QA: daily fresh-user --ui-only reachability run.' }
-  @{ Name = 'StarNet-QA-Janitor-Weekly';  Script = 'qa:janitor';  When = 'weekly';  Desc = 'StarNet QA: weekly hygiene sweep (propose-only).' }
+  @{ Name = 'Eyehold-QA-Guardian-Hourly'; Script = 'qa:guardian'; When = 'hourly';  Desc = 'Eyehold QA: hourly trunk green-gate (test:fast + shoot + golden + audit).' }
+  @{ Name = 'Eyehold-QA-Beginner-Daily';  Script = 'qa:beginner'; When = 'daily';   Desc = 'Eyehold QA: daily fresh-user --ui-only reachability run.' }
+  @{ Name = 'Eyehold-QA-Janitor-Weekly';  Script = 'qa:janitor';  When = 'weekly';  Desc = 'Eyehold QA: weekly hygiene sweep (propose-only).' }
 )
 
-Write-Host "StarNet QA watch -- scheduled-task registrar"
+Write-Host "Eyehold QA watch -- scheduled-task registrar"
 Write-Host "  repo root : $RepoRoot"
 Write-Host "  npm       : $npmPath"
 Write-Host "  mode      : $(if ($Remove) { 'REMOVE' } elseif ($Apply) { 'APPLY (registering)' } else { 'DRY-RUN (nothing will change)' })"

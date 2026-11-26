@@ -21,7 +21,7 @@ const { makeMemoryStore } = require('../sidecar/memory-store.js');
 const { makeSaveStore } = require('../sidecar/savestore.js');
 const WorkspaceRecovery = require('../sidecar/workspace-recovery.js');
 
-const SAVE_KEY = 'starnet.save';
+const SAVE_KEY = 'eyehold.save';
 const RELEASE_SAVE_VERSION = 5;
 const CANDIDATE_SAVE_VERSION = 6;
 
@@ -48,7 +48,7 @@ function loadSave(storage, releasedCeiling) {
 
 function releasedSave() {
   return {
-    schema: 'starnet.save', version: RELEASE_SAVE_VERSION, updatedAt: 1700000000000,
+    schema: 'eyehold.save', version: RELEASE_SAVE_VERSION, updatedAt: 1700000000000,
     agent: {
       id: 'agent', name: 'NOVA', provider: 'openrouter', credentialRef: 'provider:openrouter',
       docs: { identity: 'You are NOVA.', purpose: 'Protect the migration.', manual: 'Be terse.' },
@@ -110,7 +110,7 @@ A.eq(rollbackStorage.getItem(SAVE_KEY), candidateRaw, 'rollback attempt leaves c
 A.eq(rollbackStorage.getItem(ReleasedSave.PRE_MIGRATE_BACKUP_KEY), null, 'rollback refusal does not overwrite the recovery backup');
 
 // 3. Sidecar workspace stores: v0.8.5 envelopes are still decoded, re-saved, restarted and recovered.
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-upgrade-085-090-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-upgrade-085-090-'));
 try {
   const saveStore = makeSaveStore({ fs, pathMod: path, root, clock: { now: () => 1700000000100 } });
   A.ok(saveStore.save('agent', oldDoc).ok, 'released workspace save fixture persists in a disposable root');
@@ -203,9 +203,9 @@ A.ok(/format!\("channel:\{channel\}"\)/.test(credentialsRs) && /read_channel_tok
 
 // 6. Intel macOS path split: a released v0.8.5 durable save under the manual-sidecar shelf self-heals into
 // the desktop bundle-id shelf before stores open, survives the candidate reader, and leaves the source intact.
-const intelHome = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-upgrade-085-intel-mac-'));
+const intelHome = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-upgrade-085-intel-mac-'));
 try {
-  const legacyMac = path.join(intelHome, '.local', 'share', 'StarNet', 'workspaces');
+  const legacyMac = path.join(intelHome, '.local', 'share', 'Eyehold', 'workspaces');
   const desktopMac = path.join(intelHome, 'Library', 'Application Support', 'ai.skynet.harness', 'workspaces');
   fs.mkdirSync(legacyMac, { recursive: true });
   makeSaveStore({ fs, pathMod: path, root: legacyMac, clock: { now: () => 1700000000100 } }).save('agent', oldDoc);

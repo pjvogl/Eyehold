@@ -24,7 +24,7 @@ test('a live consent card serves its whole redacted request until it is answered
     res.end('data: [DONE]\n\n');
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r)); const base = 'http://127.0.0.1:' + server.address().port;
-  const fixture = SidecarFixture.create({ prefix: 'starnet-fullargs-', timeoutMs: 20000, env: { SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0', SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base, SKYNET_OPENROUTER_KEY: 'fixture-key', STARNET_OPENROUTER_KEY: 'fixture-key' } });
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-fullargs-', timeoutMs: 20000, env: { SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', SKYNET_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base, SKYNET_OPENROUTER_KEY: 'fixture-key', EYEHOLD_OPENROUTER_KEY: 'fixture-key' } });
   try {
     await fixture.start();
     await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'agent', name: 'NOVA', provider: 'openrouter', model: 'fixture/model', executionProfile: 'trusted-project', approvalMode: 'ask' }] });

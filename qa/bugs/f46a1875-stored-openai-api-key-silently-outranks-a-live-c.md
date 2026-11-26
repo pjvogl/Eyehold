@@ -41,7 +41,7 @@ A credential the Commander cannot see or remove must never outrank the one the c
 
 ## Regression
 
-Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:true` selected provider `openai` (the old assertion "a real saved API key keeps the API route" locked the defect). After fix: the same case selects `codex` with zero key writes; `stored:true, connected:false` still selects `openai` and reaches preflight; a typed key selects `openai` even with a sign-in live; each dead-wire message carries its `(via …)` door. 16 assertions pass. `test/genesis-starnet-link.test.js` (47 assertions) still finds the codex branch by source grep.
+Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:true` selected provider `openai` (the old assertion "a real saved API key keeps the API route" locked the defect). After fix: the same case selects `codex` with zero key writes; `stored:true, connected:false` still selects `openai` and reaches preflight; a typed key selects `openai` even with a sign-in live; each dead-wire message carries its `(via …)` door. 16 assertions pass. `test/genesis-eyehold-link.test.js` (47 assertions) still finds the codex branch by source grep.
 
 ## Sibling coverage
 
@@ -78,7 +78,7 @@ Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:
     {
       "target": "OPENAI card codex branch presence",
       "state": "covered",
-      "test": "test/genesis-starnet-link.test.js",
+      "test": "test/genesis-eyehold-link.test.js",
       "scenario": "source grep pins the codexConnected branch to setProv('codex')",
       "gate": "fast"
     }

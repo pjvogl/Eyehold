@@ -1,4 +1,4 @@
-/* STARNET — COPY DIAGNOSTICS must survive WebKit's user-activation rule (2026-10-07).
+/* EYEHOLD — COPY DIAGNOSTICS must survive WebKit's user-activation rule (2026-10-07).
 
    WHY THIS TEST EXISTS. A macOS customer clicked "⧉ copy diagnostics for a bug report" under a failed COMMS turn
    and got "copy failed — try again" EVERY time. Diag.copy() awaited GET /api/diagnostics and only THEN wrote the

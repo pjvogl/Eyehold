@@ -29,7 +29,7 @@ try {
   clk = 2000;
   // exactly what the host's boot scan records for a run the process died inside (index.js syncInterruptedRunHistory)
   s.record({ runId: 'int1', agentId: 'agent', provider: 'openrouter', reason: 'interrupted', turns: 3, tokens: 0, usd: 0, spendUnknown: true, model: 'm',
-    title: 'Fix the build', recoveryStatus: 'needs_review', error: 'interrupted: StarNet stopped mid-action; an action may already have happened and needs review before continuing' });
+    title: 'Fix the build', recoveryStatus: 'needs_review', error: 'interrupted: Eyehold stopped mid-action; an action may already have happened and needs review before continuing' });
   A.eq(foldInsights(s.all(), { nowMs: 5000 }).spendUnknownRuns, 1, 'before the settle INSIGHTS names the run as spend-unknown');
 
   // ---- the settle restamps the row ----
@@ -55,7 +55,7 @@ try {
 
   // ---- a later recovery-status change (the boot scan re-records with spendUnknown:true) never re-opens the spend ----
   clk = 3000;
-  s.record({ runId: 'int1', agentId: 'agent', reason: 'interrupted', turns: 3, usd: 0, spendUnknown: true, model: 'm', recoveryStatus: 'resolved', error: 'interrupted: StarNet stopped mid-action; the outcome was reviewed' });
+  s.record({ runId: 'int1', agentId: 'agent', reason: 'interrupted', turns: 3, usd: 0, spendUnknown: true, model: 'm', recoveryStatus: 'resolved', error: 'interrupted: Eyehold stopped mid-action; the outcome was reviewed' });
   row = s.latest('int1');
   A.eq([row.recoveryStatus, row.usd, row.spendSettled, 'spendUnknown' in row], ['resolved', 0.3, 'entered', false], 'a status change keeps the settled spend');
   s = makeRunStore({ io: fileIo, clock });

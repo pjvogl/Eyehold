@@ -4,7 +4,7 @@
 import { runBoundedCommand, coerceTimeoutMs } from './lib/run-command.mjs';
 
 const raw = process.argv.slice(2);
-let timeoutMs = coerceTimeoutMs(process.env.STARNET_TIMEOUT_MS || 600000);
+let timeoutMs = coerceTimeoutMs(process.env.EYEHOLD_TIMEOUT_MS || 600000);
 let label = '';
 const cmdArgs = [];
 

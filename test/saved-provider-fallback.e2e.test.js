@@ -26,7 +26,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   const fixture = SidecarFixture.create({ timeoutMs: 20000, env: {
     SKYNET_SCOUT: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_THREAD_MINE: '0',
     OPENROUTER_KEY: key, OPENROUTER_API_KEY: key, SKYNET_OPENROUTER_BASE: base + '/router',
-    SKYNET_FALLBACK_MODELS: 'gpt-5.4', SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0'
+    SKYNET_FALLBACK_MODELS: 'gpt-5.4', SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0'
   } });
   const jwt = ['eyJhbGciOiJub25lIn0', Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 86400 })).toString('base64url'), 'synthetic'].join('.');
   fs.mkdirSync(path.join(fixture.workspace, 'codex'), { recursive: true });

@@ -1,6 +1,6 @@
 # LEVELING / XP LANE — plan
 
-**Date:** 2026-07-29 · **Branch:** `claude/starnet-improvement-ideas-feef01` · **Status:** ALL FIVE SLICES BUILT.
+**Date:** 2026-07-29 · **Branch:** `claude/eyehold-improvement-ideas-feef01` · **Status:** ALL FIVE SLICES BUILT.
 
 | Slice | Commit | What shipped |
 | --- | --- | --- |
@@ -174,7 +174,7 @@ farm. Scope this properly once S1–S3 have landed; it is a design lane, not a f
 
 ## Verification plan
 
-Per `starnet-verify`: `node dev/seed.js --keep`, DOM round-trips for each "done means" above (canvas
+Per `eyehold-verify`: `node dev/seed.js --keep`, DOM round-trips for each "done means" above (canvas
 screenshots time out — assert on DOM/state, not pixels), and `npm run test:fast` green before any merge.
 New pure logic goes in `test/xp.test.js`; wiring goes in `test/xpstore.test.js`. For S1, prove it the honest
 way: revert the gate change and watch the new regression go red.

@@ -1,6 +1,6 @@
 # Dogfood — I am the user before Andrew is (self-paced · daily · the RC-soak workload driver, own worktree)
 
-Mandate: **USE StarNet the way a real person uses it, and file every anomaly.** Not a state
+Mandate: **USE Eyehold the way a real person uses it, and file every anomaly.** Not a state
 audit, not a seeded happy-path — a *shift*: recruit an agent, hand it real multi-step work,
 watch it run, interrupt it, dispatch a team, open what it built, talk on a channel, restart the
 station, and check the diagnostics tell the truth. One session = one dogfood shift. You are the
@@ -22,7 +22,7 @@ what breaks, so the machine finds it instead of Andrew.
   the whole station: `qa/QA_STATION.md`). The one exception is a bug in the dogfood tooling
   itself (this file / your own proof harness).
 - **Only claim what you PROVED live.** An anomaly is real only when you observed it in the
-  running app with evidence in hand — never because the code looks wrong (`starnet-verify`). A
+  running app with evidence in hand — never because the code looks wrong (`eyehold-verify`). A
   shift that boots but proves nothing is a **dead shift**; say so.
 - **Provider honesty is load-bearing.** A shift run against the mock provider proves *seams*
   (dispatch wiring, taskboard truth, restart durability) but NOT model behaviour, cost accuracy,
@@ -57,10 +57,10 @@ Boot the real sidecar the way a user's machine runs it — **`npm start`, NEVER 
   Deterministic reply text, zero spend. Valid for proving the seams — **labelled `mock`**.
 
 Verify via **DOM round-trips / `window.__world` / HTTP truth reads, never screenshots** — the
-game canvas animates forever and a screenshot hangs or proves nothing (`starnet-verify`, the
+game canvas animates forever and a screenshot hangs or proves nothing (`eyehold-verify`, the
 canvas gotcha). Prefer the preview tools (console + network + DOM) or drive the routes over HTTP
-with the per-launch token read from the page (`window.__STARNET_API_TOKEN__`, sent as
-`X-StarNet-Token`). Ports 8970–8979 must be free; pick the lowest free one.
+with the per-launch token read from the page (`window.__EYEHOLD_API_TOKEN__`, sent as
+`X-Eyehold-Token`). Ports 8970–8979 must be free; pick the lowest free one.
 
 ## The shift script — walk the real user journey, end to end
 
@@ -168,7 +168,7 @@ per shift:
 - verdict: <SURVIVED being used — N anomalies filed | ESCAPES: N filed | DEAD SHIFT: booted but proved nothing — why>
 ```
 
-The verdict line is the shift's headline: did StarNet survive being USED like a real user uses
+The verdict line is the shift's headline: did Eyehold survive being USED like a real user uses
 it? Silence is indistinguishable from a dead session — write the entry even on a clean shift.
 
 ## Cadence

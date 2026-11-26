@@ -1840,7 +1840,7 @@
       "area": "system",
       "name": "EXPORT STATION",
       "purpose": "EXPORT STATION — bundle the whole station config (settings/autonomy/notifyPrefs + server stores) to one JSON file.",
-      "promise": "Clicking it builds a schema-versioned (starnetExport:1) envelope and downloads it; secrets never travel in the bundle.",
+      "promise": "Clicking it builds a schema-versioned (eyeholdExport:1) envelope and downloads it; secrets never travel in the bundle.",
       "wiring": {
         "files": [
           "frontend/app/stationui.js",
@@ -4036,7 +4036,7 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "LAUNCH AT LOGIN — register StarNet to start automatically at sign-in (desktop app only).",
+      "purpose": "LAUNCH AT LOGIN — register Eyehold to start automatically at sign-in (desktop app only).",
       "promise": "On desktop the toggle reflects the real OS autostart state (Lifecycle.autostartStatus) and registers/unregisters on change; in browser/dev it renders disabled with a 'desktop app only' note.",
       "wiring": {
         "files": [
@@ -4068,7 +4068,7 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "KEEP COMPUTER AWAKE — prevent idle sleep while StarNet is open (desktop app only).",
+      "purpose": "KEEP COMPUTER AWAKE — prevent idle sleep while Eyehold is open (desktop app only).",
       "promise": "On desktop the toggle flips store.settings.keepComputerAwake and requests a wake lock; in browser/dev it renders disabled with a \"desktop app only\" note.",
       "wiring": {
         "files": [
@@ -4395,7 +4395,7 @@
       "kind": "ui",
       "area": "system",
       "name": "UPDATE CENTER",
-      "purpose": "Open the UPDATE CENTER window to check for / apply a new StarNet version.",
+      "purpose": "Open the UPDATE CENTER window to check for / apply a new Eyehold version.",
       "promise": "Clicking UPDATE CENTER opens the updates window (BUILDERS.updates).",
       "wiring": {
         "files": [
@@ -5011,7 +5011,7 @@
       "area": "system",
       "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
       "purpose": "Pins which concrete model BALANCED-class agents summon on (overriding the station default).",
-      "promise": "Choosing a model saves it to localStorage starnet.tierModels.v1 (the same key app.resolveTierModel reads at summon), so BALANCED agents actually summon on it; \"(station default)\" clears the pin.",
+      "promise": "Choosing a model saves it to localStorage eyehold.tierModels.v1 (the same key app.resolveTierModel reads at summon), so BALANCED agents actually summon on it; \"(station default)\" clears the pin.",
       "wiring": {
         "files": [
           "frontend/app/stationui.js",
@@ -5048,7 +5048,7 @@
       "area": "system",
       "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
       "purpose": "Pins which concrete model FAST-class agents summon on.",
-      "promise": "Choosing a model saves it to starnet.tierModels.v1 so FAST agents summon on it; \"(station default)\" clears the pin.",
+      "promise": "Choosing a model saves it to eyehold.tierModels.v1 so FAST agents summon on it; \"(station default)\" clears the pin.",
       "wiring": {
         "files": [
           "frontend/app/stationui.js",
@@ -5085,7 +5085,7 @@
       "area": "system",
       "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
       "purpose": "Pins which concrete model REASONING-class agents summon on.",
-      "promise": "Choosing a model saves it to starnet.tierModels.v1 so REASONING agents summon on it; \"(station default)\" clears the pin.",
+      "promise": "Choosing a model saves it to eyehold.tierModels.v1 so REASONING agents summon on it; \"(station default)\" clears the pin.",
       "wiring": {
         "files": [
           "frontend/app/stationui.js",

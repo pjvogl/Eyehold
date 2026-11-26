@@ -1,6 +1,6 @@
 /* node test/diagnostics-build.test.js — P1.5 build provenance render seam (frontend/app/diagnostics.js).
 
-   The desktop binary is stamped with its git commit (build.rs) and exposes it via the starnet_build_info Tauri
+   The desktop binary is stamped with its git commit (build.rs) and exposes it via the eyehold_build_info Tauri
    command; diagnostics.js turns that into ONE honest line "build <version> @ <commit>[ DIRTY]". This locks:
      · formatBuild() shapes the line correctly (incl. the DIRTY suffix) and returns '' for missing/empty input.
      · buildLine() FAILS SOFT to '' in a plain browser (no window.__TAURI__) — truthful telemetry: never invent a
@@ -17,9 +17,9 @@ const { formatBuild } = Diag._internals;
 {
   const buildRs = fs.readFileSync(require.resolve('../src-tauri/build.rs'), 'utf8');
   const mainRs = fs.readFileSync(require.resolve('../src-tauri/src/main.rs'), 'utf8');
-  A.ok(/STARNET_BUILD_TREE/.test(buildRs) && /HEAD\^\{tree\}/.test(buildRs), 'build.rs stamps the exact Git source tree');
-  A.ok(/STARNET_BUILD_PROVENANCE_KIND/.test(buildRs), 'build.rs stamps the base provenance kind');
-  A.ok(/source_tree:[\s\S]*provenance_kind:/.test(mainRs) && /STARNET_BUILD_TREE/.test(mainRs), 'starnet_build_info exposes sourceTree + provenanceKind');
+  A.ok(/EYEHOLD_BUILD_TREE/.test(buildRs) && /HEAD\^\{tree\}/.test(buildRs), 'build.rs stamps the exact Git source tree');
+  A.ok(/EYEHOLD_BUILD_PROVENANCE_KIND/.test(buildRs), 'build.rs stamps the base provenance kind');
+  A.ok(/source_tree:[\s\S]*provenance_kind:/.test(mainRs) && /EYEHOLD_BUILD_TREE/.test(mainRs), 'eyehold_build_info exposes sourceTree + provenanceKind');
 }
 
 // ---- formatBuild: the pure shaper ----
@@ -51,14 +51,14 @@ const { formatBuild } = Diag._internals;
 
     // (2) Tauri core present, command resolves → the formatted line
     global.window = { __TAURI__: { core: { invoke: (cmd) => {
-      A.eq(cmd, 'starnet_build_info', 'buildLine invokes starnet_build_info');
+      A.eq(cmd, 'eyehold_build_info', 'buildLine invokes eyehold_build_info');
       return Promise.resolve({ version: '0.2.2', commit: 'abc1234', sourceTree: 'b'.repeat(40), provenanceKind: 'dirty-dev', dirty: true });
     } } } };
     A.eq(await Diag.buildLine(), 'build 0.2.2 @ abc1234 [dirty-dev tree bbbbbbbbbbbb] DIRTY', 'Tauri path resolves the honest build line');
 
     // (3) old shell WITHOUT the command (invoke rejects) → '' (never surface an error/fake line)
     global.window = { __TAURI__: { core: { invoke: () => Promise.reject(new Error('unknown command')) } } };
-    A.eq(await Diag.buildLine(), '', 'a shell without starnet_build_info => "" (graceful)');
+    A.eq(await Diag.buildLine(), '', 'a shell without eyehold_build_info => "" (graceful)');
   } finally {
     if (hadWindow) global.window = savedWindow; else { try { delete global.window; } catch (_) { global.window = undefined; } }
   }

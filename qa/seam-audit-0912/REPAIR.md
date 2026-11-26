@@ -1,4 +1,4 @@
-# StarNet neglected-seam repairs
+# Eyehold neglected-seam repairs
 
 September 13, 2026. Owned branch: `agent/seam-audit-0912-b`. Product fix: `b54b44574`; silent-catch baseline adjustment: `9049ad411`; synchronized with trunk `2d8154948` through merge `89c77215a`. No shared event/schema contracts changed. No installer or customer-station recovery is claimed.
 

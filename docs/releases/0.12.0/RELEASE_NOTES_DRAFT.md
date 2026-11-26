@@ -1,10 +1,10 @@
-# StarNet 0.12.0 — draft release notes
+# Eyehold 0.12.0 — draft release notes
 
 **Editorial draft; not published or installer-verified.** Finalize after the overhaul merges and combined acceptance. Keep root `RELEASE_NOTES.md` describing the current public release until the release cut.
 
 ## A new station
 
-StarNet 0.12.0 reworks the station's visual identity and the way you move from an idea to useful work. Industrial materials, a redesigned command bridge and new floor and shell choices give the world a different character. Your agents' work remains connected to real tools, results and recorded progress.
+Eyehold 0.12.0 reworks the station's visual identity and the way you move from an idea to useful work. Industrial materials, a redesigned command bridge and new floor and shell choices give the world a different character. Your agents' work remains connected to real tools, results and recorded progress.
 
 ## From an idea to a result
 

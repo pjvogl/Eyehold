@@ -83,7 +83,7 @@ export function bumpDone(io, target) {
 export function notesDone(io, target) {
   const t = io.readText('RELEASE_NOTES.md');
   if (t == null) return false;
-  const header = (/^#\s*StarNet\s+v?(\S+)/m.exec(stripBom(t)) || [])[1];
+  const header = (/^#\s*Eyehold\s+v?(\S+)/m.exec(stripBom(t)) || [])[1];
   return header === target && !/TODO: summarize/.test(t);
 }
 
@@ -164,7 +164,7 @@ export function runRitual(ctx, io) {
   // 3. release notes — hard stop until real
   {
     const s = step('notes');
-    if (notesDone(io, target)) { s.status = 'done'; s.lines.push('RELEASE_NOTES.md has a real # StarNet ' + tag + ' entry (no TODO)'); }
+    if (notesDone(io, target)) { s.status = 'done'; s.lines.push('RELEASE_NOTES.md has a real # Eyehold ' + tag + ' entry (no TODO)'); }
     else if (dry && !bumpDone(io, target)) { s.lines.push('would STOP until RELEASE_NOTES.md is written for ' + tag + ' (replace the TODO scaffold; `git add RELEASE_NOTES.md && git commit --amend --no-edit`)'); }
     else { stop(s, 'RELEASE_NOTES.md is still the TODO scaffold for ' + tag, ['write the user-facing notes (GitHub release body + in-app UPDATE CENTER text)', 'git add RELEASE_NOTES.md && git commit --amend --no-edit    (amend the `release: ' + tag + '` commit — it must be HEAD)', 'then run this same command again']); return out; }
   }
@@ -335,9 +335,9 @@ export function parseRitualArgs(argv) {
 const INVOKED_DIRECTLY = (() => { try { return process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href; } catch { return false; } })();
 
 if (INVOKED_DIRECTLY) {
-  const ROOT = process.env.STARNET_PREFLIGHT_ROOT ? resolve(process.env.STARNET_PREFLIGHT_ROOT) : resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  const ROOT = process.env.EYEHOLD_PREFLIGHT_ROOT ? resolve(process.env.EYEHOLD_PREFLIGHT_ROOT) : resolve(dirname(fileURLToPath(import.meta.url)), '..');
   const a = parseRitualArgs(process.argv.slice(2));
-  const ctx = Object.assign(a, { keyFile: process.env.STARNET_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'starnet-updater.key') });
+  const ctx = Object.assign(a, { keyFile: process.env.EYEHOLD_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'eyehold-updater.key') });
   const result = runRitual(ctx, makeRitualIo(ROOT));
   process.stdout.write(renderRitual(result, ctx) + '\n');
   process.exit(result.exitCode);

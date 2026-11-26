@@ -1,4 +1,4 @@
-# StarNet v0.7.0
+# Eyehold v0.7.0
 
 > **DRAFT** — covers every lane merged after the v0.6.8 cut (published 2026-07-27 05:06Z).
 > `release:bump` overwrites `RELEASE_NOTES.md` with a stub, so paste this in *after* the bump,
@@ -29,9 +29,9 @@ every dock downstream was scenery.
   did. The only difference for a floor you already drew is that belts drawn dock-to-dock now buy
   real runs.
 
-## StarNet is reachable from your editor, and can message out
+## Eyehold is reachable from your editor, and can message out
 
-- **An editor can drive the station.** StarNet now speaks the **Agent Client Protocol**, so Zed,
+- **An editor can drive the station.** Eyehold now speaks the **Agent Client Protocol**, so Zed,
   Neovim or any ACP client runs real station work — live tool list, file locations, and native
   approve/reject cards wired to the actual consent gate, not a copy of it. `npm run acp:serve`;
   see `docs/ACP_EDITORS.md`.
@@ -90,7 +90,7 @@ left it.
   crate and the bar were redrawn too, and props now sit **on** a table's surface rather than
   beside it.
 
-## Nothing in StarNet is painted by your operating system
+## Nothing in Eyehold is painted by your operating system
 
 The station is one surface. Anywhere the browser or the OS still drew its own furniture inside
 it — a grey button, a system font, a yellow tooltip bubble — the illusion broke.
@@ -100,7 +100,7 @@ it — a grey button, a system font, a yellow tooltip bubble — the illusion br
   control that arrives white and Arial fails the gate instead of shipping.
 - **Every input speaks in the station's font.**
 - **Dialogs and tooltips are ours.** The OS tooltip bubble that appeared a second after your
-  cursor stopped is gone; StarNet draws its own, immediately, in the same register as the panel.
+  cursor stopped is gone; Eyehold draws its own, immediately, in the same register as the panel.
 - **PAINT became SURFACE**, and its palette was rebuilt — the deck-and-wall picker in REFIT had
   been raw HTML buttons sitting inside a pixel-art station.
 - **See a skin before you choose it.** The dossier's CONFIG › SKIN shows a live preview of the
@@ -151,7 +151,7 @@ why the surface still sounded like the old board no matter what else changed.
   service backing it fails — authority is preserved rather than downgraded.
 - **Revoking a project's trust is real.** A revoked project forgets, and no new session can start
   against it.
-- **The undo net behind shell commands and file writes actually records something.** StarNet
+- **The undo net behind shell commands and file writes actually records something.** Eyehold
   snapshots your workspace before every shell command, verify step and file write, so a bad edit
   can be rolled back. Two functions in the sidecar shared a name, so the snapshotter was silently
   handed the wrong one and **every snapshot failed without a word** — the restore list was always
@@ -180,11 +180,11 @@ why the surface still sounded like the old board no matter what else changed.
 
 ## Notes
 
-- Windows installers are code-signed (CN=Andrew Sims), continuing from v0.6.5.
-- **Windows: update from inside StarNet.** It installs over your existing copy — your crew,
+- Windows installers are code-signed (CN=Eyehold), continuing from v0.6.5.
+- **Windows: update from inside Eyehold.** It installs over your existing copy — your crew,
   sessions, keys and station stay exactly where they are.
 - **macOS: in-app updating works from v0.6.8 onward** — the mac updater legs
-  (`StarNet_darwin-arm64.app.tar.gz` / `-x64`, plus their `.sig`s) are published alongside the
+  (`Eyehold_darwin-arm64.app.tar.gz` / `-x64`, plus their `.sig`s) are published alongside the
   DMGs, so INSTALL UPDATE resolves instead of 404ing.
-- **StarNet stays MIT-licensed**, and the code is genuinely free to use commercially. The *name,
+- **Eyehold stays MIT-licensed**, and the code is genuinely free to use commercially. The *name,
   logo and artwork* are not part of that grant — a fork is welcome, under its own name.

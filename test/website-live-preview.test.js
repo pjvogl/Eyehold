@@ -46,8 +46,8 @@ function bootDemo(initial) {
   return rows;
 }
 
-const upgraded = bootDemo({ 'starnet.save': '{"retired":"station"}' });
-const upgradedSave = JSON.parse(upgraded['starnet.save']);
+const upgraded = bootDemo({ 'eyehold.save': '{"retired":"station"}' });
+const upgradedSave = JSON.parse(upgraded['eyehold.save']);
 const upgradedRoom = upgradedSave.station.rooms.r1;
 const starter = require('../frontend/app/worldmodel.js').starterDoc();
 starter.meta.createdAt = 0;
@@ -61,15 +61,15 @@ A.eq(upgradedRoom.floorMat, 'resin', 'the website demo uses the actual starter f
 A.eq(upgradedRoom.wallMat, 'panelled', 'the website demo uses the actual starter wall material');
 A.eq(upgradedRoom.hullStyle, 'bone', 'the website demo uses the actual starter hull style');
 A.eq(upgradedRoom.hullMat, null, 'the website demo uses the standard station hull material');
-A.eq(upgraded['starnet.website.demo.rev'], starterRevision,
+A.eq(upgraded['eyehold.website.demo.rev'], starterRevision,
   'a layout-derived revision moves returning visitors off obsolete starter saves automatically');
 
-const currentRev = upgraded['starnet.website.demo.rev'];
+const currentRev = upgraded['eyehold.website.demo.rev'];
 const alreadyCurrent = bootDemo({
-  'starnet.website.demo.rev': currentRev,
-  'starnet.save': '{"preserved":true}'
+  'eyehold.website.demo.rev': currentRev,
+  'eyehold.save': '{"preserved":true}'
 });
-A.eq(alreadyCurrent['starnet.save'], '{"preserved":true}',
+A.eq(alreadyCurrent['eyehold.save'], '{"preserved":true}',
   'the demo revision migrates once instead of overwriting storage on every page load');
 
 A.report('website-live-preview.test');

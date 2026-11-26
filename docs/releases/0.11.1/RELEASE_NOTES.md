@@ -1,9 +1,9 @@
-# StarNet v0.11.1
+# Eyehold v0.11.1
 
 This update improves linked-account reliability, voice playback, and everyday station controls.
 
-- Fixed managed chat using stale per-request server settings or credentials instead of the linked StarNet account. Custom providers keep their own connection settings.
-- Fixed image generation rejecting a linked StarNet credits account. Ordinary wording is less likely to trigger an unnecessary image-generation requirement.
+- Fixed managed chat using stale per-request server settings or credentials instead of the linked Eyehold account. Custom providers keep their own connection settings.
+- Fixed image generation rejecting a linked Eyehold credits account. Ordinary wording is less likely to trigger an unnecessary image-generation requirement.
 - Saved room equipment now remains available when a chat request omits placement data, and tool availability descriptions better match the actual grants.
 - Spoken replies buffer complete sentences and recover audio in order, with clearer interruption diagnostics.
 - Background replies preserve the conversation you are currently viewing. Inbox rows have more readable message previews.
@@ -16,4 +16,4 @@ This update improves linked-account reliability, voice playback, and everyday st
 
 Update through Settings > Updates > Update Center. After restarting, confirm that the installed version is 0.11.1.
 
-Google Workspace connections remain deferred while Google verification is completed. Saved connections are retained. Google login for StarNet billing is separate.
+Google Workspace connections remain deferred while Google verification is completed. Saved connections are retained. Google login for Eyehold billing is separate.

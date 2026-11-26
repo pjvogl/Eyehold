@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
-const root=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-staging-'));
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-staging-'));
 const put=(name,body='')=>{const p=path.join(root,name);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,body);};
 try{
  for(const name of ['scripts/stage-voice-deps.mjs','scripts/lib/staged-native-packages.mjs'])put(name,fs.readFileSync(path.resolve(__dirname,'..',name)));

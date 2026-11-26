@@ -1,7 +1,7 @@
 # HANDOFF — perf-lag fixes (2026-08-26)
 
 ## The report
-Andrew: StarNet turns laggy after ~5–10 min of runtime and after minimize/restore; an app
+Andrew: Eyehold turns laggy after ~5–10 min of runtime and after minimize/restore; an app
 restart clears it. Confirmed present in the SHIPPED builds — the trigger commit `57112a690`
 is inside both the v0.10.10 and v0.10.11 tags, and both tags are pushed (the train fired).
 

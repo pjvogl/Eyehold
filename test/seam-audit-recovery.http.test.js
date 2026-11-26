@@ -14,10 +14,10 @@ const provider = http.createServer((req, res) => {
   await new Promise(resolve => provider.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + provider.address().port;
   const fixture = SidecarFixture.create({ prefix: 'seam-recovery-', timeoutMs: 20000, env: {
-    SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base,
-    SKYNET_OPENROUTER_KEY: 'fixture', STARNET_OPENROUTER_KEY: 'fixture',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_CRON_ENABLED: '0', STARNET_CRON_ENABLED: '0'
+    SKYNET_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base,
+    SKYNET_OPENROUTER_KEY: 'fixture', EYEHOLD_OPENROUTER_KEY: 'fixture',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    SKYNET_CRON_ENABLED: '0', EYEHOLD_CRON_ENABLED: '0'
   } });
   try {
     await fixture.start();

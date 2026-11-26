@@ -99,7 +99,7 @@ function boot(port, env, attemptsLeft) {
 async function drive(B, token, marker) {
   const response = await fetch(B + '/api/run', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+    headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
     body: JSON.stringify({ provider: 'openrouter', model: 'test/model', agentId: 'credrotate-e2e', isTask: false, messages: [{ role: 'user', content: marker }] })
   });
   A.eq(response.status, 200, marker + ' streams through the real /api/run route');
@@ -112,7 +112,7 @@ async function drive(B, token, marker) {
 
 (async () => {
   const mock = await startMock();
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-credrotate-'));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-credrotate-'));
   const { child, port } = await boot(8940 + (process.pid % 30), {
     SKYNET_WORKSPACES: workspace,
     SKYNET_OPENROUTER_BASE: mock.base,

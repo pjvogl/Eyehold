@@ -82,7 +82,7 @@ const TEST_ONLY_LEDGER_OVERRIDE = 'TEST_ONLY_UNCOMMITTED_LEDGER_FIXTURE';
   A.eq(blockedRaw.planning.ok, false, 'production inspection rejects raw ledger bytes that differ from the candidate blob');
   A.ok(blockedRaw.planning.reasons.some(reason => /ledger bytes do not match/.test(reason)), 'raw byte mismatch is explicit');
 
-  const ambientRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-claims-ambient-'));
+  const ambientRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-claims-ambient-'));
   try {
     const ambientRepo = path.join(ambientRoot, 'repo');
     execFileSync('git', ['clone', '--shared', '--no-checkout', repoRoot, ambientRepo], { stdio: 'ignore' });
@@ -178,7 +178,7 @@ const TEST_ONLY_LEDGER_OVERRIDE = 'TEST_ONLY_UNCOMMITTED_LEDGER_FIXTURE';
   const marketingExperimental = marketingExperimentalLabel.claims.find(row => row.disposition === 'EXPERIMENTAL');
   marketingExperimental.experimentalLabel = {
     visible: true,
-    check: { kind: 'contains', path: 'README.md', needle: 'StarNet' }
+    check: { kind: 'contains', path: 'README.md', needle: 'Eyehold' }
   };
   A.eq(validateClaimsLedger(marketingExperimentalLabel, { repoRoot }).ok, false, 'marketing copy cannot impersonate a visible point-of-use experimental label');
 

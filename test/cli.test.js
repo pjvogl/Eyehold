@@ -1,4 +1,4 @@
-/* node test/cli.test.js — the PURE decisions of the `starnet` CLI (bin/lib/cli-core.js), no I/O.
+/* node test/cli.test.js — the PURE decisions of the `eyehold` CLI (bin/lib/cli-core.js), no I/O.
 
    Locks: argument parsing + env fallbacks · the attach-vs-spawn choice (never spawn beside a live station,
    never boot into a workspace a live desktop owns, a NAMED port that is dead is an error not a spawn) · the
@@ -31,9 +31,9 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.ok(core.parseArgs(['--help'], {}).help, '--help');
   A.ok(core.parseArgs(['--version'], {}).version, '--version');
   A.ok(core.parseArgs(['-p', 'x', '--spawn'], {}).spawn, '--spawn');
-  const env = core.parseArgs(['status'], { STARNET_PORT: '4444', STARNET_TOKEN: 'tk', STARNET_WORKSPACES: '/env/ws' });
-  A.eq(env.port, 4444, 'STARNET_PORT env fallback'); A.eq(env.token, 'tk', 'STARNET_TOKEN env fallback'); A.eq(env.workspace, '/env/ws', 'STARNET_WORKSPACES env fallback');
-  A.eq(core.parseArgs(['status', '--port', '5'], { STARNET_PORT: '4444' }).port, 5, 'a flag beats the env');
+  const env = core.parseArgs(['status'], { EYEHOLD_PORT: '4444', EYEHOLD_TOKEN: 'tk', EYEHOLD_WORKSPACES: '/env/ws' });
+  A.eq(env.port, 4444, 'EYEHOLD_PORT env fallback'); A.eq(env.token, 'tk', 'EYEHOLD_TOKEN env fallback'); A.eq(env.workspace, '/env/ws', 'EYEHOLD_WORKSPACES env fallback');
+  A.eq(core.parseArgs(['status', '--port', '5'], { EYEHOLD_PORT: '4444' }).port, 5, 'a flag beats the env');
   const throws = (argv, re, label) => { let msg = ''; try { core.parseArgs(argv, {}); } catch (e) { msg = e.message; } A.ok(re.test(msg), label + ': ' + msg); };
   throws(['run'], /needs a prompt/, 'run without a prompt is a usage error');
   throws(['-p', 'x', '--timeout', 'soon'], /--timeout/, 'non-numeric timeout');
@@ -53,7 +53,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   const named = c({ candidates: [{ source: 'flag', port: 9, reachable: false }] });
   A.eq(named.mode, 'refuse', 'a NAMED dead port is an error, never a spawn'); A.ok(/--port/.test(named.reason), 'and names the flag');
   const envNamed = c({ candidates: [{ source: 'env', port: 9, reachable: false }] });
-  A.ok(envNamed.mode === 'refuse' && /STARNET_PORT/.test(envNamed.reason), 'an env-named dead port names STARNET_PORT');
+  A.ok(envNamed.mode === 'refuse' && /EYEHOLD_PORT/.test(envNamed.reason), 'an env-named dead port names EYEHOLD_PORT');
   const owned = c({ candidates: [{ source: 'default', port: 8787, reachable: false }], desktop: { ownerAlive: true, ownerPid: 10436, port: 0 } });
   A.eq(owned.mode, 'refuse', 'a live desktop owner with an unknown port is never spawned over'); A.ok(/10436/.test(owned.reason), 'the refusal names the pid');
   const ownedOverride = c({ candidates: [{ source: 'default', port: 8787, reachable: false }], desktop: { ownerAlive: true, ownerPid: 10436, port: 0 }, workspaceOverride: true });
@@ -190,7 +190,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.eq(a.approvalMode, 'full', 'FULL POWER from minute one — no consent gate for the bootstrapped agent');
   A.ok(/ATLAS/.test(a.system), 'the system prompt names the agent');
   A.eq(d.save.agentId + ':' + d.save.version, 'agent:1', 'save envelope');
-  A.eq(d.save.doc.schema + ':' + d.save.doc.version, 'starnet.save:5', 'the save doc is the schema the desktop resumes');
+  A.eq(d.save.doc.schema + ':' + d.save.doc.version, 'eyehold.save:5', 'the save doc is the schema the desktop resumes');
   A.eq(d.save.doc.agent.id + ':' + d.save.doc.agent.name + ':' + d.save.doc.agent.model, 'agent:ATLAS:anthropic/claude-haiku-4.5', 'save.agent mirrors the roster');
   A.eq(d.save.doc.prov, 'openrouter', 'the provider rides doc.prov (the desktop restores it before the credential check)');
   A.eq(d.save.updatedAt + ':' + d.save.doc.updatedAt, '1700000000123:1700000000123', 'timestamps come from the injected clock');
@@ -211,7 +211,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   ];
   A.eq(core.inferProvider({ env: {}, profiles }).provider, '', 'nothing set → no provider');
   A.eq(core.inferProvider({ env: { ANTHROPIC_API_KEY: 'k' }, profiles }).provider, 'anthropic', 'a bare key env');
-  A.eq(core.inferProvider({ env: { STARNET_OPENROUTER_KEY: 'k' }, profiles }).provider, 'openrouter', 'STARNET_-scoped');
+  A.eq(core.inferProvider({ env: { EYEHOLD_OPENROUTER_KEY: 'k' }, profiles }).provider, 'openrouter', 'EYEHOLD_-scoped');
   A.eq(core.inferProvider({ env: { SKYNET_OPENAI_API_KEY: 'k' }, profiles }).provider, 'openai', 'SKYNET_-scoped legacy');
   A.eq(core.inferProvider({ env: { OPENAI_API_KEY: 'k', ANTHROPIC_API_KEY: 'k' }, profiles }).provider, 'openai', 'registry order decides ties');
   A.eq(core.inferProvider({ env: {}, profiles, codexTokensPresent: true }).provider, 'codex', 'a stored ChatGPT sign-in counts');

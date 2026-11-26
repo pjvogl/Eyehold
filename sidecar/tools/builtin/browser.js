@@ -74,7 +74,7 @@
      keeps waiting well past it, unlike the fixed sleeps this replaced. */
   const SETTLE_MIN_OBSERVE_MS = 400;
   const SETTLE_BOOTSTRAP_TEMPLATE = String.raw`(() => {
-    const SLOT = __STARNET_SETTLE_SLOT__;
+    const SLOT = __EYEHOLD_SETTLE_SLOT__;
     if (globalThis[SLOT]) return;
     const s = { n: 0 };
     try { Object.defineProperty(globalThis, SLOT, { value: s, configurable: false, writable: false }); } catch (e) { return; }
@@ -88,13 +88,13 @@
     try { addEventListener('load', bump); addEventListener('popstate', bump); } catch (e) {}
   })()`;
   // Cheap per-poll read: is the document done, and how many mutations has it seen so far?
-  const SETTLE_PROBE_TEMPLATE = `(() => { const s = globalThis[__STARNET_SETTLE_SLOT__];
+  const SETTLE_PROBE_TEMPLATE = `(() => { const s = globalThis[__EYEHOLD_SETTLE_SLOT__];
     return { ok: !!s, ready: document.readyState, n: s ? s.n : -1 }; })()`;
-  function settleSource(slot) { return SETTLE_BOOTSTRAP_TEMPLATE.replace('__STARNET_SETTLE_SLOT__', JSON.stringify(slot)); }
-  function settleProbeSource(slot) { return SETTLE_PROBE_TEMPLATE.replace('__STARNET_SETTLE_SLOT__', JSON.stringify(slot)); }
-  const SETTLE_BOOTSTRAP = settleSource('__STARNET_SETTLE__');
-  const SETTLE_PROBE = settleProbeSource('__STARNET_SETTLE__');
-  const DEFAULT_PORT = Number(process.env.STARNET_BROWSER_CDP || process.env.SKYNET_BROWSER_CDP || 9347);
+  function settleSource(slot) { return SETTLE_BOOTSTRAP_TEMPLATE.replace('__EYEHOLD_SETTLE_SLOT__', JSON.stringify(slot)); }
+  function settleProbeSource(slot) { return SETTLE_PROBE_TEMPLATE.replace('__EYEHOLD_SETTLE_SLOT__', JSON.stringify(slot)); }
+  const SETTLE_BOOTSTRAP = settleSource('__EYEHOLD_SETTLE__');
+  const SETTLE_PROBE = settleProbeSource('__EYEHOLD_SETTLE__');
+  const DEFAULT_PORT = Number(process.env.EYEHOLD_BROWSER_CDP || process.env.SKYNET_BROWSER_CDP || 9347);
 
   /* DOWNLOAD RECEIPTS. Browser.setDownloadBehavior already put bytes in the agent jail, but click()
      returned only "clicked". That made a successful Google Drive export observationally identical to a
@@ -185,9 +185,9 @@
   // bootstrap before every navigation so game code observes a faithful logical lock while the
   // browser never reaches native pointer/keyboard lock. CDP Input.* remains fully synthetic.
   const SYNTHETIC_INPUT_TEMPLATE = String.raw`(() => {
-    const SLOT = __STARNET_INPUT_SLOT__;
+    const SLOT = __EYEHOLD_INPUT_SLOT__;
     if (globalThis[SLOT]) return;
-    const ALLOW_POPUPS = __STARNET_ALLOW_POPUPS__;
+    const ALLOW_POPUPS = __EYEHOLD_ALLOW_POPUPS__;
     const state = { pointer: null, fullscreen: null, keyboard: false, ready: false, popupBlocked: false, error: null };
     let request = null, exit = null, fullscreenRequest = null, fullscreenExit = null, blockedOpen = null, keyboardLock = null, keyboardUnlock = null, wakeRequest = null, orientationLock = null, orientationUnlock = null;
     const attestation = {};
@@ -357,13 +357,13 @@
   })();`;
   // Environment-level headless selection. Production runOnce additionally passes forceHeadless,
   // so neither model arguments nor desktop-shell presence can create a window there.
-  /* The bootstrap above is a TEMPLATE: __STARNET_ALLOW_POPUPS__ is substituted per run. The exported
+  /* The bootstrap above is a TEMPLATE: __EYEHOLD_ALLOW_POPUPS__ is substituted per run. The exported
      constant keeps the fail-closed (popups blocked) form, which is also what every rig that installs
      the raw string gets. */
   function syntheticInputSource(allowPopups, slot) {
     return SYNTHETIC_INPUT_TEMPLATE
-      .replace('__STARNET_ALLOW_POPUPS__', allowPopups === true ? 'true' : 'false')
-      .replace('__STARNET_INPUT_SLOT__', JSON.stringify(slot || '__STARNET_SYNTHETIC_INPUT__'));
+      .replace('__EYEHOLD_ALLOW_POPUPS__', allowPopups === true ? 'true' : 'false')
+      .replace('__EYEHOLD_INPUT_SLOT__', JSON.stringify(slot || '__EYEHOLD_SYNTHETIC_INPUT__'));
   }
   const SYNTHETIC_INPUT_BOOTSTRAP = syntheticInputSource(false);
 
@@ -377,7 +377,7 @@
 
   function headlessRequested(env) {
     env = env || process.env;
-    return /^(1|true|yes|on)$/i.test(String(env.STARNET_BROWSER_HEADLESS || env.SKYNET_BROWSER_HEADLESS || ''));
+    return /^(1|true|yes|on)$/i.test(String(env.EYEHOLD_BROWSER_HEADLESS || env.SKYNET_BROWSER_HEADLESS || ''));
   }
   function playwrightChromes() {
     // ms-playwright caches live under per-user app data with a versioned dir name;
@@ -408,7 +408,7 @@
   // Candidate list, each tagged whether it is a headless-only binary. Env overrides and
   // real installed browsers are full Chrome (can run headed or headless).
   const CHROME_CANDIDATES = [
-    process.env.STARNET_CHROME && { path: process.env.STARNET_CHROME, headless: false },
+    process.env.EYEHOLD_CHROME && { path: process.env.EYEHOLD_CHROME, headless: false },
     process.env.SKYNET_CHROME && { path: process.env.SKYNET_CHROME, headless: false },
     ...playwrightChromes(),
     { path: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: false },
@@ -663,10 +663,10 @@
     const host = String((r && r.host) || 'the site');
     const priv = /resolves to private address (\S+)/.exec(reason);
     if (priv) {
-      return { code: 'NETWORK_REFUSED', text: 'StarNet\'s browser safety check refused it: this computer\'s DNS answered ' + priv[1] + ' for ' + host +
+      return { code: 'NETWORK_REFUSED', text: 'Eyehold\'s browser safety check refused it: this computer\'s DNS answered ' + priv[1] + ' for ' + host +
         ', a private or blocked address. That answer usually comes from a DNS filter (Pi-hole, AdGuard, NextDNS, router parental controls), ' +
         'a VPN, a security app or the hosts file on this computer. A browser using its own secure DNS can still open the site, so it may work there. ' +
-        'StarNet\'s browser uses no outside proxy, VPN or gateway: it connects from this computer. Fix or allow ' + host + ' in that DNS filter.' };
+        'Eyehold\'s browser uses no outside proxy, VPN or gateway: it connects from this computer. Fix or allow ' + host + ' in that DNS filter.' };
     }
     if (/ENOTFOUND|EAI_AGAIN|ESERVFAIL|ETIMEOUT|ECONNREFUSED.*53|getaddrinfo|no verified DNS address/i.test(reason)) {
       return { code: 'NAVIGATION_FAILED', text: 'this computer could not look up ' + host + ' (' + reason + '). Its DNS did not answer for that name; ' +
@@ -674,9 +674,9 @@
     }
     if (r && r.code === 'DIAL_FAILED') {
       return { code: 'NAVIGATION_FAILED', text: reason + ' from this computer: the address was found but did not answer. A firewall, VPN or security app ' +
-        'may be blocking StarNet\'s connection to ' + host + '.' };
+        'may be blocking Eyehold\'s connection to ' + host + '.' };
     }
-    return { code: 'NETWORK_REFUSED', text: 'StarNet\'s browser safety check refused it: ' + reason };
+    return { code: 'NETWORK_REFUSED', text: 'Eyehold\'s browser safety check refused it: ' + reason };
   }
   // Separate from assertSafeUrl: public browsing retains its SSRF boundary. Only the workbench-
   // scoped browser.test_navigate tool may use this validator, and only for an agent's local dev UI.
@@ -694,7 +694,7 @@
   // different browser surface (no plugins/window.chrome and HeadlessChrome Client Hints) even when
   // its legacy UA is overridden. A shell remains a compatibility fallback when no full build exists.
   // Returns { path, headless } where headless=true means a visible window is impossible.
-  /* The Chromium StarNet downloaded itself (sidecar/browser-install.js) for a computer with no Chrome, Edge or
+  /* The Chromium Eyehold downloaded itself (sidecar/browser-install.js) for a computer with no Chrome, Edge or
      Chromium installed. The composition root registers the finder; it is used only when nothing installed exists. */
   let extraChrome = () => null;
   function setExtraChrome(fn) { extraChrome = typeof fn === 'function' ? fn : () => null; }
@@ -845,13 +845,13 @@
     const cdpPort = deps.cdpPort == null ? DEFAULT_PORT : Number(deps.cdpPort);
     const privatePort = cdpPort === 0;
     // `let`: a launch the HELD persistent profile defeated moves, once, to a fresh temporary profile (heldFallback below)
-    let profileDir = deps.profileDir || P.join(OS.tmpdir(), 'starnet-browser-' + process.pid);
+    let profileDir = deps.profileDir || P.join(OS.tmpdir(), 'eyehold-browser-' + process.pid);
     let heldFallback = null, heldFallbackDir = null, heldFailure = null;
     // the durable station profile is in play only until a held-profile fallback moved this browser off it
     const onPersistent = () => !!deps.profileIsPersistent && !heldFallback;
     // Page-realm safety/settle state must be readable by the driver, but fixed product-named globals
     // are an avoidable signature. Opaque per-profile slots preserve the contract without publishing
-    // `__STARNET_*` on every site.
+    // `__EYEHOLD_*` on every site.
     const inputMarker = internalMarker(profileDir, 'input');
     const settleMarker = internalMarker(profileDir, 'settle');
     const inputStateExpr = 'globalThis[' + JSON.stringify(inputMarker) + ']';
@@ -886,7 +886,7 @@
       throw new Error('browser attach: port must be an integer 1-65535');
     }
     // No browser on this computer: one is downloaded on first use when the host can (deps.ensureChromium), else refuse.
-    if (!chromePath && attachPort === null && typeof deps.ensureChromium !== 'function') throw new Error('browser unavailable: Chromium not found; set STARNET_CHROME');
+    if (!chromePath && attachPort === null && typeof deps.ensureChromium !== 'function') throw new Error('browser unavailable: Chromium not found; set EYEHOLD_CHROME');
     // We run headed only if requested AND the chosen binary can actually show a window.
     let headed = wantHeaded && !binIsHeadlessOnly;
 
@@ -1273,7 +1273,7 @@
     }
     /* HELD PROFILE (customer report 2026-10-08, Windows 10, v0.13.1: the station browser never started — "spawned
        Chromium exited before CDP ownership was established", six launch retries, lockfile never free). Some process
-       StarNet cannot see by command line (a chrome.exe started as administrator, an antivirus lock) holds the durable
+       Eyehold cannot see by command line (a chrome.exe started as administrator, an antivirus lock) holds the durable
        profile, so every Chromium we start hands off to it and exits; the orphan sweep finds nothing to end. Bounded:
        ONCE per driver, when the launch on the PERSISTENT profile failed by hand-off AND the profile is still held,
        start on a fresh temporary profile (signed out — usingPersistentProfile() turns false and profileFallback() says
@@ -1288,8 +1288,8 @@
     }
     function profileHeldError(cause) {
       const err = new Error('The station browser could not start: another process is holding the station browser\'s profile — '
-        + 'open SETTINGS › BROWSER › RESET STATION BROWSER, or end any chrome.exe that StarNet started (one started as '
-        + 'administrator can\'t be closed by StarNet), then try again');
+        + 'open SETTINGS › BROWSER › RESET STATION BROWSER, or end any chrome.exe that Eyehold started (one started as '
+        + 'administrator can\'t be closed by Eyehold), then try again');
       err.code = 'BROWSER_PROFILE_HELD';
       err.cause = cause;
       return err;
@@ -1297,7 +1297,7 @@
     async function heldProfileFallback(lastErr) {
       const handedOff = /exited before CDP ownership|could not attach to Chromium/.test(String((lastErr && lastErr.message) || ''));
       if (attachPort !== null || !deps.profileIsPersistent || heldFallback || !handedOff || !persistentHeld()) throw lastErr;
-      try { heldFallbackDir = FS.mkdtempSync(P.join(OS.tmpdir(), 'starnet-browser-' + process.pid + '-held-')); }
+      try { heldFallbackDir = FS.mkdtempSync(P.join(OS.tmpdir(), 'eyehold-browser-' + process.pid + '-held-')); }
       catch (e) { failNote('browser.profile-held-fallback', e); heldFailure = profileHeldError(lastErr); throw heldFailure; }
       heldFallback = 'Saved sign-ins are not available this session: another process is holding the station browser profile, '
         + 'so this browser started on a temporary profile.';
@@ -1372,7 +1372,7 @@
         // tab beside its startup one, and the driver could bind to the tab that then went away — its first command hung
         // for a full CDP timeout (measured: 2 of 3 relaunches stalled 15 s). Only a crash bubble is disabled on top.
         args.push('--hide-crash-restore-bubble');
-        /* A COVERED WINDOW MUST KEEP DRAWING. Measured 2026-09-30 in the desktop app: StarNet's own window sits on top of
+        /* A COVERED WINDOW MUST KEEP DRAWING. Measured 2026-09-30 in the desktop app: Eyehold's own window sits on top of
            the station's Chrome window, Chrome's native occlusion tracking decides nobody can see it and stops painting,
            and the in-app BROWSER view froze on the old page (0 frames/s) while the agent kept browsing. The BROWSER
            window IS somebody watching, so a covered station window keeps rendering. Only the two flags that fix that:
@@ -1846,7 +1846,7 @@
         /* A TUNNEL FAILURE IS A REFUSAL, NOT A DEAD PROXY (the Etsy reports, 2026-10-08). Measured with real Chromium:
            ERR_TUNNEL_CONNECTION_FAILED is our LIVE proxy answering the CONNECT with a refusal (its DNS answer was
            private, the lookup failed, the address did not answer). Restarting the browser changes none of that, and
-           "not answering" sent users hunting for a VPN or a remote gateway StarNet does not have. Name the reason. */
+           "not answering" sent users hunting for a VPN or a remote gateway Eyehold does not have. Name the reason. */
         const refusal = (attachPort === null && networkProxy && typeof networkProxy.refusalsSince === 'function' &&
           /ERR_TUNNEL_CONNECTION_FAILED/i.test(navError)) ? pickRefusal(networkProxy.refusalsSince(refusalMark), url) : null;
         if (refusal) {
@@ -1860,7 +1860,7 @@
         const viaProxy = /ERR_PROXY|ERR_TUNNEL_CONNECTION_FAILED|ERR_MANDATORY_PROXY/i.test(navError);
         if (viaProxy && attachPort === null) proxyFailed = true;   // alive() turns false: the session starts a fresh browser + proxy
         const err = new Error('could not load ' + host + ': ' + navError + (viaProxy
-          ? ' - the station browser network proxy is not answering' + (attachPort === null ? '; StarNet is restarting the browser' : ' (this browser was started by an earlier StarNet session: run browser.reset)')
+          ? ' - the station browser network proxy is not answering' + (attachPort === null ? '; Eyehold is restarting the browser' : ' (this browser was started by an earlier Eyehold session: run browser.reset)')
           : ''));
         err.code = viaProxy ? 'STATION_PROXY_DOWN' : 'NAVIGATION_FAILED';
         err.navigationError = navError;
@@ -3318,14 +3318,14 @@
         }
         return { ok: true, browser: String(v.Browser || 'Chrome'), port: port };
       } catch (e) {
-        return { ok: false, error: 'browser.attach: nothing is listening on 127.0.0.1:' + port + '. Use browser.login for a saved StarNet session. Advanced attachment requires Chrome launched with --remote-debugging-port=' + port + ' and a separate --user-data-dir; current Chrome does not expose its default profile this way.' };
+        return { ok: false, error: 'browser.attach: nothing is listening on 127.0.0.1:' + port + '. Use browser.login for a saved Eyehold session. Advanced attachment requires Chrome launched with --remote-debugging-port=' + port + ' and a separate --user-data-dir; current Chrome does not expose its default profile this way.' };
       }
     }
     /* RESET (#61): the supported way out of a wedged station browser - what an agent used to try with a shell kill
        (refused, rightly) and had no other path for. Ends THIS session's own browser (and its network proxy), then
-       ends any ORPHANED Chromium on the durable station profile (one a previous StarNet process started and left
+       ends any ORPHANED Chromium on the durable station profile (one a previous Eyehold process started and left
        behind) and clears that profile's stale locks. Never touches the Commander's own Chrome (exact profile match)
-       nor a live browser this StarNet started (ancestry check). The next browser call starts a fresh browser and
+       nor a live browser this Eyehold started (ancestry check). The next browser call starts a fresh browser and
        proxy. Saved sign-ins live in the profile's files and are kept. Returns a truthful receipt. */
     async function reset() {
       const out = { closedOwn: false, closeError: null, sweep: null, attached: attachedToUserBrowser };
@@ -3478,7 +3478,7 @@
         throw new Error('browser.login needs a watched COMMS session — an unattended run cannot open a login window for the Commander');
       }
       if (deps.stationLogin !== true && (headlessRequested(deps.env) || deps.headless === true)) {
-        throw new Error('browser.login unavailable: this host pins the browser headless (STARNET_BROWSER_HEADLESS)');
+        throw new Error('browser.login unavailable: this host pins the browser headless (EYEHOLD_BROWSER_HEADLESS)');
       }
       const u = assertSafeUrl(url);
       await assertResolvedSafe(u, doLookup);   // same rebinding bar as navigate — a login window is not a weaker surface
@@ -3522,7 +3522,7 @@
         finalUrl = await d.navigate(u.href);
         if (finalUrl) assertSafeUrl(finalUrl);
         const vis = typeof d.visible === 'function' ? d.visible() : true;
-        if (!vis) throw new Error('no full Chrome found — only a headless-shell binary, so a visible login window is impossible; install Chrome or set STARNET_CHROME');
+        if (!vis) throw new Error('no full Chrome found — only a headless-shell binary, so a visible login window is impossible; install Chrome or set EYEHOLD_CHROME');
       } catch (e) {
         // restore the shimmed headless posture before surfacing the failure
         await relaunch({ headed: deps.preferVisible === true ? wantedHeaded(undefined) : false });
@@ -3747,7 +3747,7 @@
          this file drives a browser the station owns; this one drives the Commander's, where every account
          they have is already signed in. The consent card is the only place a human sees that difference
          before it happens, so `false` is never passed for the consent flag here. */
-      exec('browser.attach', 'Attach to an explicitly prepared Chrome debugging session. Prefer browser.login for guided sign-in with a reusable StarNet profile. Advanced attachment requires --remote-debugging-port=<port> and a separate --user-data-dir; current Chrome refuses debugging its default profile. Only accounts signed into that separate profile are available. Use this when a task needs a real logged-in session that browser.login cannot supply. browser.eval stays refused while attached. browser.detach lets go without closing their browser.',
+      exec('browser.attach', 'Attach to an explicitly prepared Chrome debugging session. Prefer browser.login for guided sign-in with a reusable Eyehold profile. Advanced attachment requires --remote-debugging-port=<port> and a separate --user-data-dir; current Chrome refuses debugging its default profile. Only accounts signed into that separate profile are available. Use this when a task needs a real logged-in session that browser.login cannot supply. browser.eval stays refused while attached. browser.detach lets go without closing their browser.',
         { type: 'object', required: ['port'], properties: { port: { type: 'number' } } },
         async a => {
           const r = await session.attach(a.port);
@@ -3761,15 +3761,15 @@
         async () => ({ content: await session.detach(), summary: 'detached' }), false),
       // #61: the supported recovery when the browser is wedged (navigations fail with proxy/connection errors, a new
       // browser "exited before CDP ownership", the profile is locked). An agent never needs a shell kill for this.
-      exec('browser.reset', 'Recover a stuck station browser: closes the browser this run started (and its network proxy), ends any ORPHANED StarNet browser left running on the station profile by an earlier StarNet process, and clears that profile\'s stale locks. Use it when pages fail with proxy or connection errors, or a new browser exits before it can be controlled. Never touches the Commander\'s own Chrome. Saved sign-ins are kept. The next browser call starts fresh.', { type: 'object', properties: {} },
+      exec('browser.reset', 'Recover a stuck station browser: closes the browser this run started (and its network proxy), ends any ORPHANED Eyehold browser left running on the station profile by an earlier Eyehold process, and clears that profile\'s stale locks. Use it when pages fail with proxy or connection errors, or a new browser exits before it can be controlled. Never touches the Commander\'s own Chrome. Saved sign-ins are kept. The next browser call starts fresh.', { type: 'object', properties: {} },
         async () => {
           if (typeof session.reset !== 'function') return { content: 'browser.reset is not available for this browser.', summary: 'reset unavailable' };
           const r = await session.reset();
-          if (r.attached) return { content: 'This run is attached to the Commander\'s own Chrome, which StarNet never closes. Use browser.detach to let go of it.', summary: 'attached: not reset' };
+          if (r.attached) return { content: 'This run is attached to the Commander\'s own Chrome, which Eyehold never closes. Use browser.detach to let go of it.', summary: 'attached: not reset' };
           const parts = [r.closedOwn ? 'Closed this run\'s browser and its network proxy.' : (r.closeError ? 'Could not close this run\'s browser: ' + r.closeError + '.' : 'This run had no browser open.')];
           parts.push(r.sweep ? 'Station profile: ' + Orphans.describeSweep(r.sweep) + '.' : 'No station profile sweep was available here.');
           const clean = !r.closeError && (!r.sweep || r.sweep.ok);
-          parts.push(clean ? 'The next browser call starts a fresh browser.' : 'The browser may still be stuck: the Commander can use Settings > BROWSER > RESET STATION BROWSER, or restart StarNet.');
+          parts.push(clean ? 'The next browser call starts a fresh browser.' : 'The browser may still be stuck: the Commander can use Settings > BROWSER > RESET STATION BROWSER, or restart Eyehold.');
           return { content: parts.join(' '), summary: clean ? 'browser reset' : 'browser reset incomplete' };
         }, false),
       read('browser.find', 'Find visible elements in the current viewport by text and/or role, and get refs you can click or type into. Prefer this over browser.snapshot on a busy viewport: snapshot lists the first 80 interactive elements, while this scans up to 200 and returns only what matches. It does not scan below the fold or inside closed menus; scroll or open the menu and try again. Refs from earlier snapshots expire, same as after any snapshot.',

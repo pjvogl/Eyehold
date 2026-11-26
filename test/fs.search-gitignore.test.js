@@ -14,7 +14,7 @@ const os = require('os');
 const { spawn, spawnSync } = require('child_process');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-fs-gitignore-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-fs-gitignore-' + process.pid);
 const WS = path.join(ROOT, 'gi');
 const ctx = { agentId: 'gi' };
 const lines = r => r.content.split('\n').filter(Boolean);

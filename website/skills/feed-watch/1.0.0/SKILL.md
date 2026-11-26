@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Feed Watch"
   category: "Research"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

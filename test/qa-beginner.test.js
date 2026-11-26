@@ -66,7 +66,7 @@ const clock = { now: () => clk };
   A.eq(beginnerKeyFieldValue('live', 'dummy'), '', 'live mode never writes a credential sentinel into the DOM');
   A.eq(uiOnlyProviderBaseEnv('ui-only', 'http://127.0.0.1:1234/api/v1').SKYNET_OPENROUTER_BASE,
     'http://127.0.0.1:1234/api/v1', 'UI-only routes the mandatory WAKE preflight to its local provider');
-  A.eq(uiOnlyProviderBaseEnv('ui-only', 'http://127.0.0.1:1234/api/v1').STARNET_OPENROUTER_BASE,
+  A.eq(uiOnlyProviderBaseEnv('ui-only', 'http://127.0.0.1:1234/api/v1').EYEHOLD_OPENROUTER_BASE,
     'http://127.0.0.1:1234/api/v1', 'both environment prefixes route to the same local provider');
   A.eq(Object.keys(uiOnlyProviderBaseEnv('live', 'http://127.0.0.1:1234/api/v1')).length, 0,
     'live mode never redirects the real provider wire');

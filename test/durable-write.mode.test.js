@@ -14,7 +14,7 @@ const os = require('os');
 const { writeFileDurable } = require('../sidecar/durable-write.js');
 const { makeSpotifyStore } = require('../sidecar/spotify/store.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-durable-mode-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-durable-mode-' + process.pid);
 
 (async () => {
   fs.rmSync(DIR, { recursive: true, force: true });

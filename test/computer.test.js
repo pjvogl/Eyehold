@@ -62,20 +62,20 @@ const ATTENDED = { surface: 'interactive', isTask: true, ownerTrusted: true, rem
   A.eq(driver.log[5].action, 'type', 'type action routed to driver');
   A.eq(driver.log[7].action, 'hotkey', 'hotkey action routed to driver');
   A.eq(T.win32DriverRequested({}), false, 'local win32 desktop driver is opt-in');
-  A.eq(T.win32DriverRequested({ STARNET_COMPUTER_DRIVER: 'win32' }), true, 'STARNET_COMPUTER_DRIVER=win32 enables local desktop driver');
+  A.eq(T.win32DriverRequested({ EYEHOLD_COMPUTER_DRIVER: 'win32' }), true, 'EYEHOLD_COMPUTER_DRIVER=win32 enables local desktop driver');
   A.eq(T.win32DriverRequested({ SKYNET_COMPUTER_DRIVER: 'true' }), true, 'legacy SKYNET_COMPUTER_DRIVER=true enables local desktop driver');
   A.eq(typeof C._internals.makeWin32DesktopDriver, 'function', 'computer tool exposes local desktop driver internals for tests');
 
   // driver activation: desktop-shell presence is NEVER authority. A reviewed explicit opt-in is
   // necessary but still not sufficient without the per-call attended lease above.
   A.eq(T.win32DriverActive({}, 'win32'), false, 'bare win32 server run keeps the safe no-driver stub');
-  A.eq(T.win32DriverActive({ STARNET_DESKTOP_SHELL: '1' }, 'win32'), false, 'desktop shell marker alone never activates physical input');
-  A.eq(T.win32DriverActive({ STARNET_DESKTOP_SHELL: '1' }, 'linux'), false, 'non-win32 desktop shell does NOT activate the win32 driver');
-  A.eq(T.win32DriverActive({ STARNET_DESKTOP_SHELL: '1', STARNET_COMPUTER_DRIVER: '0' }, 'win32'), false, 'explicit disable overrides the desktop-shell default');
-  A.eq(T.win32DriverActive({ STARNET_DESKTOP_SHELL: '1', STARNET_COMPUTER_DRIVER: 'win32' }, 'win32'), true, 'desktop host can load the native driver while the lease still gates every call');
-  A.eq(T.win32DriverActive({ STARNET_COMPUTER_DRIVER: 'win32' }, 'linux'), false, 'win32 driver can never activate off Windows');
+  A.eq(T.win32DriverActive({ EYEHOLD_DESKTOP_SHELL: '1' }, 'win32'), false, 'desktop shell marker alone never activates physical input');
+  A.eq(T.win32DriverActive({ EYEHOLD_DESKTOP_SHELL: '1' }, 'linux'), false, 'non-win32 desktop shell does NOT activate the win32 driver');
+  A.eq(T.win32DriverActive({ EYEHOLD_DESKTOP_SHELL: '1', EYEHOLD_COMPUTER_DRIVER: '0' }, 'win32'), false, 'explicit disable overrides the desktop-shell default');
+  A.eq(T.win32DriverActive({ EYEHOLD_DESKTOP_SHELL: '1', EYEHOLD_COMPUTER_DRIVER: 'win32' }, 'win32'), true, 'desktop host can load the native driver while the lease still gates every call');
+  A.eq(T.win32DriverActive({ EYEHOLD_COMPUTER_DRIVER: 'win32' }, 'linux'), false, 'win32 driver can never activate off Windows');
 
-  // RUN-CONTEXT ESCAPE TEST: no normal StarNet task/autonomous/test/missing-context call may
+  // RUN-CONTEXT ESCAPE TEST: no normal Eyehold task/autonomous/test/missing-context call may
   // reach even an injected fake driver. Full/standing consent is intentionally irrelevant here.
   {
     const isolated = fakeDriver();
@@ -100,13 +100,13 @@ const ATTENDED = { surface: 'interactive', isTask: true, ownerTrusted: true, rem
     await FT.run({ action: 'type', text: 'hi', expectApp: 'notepad' }, ATTENDED);
     A.eq(fgDriver.log.length, 2, 'mismatched expectApp is advisory and does not narrow remote-owner control');
 
-    // typing into StarNet's own window is always refused, even without expectApp
+    // typing into Eyehold's own window is always refused, even without expectApp
     const selfDriver = fakeDriver();
-    selfDriver.foreground = async () => ({ title: 'STARNET — station', process: 'msedge' });
+    selfDriver.foreground = async () => ({ title: 'EYEHOLD — station', process: 'msedge' });
     const ST = makeComputerTools({ driver: selfDriver, allowPhysicalInput: true }).useTool;
     await ST.run({ action: 'type', text: 'hi' }, ATTENDED);
     await ST.run({ action: 'hotkey', keys: ['Ctrl', 'l'] }, ATTENDED);
-    A.eq(selfDriver.log.length, 2, 'the paired owner may intentionally control the StarNet window too');
+    A.eq(selfDriver.log.length, 2, 'the paired owner may intentionally control the Eyehold window too');
 
     // mouse/screenshot are NOT focus-gated (clicking is how you restore focus)
     const clicked = await ST.run({ action: 'click', x: 5, y: 5 }, ATTENDED);

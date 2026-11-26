@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.3 audit
+> eyehold-harness@0.12.3 audit
 > node scripts/audit.mjs
 
 provider: deterministic audit mock on http://127.0.0.1:50871/api/v1

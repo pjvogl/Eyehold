@@ -1,15 +1,15 @@
 /* Run against an ISOLATED dev/seed.js --keep station only.
- * STARNET_PLAYWRIGHT_MODULE may point to a bundled Playwright package.
- * STARNET_CHROME may point to a local Chrome executable. No microphone or paid model is used.
+ * EYEHOLD_PLAYWRIGHT_MODULE may point to a bundled Playwright package.
+ * EYEHOLD_CHROME may point to a local Chrome executable. No microphone or paid model is used.
  * We expose the unchanged voice callback for deterministic delivery and substitute only Harness.chat's
  * transport; session stores, composer, run metadata, station tool/handler, DOM, and saves run normally.
  */
 'use strict';
 const assert = require('node:assert/strict');
-const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 const { makeStationTools } = require('../../sidecar/tools/builtin/station.js');
 (async () => {
-  const browser = await chromium.launch({headless:true, ...(process.env.STARNET_CHROME ? {executablePath:process.env.STARNET_CHROME} : {})});
+  const browser = await chromium.launch({headless:true, ...(process.env.EYEHOLD_CHROME ? {executablePath:process.env.EYEHOLD_CHROME} : {})});
   try {
     const page = await browser.newPage();
     page.setDefaultTimeout(30000);

@@ -2,10 +2,10 @@
 /* node test/slag-known-error-kinds.test.js — a failed run's post-mortem names the REAL door for every error kind the
    page classifies (audit B3, 2026-10-08).
 
-   slaglog.js KNOWN_ERROR_KINDS predated the 10-07 StarNet-credit kinds, so a refused StarNet link (managed_credit_link —
+   slaglog.js KNOWN_ERROR_KINDS predated the 10-07 Eyehold-credit kinds, so a refused Eyehold link (managed_credit_link —
    not retryable, its door is RELINK) or an unanswered balance check (managed_credit_unavailable — try again) became a
    maintenance quest saying "send the request again… copy the diagnostics and report it". And a stalled BUILD's beat
-   (workqueststore.js stallBeat) passed no error at all, so even an empty wallet read as a StarNet bug to report.
+   (workqueststore.js stallBeat) passed no error at all, so even an empty wallet read as a Eyehold bug to report.
 
    Locked here, by running the code:
      1. DRIFT LOCK — every kind friendlyerror.js can return is sorted into exactly one post-mortem bucket; a new Friendly
@@ -31,7 +31,7 @@ const KINDS = {};
 }
 // the door each kind's post-mortem names. NAMED: the kind's own message is the fix, and a resend will not fix it.
 // RETRY: the kind's own message is the fix, and the cause says a resend in a moment can go through (never "will not fix").
-// GENERIC: StarNet's own fault is plausible (or the cause is unknown) — keep "see RECORD, resend, report it if it repeats".
+// GENERIC: Eyehold's own fault is plausible (or the cause is unknown) — keep "see RECORD, resend, report it if it repeats".
 // NOT_A_FAILURE: a deliberate stop never becomes a post-mortem (it ends 'cancelled', not 'error').
 const BUCKET = {
   billing: 'NAMED', managed_credit: 'NAMED', managed_credit_link: 'NAMED', auth: 'NAMED', no_model: 'NAMED', oauth: 'NAMED',
@@ -57,7 +57,7 @@ for (const kind of Object.keys(BUCKET)) {
     A.ok(!NOT_FIXABLE_BY_RESEND.test(d.cause) && /resend in a moment/.test(d.cause), kind + ': the cause says a retry can go through: ' + d.cause);
     A.ok(KINDS[kind] === true, kind + ': a RETRY kind is one Friendly marks retryable');
   } else if (BUCKET[kind] === 'GENERIC') {
-    A.ok(/report it/.test(d.fix) && /diagnostics/.test(d.fix), kind + ': keeps the resend + report fix (it may be StarNet\'s own bug)');
+    A.ok(/report it/.test(d.fix) && /diagnostics/.test(d.fix), kind + ': keeps the resend + report fix (it may be Eyehold\'s own bug)');
   }
 }
 
@@ -70,7 +70,7 @@ const refusedLink = refusalOf({ linkRefused: true }).message;
 const unanswered = refusalOf({}).message;
 const outOf = refusalOf({ exhausted: true }).message;
 const heldBy = refusalOf({ exhausted: true, held: { counted: true, runs: 2, usd: 4 }, balanceUsd: 0 }).message;
-A.ok(/refused this station's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /held by 2 running StarNet runs/.test(heldBy),
+A.ok(/refused this station's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /held by 2 running Eyehold runs/.test(heldBy),
   'the sidecar still emits the refused-link, unanswered, out-of-credit and held refusals');
 const postMortem = (text) => {
   const v = Friendly.friendlyError(new Error(text));
@@ -87,17 +87,17 @@ const postMortem = (text) => {
   A.eq(r.kind, 'managed_credit_unavailable', 'an unanswered balance check classifies as managed_credit_unavailable');
   A.ok(/couldn't check your credit balance/.test(r.d.fix) && /Try again in a moment/.test(r.d.fix), 'an unanswered check says the balance could not be read, try again: ' + r.d.fix);
   A.ok(!/report it|diagnostics/.test(r.d.fix) && !NOT_FIXABLE_BY_RESEND.test(r.d.cause), 'an unanswered check is never "report it", and never "a resend will not fix it"');
-  A.ok(!/out of StarNet credits|top up/i.test(r.d.fix), 'an unanswered check never claims an empty wallet');
+  A.ok(!/out of Eyehold credits|top up/i.test(r.d.fix), 'an unanswered check never claims an empty wallet');
 }
 {
   const r = postMortem(outOf);
   A.eq(r.kind, 'managed_credit', 'a reported empty wallet classifies as managed_credit');
-  A.ok(/out of StarNet credits/.test(r.d.fix), 'only a reported empty wallet says top up');
+  A.ok(/out of Eyehold credits/.test(r.d.fix), 'only a reported empty wallet says top up');
 }
 {
   const r = postMortem(heldBy);
   A.eq(r.kind, 'managed_credit_held', 'a balance held by running runs classifies as managed_credit_held');
-  A.ok(/still working/.test(r.d.fix) && !/out of StarNet credits|report it|diagnostics/.test(r.d.fix), 'a held balance says wait, never empty or report it: ' + r.d.fix);
+  A.ok(/still working/.test(r.d.fix) && !/out of Eyehold credits|report it|diagnostics/.test(r.d.fix), 'a held balance says wait, never empty or report it: ' + r.d.fix);
   A.ok(!NOT_FIXABLE_BY_RESEND.test(r.d.cause) && /resend in a moment/.test(r.d.cause), 'a held balance is a retry: a resend after the runs settle can go through');
 }
 
@@ -123,7 +123,7 @@ A.eq((listeners['agent.run.end'] || []).length, 1, 'the store subscribes to run.
   fire('agent.run.end', { agentId: 'agent', runId: 'run-link', reason: 'error', turns: 0, usd: 0 });
   A.eq(notifs.length, 1, 'a stalled build surfaces exactly one beat');
   A.ok(/price watcher/.test(notifs[0].txt) && /Relink it/.test(notifs[0].txt), 'a build stalled on a refused link says relink: ' + notifs[0].txt);
-  A.ok(!/report it|diagnostics/.test(notifs[0].txt), 'a refused link never tells the Commander to report StarNet');
+  A.ok(!/report it|diagnostics/.test(notifs[0].txt), 'a refused link never tells the Commander to report Eyehold');
   A.eq(notifs[0].cls, 'warn', 'the beat stays in the neutral WARN family');
 }
 {

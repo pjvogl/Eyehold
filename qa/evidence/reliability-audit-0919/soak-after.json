@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.soak-receipt.v1",
+  "schema": "eyehold.soak-receipt.v1",
   "verdict": "PASS",
   "failedRules": [],
   "sidecarHead": "9dfedb18f4b7b31f241909b46d41fcfd9af2e5c9",

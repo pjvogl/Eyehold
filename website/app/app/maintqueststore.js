@@ -1,4 +1,4 @@
-/* STARNET — maintqueststore.js : the live wiring around the pure MaintQuests engine (G1c).
+/* EYEHOLD — maintqueststore.js : the live wiring around the pure MaintQuests engine (G1c).
 
    The maintenance-quest generator, wired to real signals. It owns everything the pure engine can't touch:
      • the SLAG SIGNAL — on every sync it re-reads the live SlagLog ring (World.slagPostmortems) and tallies it
@@ -21,7 +21,7 @@
    running clean again, plus the shared celebration — never points. NEVER emits on U.bus (subscription only). */
 'use strict';
 const MaintQuestStore = (() => {
-  const KEY = 'starnet.maintquests.v1';
+  const KEY = 'eyehold.maintquests.v1';
   const JAM_MIN_SKIPS = 3;       // a routine must be skipped at least this many times before it reads as JAMMED (anti-blip)
   const JAM_WINDOW_MS = 90000;   // a skip older than this no longer counts toward the jam (a stale backlog clears itself)
   let state = null;
@@ -186,7 +186,7 @@ const MaintQuestStore = (() => {
     sync();
   }
 
-  // a NEW AGENT starts with no maintenance history (own key — Save.clear() only wipes starnet.save; mirrors
+  // a NEW AGENT starts with no maintenance history (own key — Save.clear() only wipes eyehold.save; mirrors
   // StationQuestStore.reset). The next init() hydrates clean.
   function reset() { state = null; jamByJob.clear(); settled = new WeakSet(); try { localStorage.removeItem(KEY); } catch (_) {} }
 

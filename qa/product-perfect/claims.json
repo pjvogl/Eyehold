@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "authority": "Eyehold development claims including inherited StarNet claims",
+  "authority": "Eyehold development claims including inherited Eyehold claims",
   "auditBaseSha": "ef16fa087ad872f9d266ecde8b72ef813cb9ca82",
   "reviewedAt": "2026-10-17",
   "scope": "Finite normalized material claims across tracked frontend JS/HTML and marketed docs; literal duplicate strings are folded into one family.",
@@ -2425,7 +2425,7 @@
     {
       "id": "one-click-mutation-approval",
       "domain": "security",
-      "claim": "Approval behavior follows effective access: ASK respects standing grants; Full Power has no StarNet approval prompts.",
+      "claim": "Approval behavior follows effective access: ASK respects standing grants; Full Power has no Eyehold approval prompts.",
       "surfaceLocators": [
         {
           "path": "frontend/app/stationui.js",
@@ -2674,7 +2674,7 @@
       "surfaceLocators": [
         {
           "path": "frontend/app/windows/messaging.js",
-          "needle": "Keep StarNet running."
+          "needle": "Keep Eyehold running."
         }
       ],
       "authorityChecks": [
@@ -2989,7 +2989,7 @@
     {
       "id": "local-first-no-account",
       "domain": "privacy",
-      "claim": "StarNet is local-first: no StarNet account is required and no StarNet server holds user data, unless the user opts into managed credits.",
+      "claim": "Eyehold is local-first: no Eyehold account is required and no Eyehold server holds user data, unless the user opts into managed credits.",
       "surfaceLocators": [
         {
           "path": "PRIVACY.md",
@@ -3011,7 +3011,7 @@
       "verdict": "SHIPPED",
       "disposition": "PROVEN",
       "ownerWave": "W2",
-      "qualification": "The app server and stores are local; third-party provider/channel/update traffic remains qualified. Managed credits (optional, not yet launched) add a billing account and relay model calls through StarNet's gateway — PRIVACY.md states that carve-out explicitly.",
+      "qualification": "The app server and stores are local; third-party provider/channel/update traffic remains qualified. Managed credits (optional, not yet launched) add a billing account and relay model calls through Eyehold's gateway — PRIVACY.md states that carve-out explicitly.",
       "liveProofRequired": true,
       "liveProof": "PENDING",
       "refsChecked": [
@@ -3023,7 +3023,7 @@
     {
       "id": "no-analytics-telemetry",
       "domain": "privacy",
-      "claim": "StarNet contains no analytics, telemetry, crash-reporting, or ad SDK.",
+      "claim": "Eyehold contains no analytics, telemetry, crash-reporting, or ad SDK.",
       "surfaceLocators": [
         {
           "path": "PRIVACY.md",
@@ -3065,7 +3065,7 @@
     {
       "id": "no-phone-home",
       "domain": "privacy",
-      "claim": "StarNet performs no phone-home or unrequested boot egress.",
+      "claim": "Eyehold performs no phone-home or unrequested boot egress.",
       "surfaceLocators": [
         {
           "path": "PRIVACY.md",
@@ -3200,7 +3200,7 @@
       "surfaceLocators": [
         {
           "path": "INSTALL.md",
-          "needle": "StarNet's public release train supports **Windows and macOS**"
+          "needle": "Eyehold's public release train supports **Windows and macOS**"
         }
       ],
       "authorityChecks": [
@@ -3286,7 +3286,7 @@
       "verdict": "SHIPPED",
       "disposition": "PROVEN",
       "ownerWave": "W6",
-      "qualification": "Budget enforcement exists; free/no-markup remains an owner business-policy claim, and is now scoped to the BYOK path — TERMS.md §2 states plainly that StarNet does resell model access on the optional credits path.",
+      "qualification": "Budget enforcement exists; free/no-markup remains an owner business-policy claim, and is now scoped to the BYOK path — TERMS.md §2 states plainly that Eyehold does resell model access on the optional credits path.",
       "liveProofRequired": true,
       "liveProof": "PENDING",
       "refsChecked": [
@@ -3483,7 +3483,7 @@
         "trunk@ef16fa087ad872f9d266ecde8b72ef813cb9ca82",
         "branches@agent/pp-browser-dns 271449d2",
         "worktrees@git-worktree-list audited 2026-07-12",
-        "branch@claude/starnet-bug-hunt-5cf4c9 667e6676"
+        "branch@claude/eyehold-bug-hunt-5cf4c9 667e6676"
       ]
     },
     {
@@ -3614,7 +3614,7 @@
       "verdict": "MISSING",
       "disposition": "FIX",
       "ownerWave": "W2",
-      "qualification": "The sidecar warms OpenRouter models at server listen. The frontend no longer loads Google Fonts — VT323 ships locally (the STARNET font law), so the remaining boot egress is the catalog warm alone.",
+      "qualification": "The sidecar warms OpenRouter models at server listen. The frontend no longer loads Google Fonts — VT323 ships locally (the EYEHOLD font law), so the remaining boot egress is the catalog warm alone.",
       "authorityChecks": [
         {
           "kind": "contains",
@@ -3795,7 +3795,7 @@
         {
           "kind": "contains",
           "path": "frontend/app/windows/messaging.js",
-          "needle": "Keep StarNet running."
+          "needle": "Keep Eyehold running."
         },
         {
           "kind": "contains",
@@ -3984,7 +3984,7 @@
         {
           "kind": "contains",
           "path": "sidecar/index.js",
-          "needle": "return json(200, { ok: false, error: 'workspace written by newer StarNet', degraded: true })"
+          "needle": "return json(200, { ok: false, error: 'workspace written by newer Eyehold', degraded: true })"
         }
       ],
       "refsChecked": [

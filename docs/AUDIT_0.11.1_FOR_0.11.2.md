@@ -22,11 +22,11 @@ This is not exhaustive hardware, security or production-provider certification. 
 
 | Priority | Record | Observed behavior | Release relationship |
 | --- | --- | --- | --- |
-| P1 | [1600dcf0](../qa/bugs/1600dcf0-late-model-catalog-reverts-new-provider-choice.md) | Hold an Ollama catalog reply; select StarNet / anthropic/test-model; release the reply. State becomes Ollama / empty model. | Existing race survives 0.11.1. Same capture/reconcile sequence is present in 0.11.0. |
+| P1 | [1600dcf0](../qa/bugs/1600dcf0-late-model-catalog-reverts-new-provider-choice.md) | Hold an Ollama catalog reply; select Eyehold / anthropic/test-model; release the reply. State becomes Ollama / empty model. | Existing race survives 0.11.1. Same capture/reconcile sequence is present in 0.11.0. |
 | P1 | [79867817](../qa/bugs/79867817-managed-image-charge-missing-from-run-cost.md) | Simulated managed wallet loses $0.025 for an image, while both cost events and completed run report $0.00. Repeated after restart. | Newly enabled managed-image path exposes an existing auxiliary-cost accounting omission. |
 | P1 | [a0dffdd7](../qa/bugs/a0dffdd7-image-generation-writes-after-run-cancellation.md) | Cancel while image response is held; after cancellation is acknowledged, release it. Run ends cancelled but the output file is created. | Inherited image-tool cancellation limitation also affects new managed route. |
 | P2 | [12203375](../qa/bugs/12203375-glass-panel-height-resets-on-reopen.md) | Settings panel height: 420px initially, 512px after two keyboard resize actions, 420px after close/reopen. | New glass control retains height only on the current DOM node. |
-| P2 | [3a2837bd](../qa/bugs/3a2837bd-byok-image-recovery-only-offers-paid-link.md) | An unlinked BYOK image task is told only to link a StarNet account, although a separate OpenRouter key is supported. | Error-message regression in the media-route repair. |
+| P2 | [3a2837bd](../qa/bugs/3a2837bd-byok-image-recovery-only-offers-paid-link.md) | An unlinked BYOK image task is told only to link a Eyehold account, although a separate OpenRouter key is supported. | Error-message regression in the media-route repair. |
 
 ### Provider selection
 

@@ -1,5 +1,5 @@
 /* node test/credits-link.test.js — the device-pairing client + durable link store (sidecar/credits-link.js):
-   config-gating (no STARNET_CLOUD_URL => zero surface), the start/poll happy path against a STUBBED cloud
+   config-gating (no EYEHOLD_CLOUD_URL => zero surface), the start/poll happy path against a STUBBED cloud
    (fake fetch, no real network), the pollSecret-stays-server-side invariant, the credits.json persistence
    round-trip (proxy for boot-from-file construction), and unlink. No real IO beyond a temp dir. */
 'use strict';
@@ -12,7 +12,7 @@ const { makeCreditsLink } = require('../sidecar/credits-link.js');
 
 const flush = () => new Promise(r => setTimeout(r, 0));
 
-// a fake StarNet Cloud: link/start mints a code+pollSecret; link/poll flips to confirmed once `confirm()` is called.
+// a fake Eyehold Cloud: link/start mints a code+pollSecret; link/poll flips to confirmed once `confirm()` is called.
 function fakeCloud(opts) {
   opts = opts || {};
   const state = { code: opts.code || 'STAR-7F3K', pollSecret: 'ps_secret_' + Math.random().toString(36).slice(2), confirmed: false, released: false };
@@ -46,7 +46,7 @@ function fakeCloud(opts) {
 }
 
 (async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-link-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-link-'));
   const dir = path.join(tmp, '.secrets');
   const file = path.join(dir, 'credits.json');
 
@@ -54,7 +54,7 @@ function fakeCloud(opts) {
   {
     const cloud = fakeCloud();
     const link = makeCreditsLink({ cloudUrl: '', fetch: cloud.fetch, fsp, fs, pathMod: path, dir, now: () => 1000 });
-    A.eq(link.configured(), false, 'no STARNET_CLOUD_URL => configured() false (link routes 404, no LINK card)');
+    A.eq(link.configured(), false, 'no EYEHOLD_CLOUD_URL => configured() false (link routes 404, no LINK card)');
     const s = await link.start('X');
     A.eq(s.ok, false, 'start() refuses when unconfigured');
     A.eq(cloud.calls.length, 0, 'unconfigured client makes NO network calls');
@@ -66,7 +66,7 @@ function fakeCloud(opts) {
   {
     const cloud = fakeCloud();
     const link = makeCreditsLink({ cloudUrl: 'https://cloud.example/', fetch: cloud.fetch, fsp, fs, pathMod: path, dir, now: () => 2000 });
-    A.eq(link.configured(), true, 'a STARNET_CLOUD_URL makes linking available');
+    A.eq(link.configured(), true, 'a EYEHOLD_CLOUD_URL makes linking available');
 
     const s = await link.start('My Station');
     A.eq(s.ok, true, 'start() ok');
@@ -199,7 +199,7 @@ function fakeCloud(opts) {
   }
 
   // ---- KEYCHAIN ADOPTION: the desktop strips `deviceToken` from credits.json and injects it at spawn as
-  //      STARNET_CREDITS_TOKEN. The station must stay linked across that move, and the non-secret fields
+  //      EYEHOLD_CREDITS_TOKEN. The station must stay linked across that move, and the non-secret fields
   //      (url/accountId/linkedAt) must survive it — they are NOT part of what gets adopted. ----
   {
     const kcDir = path.join(tmp, 'kc'); const kcFile = path.join(kcDir, 'credits.json');

@@ -74,12 +74,12 @@ function startMock() {
   return new Promise(r => server.listen(0, '127.0.0.1', () => { mock.server = server; mock.base = 'http://127.0.0.1:' + server.address().port + '/api/v1'; r(mock); }));
 }
 const api = async (base, token, method, path, body) => {
-  const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base }, body: body ? JSON.stringify(body) : undefined });
   let j = null; try { j = await r.json(); } catch (_) {}
   return { status: r.status, json: j };
 };
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-gaps-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-gaps-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');
@@ -91,7 +91,7 @@ const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model:
 const chrome = spawn(chromePath, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--no-proxy-server', '--hide-scrollbars', '--mute-audio',
   '--remote-debugging-port=' + cdpPort, '--window-size=1440,900', '--user-data-dir=' + profile, 'about:blank'], { stdio: 'ignore' });
 
-const NOTIFS = `(() => { try { return (JSON.parse(localStorage.getItem('starnet.station.v1')) || {}).notifs || []; } catch (_) { return null; } })()`;
+const NOTIFS = `(() => { try { return (JSON.parse(localStorage.getItem('eyehold.station.v1')) || {}).notifs || []; } catch (_) { return null; } })()`;
 let cdp = null;
 try {
   check('isolated seeded sidecar starts', await waitUp(base + '/'));
@@ -129,7 +129,7 @@ try {
     { name: 'station_settings', args: { section: 'limits' } },                                                                       // 8
     { name: 'station_control', args: { action: 'estop.engage', args: {} } }                                                           // 9
   ];
-  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base },
+  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base },
     body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: MARK + ' queue tidy-the-docs as away work, browser in its own window, clear my notifications, clean up deliverables, max 150 steps, then hit the E-STOP' }] }) });
   await res.text();
   const R = mock.results;

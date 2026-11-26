@@ -2,7 +2,7 @@
    Locks the G1 packaged-lifecycle gate's classification + verdict logic (scripts/qa/packaged-lifecycle.mjs)
    with fakes — no PowerShell, no user32, no installed app, virtual clock. Proves:
      - process classification uses the shell's full-path rule (foreign node.exe never counts)
-     - window detection = visible + exact "StarNet" title + shell-owned (the `-siw` single-instance
+     - window detection = visible + exact "Eyehold" title + shell-owned (the `-siw` single-instance
        window and hidden windows never count)
      - startup.log parsing takes the LAST spawn record after a marker and names the close branch
      - idle-close verdict fails on a lingering shell, an orphan sidecar, the wrong branch, or a
@@ -17,7 +17,7 @@ const A = require('./_assert.js');
 
 (async () => {
   const M = await import('../scripts/qa/packaged-lifecycle.mjs');
-  const INSTALL = 'C:\\Users\\runneradmin\\AppData\\Local\\StarNet';
+  const INSTALL = 'C:\\Users\\runneradmin\\AppData\\Local\\Eyehold';
   const EXE = INSTALL + '\\skynet-desktop.exe';
   const NODE = INSTALL + '\\node.exe';
 
@@ -37,17 +37,17 @@ const A = require('./_assert.js');
     A.eq(M.classifyProcesses([{ pid: 7, name: 'node.exe', path: null }], INSTALL).sidecar.length, 0, 'node.exe without a path never counts as sidecar');
   }
 
-  // ---- starnetWindows
+  // ---- eyeholdWindows
   {
     const wins = [
-      { hwnd: 1, pid: 100, visible: true, title: 'StarNet' },
-      { hwnd: 2, pid: 100, visible: false, title: 'StarNet' },
+      { hwnd: 1, pid: 100, visible: true, title: 'Eyehold' },
+      { hwnd: 2, pid: 100, visible: false, title: 'Eyehold' },
       { hwnd: 3, pid: 100, visible: true, title: 'ai.skynet.harness-siw' },
-      { hwnd: 4, pid: 999, visible: true, title: 'StarNet' },
-      { hwnd: 5, pid: 100, visible: true, title: ' StarNet ' },
+      { hwnd: 4, pid: 999, visible: true, title: 'Eyehold' },
+      { hwnd: 5, pid: 100, visible: true, title: ' Eyehold ' },
     ];
-    A.eq(M.starnetWindows(wins, [100]).map((w) => w.hwnd), [1, 5], 'visible + exact title + shell-owned only');
-    A.eq(M.starnetWindows(wins, []).length, 0, 'no shell pids → no windows');
+    A.eq(M.eyeholdWindows(wins, [100]).map((w) => w.hwnd), [1, 5], 'visible + exact title + shell-owned only');
+    A.eq(M.eyeholdWindows(wins, []).length, 0, 'no shell pids → no windows');
   }
 
   // ---- parseStartupLog / closeBranch
@@ -76,7 +76,7 @@ const A = require('./_assert.js');
   const snap = (o) => Object.assign({ shell: [], sidecar: [], windows: [], health: null }, o);
   const shell = (pid) => ({ pid, path: EXE, ppid: 1 });
   const side = (pid) => ({ pid, path: NODE, ppid: 100 });
-  const win = (pid) => ({ hwnd: 9, pid, visible: true, title: 'StarNet' });
+  const win = (pid) => ({ hwnd: 9, pid, visible: true, title: 'Eyehold' });
   const idleLog = { closeLines: ['close-request: close_to_tray=false'] };
   const trayLog = { closeLines: ['close-request: close_to_tray=true', 'close-request: staying resident (close-to-tray preference)'] };
 
@@ -93,7 +93,7 @@ const A = require('./_assert.js');
     const wrongBranch = M.judgeIdleClose({ after: snap(), relaunch: snap({ shell: [shell(200)], windows: [win(200)], health: true }), log: trayLog });
     A.ok(!wrongBranch.pass && wrongBranch.reasons.some((r) => /branch was "tray-preference"/.test(r)), 'idle case that took the tray branch FAILS (the 08-19 wrong-branch lesson)');
     const noWin = M.judgeIdleClose({ after: snap(), relaunch: snap({ shell: [shell(200)], windows: [], health: true }), log: idleLog });
-    A.ok(!noWin.pass && noWin.reasons.some((r) => /no visible "StarNet" window after relaunch/.test(r)), 'relaunch without a window FAILS');
+    A.ok(!noWin.pass && noWin.reasons.some((r) => /no visible "Eyehold" window after relaunch/.test(r)), 'relaunch without a window FAILS');
     const noHealth = M.judgeIdleClose({ after: snap(), relaunch: snap({ shell: [shell(200)], windows: [win(200)], health: false }), log: idleLog });
     A.ok(!noHealth.pass && noHealth.reasons.some((r) => /health/.test(r)), 'relaunch without health FAILS');
     A.eq(M.judgeIdleClose({ after: null, relaunch: null, log: null }).pass, false, 'missing snapshots FAIL loudly');
@@ -121,7 +121,7 @@ const A = require('./_assert.js');
 
   // ---- judgeUpdater
   {
-    const feed = { version: '0.10.7', platforms: { 'windows-x86_64': { url: 'https://x/StarNet_0.10.7_x64-setup.exe', signature: 'sig' } } };
+    const feed = { version: '0.10.7', platforms: { 'windows-x86_64': { url: 'https://x/Eyehold_0.10.7_x64-setup.exe', signature: 'sig' } } };
     A.eq(M.judgeUpdater({ expectedVersion: '0.10.7', exeVersion: '0.10.7.0', tagFeed: feed, publicFeed: feed, feedMustMatch: true }).pass, true, 'updater passes when exe, tag feed, and public feed agree (trailing .0 tolerated)');
     A.eq(M.judgeUpdater({ expectedVersion: 'v0.10.7', exeVersion: '0.10.7', tagFeed: feed, publicFeed: { version: '0.10.6', platforms: feed.platforms }, feedMustMatch: false }).pass, true, 'public feed may lag when the tag is a draft (feedMustMatch=false)');
     const lag = M.judgeUpdater({ expectedVersion: '0.10.7', exeVersion: '0.10.7', tagFeed: feed, publicFeed: { version: '0.10.6' }, feedMustMatch: true });
@@ -171,7 +171,7 @@ const A = require('./_assert.js');
       launches.push('first');
       const pid = nextPid++;
       procs.push({ pid, name: 'skynet-desktop.exe', path: EXE, ppid: 1 });
-      windows.push({ hwnd: pid * 10, pid, visible: true, title: 'StarNet' });
+      windows.push({ hwnd: pid * 10, pid, visible: true, title: 'Eyehold' });
       windows.push({ hwnd: pid * 10 + 1, pid, visible: true, title: 'ai.skynet.harness-siw' });
       const sp = nextPid++;
       procs.push({ pid: sp, name: 'node.exe', path: NODE, ppid: pid });
@@ -255,7 +255,7 @@ const A = require('./_assert.js');
     A.ok(/^name: g1-packaged-lifecycle$/m.test(yml), 'workflow is named g1-packaged-lifecycle');
     A.ok(/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*tag:/.test(yml), 'workflow_dispatch exposes a `tag` input');
     A.ok(/runs-on: windows-latest/.test(yml), 'runs on a hosted Windows VM (fresh machine per run)');
-    A.ok(!/androoAGI\/starnet-releases/.test(yml), 'does not download upstream installers');
+    A.ok(!/Eyehold\/eyehold-releases/.test(yml), 'does not download upstream installers');
     A.ok(/inputs\.release_repository/.test(yml), 'the owner names the release repository at dispatch');
     A.ok(/gh release download \$env:TAG .*--pattern '\*-setup\.exe'/.test(yml), 'downloads the tag installer');
     A.ok(/-ArgumentList '\/S'/.test(yml), 'silent install');

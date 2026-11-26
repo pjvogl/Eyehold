@@ -1,7 +1,7 @@
 /* node test/payload.budget.test.js — the PER-CALL PAYLOAD BUDGET (w2 footprint, 2026-09-22).
 
    Every model call re-sends the system prompt and every advertised tool schema. Nothing guarded that growth: a
-   Hermes-parity audit measured StarNet at 34,867 system chars + 47 tools per call on a working floor, against
+   Hermes-parity audit measured Eyehold at 34,867 system chars + 47 tools per call on a working floor, against
    13,595 + 25 for Hermes on the same machine. This test builds the two layouts that matter from the REAL request
    bytes a private sidecar sends to a fake model, prints what it measured so growth is visible in review, and pins
    an upper budget with headroom:
@@ -48,7 +48,7 @@ const HOST = '127.0.0.1';
    (it sets what starts a line) join the deferred index: ", station_test_line, station_start_line" = +39. Note what else moves this number: the prompt carries the harness build id
    (git describe), whose length changes as other lanes add tags. It took trunk from 24,795 to 24,833 on the floor
    with no prompt change (038a62983). Measured 24,612 + 39 / 24,833 + 39; the system budgets move by 50 again.
-   PINNED BUILD ID 2026-10-03: the run's build id is now a fixed release-shaped label (STARNET_BUILD_DESCRIBE below), so a
+   PINNED BUILD ID 2026-10-03: the run's build id is now a fixed release-shaped label (EYEHOLD_BUILD_DESCRIBE below), so a
    tag elsewhere can never move this number again (an archive tag took the floor to 24,902 with no prompt change).
    10-06 ISSUE BATCH (#77, already on trunk e5e95c76b): team_dispatch's description now says where a worker's relative
    files land in a project-scoped conversation and why an ASK-mode worker has no shell (+570), image tools name the
@@ -76,13 +76,13 @@ const BUDGET = {
   await new Promise(r => llm.listen(0, HOST, r));
   const env = {};
   for (const k of Object.keys(process.env)) {
-    if (/^(OPENROUTER|ANTHROPIC|OPENAI|GEMINI|GOOGLE_API|XAI|GROQ|MISTRAL|DEEPSEEK|TOGETHER|FIREWORKS|PERPLEXITY|CEREBRAS|KIMI|ELEVENLABS|STARNET_|SKYNET_)/i.test(k)) env[k] = '';
+    if (/^(OPENROUTER|ANTHROPIC|OPENAI|GEMINI|GOOGLE_API|XAI|GROQ|MISTRAL|DEEPSEEK|TOGETHER|FIREWORKS|PERPLEXITY|CEREBRAS|KIMI|ELEVENLABS|EYEHOLD_|SKYNET_)/i.test(k)) env[k] = '';
   }
-  Object.assign(env, { SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_THREAD_MINE: '0', STARNET_LIVE_PRICES: '0' });
+  Object.assign(env, { SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_THREAD_MINE: '0', EYEHOLD_LIVE_PRICES: '0' });
   // the prompt carries the harness build id: pinned to a release-shaped label so the measurement is the PROMPT, not whichever
   // tag `git describe` finds nearest this checkout (an archive/<lane>-<sha> tag added 13 chars and failed the gate, 10-03)
-  env.STARNET_BUILD_DESCRIBE = 'v0.12.5-1587-gac98203c2-dirty';
-  const fixture = SidecarFixture.create({ prefix: 'starnet-payload-budget-', timeoutMs: 20000, env });
+  env.EYEHOLD_BUILD_DESCRIBE = 'v0.12.5-1587-gac98203c2-dirty';
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-payload-budget-', timeoutMs: 20000, env });
   const starter = [];
   for (const p of WM.starterDoc().props) { const c = WM.capForProp(p.t); if (c && c !== 'computer' && c !== 'connector' && starter.indexOf(c) < 0) starter.push(c); }
   async function measure(isTask) {

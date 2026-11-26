@@ -1,4 +1,4 @@
-# StarNet v0.11.2 — draft
+# Eyehold v0.11.2 — draft
 
 This update brings more reliable saves and task results, clearer setup, and smoother station movement and backdrops.
 
@@ -23,7 +23,7 @@ This update brings more reliable saves and task results, clearer setup, and smoo
 - CRT static strength can be adjusted and saved in Appearance settings. Existing stations keep their current look at the 100% default.
 - Docked panel height survives reopen and reload. Image setup guidance includes the supported OpenRouter credential route.
 
-Google Workspace connections remain deferred while verification is completed. Google login for StarNet billing is separate.
+Google Workspace connections remain deferred while verification is completed. Google login for Eyehold billing is separate.
 
 Editorial draft only. These notes describe included source changes; the release remains subject to the acceptance work in [FOLLOWTHROUGH.md](FOLLOWTHROUGH.md). Canary installers are test artifacts; no public release or tag is implied.
 

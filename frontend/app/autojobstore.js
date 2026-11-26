@@ -1,4 +1,4 @@
-/* STARNET — autojobstore.js : the browser wiring around the pure self-initiation engine (autojobs.js). Slice 2 of
+/* EYEHOLD — autojobstore.js : the browser wiring around the pure self-initiation engine (autojobs.js). Slice 2 of
    the autonomy layer.
 
    It does two things, both routed through the same flow (reason-only model call → parse → approval beat → schedule):
@@ -16,7 +16,7 @@
    - The actual jobs live SERVER-side (cron); this store only remembers whether the one-time offer has happened. */
 'use strict';
 const AutoJobStore = (() => {
-  const KEY = 'starnet.autojobs.v1';
+  const KEY = 'eyehold.autojobs.v1';
   let state = null;            // { v:1, proposed:bool } — the proactive fire-once flag (self-persisted)
   let deps = {};               // accessors/actions injected by app.js
   let firing = false;          // re-entrancy guard while a proposal flow is mid-air

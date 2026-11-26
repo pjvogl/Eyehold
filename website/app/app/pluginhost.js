@@ -1,6 +1,6 @@
 /* frontend/app/pluginhost.js — PLUGIN WINDOWS (plugin extensions phase 1, 2026-09-29).
 
-   An approved plugin's `screens` (plugin.json) become real StarNet windows. Each one is registered through the
+   An approved plugin's `screens` (plugin.json) become real Eyehold windows. Each one is registered through the
    ordinary window registry (StationUI.registerWindow), so it opens, drags, docks, minimizes and rises in as a glass
    sheet exactly like CONNECTORS or the TASK BOARD — the station's chrome, the plugin's content.
 
@@ -11,7 +11,7 @@
    bar, the PLUGIN plate and every approval stay host-drawn, so a plugin can never pass its content off as the
    station's own telemetry.
 
-   Theme: the host pushes the station's LIVE computed tokens into each frame (starnet-kit.js applies them) when a
+   Theme: the host pushes the station's LIVE computed tokens into each frame (eyehold-kit.js applies them) when a
    frame says hello and whenever <body>'s theme class or inline theme vars change — a custom hue repaints every
    plugin window in the same frame as the station.
 
@@ -145,7 +145,7 @@
     // the plugin's OWN backend (api.handle in its main), run in its own process by the sidecar
     'backend.call': async (entry, a) => {
       if (entry.draft) throw new Error('a draft preview has no backend — its code runs only after it is installed and approved');
-      if (entry.app) throw new Error('an app has no backend — its data arrives with app.publish (read it with starnet.store.get)');
+      if (entry.app) throw new Error('an app has no backend — its data arrives with app.publish (read it with eyehold.store.get)');
       const r = await fetch('/api/plugins/call', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: entry.plugin.id, fn: String((a && a.fn) || ''), args: a && a.args })
@@ -214,9 +214,9 @@
      case). A second time within 15 s leaves the window stopped and says so, neutrally: the host cannot tell an
      escape from a page that will not load, so it accuses nothing.
      Honest limits: the one request that loaded the foreign page has already been made — what a frame can reach is
-     only its own plugin's/app's data, and it never stays on screen to pose as StarNet; and a page may send one hello
+     only its own plugin's/app's data, and it never stays on screen to pose as Eyehold; and a page may send one hello
      ahead of a navigation (or hand its nonce to a page it opens), so a determined page can stay out of sight for one
-     hop. The guard is about what the Commander SEES in a StarNet window, not a network wall. */
+     hop. The guard is about what the Commander SEES in a Eyehold window, not a network wall. */
   const leaveLog = new Map();   // window key -> last time its frame was thrown out
   function watchLeave(key, body, entry) {
     entry.iframe.addEventListener('load', () => {
@@ -240,7 +240,7 @@
         // put it back on its LATEST version (the app/plugin list is re-read first, so a changed page loads fresh)
         const reread = entry.app && typeof AppsUI !== 'undefined' && AppsUI.load ? AppsUI.load() : refresh();
         Promise.resolve(reread).catch(() => null).then(() => { if (body.isConnected && !frameFor(body)) build(key, body); });
-        if (ui && ui.notify) ui.notify(name + ' could not load its own page — StarNet reopened it.', 'warn', 'general', { transient: true });
+        if (ui && ui.notify) ui.notify(name + ' could not load its own page — Eyehold reopened it.', 'warn', 'general', { transient: true });
       }, 2500);
     });
   }
@@ -271,7 +271,7 @@
         plate.className = 'plugin-plate' + (draft ? ' draft' : '') + (isApp ? ' app' : '');
         plate.textContent = draft ? 'DRAFT' : (isApp ? 'APP' : 'PLUGIN');
         plate.setAttribute('data-tip', draft ? 'A plugin draft your crew wrote — not installed; its code does not run and nothing it saves is kept'
-          : (isApp ? 'An app your crew built for you. It can only draw — its content comes from your crew' : 'Drawn by a plugin you approved, not by StarNet'));
+          : (isApp ? 'An app your crew built for you. It can only draw — its content comes from your crew' : 'Drawn by a plugin you approved, not by Eyehold'));
         title.insertAdjacentElement('afterend', plate);
       }
     }
@@ -437,7 +437,7 @@
     for (const f of Array.from(frames)) if (f.key === key && ui && ui.rerender) ui.rerender(key);
     return true;
   }
-  // the crew published data: tell the page (starnet.onData) and refresh the bar's status line
+  // the crew published data: tell the page (eyehold.onData) and refresh the bar's status line
   function appData(id) {
     const key = APP_PREFIX + id;
     for (const f of frames) if (f.key === key) post(f, { ev: 'data' });

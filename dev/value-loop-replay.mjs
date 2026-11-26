@@ -105,15 +105,15 @@ async function main() {
   let scratch, workspace, source;
   if (resumeArg) ({ scratch, workspace, source } = validateResume(resumeArg.slice(9)));
   else {
-    scratch = mkdtempSync(join(tmpdir(), 'starnet-value-replay-'));
+    scratch = mkdtempSync(join(tmpdir(), 'eyehold-value-replay-'));
     workspace = join(scratch, 'workspace'); source = join(scratch, 'client-notes');
     materializeSeedWorkspace(workspace, MODEL);
     mkdirSync(source); writeFileSync(join(source, 'weekly-notes.md'), SAMPLE + '\n');
   }
   const mock = await startReplayProvider();
   const child = bootSeededSidecar({ port, model: MODEL, key: 'local-replay-placeholder-not-a-credential', scratchDir: workspace, env: {
-    SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base,
-    STARNET_OPENROUTER_KEY: 'local-replay-placeholder-not-a-credential',
+    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'local-replay-placeholder-not-a-credential',
     SKYNET_QUEST_REFRESH: '0', SKYNET_SCOUT: '0'
   } });
   let stopping = false;

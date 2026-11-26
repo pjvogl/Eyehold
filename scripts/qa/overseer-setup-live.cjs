@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
-const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 (async () => {
-  const browser = await chromium.launch({ headless: true, ...(process.env.STARNET_CHROME ? { executablePath: process.env.STARNET_CHROME } : {}) });
+  const browser = await chromium.launch({ headless: true, ...(process.env.EYEHOLD_CHROME ? { executablePath: process.env.EYEHOLD_CHROME } : {}) });
   const receipt = { checks: [], errors: [] };
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
@@ -52,7 +52,7 @@ const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwrigh
       const response = await page.request.get('http://127.0.0.1:9217/assets/brand/providers/'+logo+'.svg');
       assert(response.ok() && (await response.text()).includes('<svg'),logo+' is bundled');
     }
-    const hero = page.locator('.prov[data-prov="starnet"]');
+    const hero = page.locator('.prov[data-prov="eyehold"]');
     await hero.waitFor({state:'visible'});
     assert.equal(connections,0,'automatic selection must never launch account connection');
     const [popup] = await Promise.all([page.waitForEvent('popup'),hero.evaluate(el => { el.click(); el.click(); })]);
@@ -189,7 +189,7 @@ const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwrigh
     const recoveryPage = await browser.newPage();
     recoveryPage.on('pageerror', error => receipt.errors.push(error.message));
     // Suppress only the development credential shortcut; the real seeded save must route to RESUME.
-    await recoveryPage.addInitScript(() => Object.defineProperty(window, '__STARNET_DEV__', { get: () => undefined, set: () => {} }));
+    await recoveryPage.addInitScript(() => Object.defineProperty(window, '__EYEHOLD_DEV__', { get: () => undefined, set: () => {} }));
     await recoveryPage.goto(process.argv[2] || 'http://127.0.0.1:9217/');
     await recoveryPage.locator('#screen-connect.recovery').waitFor();
     assert.equal(await recoveryPage.locator('#in-name').inputValue(), 'NOVA');

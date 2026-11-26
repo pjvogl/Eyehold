@@ -112,7 +112,7 @@ A.eq(makeRouter().stationFor('coder'), null, 'no posted plan -> stationFor null'
   stDoc.props.push({ id: 'pc1', t: 'console', x: 7, y: 1, w: 2, h: 1, agentId: 'coder' });
   const r = makeRouter();
   A.ok(r.setStation(stDoc).ok, 'valid Station document installs as last-good');
-  A.ok(!r.setStation({ schema: 'starnet.station', version: 1, rooms: {}, order: [], props: [] }).ok, 'invalid empty Station document is refused');
+  A.ok(!r.setStation({ schema: 'eyehold.station', version: 1, rooms: {}, order: [], props: [] }).ok, 'invalid empty Station document is refused');
   r.setPlan(planWith(['cabinet']));
   A.ok(resolveTools('coder', r.stationFor('coder')).hasCompute, 'last-good station stays active after invalid update');
 }

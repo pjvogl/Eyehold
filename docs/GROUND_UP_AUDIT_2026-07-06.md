@@ -1,4 +1,4 @@
-# StarNet ground-up audit — 2026-07-06
+# Eyehold ground-up audit — 2026-07-06
 
 Six parallel read-only audits (backend, frontend, event seams, desktop/release, tests/docs,
 security/first-run) grounded against current trunk `feat/harness-backend`, not plan docs.
@@ -17,7 +17,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
 ### 0.1 Workspace "migration" resurrects deleted user data every boot
 - **Where:** `src-tauri/src/main.rs:385-397`, called unconditionally at `:1131`; `copy_missing_dir` `:360`.
 - **What:** `migrate_workspace_data` runs on *every* startup with no done-marker. `copy_missing_dir`
-  copies any file present in a legacy root (incl. `%LOCALAPPDATA%\StarNet\workspaces`, a real stale
+  copies any file present in a legacy root (incl. `%LOCALAPPDATA%\Eyehold\workspaces`, a real stale
   secondary on Andrew's machine) but missing in the live root.
 - **Why it matters:** User deletes an agent / dismisses a prospect / prunes a session → file gone from
   the live root → next launch silently copies the stale legacy copy back → deleted state resurrects.
@@ -43,7 +43,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
 - **Where:** `sidecar/index.js:3852` (`serveWorkshopRun` sets no CSP), token injected token-free into
   index.html at `:6405`, static routes need no token (`serveStatic` `:6397`).
 - **What:** Deliverables are served as executable HTML on `http://127.0.0.1:8787`. Once opened, inline
-  scripts run same-origin and can `fetch('/')` → read `window.__STARNET_API_TOKEN__` → call any `/api/*`
+  scripts run same-origin and can `fetch('/')` → read `window.__EYEHOLD_API_TOKEN__` → call any `/api/*`
   route (self-approve consent, write files via `/api/workshop/decide`, dump config). `/api/file` defends
   the identical files with `CSP: sandbox` + octet-stream; `/workshop-run/` does not.
 - **Why it matters:** A prompt-injected workshop shift → Commander clicks "Open it" → full harness
@@ -67,7 +67,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
 ### 0.6 Frontend leaks the local API token to openrouter.ai (third party)
 - **Where:** `frontend/app/harness.js:44-46` (`isApiUrl` matches `/\/api\//` anywhere), `:290` (fallback
   `fetch(OR + '/models')` where `OR = https://openrouter.ai/api/v1`).
-- **What:** The `window.fetch` monkey-patch attaches `X-StarNet-Token` to *any* URL containing `/api/`.
+- **What:** The `window.fetch` monkey-patch attaches `X-Eyehold-Token` to *any* URL containing `/api/`.
   The OpenRouter fallback catalog URL contains `/api/`, so the desktop build (which injects the token)
   sends the private local token to openrouter.ai. The custom header also forces a CORS preflight
   OpenRouter rejects → the fallback catalog fetch fails outright.
@@ -78,7 +78,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
 
 ### 0.5 Release pipeline — three ship-blockers
 - **0.5a Updater + INSTALL.md point at a private repo that 404s fleet-wide.** `src-tauri/tauri.conf.json:67`
-  and `INSTALL.md:17-18` both target `nonfungiblefunyuns-ship-it/starnet-releases/.../latest`, which returns
+  and `INSTALL.md:17-18` both target `nonfungiblefunyuns-ship-it/eyehold-releases/.../latest`, which returns
   404 while private. Auto-update is dead and the doc handed to testers 404s. **Decision required:** publish
   the releases repo public (Andrew-only action) or gate the doc/updater behind "coming soon."
 - **0.5b Version floor stale → backwards release.** `tauri.conf.json`/`Cargo.toml` say 0.2.2, installed is
@@ -116,7 +116,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
   roster. A headless (Telegram/cron-only) deployment loses it permanently; saved UI state and runtime disagree.
 - **Fix:** Include `approvalMode` in `saveAgentRoster`.
 
-### 1.4 `STARNET_TEST_OPEN_LOG` makes `/api/workshop/open` fake success in production
+### 1.4 `EYEHOLD_TEST_OPEN_LOG` makes `/api/workshop/open` fake success in production
 - **Where:** `sidecar/index.js:789-793` (`installTestOpenLog`).
 - **What:** If that env var is non-empty, the opener is replaced and unconditionally returns `launched` —
   a success-shaped stub not gated on any dev/test flag. A stray env var → "Open it" reports success while

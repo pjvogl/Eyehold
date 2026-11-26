@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.longhaul-audit",
+  "schema": "eyehold.longhaul-audit",
   "version": 1,
   "deterministicEpoch": 1710000000000,
   "tempRoot": "C:\\Users\\andro\\gen-trees\\release-audit-0124-0920\\.qa_tmp\\release-0124\\longhaul-workspace",

@@ -75,7 +75,7 @@ assert.equal(ctx.U.timeoutSignal(17), sentinel, 'native implementation remains a
   // Execute the real staging function on a small tree, then load the exact
   // packaged script referenced by index.html with no engine/global API origin.
   const { stage, plan, KEEP_INDUSTRIAL } = await import(pathToFileURL(path.resolve('scripts/stage-frontend-dist.mjs')));
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-mac-boot-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-mac-boot-'));
   try {
     const src = path.join(dir, 'frontend'), dest = path.join(dir, 'bundle');
     for (const name of KEEP_INDUSTRIAL) fs.mkdirSync(path.join(src, 'assets/industrial', name), { recursive: true });

@@ -15,7 +15,7 @@ const seedWorkspace = mkdtempSync(resolve(out, 'workspace-'));
 const port = await allocatePort(), cdpPort = await allocatePort();
 const url = `http://127.0.0.1:${port}/`;
 let app, browser, cdp, log = '';
-const installedRoot = process.env.STARNET_SESSION_INSTALLED_ROOT;
+const installedRoot = process.env.EYEHOLD_SESSION_INSTALLED_ROOT;
 const installed = installedRoot ? SidecarFixture.create({entry:resolve(installedRoot,'sidecar/index.js'),portAllocator:async()=>port,
   env:{SKYNET_DEV:'1',SKYNET_FULL_ACCESS:'1',SKYNET_DEFAULT_MODEL:'test/model',SKYNET_OPENROUTER_KEY:'sk-or-session-fixture'}}) : null;
 if (installed) {
@@ -133,7 +133,7 @@ try {
       truncated=true;Harness.setModel('test/model');await Chat.send('Retain a partial reply');
       const partialProtected=a.lastRunOk===false && a.history.some(m=>m.error) && !document.getElementById('chat-log').innerText.endsWith('RUN COMPLETE');
       saveOffline=true;App.persist();const failedSave=await CloudSave.flush({force:true});
-      const localRetained=localStorage.getItem('starnet.save').includes('Retain a partial reply');
+      const localRetained=localStorage.getItem('eyehold.save').includes('Retain a partial reply');
       saveOffline=false;App.persist(); const saved = await CloudSave.flush({force:true});
       return {id:a.id, neighbor:b.id, delayedVisible, beforeHistoryReady, modelContext, promptLast, draftProtected,focusProtected,unavailableProtected,retryOnce,partialProtected,failedSave,localRetained,saved,
         diagnostics:Chat.continuityDiagnostics(),
@@ -143,7 +143,7 @@ try {
   writeFileSync(resolve(out, 'live.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));
   // Force recovery from the acknowledged durable save, not the old browser cache.
-  assert.equal(await evalJS(cdp, "localStorage.removeItem('starnet.save'); localStorage.getItem('starnet.save')"),null);
+  assert.equal(await evalJS(cdp, "localStorage.removeItem('eyehold.save'); localStorage.getItem('eyehold.save')"),null);
   await cdp.send('Page.navigate', { url: 'about:blank' });
   await stop(); await boot(); await page();
   result.restart = await evalJS(cdp, `(() => { const w=Workstreams.get(${JSON.stringify(result.id)}); if(w) {Workstreams.switch(w.id);Chat.load(w);} return {exists:!!w,history:w?.history.map(m=>({role:m.role,content:m.content})),visible:document.getElementById('chat-log').innerText}; })()`);

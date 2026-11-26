@@ -1,6 +1,6 @@
 /* node test/child-env.test.js — helper processes never inherit the station's secrets (audit 2026-09-25 #13).
 
-   Plants station secrets in THIS test process's env (the desktop-injected STARNET_/SKYNET_ names, a service key
+   Plants station secrets in THIS test process's env (the desktop-injected EYEHOLD_/SKYNET_ names, a service key
    the sidecar exported, a held secret value re-exported under an innocent name), then spawns REAL node children
    through the guarded child_process and asserts each child cannot see them while it still sees PATH, HOME and the
    user's own vars (including the user's own NPM_TOKEN — theirs, not the station's). Also pins the rule that every
@@ -15,11 +15,11 @@ const { sanitizeChildEnv } = require('../sidecar/environment.js');
 const HELD = 'held-provider-key-CANARY-0123456789';
 const PLANT = {
   SKYNET_API_TOKEN: 'api-token-CANARY-abcdef',
-  STARNET_API_TOKEN: 'api-token-CANARY-abcdef',
+  EYEHOLD_API_TOKEN: 'api-token-CANARY-abcdef',
   SKYNET_IPC_TOKEN: 'ipc-token-CANARY-abcdef',
   SKYNET_OPENAI_API_KEY: 'sk-desktop-injected-CANARY-1234',
   SKYNET_KEY_POOL_OPENROUTER: 'pool-a-CANARY-123,pool-b-CANARY-456',
-  STARNET_CREDITS_TOKEN: 'credits-CANARY-7890abcd',
+  EYEHOLD_CREDITS_TOKEN: 'credits-CANARY-7890abcd',
   SKYNET_TELEGRAM_TOKEN: '123456:telegram-CANARY-abcdefgh',
   ACME_API_KEY: 'service-key-CANARY-exported',     // a KEYS-tab service key the sidecar exported (owned name)
   INNOCENT_LOOKING: HELD,                            // a held secret value under a name that looks harmless
@@ -30,8 +30,8 @@ for (const k of Object.keys(PLANT)) process.env[k] = PLANT[k];
 if (!process.env.HOME && process.env.USERPROFILE) process.env.HOME = process.env.USERPROFILE;
 CE.setStationSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, 'short'] });
 
-const STRIPPED = ['SKYNET_API_TOKEN', 'STARNET_API_TOKEN', 'SKYNET_IPC_TOKEN', 'SKYNET_OPENAI_API_KEY', 'SKYNET_KEY_POOL_OPENROUTER',
-  'STARNET_CREDITS_TOKEN', 'SKYNET_TELEGRAM_TOKEN', 'ACME_API_KEY', 'INNOCENT_LOOKING'];
+const STRIPPED = ['SKYNET_API_TOKEN', 'EYEHOLD_API_TOKEN', 'SKYNET_IPC_TOKEN', 'SKYNET_OPENAI_API_KEY', 'SKYNET_KEY_POOL_OPENROUTER',
+  'EYEHOLD_CREDITS_TOKEN', 'SKYNET_TELEGRAM_TOKEN', 'ACME_API_KEY', 'INNOCENT_LOOKING'];
 function checkEnv(env, label) {
   const names = Object.keys(env).map(k => k.toUpperCase());
   for (const k of STRIPPED) A.ok(names.indexOf(k) < 0, label + ': ' + k + ' is stripped');

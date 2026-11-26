@@ -14,7 +14,7 @@ linked schedule. Required syntax, fast and HTTP gates must pass before integrati
 - Your widgets / Connected apps / Pinned picker; no default station counters. Old pins remain
   manageable. Three editable presets plus custom Number, List, Trend and Progress displays.
 - Sources are the current MCP manager and configured service-key inventory, plus information
-  StarNet manages. API keys are labelled configured rather than independently verified. The
+  Eyehold manages. API keys are labelled configured rather than independently verified. The
   inventory exposes no credentials, token values, connection headers or process arguments.
 - Saved source identity, request and display type live beside the reading in the durable widget
   store. A definition alone has no reading or update timestamp. Editing clears the old reading

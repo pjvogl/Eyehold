@@ -6,7 +6,7 @@ Intent: retain slim adult proportions and 18-world-pixel body height, enlarge fa
 
 Packing: crop generated alpha bounds, uniformly resize to 76px high, center on 144x144 transparent canvas at y36 (feet112). Revised width34 versus previous31; world widths8.05 versus7.34, both heights18. No horizontal stretch.
 
-The existing real seeded StarNet dev entry now loads an isolated snapshot of app/world.js with a render-only comparison pair. These mannequins are not roster members and do not produce activity or work events. They enter the actual entity depth pass, use the same sampled local light, and share the same floor line. Normal camera2x and close camera4x affect the entire station equally. User pan/zoom remains available. No production world.js changes.
+The existing real seeded Eyehold dev entry now loads an isolated snapshot of app/world.js with a render-only comparison pair. These mannequins are not roster members and do not produce activity or work events. They enter the actual entity depth pass, use the same sampled local light, and share the same floor line. Normal camera2x and close camera4x affect the entire station equally. User pan/zoom remains available. No production world.js changes.
 
 Live proof: both actual tracks drawn (industrial_secretagent.rot.south and readability_secretagent.rot.south), comparison=drawn, normal zoom2 and close zoom4. Visually checked against live desks/chairs, aligned feet and head heights. Browser error log empty. Normal five-agent roster retained.
 

@@ -26,8 +26,8 @@ for(const page of ['index.html',...pages]){
     A.ok(!/<script[^>]+src="[^"]*site\.js/.test(html),page+' keeps the docs network-free');
   }
   for(const m of html.matchAll(/href="([^"]+)"/g)){
-    const url=new URL(m[1].replace(/&amp;/g,'&'),'https://starnetos.com/'+page);
-    if(url.origin!=='https://starnetos.com')continue;
+    const url=new URL(m[1].replace(/&amp;/g,'&'),'https://eyehold.com/'+page);
+    if(url.origin!=='https://eyehold.com')continue;
     let file=decodeURIComponent(url.pathname).replace(/^\//,'');
     if(!file || file.endsWith('/'))file+='index.html';
     if(!file.endsWith('.html'))continue;

@@ -2,7 +2,7 @@
    (sidecar/tools/builtin/browser.js session options preferVisible + noAttach; sidecar/browser-view.js). Proves, with a
    makeDriver SEAM (so the session's own mode + revive logic really runs):
      - preferVisible launches it as a window whatever a call asks (a visible:false navigate, a local test page), and
-       STARNET_BROWSER_HEADLESS still pins it hidden;
+       EYEHOLD_BROWSER_HEADLESS still pins it hidden;
      - when the window is closed (the Chromium we started exits), the next call starts a fresh one on the same
        profile instead of failing against a dead socket — and the dead one is closed without deleting that profile;
      - a dead browser reads as "no page open" to the station (never a stale picture);
@@ -29,8 +29,8 @@ function driverRig() {
 const tick = () => new Promise(r => setImmediate(r));
 
 (async () => {
-  const saved = process.env.STARNET_BROWSER_HEADLESS;
-  delete process.env.STARNET_BROWSER_HEADLESS;
+  const saved = process.env.EYEHOLD_BROWSER_HEADLESS;
+  delete process.env.EYEHOLD_BROWSER_HEADLESS;
   try {
     // ---- a window, whatever a call asks ----
     {
@@ -64,13 +64,13 @@ const tick = () => new Promise(r => setImmediate(r));
     }
     // ---- the headless pin still wins ----
     {
-      process.env.STARNET_BROWSER_HEADLESS = '1';
+      process.env.EYEHOLD_BROWSER_HEADLESS = '1';
       const r = driverRig();
       const B = makeBrowserTools({ makeDriver: r.make, lookup: null, preferVisible: true, forceHeadless: false });
       await B.session.navigate('https://example.com/');
-      A.eq(r.built[0].d.headed, false, 'STARNET_BROWSER_HEADLESS=1 keeps even the station browser hidden (CI, gates)');
+      A.eq(r.built[0].d.headed, false, 'EYEHOLD_BROWSER_HEADLESS=1 keeps even the station browser hidden (CI, gates)');
       A.eq(B.session.handoffSurface().visible, false, 'and it reads as hidden');
-      delete process.env.STARNET_BROWSER_HEADLESS;
+      delete process.env.EYEHOLD_BROWSER_HEADLESS;
     }
     // ---- a private run browser is untouched: headless, attach still available ----
     {
@@ -109,7 +109,7 @@ const tick = () => new Promise(r => setImmediate(r));
       A.eq(h.closed, 1, 'a hidden one still closes after half an hour unused');
     }
   } finally {
-    if (saved === undefined) delete process.env.STARNET_BROWSER_HEADLESS; else process.env.STARNET_BROWSER_HEADLESS = saved;
+    if (saved === undefined) delete process.env.EYEHOLD_BROWSER_HEADLESS; else process.env.EYEHOLD_BROWSER_HEADLESS = saved;
   }
   A.report('browser-station-window.test');
 })().catch(e => { console.log('FAIL: browser-station-window.test threw - ' + (e && e.stack || e)); process.exit(1); });

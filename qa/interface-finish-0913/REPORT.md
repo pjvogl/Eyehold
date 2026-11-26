@@ -1,8 +1,8 @@
-# StarNet interface finish audit
+# Eyehold interface finish audit
 
 Audit date: September 12–13, 2026. Baseline: `091d6e7f3`. Implementation: `0054a3d7a` on `agent/interface-finish-0913`. Environment: isolated worktree, keyless `node dev/seed.js --keep`, browser at `127.0.0.1:9237`. Findings below concern the actual seeded UI unless explicitly labelled **code inference**. This is a broad interface audit, not certification of every account, platform, or lifecycle state.
 
-The strongest opportunity is to carry StarNet's existing readable glass-console patterns into secondary forms. Preserve the station artwork, VT323 type, phosphor palette, inset controls, restrained borders, status language, and shared window chrome. The largest defects came from fixed layout dimensions and older text rules, rather than the visual identity itself.
+The strongest opportunity is to carry Eyehold's existing readable glass-console patterns into secondary forms. Preserve the station artwork, VT323 type, phosphor palette, inset controls, restrained borders, status language, and shared window chrome. The largest defects came from fixed layout dimensions and older text rules, rather than the visual identity itself.
 
 ## Prioritized findings and implementation
 
@@ -57,7 +57,7 @@ The existing [missing-key COMMS error](comms-missing-key.png) is another useful 
 | Quests | Quests, Goals, Progress, Completed including three completed entries | No new goal execution |
 | System | Field manual first mission/navigation; browser Updates unavailable; notifications empty, populated test event, mark-all-read and badge removal | Remaining manual chapters and installed updater not exercised |
 | Refit | Quick-guide modal, prop categories/details, toolbar at two sizes, DONE success toast after unchanged layout | Other editing modes, placement failures and every prop not exercised |
-| Widgets | Your widgets empty, Connected apps, available StarNet entry | No widget generation or connected third-party data |
+| Widgets | Your widgets empty, Connected apps, available Eyehold entry | No widget generation or connected third-party data |
 
 Window checks: 800×600, 1024×768, 1280×720, 1440×900, 1920×1080. Text presets: STANDARD 100%, X-LARGE 130%, HUGE 145%. Provider checks covered all 18 cards via live geometry, with representative visual screenshots. Abilities/catalog repairs were rechecked at 1280×720 / 130% and 1920×1080 / 100%. Automation was checked at 1280×720 and 1024×768 / 100%. [Green-theme Autonomy](after-autonomy-green.png) was visually checked at 1280×720; the original amber theme and AUTO text preference were restored afterward. This is a targeted matrix, not every screen at every combination. Temporary viewport overrides were reset after verification.
 

@@ -83,7 +83,7 @@ function probe(sourceText) {
 let chrome, cdp, profile, failed = false;
 try {
   const executable = findChrome(), port = await freePort();
-  profile = mkdtempSync(join(tmpdir(), 'starnet-wall-receiver-'));
+  profile = mkdtempSync(join(tmpdir(), 'eyehold-wall-receiver-'));
   chrome = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--mute-audio',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
@@ -121,7 +121,7 @@ finally {
   await stopChild(chrome);
   if (profile) {
     const rel = relative(resolve(tmpdir()), resolve(profile));
-    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('starnet-wall-receiver-'), 'cleanup stays inside its own test temp directory');
+    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-wall-receiver-'), 'cleanup stays inside its own test temp directory');
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
     // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.

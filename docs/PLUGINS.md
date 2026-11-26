@@ -1,6 +1,6 @@
-# StarNet plugins
+# Eyehold plugins
 
-A plugin is one folder with a single approval. It can add **windows** (your own HTML/JS, opened as real StarNet
+A plugin is one folder with a single approval. It can add **windows** (your own HTML/JS, opened as real Eyehold
 windows), **code that runs in the station in its own process** (tools for your crew, hooks on every run, background
 jobs, a backend for its windows), and a **terminal** that stands in the station as its body, or any mix of those.
 
@@ -50,14 +50,14 @@ Up to 8 screens per plugin, 32 plugins, 512 files / 16 MB per plugin folder.
 - The page is served by the sidecar from `/plugin-ui/…` and shown in a **sandboxed frame with an opaque origin**. It
   runs any JavaScript you like, loads its own relative assets, and can `fetch` any public API that allows CORS.
 - It **cannot** read the station page, the station's API token, or call the station's `/api` directly. Everything
-  it asks of the station goes through the `starnet` bridge below. The station answers only for the plugin that owns
+  it asks of the station goes through the `eyehold` bridge below. The station answers only for the plugin that owns
   the frame, and a page can't name another plugin.
 - The station draws the title bar, the **PLUGIN** plate, the dock/minimize/expand/close controls and the glass sheet.
   Your page is everything inside. Text size follows the station's TEXT SIZE setting automatically.
 
 ## The kit (the station look, free)
 
-Every page gets `starnet-kit.css` and `starnet-kit.js` injected first in `<head>`. The CSS sits in `@layer starnet`,
+Every page gets `eyehold-kit.css` and `eyehold-kit.js` injected first in `<head>`. The CSS sits in `@layer eyehold`,
 the lowest layer, so **any CSS you write wins** without `!important`. The page background is transparent: the
 window's glass is your background.
 
@@ -82,31 +82,31 @@ window's glass is your background.
 Bare `button`, `input`, `select` and `textarea` are already themed, so no control ever shows the browser's white
 paint. Keep it matte: the station uses edges and light, not glows.
 
-## The `starnet` bridge
+## The `eyehold` bridge
 
 Every call returns a Promise. A refused call rejects with an `Error` that says why.
 
 ```js
-const { plugin, screen } = await starnet.ready;   // { id, name, version }, { id, title }
+const { plugin, screen } = await eyehold.ready;   // { id, name, version }, { id, title }
 
-await starnet.store.set('notes', [{ text: 'hi' }]); // any JSON value, ≤ 256 KB each, ≤ 4 MB per plugin
-await starnet.store.get('notes');                  // → value, or null
-await starnet.store.delete('notes');
-await starnet.store.keys();                        // → ['notes', …]
+await eyehold.store.set('notes', [{ text: 'hi' }]); // any JSON value, ≤ 256 KB each, ≤ 4 MB per plugin
+await eyehold.store.get('notes');                  // → value, or null
+await eyehold.store.delete('notes');
+await eyehold.store.keys();                        // → ['notes', …]
 
-await starnet.backend.call('summary', { days: 7 }); // your main file's api.handle('summary', fn), in its process
+await eyehold.backend.call('summary', { days: 7 }); // your main file's api.handle('summary', fn), in its process
 
-starnet.ui.toast('Saved', 'ok' | 'warn' | 'bad');  // a station notification, shown as "<Plugin>: Saved"
-starnet.ui.setTitle('3 open');                     // title bar becomes "PR RADAR · 3 open"
-starnet.ui.open('settings');                       // open another screen of THIS plugin
-starnet.ui.close();
-starnet.ui.openLink('https://github.com/…');       // https only, opens the real browser
-starnet.ui.setHeight(480);                         // fixed content height (default: follows your content)
-starnet.ui.autoHeight(true);                       // follow the content again (heights are kept between 80 px and
+eyehold.ui.toast('Saved', 'ok' | 'warn' | 'bad');  // a station notification, shown as "<Plugin>: Saved"
+eyehold.ui.setTitle('3 open');                     // title bar becomes "PR RADAR · 3 open"
+eyehold.ui.open('settings');                       // open another screen of THIS plugin
+eyehold.ui.close();
+eyehold.ui.openLink('https://github.com/…');       // https only, opens the real browser
+eyehold.ui.setHeight(480);                         // fixed content height (default: follows your content)
+eyehold.ui.autoHeight(true);                       // follow the content again (heights are kept between 80 px and
                                                    // 78% of the screen; a docked or resized window fills its body)
 
-starnet.theme.vars;                                // the live tokens, e.g. vars['--ph']
-starnet.theme.onChange((vars) => redrawChart(vars));
+eyehold.theme.vars;                                // the live tokens, e.g. vars['--ph']
+eyehold.theme.onChange((vars) => redrawChart(vars));
 ```
 
 The store lives in `<workspaces>/plugin-data/<id>.json` (durable, survives restarts, outside every agent's files).
@@ -133,7 +133,7 @@ module.exports = {
       run: async (args, ctx) => fetchPrs(args.repo)   // return a string or any JSON; ctx = { agentId, runId }
     });
 
-    // answer this plugin's own windows: await starnet.backend.call('summary', { days: 7 })
+    // answer this plugin's own windows: await eyehold.backend.call('summary', { days: 7 })
     api.handle('summary', async ({ days }) => ({ open: 12, days }));
 
     // a background job (10 s minimum)
@@ -155,9 +155,9 @@ capped at 120 lines a minute per plugin.
 
 ## Terminals (how tools reach your crew)
 
-StarNet runs on **object = capability**: an agent can use what stands in its room. A plugin's tools reach agents
+Eyehold runs on **object = capability**: an agent can use what stands in its room. A plugin's tools reach agents
 through its **PLUGIN TERMINAL**, a prop in the REFIT catalog under CAPABILITY. When you approve or create a plugin
-with tools, StarNet **places its terminal in the lead's room for you**. You can move it, place more in other
+with tools, Eyehold **places its terminal in the lead's room for you**. You can move it, place more in other
 rooms, or bind a terminal to a different plugin by clicking it in REFIT. Clicking a terminal in the station opens
 the plugin's window.
 
@@ -170,7 +170,7 @@ data. The TOOLSETS **connectors** switch turns them all off.
 
 Ask in COMMS: "build me a plugin that shows my open PRs". The agent uses the plugin authoring tools (`plugin.draft_start`,
 `plugin.draft_from_installed`, `plugin.draft_read`, `plugin.draft_write`, `plugin.check`, `plugin.preview`, `plugin.submit`; the opt-in
-**Build a StarNet Plugin** library skill has the full recipe):
+**Build a Eyehold Plugin** library skill has the full recipe):
 
 - It writes a **draft** in `<workspaces>/plugin-drafts/<id>`, never in `plugins/` and never in its own files.
 - `plugin.check` parses and compiles the draft **without running it**, and warns about looks that don't match the station.

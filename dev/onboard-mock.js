@@ -44,7 +44,7 @@ function replyFor(directive) {
   if (d.indexOf('THE BENCH') >= 0) return [
     'ACK: two live wires on the bench. good — that is where i land.',
     'ASK: MOCKBENCH — which of the two has to ship first?',
-    'BELIEF goals: Actively building StarNet and an AI-agent YouTube channel.'
+    'BELIEF goals: Actively building Eyehold and an AI-agent YouTube channel.'
   ].join('\n');
   if (d.indexOf('THE YEAR') >= 0) return [
     'ACK: a thousand real users. i want that as much as you do.',
@@ -59,8 +59,8 @@ function replyFor(directive) {
     'BELIEF pain: Loses evenings to manual end-to-end testing.'
   ].join('\n');
   if (d.indexOf('THE READ') >= 0) return [
-    'READ: you build starnet all day and film the building of it — and you want it alive in a thousand hands. that makes me for shipping.',
-    'PURPOSE: Help them ship StarNet and grow the audience watching it happen.',
+    'READ: you build eyehold all day and film the building of it — and you want it alive in a thousand hands. that makes me for shipping.',
+    'PURPOSE: Help them ship Eyehold and grow the audience watching it happen.',
     'STACK: NONE',
     'BELIEF style: Wants short, direct answers.'
   ].join('\n');

@@ -22,7 +22,7 @@ assert.match(source, /POSITION_KEY/, 'floating position is remembered');
 assert.match(source, /seq\s*!==\s*sessionSeq/, 'late microphone permission cannot resurrect a closed session');
 assert.match(source, /requestPartial\(utterance,\s*utteranceSeq\)/, 'long turns surface local partial transcription');
 assert.match(source, /id="lv-endpoint"[^>]*aria-label="Pause before sending your turn"/, 'Local Live exposes an explicit turn-end pause control');
-assert.match(source, /TURN_END_KEY\s*=\s*'starnet\.liveVoice\.turnEndMs\.v1'/, 'the turn-end choice persists across calls');
+assert.match(source, /TURN_END_KEY\s*=\s*'eyehold\.liveVoice\.turnEndMs\.v1'/, 'the turn-end choice persists across calls');
 assert.match(source, /DEFAULT_TURN_END_MS\s*=\s*1200/, 'the default uses the proven quick boundary without returning to a sub-second cutoff');
 assert.match(source, /function endpointSilenceMs\(text,\s*baseMs\)/, 'turn endpointing has a dedicated user-adjustable policy');
 assert.match(source, /Math\.min\(3600,\s*wait\s*\+\s*600\)/, 'incomplete partial transcripts receive an additional hesitation grace period');
@@ -34,8 +34,8 @@ assert.match(source, /noiseFloor\s*\+\s*\(outputActive\s*\?\s*0\.025\s*:\s*0\.00
 assert.doesNotMatch(source, /durationMs\s*>=\s*20000/, 'the former 20-second hard cutoff is removed');
 assert.match(source, /scheduleReconnect\(/, 'lost microphones enter the reconnect state machine');
 assert.match(source, /approvalCommand\(lower\)/, 'run-scoped approvals can be answered by an explicit voice command');
-assert.match(source, /agentCommand\(value,\s*lower\)/, 'voice can select the active Starnet agent without provider coupling');
-assert.match(source, /Harness\.getProv/, 'the controller reports the active Starnet provider');
+assert.match(source, /agentCommand\(value,\s*lower\)/, 'voice can select the active Eyehold agent without provider coupling');
+assert.match(source, /Harness\.getProv/, 'the controller reports the active Eyehold provider');
 assert.doesNotMatch(source, /CODEX OAUTH/, 'provider-agnostic voice UI does not claim Codex is required');
 assert.match(source, /attachCoordinator\(\{\s*onState,\s*onAssistant,\s*onOutputLevel,\s*onTiming[\s\S]*?onSpeechInterrupted[\s\S]*?\}\)/, 'live controller subscribes to real agent output levels');
 assert.match(source, /bar\.dataset\.src\s*=\s*cell\.src/, 'wave history preserves which side of the conversation produced each sample');
@@ -48,7 +48,7 @@ assert.match(chatSource, /Local Live voice stopped\./, '/voice live toggles the 
 assert.doesNotMatch(chatSource, /Hands-free voice mode toggled\./, 'slash command no longer activates the legacy hands-free loop');
 assert.match(voiceSource, /const endFailed\s*=\s*error\s*=>[\s\S]*?onSpeakEnd\(\)[\s\S]*?onFail/, 'media failures clear speaking and meter state before the queue advances');
 assert.match(voiceSource, /currentAudioCleanup/, 'interrupted blob playback has an explicit URL cleanup path');
-assert.match(css, /\.live-voice-panel\s*\{[^}]*position:\s*fixed/s, 'controller follows the user across StarNet views');
+assert.match(css, /\.live-voice-panel\s*\{[^}]*position:\s*fixed/s, 'controller follows the user across Eyehold views');
 assert.match(css, /\.lv-head\s*\{[^}]*cursor:\s*grab/s, 'header advertises the drag affordance');
 assert.match(css, /\.lv-wave i\[data-src="self"\]/, 'the user side of the shared waveform has an explicit visual contract');
 assert.match(css, /\.lv-wave i\[data-src="agent"\]/, 'the agent side of the shared waveform has an explicit visual contract');

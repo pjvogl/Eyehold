@@ -17,12 +17,12 @@ const vm = require('node:vm');
   const unchanged = run('self_.glance = otherBody.id; return 42;');
   assert.equal(unchanged.invoke(), 42, 'preserve original result');
   assert.equal(unchanged.bodies[0].glance, 'b', 'preserve real gaze effect');
-  assert.equal(unchanged.__STARNET_GAZE_PROOF__.read().violations.length, 0, 'occupied target does not establish a movement violation');
-  assert.equal(unchanged.__STARNET_GAZE_PROOF__.exercise().forced, 2, 'exercise both directions');
+  assert.equal(unchanged.__EYEHOLD_GAZE_PROOF__.read().violations.length, 0, 'occupied target does not establish a movement violation');
+  assert.equal(unchanged.__EYEHOLD_GAZE_PROOF__.exercise().forced, 2, 'exercise both directions');
   for (const mutation of ['self_.px++', 'otherBody.py++', 'self_.target = {tile:{x:9,y:9}}', 'self_.pathPts = [{x:4,y:5}]', 'self_.state = "walk"']) {
     const changed = run(mutation);
     changed.invoke();
-    assert.equal(changed.__STARNET_GAZE_PROOF__.read().violations.length, 1, 'detect movement: ' + mutation);
+    assert.equal(changed.__EYEHOLD_GAZE_PROOF__.read().violations.length, 1, 'detect movement: ' + mutation);
   }
   assert.throws(() => instrumentGaze('no seam'), /exactly one/);
   assert.throws(() => instrumentGaze('function glanceAt(self_, otherBody, dur, now) { function glanceAt(self_, otherBody, dur, now) {'), /exactly one/);

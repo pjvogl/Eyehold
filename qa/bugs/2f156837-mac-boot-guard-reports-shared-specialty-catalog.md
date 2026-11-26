@@ -21,7 +21,7 @@ recoveryEvidence: September 18 owner-supplied diagnostics show all five catalog 
 
 ## Symptom
 
-Opening StarNet produces a page-side boot-guard failure naming `shared/specialties.js` as the single failed script. The reported page path is `/`; the user agent identifies Mac WebKit. The report does not include the application version, full origin, requested resource URL, or native startup log.
+Opening Eyehold produces a page-side boot-guard failure naming `shared/specialties.js` as the single failed script. The reported page path is `/`; the user agent identifies Mac WebKit. The report does not include the application version, full origin, requested resource URL, or native startup log.
 
 ## Repro
 

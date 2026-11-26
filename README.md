@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/media/starnet-logo-glow.png" alt="Eyehold" width="560">
+<img src=".github/media/eyehold-logo-glow.png" alt="Eyehold" width="560">
 
 **A living pixel-art realm where real AI agents do real work.**
 
@@ -64,9 +64,9 @@ is still required before any public download.
 
 | Platform | Asset |
 | --- | --- |
-| **Windows** (10/11, 64-bit) | `StarNet_<version>_x64-setup.exe` |
-| **macOS — Apple Silicon** (M1 or later) | `StarNet_<version>_aarch64.dmg` |
-| **macOS — Intel** | `StarNet_<version>_x64.dmg` |
+| **Windows** (10/11, 64-bit) | `Eyehold_<version>_x64-setup.exe` |
+| **macOS — Apple Silicon** (M1 or later) | `Eyehold_<version>_aarch64.dmg` |
+| **macOS — Intel** | `Eyehold_<version>_x64.dmg` |
 
 > **Apple Silicon note:** use the native `aarch64` DMG. Avoid the `x64` DMG on Apple Silicon:
 > it runs under Rosetta 2 rather than using the native architecture.
@@ -90,21 +90,21 @@ Requirements: Node.js 18+ (Node.js 22 matches CI), Git. Rust and the
 The sidecar uses Node core modules only, so it runs without installing anything:
 
 ```bash
-git clone https://github.com/androoAGI/starnet.git
-cd starnet
+git clone https://github.com/Eyehold/eyehold.git
+cd eyehold
 node sidecar/index.js
 ```
 
 Open <http://localhost:8787>, then connect a provider —
 **bring your own OpenRouter API key (BYOK)** or use a supported OAuth sign-in. Provider requests leave your machine when you run an agent;
-station state, transcripts, memory, and ledgers stay in the local StarNet workspace unless you
+station state, transcripts, memory, and ledgers stay in the local Eyehold workspace unless you
 explicitly use a network tool or connector. See [PRIVACY.md](PRIVACY.md) for the full data map.
 
 ### Run free with a local model
 
 No key, no account, no bill: install [Ollama](https://ollama.com), pull a model
 (`ollama pull qwen3:8b`), and pick **OLLAMA** as the provider — on the first-run brain screen, or
-later in **SETTINGS → PROVIDERS**. StarNet talks to Ollama on `127.0.0.1:11434` and only reports
+later in **SETTINGS → PROVIDERS**. Eyehold talks to Ollama on `127.0.0.1:11434` and only reports
 it ready once it can list your local models. Pick a model that supports tools (`ollama show <model>`
 lists them): agents act through tool calls. Honest caveat: local models are smaller than the
 cloud ones, so expect slower and rougher work on long tasks, and a task needs a large context
@@ -120,8 +120,8 @@ npm run desktop:build   # build installers locally
 
 ## Coming from OpenClaw or Hermes?
 
-StarNet can import an existing agent: point it at your on-disk OpenClaw or Hermes home and it
-mints a StarNet agent from the persona, instructions, memory, and model it finds. API keys
+Eyehold can import an existing agent: point it at your on-disk OpenClaw or Hermes home and it
+mints a Eyehold agent from the persona, instructions, memory, and model it finds. API keys
 never transfer — you re-enter those in the KEYS tab.
 
 ## Architecture
@@ -164,19 +164,19 @@ reporting instructions.
 
 ## License
 
-StarNet is open source under the [MIT License](LICENSE). Third-party components remain
+Eyehold is open source under the [MIT License](LICENSE). Third-party components remain
 under their original licenses — see [NOTICE.md](NOTICE.md).
 
-**The MIT License covers the code only.** The **StarNet** name, the logo, the station artwork
-and sprites, and the rest of the project's brand identity are owned by Andrew Sims and are
+**The MIT License covers the code only.** The **Eyehold** name, the logo, the station artwork
+and sprites, and the rest of the project's brand identity are owned by Eyehold and are
 **not** licensed with it — no trademark or other brand rights are granted, expressly or by
 implication.
 
 MIT means you may fork, modify, and redistribute the code, including commercially. What you
-may not do is ship it as StarNet: forks and derivatives must use their own name, logo, and
+may not do is ship it as Eyehold: forks and derivatives must use their own name, logo, and
 artwork, and must not present themselves as this project or as endorsed by it.
 
 This checkout is the Eyehold fork. Its visible marks and the default realm art added here
-are original. The reserved StarNet name, the traced station sheets under `frontend/assets`,
+are original. The reserved Eyehold name, the traced station sheets under `frontend/assets`,
 and the signed skill catalog are not relicensed. See
 [docs/EYEHOLD_UPSTREAM_LEFTOVERS.md](docs/EYEHOLD_UPSTREAM_LEFTOVERS.md).

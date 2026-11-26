@@ -20,20 +20,20 @@ function makeComputerControl(deps) {
   let config;
   try { config = deps.load(configFile) || {}; } catch { config = {}; }
   let installing = null;
-  const selectedEnv = String(env.STARNET_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || '').toLowerCase();
+  const selectedEnv = String(env.EYEHOLD_COMPUTER_DRIVER || env.SKYNET_COMPUTER_DRIVER || '').toLowerCase();
   const locked = /^(cua|0|false|off|none)$/.test(selectedEnv);
   const selection = () => locked ? selectedEnv === 'cua' ? 'cua' : 'off'
     : ['cua', 'win32', 'off'].includes(config.backend) ? config.backend
     : /^(1|true|yes|on|win32|windows)$/.test(selectedEnv) ? 'win32' : 'off';
-  const binary = () => String(env.STARNET_CUA_BINARY || path.join(root, VERSION, 'cua-driver.exe'));
+  const binary = () => String(env.EYEHOLD_CUA_BINARY || path.join(root, VERSION, 'cua-driver.exe'));
   const installed = () => fs.existsSync(binary()) && fs.existsSync(path.join(path.dirname(binary()), 'cua-driver-uia.exe'));
   const available = () => shell && platform === 'win32' && (selection() === 'win32' || (selection() === 'cua' && supported && installed()));
   function status() {
     return {
       backend: selection(), supported, nativeSupported: platform === 'win32', desktopShell: shell, installed: installed(),
-      customBinary: !!env.STARNET_CUA_BINARY,
+      customBinary: !!env.EYEHOLD_CUA_BINARY,
       available: available(), installing: !!installing, envLocked: locked, version: VERSION,
-      detail: !shell ? 'Native control requires the StarNet desktop app.'
+      detail: !shell ? 'Native control requires the Eyehold desktop app.'
         : !supported ? 'CUA installation currently supports Windows x64. The existing Windows driver remains available on Windows.'
         : selection() === 'off' ? 'Native control is off.'
         : selection() === 'cua' && !installed() ? 'Install CUA to use accessibility targeting.'
@@ -68,7 +68,7 @@ function makeComputerControl(deps) {
   }
   async function install({ repair = false } = {}) {
     if (!supported || !shell) throw new Error('CUA installation requires the Windows x64 desktop app');
-    if (env.STARNET_CUA_BINARY) throw new Error('CUA uses a custom binary path; manage that installation directly');
+    if (env.EYEHOLD_CUA_BINARY) throw new Error('CUA uses a custom binary path; manage that installation directly');
     if (installing) return installing;
     installing = (async () => {
       // Version directories and a private staging directory prevent partial
@@ -98,9 +98,9 @@ function makeComputerControl(deps) {
           await fd.sync();
         } finally { await fd.close(); }
         if (hash.digest('hex') !== SHA256) throw new Error('CUA download checksum mismatch');
-        const ps = "$ErrorActionPreference='Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::ExtractToDirectory($env:STARNET_CUA_ARCHIVE,$env:STARNET_CUA_EXPANDED)";
+        const ps = "$ErrorActionPreference='Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::ExtractToDirectory($env:EYEHOLD_CUA_ARCHIVE,$env:EYEHOLD_CUA_EXPANDED)";
         await exec('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', ps], {
-          timeout: 60000, env: { ...childEnv(), STARNET_CUA_ARCHIVE: archive, STARNET_CUA_EXPANDED: expanded }
+          timeout: 60000, env: { ...childEnv(), EYEHOLD_CUA_ARCHIVE: archive, EYEHOLD_CUA_EXPANDED: expanded }
         });
         const manifest = JSON.parse(await exec(path.join(expanded, 'cua-driver.exe'), ['manifest']));
         if (manifest.binary_version !== VERSION || !fs.existsSync(path.join(expanded, 'cua-driver-uia.exe'))) throw new Error('CUA package verification failed');

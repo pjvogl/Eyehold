@@ -483,7 +483,7 @@ const StationCommands = (() => {
   const builderPlans = new Map(), PLAN_TTL_MS = 10 * 60 * 1000;
   /* the lead's builds on this station, newest last: what an undo may take back. Kept per station (its createdAt) in
      localStorage so a reload keeps them; an undo still plans only while the station is exactly as that build left it. */
-  const builtKey = st => 'starnet.builderBuilt.' + ((st && st.doc && st.doc().meta && st.doc().meta.createdAt) || 'station');
+  const builtKey = st => 'eyehold.builderBuilt.' + ((st && st.doc && st.doc().meta && st.doc().meta.createdAt) || 'station');
   const builtRead = st => { try { const v = JSON.parse(localStorage.getItem(builtKey(st)) || '[]'); return Array.isArray(v) ? v.slice(-10) : []; } catch (_) { return []; } };
   const builtWrite = (st, list) => { try { localStorage.setItem(builtKey(st), JSON.stringify(list.slice(-10))); } catch (_) {} };
   let planSeq = 0;
@@ -680,7 +680,7 @@ const StationCommands = (() => {
       // a swap backs the current layout up to Build mode's own slot first, so RESTORE PREVIOUS in Build → Presets brings it back
       let backup = null;
       if (e.plan.spec && (e.plan.spec.kind === 'swap' || e.plan.spec.kind === 'relayout')) {
-        const key = 'starnet.layoutBackup.' + st.doc().meta.createdAt;
+        const key = 'eyehold.layoutBackup.' + st.doc().meta.createdAt;
         try { backup = { key, old: localStorage.getItem(key) }; localStorage.setItem(key, JSON.stringify(st.serialize())); }
         catch (_) { throw new Error('Your current layout could not be backed up, so nothing was changed.'); }
       }
@@ -984,7 +984,7 @@ const StationCommands = (() => {
     'station.show': async (a) => {
       requireWatching(a && a.origin);
       const place = typeof Places !== 'undefined' && Places.get ? Places.get(a && a.place) : null;
-      if (!place) throw new Error('there is no StarNet place "' + String((a && a.place) || '') + '"; places: ' + (typeof Places !== 'undefined' ? Places.ids().join(', ') : 'none loaded — reload the page'));
+      if (!place) throw new Error('there is no Eyehold place "' + String((a && a.place) || '') + '"; places: ' + (typeof Places !== 'undefined' ? Places.ids().join(', ') : 'none loaded — reload the page'));
       if (typeof StationUI === 'undefined' || !StationUI.showTerm) throw new Error('the station windows are not ready yet');
       const o = place.open;
       const ag = (o.agent || o.desk) ? resolveAgent(a && a.agent) : null;

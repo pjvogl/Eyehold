@@ -4,7 +4,7 @@
    the unit surface. Proves both sides of the contract:
      1. WAIT + FIFO HANDOFF (default lease wait): run A takes the lease with its write and stays live on a
         slow final turn; run B's write WAITS, the lease hands off when A ends, and BOTH writes land.
-     2. BOUNDED TRUTHFUL REFUSAL (tiny STARNET_WORKSPACE_LEASE_WAIT_MS): B's write times out, the model gets
+     2. BOUNDED TRUTHFUL REFUSAL (tiny EYEHOLD_WORKSPACE_LEASE_WAIT_MS): B's write times out, the model gets
         the truthful workspace-busy tool error, the run still completes clean, and B's file does NOT exist.
    No real key, no network. */
 'use strict';
@@ -95,7 +95,7 @@ function findFile(root, name) {   // recursive: workspace layout is the sidecar'
 
 async function driveRun(B, token, agentId, text, streamId) {
   const res = await fetch(B + '/api/run', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
     body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId, streamId, isTask: true, placed: ['cabinet'], messages: [{ role: 'user', content: text }] })
   });
   return res.text();
@@ -141,7 +141,7 @@ async function untilReady(check, label) {
   // ===== scenario 2: BOUNDED TRUTHFUL REFUSAL (250ms lease wait) =====
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'wlease-ws2-'));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1', STARNET_WORKSPACE_LEASE_WAIT_MS: '250' };
+    const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1', EYEHOLD_WORKSPACE_LEASE_WAIT_MS: '250' };
     const { child, port } = await boot(8745 + (process.pid % 40), env, 25);
     const B = 'http://' + HOST + ':' + port;
     try {

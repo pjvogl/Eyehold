@@ -6,10 +6,10 @@
 
    A requested sandbox is HONORED or REFUSED, never faked. resolveBackend() returns the full resolution
    ({ id, requested, matched, reason }); when the requested backend (docker for Safe Cell, ssh for Remote SSH)
-   is not registered, `matched` is false. Under the default policy (STARNET_SANDBOX_FALLBACK=refuse) forAgent()
+   is not registered, `matched` is false. Under the default policy (EYEHOLD_SANDBOX_FALLBACK=refuse) forAgent()
    then hands back a REFUSING proxy: describe/status/workspace methods still answer, but every execute-class
    method rejects with a typed { code:'sandbox_unavailable' } error that the tools surface as a precondition.
-   STARNET_SANDBOX_FALLBACK=allow keeps the old silent-local behaviour, but describeAgent still reports
+   EYEHOLD_SANDBOX_FALLBACK=allow keeps the old silent-local behaviour, but describeAgent still reports
    backendMatched:false so the UI can never claim a sandbox the harness is not running.
 */
 'use strict';
@@ -24,7 +24,7 @@ function makeExecutionRouter(deps) {
   if (!environments[defaultBackendId]) throw new Error('execution router missing default backend "' + defaultBackendId + '"');
 
   const envSrc = deps.env || process.env;
-  const fallbackPolicy = String(deps.sandboxFallback || envSrc.STARNET_SANDBOX_FALLBACK || envSrc.SKYNET_SANDBOX_FALLBACK || 'refuse')
+  const fallbackPolicy = String(deps.sandboxFallback || envSrc.EYEHOLD_SANDBOX_FALLBACK || envSrc.SKYNET_SANDBOX_FALLBACK || 'refuse')
     .trim().toLowerCase() === 'allow' ? 'allow' : 'refuse';
 
   // A registered manager is not the same as a usable one: the sidecar registers local+docker+ssh at boot

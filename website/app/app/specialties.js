@@ -1,4 +1,4 @@
-/* STARNET — specialties.js : preset SPECIALTY types for agents — the "what it's FOR" axis.
+/* EYEHOLD — specialties.js : preset SPECIALTY types for agents — the "what it's FOR" axis.
 
    Parallel to personas.js (the "how it TALKS" axis). The two compose: a "Witty Researcher"
    is a Researcher specialty wearing the witty persona. A specialty bundles a ready-made
@@ -28,7 +28,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (shared, eyeholdRoles) {
   'use strict';
 
-  const STORE_KEY = 'starnet.specialties.v1';   // localStorage home for custom (save-your-own) specialties
+  const STORE_KEY = 'eyehold.specialties.v1';   // localStorage home for custom (save-your-own) specialties
   const DEFAULT_ID = shared.DEFAULT_ID || 'chief';
 
   // model-tier hints are ADVISORY only (the real model list is the live OpenRouter catalog) — a chip

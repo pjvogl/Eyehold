@@ -1,4 +1,4 @@
-/* STARNET — recipes.js : THE RECIPE / MISSION LIBRARY — ready-made, parameterized job templates.
+/* EYEHOLD — recipes.js : THE RECIPE / MISSION LIBRARY — ready-made, parameterized job templates.
 
    The sibling of specialties.js. A SPECIALTY answers "who should my agent BE" (its purpose + standing
    orders); a RECIPE answers "what should my agent DO right now" — a one-tap mission like "morning research
@@ -34,8 +34,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (TopicMatch) {
   'use strict';
 
-  const STORE_KEY = 'starnet.recipes.v2';        // localStorage home for custom (save-your-own) recipes (schema v2)
-  const STORE_KEY_V1 = 'starnet.recipes.v1';     // legacy v1 home — read once + migrated forward, then left in place
+  const STORE_KEY = 'eyehold.recipes.v2';        // localStorage home for custom (save-your-own) recipes (schema v2)
+  const STORE_KEY_V1 = 'eyehold.recipes.v1';     // legacy v1 home — read once + migrated forward, then left in place
 
   // the interest vocabulary the personalization recommender ranks against (mirrors classify.js getTag and
   // specialties.js) — a recipe's `tags` map weights these lanes so it ranks honestly in the same feed.
@@ -54,7 +54,7 @@
   // 'general' is the catch-all fallback. Additive only — no bucket is ever renamed or removed.
   //
   // STANDING-AUTOMATION BUCKETS (2026-08-04): the catalog is a use-case dictionary for someone who cannot yet
-  // name their own use case, so the buckets are the areas a StarNet user actually works in. A bucket only
+  // name their own use case, so the buckets are the areas a Eyehold user actually works in. A bucket only
   // exists if a real shelf of recipes stands behind it — an empty or one-item bucket reads as broken next to
   // a full one, so a bucket is added WITH its module and removed when its module goes.
   const CATEGORIES = ['developer', 'research', 'creator', 'writing', 'ops', 'business', 'money',
@@ -583,7 +583,7 @@
       }
       return row;
     });
-    return { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements };
+    return { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements };
   }
 
   // build a DRAFT custom recipe from a launched one (P3 "save what you keep asking for" seam). Returns a plain
@@ -780,7 +780,7 @@
   function exportRecipe(idOrRecipe) {
     const r = typeof idOrRecipe === 'string' ? get(idOrRecipe) : idOrRecipe;
     if (!r) return null;
-    const out = { starnetRecipe: EXPORT_FORMAT };
+    const out = { eyeholdRecipe: EXPORT_FORMAT };
     for (const k of EXPORT_FIELDS) {
       const v = r[k];
       if (v == null) { out[k] = (k === 'cadence' || k === 'forkedFrom') ? null : v; continue; }

@@ -20,12 +20,12 @@ recovery: unconfirmed
 
 ## Symptom
 
-A valid linked StarNet account fails with fetch failed (ECONNREFUSED 127.0.0.1) when a request carries an obsolete local baseUrl. A per-request key can also replace the linked device credential independently of the destination.
+A valid linked Eyehold account fails with fetch failed (ECONNREFUSED 127.0.0.1) when a request carries an obsolete local baseUrl. A per-request key can also replace the linked device credential independently of the destination.
 
 ## Repro
 
 1. Save a valid funded credits link and start the actual sidecar.
-2. POST /api/run with provider starnet: the linked route succeeds.
+2. POST /api/run with provider eyehold: the linked route succeeds.
 3. Repeat with baseUrl pointing to a closed local port: the original code reproduces the exact reported transport error.
 4. With the repair, repeat the same request: it completes using the linked service and credential.
 
@@ -33,7 +33,7 @@ A valid linked StarNet account fails with fetch failed (ECONNREFUSED 127.0.0.1) 
 
 Baseline trunk 41253b0bd: test/managed-endpoint.e2e.test.js with ENDPOINT_BASELINE=1 proved a successful linked request followed by the exact refused-localhost error. The same resolver ordering exists in v0.10.13 (source comparison, not a released-installer reproduction). After 177a9384e, the actual sidecar completes with both baseUrl spellings overridden, retains explicit custom-provider routing, and returns to the linked token/URL after switching providers. This survives restarting with the file token removed and a synthetic desktop-injected token, without changing the linked URL. A temporary wrapper also exercised node dev/seed.js --keep against the disposable profile; the wrapper was removed afterward. All provider responses and credentials were synthetic; no customer data or paid external request was used.
 
-The real frontend Harness storage code was evaluated with persisted localStorage across a reload. Normal custom -> Gemini -> StarNet switching does NOT copy endpoints between providers. An already-existing starnet-scoped endpoint does survive reload. Thus this is a demonstrated defect matching the reported symptom, not proof of how the reporter acquired it.
+The real frontend Harness storage code was evaluated with persisted localStorage across a reload. Normal custom -> Gemini -> Eyehold switching does NOT copy endpoints between providers. An already-existing eyehold-scoped endpoint does survive reload. Thus this is a demonstrated defect matching the reported symptom, not proof of how the reporter acquired it.
 
 ## Regression
 
@@ -47,7 +47,7 @@ Managed requests now resolve the linked credential and endpoint before consideri
 
 {
   "adapters": [
-    { "target": "StarNet managed", "state": "covered", "test": "test/managed-endpoint.e2e.test.js", "scenario": "linked endpoint/token wins over stale request overrides", "gate": "http" },
+    { "target": "Eyehold managed", "state": "covered", "test": "test/managed-endpoint.e2e.test.js", "scenario": "linked endpoint/token wins over stale request overrides", "gate": "http" },
     { "target": "custom BYOK", "state": "covered", "test": "test/managed-endpoint.e2e.test.js", "scenario": "explicit endpoint and key preserved", "gate": "http" }
   ],
   "entrypoints": [

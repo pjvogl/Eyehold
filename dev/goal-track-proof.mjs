@@ -39,7 +39,7 @@ const OPEN_EMPTY = `(async () => {
 
 // Stage a REAL goal through the shipped confirm seam, then read the track the engine produced.
 const STAGE_GOAL = `(async () => {
-  const belief = { id: null, text: 'Launch StarNet to my first 100 users' };
+  const belief = { id: null, text: 'Launch Eyehold to my first 100 users' };
   const texts = [
     'Write the launch announcement',
     'Record a 60-second demo',
@@ -75,7 +75,7 @@ const READ_TRACK = `(() => {
     acceptBtns: track.querySelectorAll('.q-arc-accept').length,
     // the arc must NOT also appear as cards in the grid below
     arcCardsInGrid: [...document.querySelectorAll('.q-grid .q-card')]
-      .filter(c => /Launch StarNet to my first 100 users|Record a 60-second demo/.test(c.textContent)).length,
+      .filter(c => /Launch Eyehold to my first 100 users|Record a 60-second demo/.test(c.textContent)).length,
     // standing law: the log gates nothing — no lock language anywhere on the track
     lockLanguage: /locked|unlock|tier \\d|🔒/i.test(track.textContent),
     // the payoff line must name the SIDECAR's next stage — never a name invented in the frontend

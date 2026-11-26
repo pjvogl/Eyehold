@@ -1,4 +1,4 @@
-/* STARNET — nightreportstore.js : the thin live wiring around the pure MORNING-REPORT engine (nightreport.js), NS-4.
+/* EYEHOLD — nightreportstore.js : the thin live wiring around the pure MORNING-REPORT engine (nightreport.js), NS-4.
 
    THE JOB: on the FIRST activity after a genuine absence, fetch the three night-shift truthful-telemetry surfaces
    (status + autonomy ledger + drafts) and surface ONE honest COMMS digest beat — the acts fired AND the declined
@@ -13,7 +13,7 @@
    beat, never a fake one). */
 'use strict';
 const NightReportStore = (() => {
-  const KEY = 'starnet.nightreport.v1';
+  const KEY = 'eyehold.nightreport.v1';
   const DELAY_MS = 1400;           // let the floor + COMMS settle before the beat (mirrors ReturnStore's cadence)
   const HEARTBEAT_MS = 30000;      // stamp "the app is open" — so "away" means it was genuinely CLOSED
   const MIN_AWAY_MS = 30 * 60000;  // "genuinely away" — matches the sidecar's default NIGHTSHIFT_AWAY_MS (30 min)

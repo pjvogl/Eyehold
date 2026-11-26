@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.systemic-bug-validation.v1",
+  "schema": "eyehold.systemic-bug-validation.v1",
   "sourceFix": "8eb87b0d3",
   "lockedHead": "ff8c5b709c6b5b204e73a86f090d8c789036175f",
   "runtime": "v22.23.0",

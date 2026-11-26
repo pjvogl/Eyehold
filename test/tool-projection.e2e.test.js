@@ -34,7 +34,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   });
   await new Promise(r => upstream.listen(0, '127.0.0.1', r));
   const baseUrl = 'http://127.0.0.1:' + upstream.address().port;
-  const fixture = SidecarFixture.create({ timeoutMs: 20000, env: { STARNET_FULL_ACCESS: '0', SKYNET_FULL_ACCESS: '0' } });
+  const fixture = SidecarFixture.create({ timeoutMs: 20000, env: { EYEHOLD_FULL_ACCESS: '0', SKYNET_FULL_ACCESS: '0' } });
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({ version: 1, allow: ['cabinet:write'], meta: {} }));
     await fixture.start();
@@ -42,7 +42,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     assert.ok(station.addProp({ t: 'war_intelcab', x: 2, y: 2, w: 1, h: 2 }).ok);
     const save = async () => {
       const revision = (await fixture.json('GET', '/api/save?agent=agent')).body.save?._saveRevision || 0;
-      const r = await fixture.json('POST', '/api/save', { schema: 'starnet.save', version: 5, _saveRevision: revision, updatedAt: Date.now(), agent: { id: 'agent' }, station: station.serialize() });
+      const r = await fixture.json('POST', '/api/save', { schema: 'eyehold.save', version: 5, _saveRevision: revision, updatedAt: Date.now(), agent: { id: 'agent' }, station: station.serialize() });
       assert.equal(r.body.ok, true, r.text);
     };
     const roster = async (profile = 'station-gear', approvalMode = 'ask') => {

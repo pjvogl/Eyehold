@@ -58,7 +58,7 @@ function startMock() {
 }
 
 async function post(url, body) {
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Starnet-Token': TOKEN }, body: JSON.stringify(body) });
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': TOKEN }, body: JSON.stringify(body) });
   const text = await res.text();
   return { status: res.status, text };
 }
@@ -71,7 +71,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   // a real active goal + a real open thread, written the way the station stores them, so the pack has
   // something true to carry. Nothing here is invented at read time — these are the station's own files.
   fs.writeFileSync(path.join(SCRATCH, '_commander.goals.json'),
-    JSON.stringify({ goal: { text: 'ship StarNet to a thousand real users', at: Date.now() } }, null, 2));
+    JSON.stringify({ goal: { text: 'ship Eyehold to a thousand real users', at: Date.now() } }, null, 2));
 
   const base = await startMock();
   const env = Object.assign({}, process.env, {
@@ -114,7 +114,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     ok(lastSystem.indexOf('<active_goal provenance="commander-confirmed">') >= 0, 'the active GOAL reaches the generator');
     ok(lastSystem.indexOf('thousand real users') >= 0, '…with its real text, from the station’s own store');
     ok(lastSystem.indexOf('<commander_context provenance="commander-dossier">') >= 0, 'the dossier reaches it');
-    ok(lastSystem.indexOf('building and testing StarNet') >= 0, '…with its real text');
+    ok(lastSystem.indexOf('building and testing Eyehold') >= 0, '…with its real text');
 
     console.log('\n3. the internal path is otherwise UNTOUCHED (no manual, no capability summary, no skills)');
     ok(!/OPERATOR MANUAL|FIELD MANUAL/i.test(lastSystem), 'no operator manual');

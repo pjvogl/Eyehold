@@ -16,7 +16,7 @@ const { safeAgentId: envSafeAgentId } = require('../sidecar/environment.js');
 const { makePathTrust } = require('../sidecar/pathtrust.js');
 const AgentId = require('../frontend/app/agentid.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-reserved-ws-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-reserved-ws-' + process.pid);
 const CANARY = 'canary-refresh-token-DO-NOT-LEAK-' + process.pid;
 
 async function rejects(promise, msg, re) {

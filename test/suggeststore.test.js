@@ -177,7 +177,7 @@ global.DossierStore.summary = _summ;
     dsFam = 0.8;   // familiarity == baseline → the Slice-8 re-floor guard is a no-op here (this case tests persistence)
     SuggestStore._state().lastFamiliarity = 0.8; SuggestStore._state().tasksSinceLast = 2;
     bus.emit('agent.run.end', { reason: 'done', agentId: 'agent' });   // triggers a save via the counter
-    A.ok(mem['starnet.suggest.v1'] && JSON.parse(mem['starnet.suggest.v1']).lastFamiliarity === 0.8, 'state self-persists to its own key (no save.js)');
+    A.ok(mem['eyehold.suggest.v1'] && JSON.parse(mem['eyehold.suggest.v1']).lastFamiliarity === 0.8, 'state self-persists to its own key (no save.js)');
 
     // re-floor on a DROP (Slice 8 #14): familiarity below the baseline (e.g. the dossier grew 5→7 dims so the
     // fraction shrank) lowers the baseline to now — otherwise a one-time denominator change freezes ideas forever.
@@ -186,7 +186,7 @@ global.DossierStore.summary = _summ;
     A.eq(SuggestStore._state().lastFamiliarity, 0.5, 'baseline re-floors when familiarity drops below it (no permanent freeze on dim growth)');
 
     SuggestStore.reset();
-    A.eq(mem['starnet.suggest.v1'], undefined, 'reset() removes the persisted key');
+    A.eq(mem['eyehold.suggest.v1'], undefined, 'reset() removes the persisted key');
     A.eq(SuggestStore._state().lastFamiliarity, null, 'reset() clears the baseline for a new hero');
 
     /* ---------- re-entrancy: willSuggest() is false while an idea is mid-flight (no double-fire) ---------- */

@@ -1,6 +1,6 @@
 # QA STATION — the runbook (STAND UP THE WATCH)
 
-> **What this is:** the operating manual for StarNet's Self-Testing Station — the crew of
+> **What this is:** the operating manual for Eyehold's Self-Testing Station — the crew of
 > scripts + Claude sessions that finds breakage so **Andrew doesn't have to be the
 > bug-finder**. Charter: `docs/SELF_TEST_STATION_PLAN.md` (Parts 2/3/5 for the crew, the
 > findings spine, and the laws). Live dashboard: `qa/STATUS.md`. Known baseline:
@@ -105,7 +105,7 @@ npm run qa:guardian:watch -- --interval 120   # poll every N seconds (default 60
 > only stops a *standing red* from filing twice — it does **nothing** about two processes
 > corrupting each other's checkout mid-run. The earlier claim that "the two overlap harmlessly"
 > was **false**. The Guardian now takes a **machine-global cross-process lock** (a heartbeat
-> lockfile at `%TEMP%/starnet-qa-guardian.lock`, override `SKYNET_GUARDIAN_LOCK`, with
+> lockfile at `%TEMP%/eyehold-qa-guardian.lock`, override `SKYNET_GUARDIAN_LOCK`, with
 > PID-liveness + stale-heartbeat reclaim). A one-shot that fires while a cycle is running finds
 > the lock held and **exits 0 as redundant** (the running cycle already covers this or a newer
 > trunk); pass `--wait` to queue instead. `--watch` takes the lock per-cycle and **skips** a
@@ -181,7 +181,7 @@ written into any evidence file. After a `--live` run the CLI automatically runs
 `npm run lint:evidence-secrets` over the run dir to prove no key leaked into a screenshot or
 log; if the lint trips, the run fails.
 
-- Default env var: **`SKYNET_OPENROUTER_KEY`** (fallback **`STARNET_OPENROUTER_KEY`**).
+- Default env var: **`SKYNET_OPENROUTER_KEY`** (fallback **`EYEHOLD_OPENROUTER_KEY`**).
 - Override the var name with `--key-env <NAME>`.
 - If `--live` is passed and the var is empty, the script **refuses to run** (loud error, no
   boot) — it never falls back to a placeholder.
@@ -520,7 +520,7 @@ writes `CLOSER_VERDICT.md` and changes nothing, because retiring a detector is a
 
 ### Cadence
 Per open finding, self-paced — it is pointless on an empty ledger and worth running the moment the
-Guardian has a standing red. One run at a time: a machine-global lock (`starnet-qa-closer.lock`,
+Guardian has a standing red. One run at a time: a machine-global lock (`eyehold-qa-closer.lock`,
 same law as the Guardian's) serializes the shared referee checkout and the 8970s ports; a second
 run exits 0 as redundant.
 
@@ -626,9 +626,9 @@ explicit final activation step (§13). The glue is a single script:
 A PowerShell script that registers the headless jobs as Windows Scheduled Tasks. It is
 **inert until an operator runs it**, defaults to a **dry-run that only PRINTS** what it would
 register, and only mutates the system when called with `-Apply`. It registers:
-- `StarNet-QA-Guardian-Hourly` → `npm run qa:guardian` every hour.
-- `StarNet-QA-Beginner-Daily` → `npm run qa:beginner` (`--ui-only`) daily.
-- `StarNet-QA-Janitor-Weekly` → `npm run qa:janitor` weekly.
+- `Eyehold-QA-Guardian-Hourly` → `npm run qa:guardian` every hour.
+- `Eyehold-QA-Beginner-Daily` → `npm run qa:beginner` (`--ui-only`) daily.
+- `Eyehold-QA-Janitor-Weekly` → `npm run qa:janitor` weekly.
 
 It does NOT register the `--watch` Guardian (that's a standing process, started once — see
 §13), the `--live` Beginner (secret; session-only), or the Overseer / Visual Auditor

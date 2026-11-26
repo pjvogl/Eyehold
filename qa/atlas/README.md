@@ -1,6 +1,6 @@
 # Station Atlas — the perfection-loop registry
 
-> **What this is:** a registry of **every** surface element in StarNet — every UI control, slash
+> **What this is:** a registry of **every** surface element in Eyehold — every UI control, slash
 > command, API route, bus event, and shoot state — each carrying its purpose, its observable promise,
 > and its status on the road to *verified-perfect*. The QA Station (`qa/QA_STATION.md`) is a
 > **regression** watch: it proves trunk stays green and the app keeps booting. It cannot answer *"is

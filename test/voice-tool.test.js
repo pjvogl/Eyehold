@@ -13,7 +13,7 @@ const { makeVoiceTools } = require('../sidecar/tools/builtin/voice.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
 // per-process root: two gates running at once must not race on a content-addressed path (see image.test.js)
-const ROOT = path.join(os.tmpdir(), 'starnet-voice-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-voice-test-' + process.pid);
 const MP3 = Buffer.from([0x49, 0x44, 0x33, 0x04, 0x00, 0x00, 0x21, 0x22, 0x23]);   // 'ID3' + filler: real-shaped mp3 bytes
 
 function ctxOf() {

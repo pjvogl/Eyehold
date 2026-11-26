@@ -108,7 +108,7 @@ function boot(port, env, attemptsLeft) {
     A.eq((await fetch(B + view('') + 'root.html')).status, 200, 'a root-level page renders on a root ticket');
 
     // (6) the page's own minter builds URLs this route accepts
-    global.window = { __STARNET_API_TOKEN__: token, __STARNET_API__: '', crypto: require('node:crypto').webcrypto };
+    global.window = { __EYEHOLD_API_TOKEN__: token, __EYEHOLD_API__: '', crypto: require('node:crypto').webcrypto };
     delete require.cache[require.resolve('../frontend/app/apiticket.js')];
     const P = require('../frontend/app/apiticket.js');
     const u1 = P.viewUrl('builder', 'site/index.html');

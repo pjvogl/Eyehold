@@ -19,7 +19,7 @@
    config = {
      providerId, clientId, deviceUrl, tokenUrl,
      scope?              — space-delimited scope string, sent on the DEVICE leg only
-     deviceExtraBody?    — extra fields on the DEVICE leg only (e.g. Grok's referrer:'starnet')
+     deviceExtraBody?    — extra fields on the DEVICE leg only (e.g. Grok's referrer:'eyehold')
      headers?            — extra request headers on EVERY auth leg (e.g. Kimi's X-Msh-* set)
      encoding            — 'form' (application/x-www-form-urlencoded) | 'json'
      refreshSkewSeconds  — refresh margin when using expires_at/JWT-exp (Grok 120, Kimi 300)

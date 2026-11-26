@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 shoot
+> eyehold-harness@0.12.4 shoot
 > node scripts/shoot.mjs
 
 sidecar: booting SEEDED SKYNET_DEV on :8940 (model=anthropic/claude-sonnet-4.6) ...

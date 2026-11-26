@@ -29,6 +29,6 @@ async function exercise(invoke) {
   assert.equal(desktop.notices[0][1], 'warn');
   const html = fs.readFileSync(path.join(__dirname, '../frontend/index.html'), 'utf8');
   assert.match(html, /id="model-dock-subscription" href="#billing-not-configured"/);
-  assert.doesNotMatch(html, /starnetos\.com\/pricing/);
+  assert.doesNotMatch(html, /eyehold\.com\/pricing/);
   console.log('model-subscription: billing stays unconfigured and does not open a payment page');
 })().catch(e => { console.error(e); process.exitCode = 1; });

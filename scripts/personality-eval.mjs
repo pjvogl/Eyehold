@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Opt-in real-model personality evaluation. No tool execution, installed credentials or station writes.
    Prepare the trial plan: node scripts/personality-eval.mjs --out .tmp/personality-eval
-   Capture responses: STARNET_PERSONALITY_EVAL_KEY=<key> node scripts/personality-eval.mjs --live --model <OpenRouter model id> --out <new directory>
+   Capture responses: EYEHOLD_PERSONALITY_EVAL_KEY=<key> node scripts/personality-eval.mjs --live --model <OpenRouter model id> --out <new directory>
    Responses are ungraded evidence. Blind reviewers identify character separately from factual quality. */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,8 +16,8 @@ const arg = flag => { const i = args.indexOf(flag); return i < 0 ? '' : (args[i 
 const out = arg('--out');
 if (!out) throw new Error('Choose a new output directory with --out. Add --live --model <id> only to capture real responses.');
 const live = args.includes('--live'), model = arg('--model');
-const key = process.env.STARNET_PERSONALITY_EVAL_KEY || '';
-if (live && (!model || !key)) { console.error('Live capture requires --model and STARNET_PERSONALITY_EVAL_KEY. No installed credential was read.'); process.exit(2); }
+const key = process.env.EYEHOLD_PERSONALITY_EVAL_KEY || '';
+if (live && (!model || !key)) { console.error('Live capture requires --model and EYEHOLD_PERSONALITY_EVAL_KEY. No installed credential was read.'); process.exit(2); }
 const P = vm.runInNewContext(fs.readFileSync(path.join(root, 'frontend/app/personas.js'), 'utf8') + '\nPersonas;');
 const scenarios = [
   ['conversation', 'We are starting a small documentation project together. How should we get going?'],

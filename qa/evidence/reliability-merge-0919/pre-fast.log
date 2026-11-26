@@ -1,9 +1,9 @@
 
-> starnet-harness@0.12.3 test:fast
+> eyehold-harness@0.12.3 test:fast
 > node scripts/timeout.mjs --label test:fast --timeout=900000 -- npm run test:fast:raw
 
 
-> starnet-harness@0.12.3 test:fast:raw
+> eyehold-harness@0.12.3 test:fast:raw
 > node scripts/run-fast-tests.mjs
 
 schema.test: OK (42 assertions)
@@ -203,7 +203,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-DBuLlu\ci-scratch-VTcErh\ws is under C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-DBuLlu\ci-scratch-VTcErh); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)
@@ -570,7 +570,7 @@ qa-claims-streaming: OK (whole-buffer parity, binary and chunk-boundary needles)
 website-pricing-hold.test: OK (14 assertions)
 Checked 1079 internal page links.
 website-docs-navigation.test: OK (1323 assertions)
-genesis-starnet-link.test.js OK - 47 assertions
+genesis-eyehold-link.test.js OK - 47 assertions
 qa-product-perfect-provenance.test: OK (13 assertions)
 qa-cartographer.test: OK (139 assertions)
 golden.test: OK (38 assertions)
@@ -1145,7 +1145,7 @@ tests: OK (104 assertions)
 tests: OK (64 assertions)
 release-installer-selection.test: OK (5 assertions)
 opensource-readiness.test: OK
-{"tag":"v1.2.3","action":"noop","assets":["StarNet_1.2.3_x64-setup.exe","StarNet_1.2.3_aarch64.dmg","StarNet_1.2.3_x64.dmg"]}
+{"tag":"v1.2.3","action":"noop","assets":["Eyehold_1.2.3_x64-setup.exe","Eyehold_1.2.3_aarch64.dmg","Eyehold_1.2.3_x64.dmg"]}
 source-release-mirror.test: OK (35 assertions)
 release-train-chrome-warmup.test: OK (10 assertions)
 release-train-provenance.test: OK (51 assertions)
@@ -1470,7 +1470,7 @@ session-continuity (48 lifecycle sequences, both shipped trees): OK (48 assertio
     },
     {
       "role": "assistant",
-      "content": "⚠ The reply stream stopped before it finished — StarNet's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again."
+      "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again."
     }
   ],
   "draft": ""

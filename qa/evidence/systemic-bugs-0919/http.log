@@ -1,9 +1,9 @@
 
-> starnet-harness@0.12.3 test:http
+> eyehold-harness@0.12.3 test:http
 > node scripts/timeout.mjs --label test:http --timeout=1200000 -- npm run test:http:raw
 
 
-> starnet-harness@0.12.3 test:http:raw
+> eyehold-harness@0.12.3 test:http:raw
 > node scripts/run-test-list.mjs test/http.list
 
 provider-recovery.e2e: OK (15 assertions)
@@ -197,11 +197,11 @@ not ok 4 - funded link diagnostics survive restart without exposing account or t
     sidecar output:
     [recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\paid-link-receipt-8grcMN is under C:\Users\andro\AppData\Local\Temp); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
     [recovery] auto recovery skipped (AUTO_RECOVERY_TARGET_IS_SCRATCH): this workspace is a scratch/temp root, so no real station was ingested.
-    ✗ StarNet refused to open this workspace because another process may own it.
+    ✗ Eyehold refused to open this workspace because another process may own it.
       workspace: C:\Users\andro\AppData\Local\Temp\paid-link-receipt-8grcMN
       holder PID: 41356
       safety code: WORKSPACE_BUSY
-      Close the other StarNet process and retry. StarNet will not risk concurrent writes.
+      Close the other Eyehold process and retry. Eyehold will not risk concurrent writes.
 
   code: 'ERR_TEST_FAILURE'
   stack: |-

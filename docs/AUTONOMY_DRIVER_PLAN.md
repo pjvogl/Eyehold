@@ -7,7 +7,7 @@
 > and leaves it on your desk — gated by how well it actually knows you.
 
 Status: **PLAN ONLY — not started.** Lane: `autonomy`. Builds on `autonomy.js`, `autojobs.js`,
-`dossier.js`, `profile.js`, `cron-driver.js`. See memory `starnet-autonomy-layer` for the locked vision.
+`dossier.js`, `profile.js`, `cron-driver.js`. See memory `eyehold-autonomy-layer` for the locked vision.
 
 ---
 
@@ -100,7 +100,7 @@ The deterministic scaffold; the model fills only narrow reasoning slots.
 - **READ-ONLY bus citizen** — `.on()`s what it needs, **never `.emit()`s** (keeps `lint-emits` green).
 - Owns: `lastActivity` stamp, today's autonomous-action count (resets at the local day boundary), the
   idle check, and fire-once/anti-nag bookkeeping. Self-persists its **own** localStorage key
-  (`starnet.autopilot.v1`); no `save.js` change. `reset()` on new hero.
+  (`eyehold.autopilot.v1`); no `save.js` change. `reset()` on new hero.
 - **Idle stamping:** lightweight listeners (pointer/key/chat-send) stamp `lastActivity` at the edge.
 - **The tick:** reuse the existing app loop / a single `setInterval` at the edge → gather inputs
   (`AutonomyStore.summary()`, `DossierStore.summary()` + `beliefs(dim)`, `ProfileStore.summary()`,

@@ -1,5 +1,5 @@
 /* test/settle-managed-copy.test.js — SETTINGS › SPENDING LIMITS › INTERRUPTED tells you WHERE the charge is.
-   An interrupted run's receipt records whether it ran on StarNet credits (ledger receipt `managed: true`). Its charge
+   An interrupted run's receipt records whether it ran on Eyehold credits (ledger receipt `managed: true`). Its charge
    then shows in the STORE's RECENT ACTIVITY (SETTINGS → AI & MODELS), listed by run id, not on a provider dashboard
    the user never had — the old copy told every row to "enter the charge your provider dashboard shows". A BYOK row
    keeps the provider dashboard. Spend-truth lane B6, 2026-10-08. Drives the real wireBudget/paintUnsettled source in a vm with
@@ -23,32 +23,32 @@ const harness = (status) => {
   const base = { caps: { perRun: 0, perAgent: 0, perDay: 25, global: 0 }, saved: {}, envDefaults: { perRun: 0, perAgent: 0, perDay: 25, global: 0 }, spentToday: null, lifetime: null, runs: 0 };
   const st = { ...base, accounting: { complete: false, durable: true, readError: 'UNSETTLED_SPEND', writeError: null, unsettledRuns: 2 }, atLeast: { today: 1, lifetime: 2, runs: 3 },
     unsettled: [
-      { runId: 'm1', agentId: 'agent', ts: Date.now(), title: 'Write the brief', provider: 'starnet', model: 'anthropic/claude-sonnet-5.5', managed: true, runCapUsd: 2 },
+      { runId: 'm1', agentId: 'agent', ts: Date.now(), title: 'Write the brief', provider: 'eyehold', model: 'anthropic/claude-sonnet-5.5', managed: true, runCapUsd: 2 },
       { runId: 'b1', agentId: 'agent', ts: Date.now(), title: 'Fix the build', provider: 'openrouter', model: 'test/m', managed: false, runCapUsd: 0.5 }
     ] };
   const { node, posts } = harness(st); await tick();
   const [managedRow, byokRow] = node('#budget-unsettled').children;
   assert.ok(managedRow && byokRow, 'one row per interrupted run');
-  // the StarNet-credit row points at the in-app STORE's RECENT ACTIVITY (review 2026-10-08): it lists each charge with
+  // the Eyehold-credit row points at the in-app STORE's RECENT ACTIVITY (review 2026-10-08): it lists each charge with
   // its run id, on a linked station AND on an operator (env) station — the account web page has no run ids, and an
-  // operator station's charges are not on account.starnetos.com at all
+  // operator station's charges are not on account.eyehold.com at all
   const mTip = managedRow.attrs['data-tip'];
-  assert.match(mTip, /StarNet credits/, 'the managed row says it ran on StarNet credits: ' + mTip);
+  assert.match(mTip, /Eyehold credits/, 'the managed row says it ran on Eyehold credits: ' + mTip);
   assert.match(mTip, /SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY/, 'and where its charge is: ' + mTip);
   assert.match(mTip, /run m1\b/, 'naming the run id the activity lists it under: ' + mTip);
-  assert.doesNotMatch(mTip, /account\.starnetos\.com/, 'no hardcoded account host');
+  assert.doesNotMatch(mTip, /account\.eyehold\.com/, 'no hardcoded account host');
   assert.doesNotMatch(mTip, /provider dashboard/, 'not a provider dashboard the user never had');
   const [, mUsd, mSettle, mCount] = managedRow.children;
-  assert.match(mUsd.attrs['aria-label'], /what StarNet charged/, 'the amount field asks what StarNet charged');
+  assert.match(mUsd.attrs['aria-label'], /what Eyehold charged/, 'the amount field asks what Eyehold charged');
   assert.match(mCount.attrs['data-tip'], /the STORE’s RECENT ACTIVITY has the exact charge/, 'COUNT AS points at the same activity: ' + mCount.attrs['data-tip']);
   assert.doesNotMatch(mCount.attrs['data-tip'], /provider dashboard/);
   mUsd.value = ''; mSettle.click(); await tick();
   assert.equal(posts.length, 0, 'a blank is not $0');
-  assert.match(node('#budget-msg').textContent, /what StarNet charged/, 'the refusal asks for what StarNet charged: ' + node('#budget-msg').textContent);
+  assert.match(node('#budget-msg').textContent, /what Eyehold charged/, 'the refusal asks for what Eyehold charged: ' + node('#budget-msg').textContent);
   // a BYOK row keeps the provider dashboard
   const bTip = byokRow.attrs['data-tip'];
   assert.match(bTip, /provider dashboard/, 'a provider-key row still points at the provider dashboard: ' + bTip);
-  assert.doesNotMatch(bTip, /starnetos/);
+  assert.doesNotMatch(bTip, /eyehold/);
   const [, bUsd, bSettle, bCount] = byokRow.children;
   assert.match(bUsd.attrs['aria-label'], /what your provider charged/);
   assert.match(bCount.attrs['data-tip'], /provider dashboard has the exact charge/);
@@ -58,11 +58,11 @@ const harness = (status) => {
   const idx = fs.readFileSync(path.join(__dirname, '..', 'sidecar/index.js'), 'utf8');
   const settle = idx.slice(idx.indexOf('async function handleBudgetSettle('), idx.indexOf('async function warmModelCatalogSet('));
   assert.ok(settle.length > 200 && settle.length < 6000, 'handleBudgetSettle found');
-  assert.match(settle, /open\.managed === true \? 'this run recorded no per-run limit — enter what StarNet charged for it \(SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY lists each charge with its run id\)' : 'this run recorded no per-run limit — enter the charge from your provider dashboard'/,
+  assert.match(settle, /open\.managed === true \? 'this run recorded no per-run limit — enter what Eyehold charged for it \(SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY lists each charge with its run id\)' : 'this run recorded no per-run limit — enter the charge from your provider dashboard'/,
     'a limit-less managed receipt is pointed at the STORE’s RECENT ACTIVITY');
   // the door exists: the configured STORE renders a RECENT ACTIVITY list whose rows carry the run id
   assert.match(text, /<h4 class="ms-h">STORE /, 'the STORE heading exists under AI & MODELS');
   assert.match(text, /RECENT ACTIVITY<\/span>/, 'with its RECENT ACTIVITY list');
   assert.match(text, /e && e\.runId \? ' · run ' \+ esc\(String\(e\.runId\)\.slice\(0, 8\)\)/, 'whose rows show the run id (first 8 chars)');
-  console.log('settle-managed-copy: StarNet-credit receipts point at the STORE’s RECENT ACTIVITY, provider-key receipts at the provider dashboard PASS');
+  console.log('settle-managed-copy: Eyehold-credit receipts point at the STORE’s RECENT ACTIVITY, provider-key receipts at the provider dashboard PASS');
 })().catch(e => { console.error(e); process.exitCode = 1; });

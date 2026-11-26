@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Inbox Triage"
   category: "Communication"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

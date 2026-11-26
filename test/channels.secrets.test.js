@@ -6,7 +6,7 @@
      • stripTokens removes every channel token (what the desktop build persists) and keeps the rest.
      • migratePlaintext: bare mode = untouched; desktop mode imports the plaintext token AND strips it; an
        already-migrated channel (keychain has it) is stripped but NOT re-imported; a tokenless config is a no-op.
-     • the sidecar host resolves tokens from runtime/env and strips before writing under STARNET_DESKTOP_SHELL,
+     • the sidecar host resolves tokens from runtime/env and strips before writing under EYEHOLD_DESKTOP_SHELL,
        and exposes a token-gated /api/channels/token push that never echoes the token.
      • the Rust shell injects SKYNET_<ID>_TOKEN from the keychain, migrates plaintext, and gates the command. */
 'use strict';

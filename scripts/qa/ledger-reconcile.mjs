@@ -518,7 +518,7 @@ export function realIo(ROOT, o) {
       if (!o.runHttp && httpList().has(rel.replace(/\\/g, '/'))) return { ok: null, code: null, ms: 0, tail: '', skipped: 'test:http gate suite' };
       // HERMETIC PROFILE — the same isolation scripts/run-test-list.mjs gives every gate step: a
       // spawned sidecar's boot-time station recovery must never see the real per-user app-data roots.
-      const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-reconcile-profile-'));
+      const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-reconcile-profile-'));
       const hermetic = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile };
       if (process.platform !== 'win32') hermetic.HOME = profile;
       const t0 = Date.now();

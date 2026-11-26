@@ -2,7 +2,7 @@
 
 Date: 2026-06-26
 
-Scope: Phase 0.0 through the local safe-cell gate for background fan-out. This audit covers the StarNet execution surfaces that can touch the host filesystem or run code:
+Scope: Phase 0.0 through the local safe-cell gate for background fan-out. This audit covers the Eyehold execution surfaces that can touch the host filesystem or run code:
 
 - `fs.read`, `fs.write`, `fs.append`, `fs.edit`, `fs.list`, `fs.search`
 - `shell.exec`, `shell.exec background:true`, `shell.bg.status`, `shell.bg.read`, `shell.bg.kill`

@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-/* scripts/build-skill-catalog.mjs — build the StarNet Skill Market catalog into website/.
+/* scripts/build-skill-catalog.mjs — build the Eyehold Skill Market catalog into website/.
 
    Sources:
-     sidecar/skills/library/<slug>.md    StarNet Originals already bundled with the app, listed in skills-catalog/originals.json
+     sidecar/skills/library/<slug>.md    Eyehold Originals already bundled with the app, listed in skills-catalog/originals.json
                                          (each carries its own `version:` line; bump it when its text changes)
      skills-catalog/skills/<slug>/       market-only skills: skill.json + SKILL.md (+ LICENSE, references/)
      skills-catalog/revoked.json         skills the market has PULLED: { "revoked": [{ slug, digest?, reason, at }] }
-   Output (served by starnetos.com, Cloudflare Pages):
-     website/.well-known/starnet-skills.json          the index (starnet-skill-registry/v1 + market fields)
-     website/.well-known/starnet-skills-revoked.json  the pulled list on its own, for stations to check often
+   Output (served by eyehold.com, Cloudflare Pages):
+     website/.well-known/eyehold-skills.json          the index (eyehold-skill-registry/v1 + market fields)
+     website/.well-known/eyehold-skills-revoked.json  the pulled list on its own, for stations to check often
      website/.well-known/*.sig                        an Ed25519 signature over each of the two, byte for byte
      website/skills/<slug>/<version>/<files>          one immutable folder per published version
 
@@ -18,8 +18,8 @@
 
    SIGNING (sidecar/skills/market-signing.js): stations refuse a catalog or pulled list whose signature does not
    verify with a key the app trusts, and one whose `serial` is lower than one they have already seen. A build that
-   changes either document bumps the serial and re-signs, which needs the private key: STARNET_SKILL_MARKET_KEY
-   (a path), else ~/.starnet-keys/skill-market.key. The key never goes in the repo or on the website; --check needs
+   changes either document bumps the serial and re-signs, which needs the private key: EYEHOLD_SKILL_MARKET_KEY
+   (a path), else ~/.eyehold-keys/skill-market.key. The key never goes in the repo or on the website; --check needs
    only the public keys.
 
    To PULL a skill: add { slug, digest (to pull one published package; omit to pull every version), reason, at } to
@@ -49,10 +49,10 @@ const guard = require(join(ROOT, 'sidecar/skills/guard.js'));
 const LIB = join(ROOT, 'sidecar/skills/library');
 const SRC = join(ROOT, 'skills-catalog');
 const OUT = join(ROOT, 'website');
-const INDEX = join(OUT, '.well-known', 'starnet-skills.json');
-const REVOKED = join(OUT, '.well-known', 'starnet-skills-revoked.json');
+const INDEX = join(OUT, '.well-known', 'eyehold-skills.json');
+const REVOKED = join(OUT, '.well-known', 'eyehold-skills-revoked.json');
 const FLOOR = join(ROOT, 'sidecar', 'skills', 'market-floor.json');
-const SIGNING_KEY = process.env.STARNET_SKILL_MARKET_KEY || join(homedir(), '.starnet-keys', 'skill-market.key');
+const SIGNING_KEY = process.env.EYEHOLD_SKILL_MARKET_KEY || join(homedir(), '.eyehold-keys', 'skill-market.key');
 
 function lf(s) { return String(s).replace(/\r\n/g, '\n'); }
 function readText(p) { return lf(readFileSync(p, 'utf8')).replace(/^﻿/, ''); }
@@ -71,7 +71,7 @@ function scanOrThrow(slug, files) {
 
 export function buildCatalog() {
   const sources = [];
-  // 1. StarNet Originals from the bundled library
+  // 1. Eyehold Originals from the bundled library
   const originals = JSON.parse(readText(join(SRC, 'originals.json')));
   const library = catalog.loadDir(LIB, { readdirSync, readFileSync }, { join });
   const bySlug = new Map(library.map(r => [r.slug, r]));
@@ -85,7 +85,7 @@ export function buildCatalog() {
     sources.push({
       slug, version, shelf: 'originals', category: recipe.category, requires: recipe.requires,
       tags: [recipe.category.toLowerCase()].concat(originals.skills[slug].tags || []), license: recipe.license || 'MIT',
-      authors: ['StarNet'], librarySlug: slug,
+      authors: ['Eyehold'], librarySlug: slug,
       files: [{ path: 'SKILL.md', content: market.libraryToSkillMd(recipe, { version }) }]
     });
   }
@@ -156,7 +156,7 @@ function planWrites(result) {
     }
     writes.push({ path: join(OUT, 'skills', entry.slug, entry.version, entry.download.path), bytes: zip, immutable: true, label: entry.slug + '@' + entry.version + '/' + entry.download.path });
   }
-  for (const [file, doc, label] of [[INDEX, result.index, '.well-known/starnet-skills.json'], [REVOKED, result.revocations, '.well-known/starnet-skills-revoked.json']]) {
+  for (const [file, doc, label] of [[INDEX, result.index, '.well-known/eyehold-skills.json'], [REVOKED, result.revocations, '.well-known/eyehold-skills-revoked.json']]) {
     const bytes = jsonBytes(doc);
     writes.push({ path: file, bytes, immutable: false, label });
     writes.push({ path: file + '.sig', signs: bytes, immutable: false, label: label + '.sig' });
@@ -173,7 +173,7 @@ function signatureHolds(file, bytes) {
 let signingKey = null;
 function signWith(bytes) {
   if (!signingKey) {
-    if (!existsSync(SIGNING_KEY)) throw new Error('the catalog changed, so it must be re-signed, and there is no signing key at ' + SIGNING_KEY + ' (set STARNET_SKILL_MARKET_KEY to its path)');
+    if (!existsSync(SIGNING_KEY)) throw new Error('the catalog changed, so it must be re-signed, and there is no signing key at ' + SIGNING_KEY + ' (set EYEHOLD_SKILL_MARKET_KEY to its path)');
     signingKey = readFileSync(SIGNING_KEY, 'utf8');
   }
   return Buffer.from(signing.sign(bytes, signingKey), 'utf8');

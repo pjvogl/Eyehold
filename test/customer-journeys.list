@@ -25,7 +25,7 @@ test/credits.test.js
 # Catalog/status/recovery surfaces and connector expiry/session races.
 test/tier-model-catalog.test.js
 test/model-provider-reconcile.test.js
-test/genesis-starnet-link.test.js
+test/genesis-eyehold-link.test.js
 test/friendlyerror.test.js
 test/errorclass.test.js
 test/connectors-ui.test.js

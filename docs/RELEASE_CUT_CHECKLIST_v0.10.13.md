@@ -20,7 +20,7 @@ into RC.2 evidence.
 ## Recommendation
 
 Cut `0.10.13`. Although the tree gained environment discovery, outcome learning, 42 new
-connector/key-directory entries, and the 19-system LINES library, StarNet's established 0.10.x
+connector/key-directory entries, and the 19-system LINES library, Eyehold's established 0.10.x
 release convention has already carried similarly large feature bundles in patch releases. For
 comparison, `0.10.2` contained 252 commits across 250 files and `0.10.8` contained 228 commits
 across 204 files; this snapshot contains 205 commits across 187 files. No singular product-generation
@@ -60,9 +60,9 @@ process debt for the two sweep merges. On the repair head, `test:fast` is GREEN 
 merged tree must repeat the binding gates.
 
 The two agreed next-cut requirements are now represented in code: creating a new Commander resets
-`starnet.tutorial.v1` and re-arms the tour/coachmarks/FIRST STEPS, and the save-unreachable screen
+`eyehold.tutorial.v1` and re-arms the tour/coachmarks/FIRST STEPS, and the save-unreachable screen
 shows stable `SAVE-403` versus `SAVE-NET` diagnosis plus copyable recovery details. The existing
-genesis `USE A DIFFERENT ACCOUNT` action clears a wrong StarNet account link in-app. Physical macOS
+genesis `USE A DIFFERENT ACCOUNT` action clears a wrong Eyehold account link in-app. Physical macOS
 runtime proof is still owed; Windows tests and source inspection are not a substitute.
 
 Live Windows proof used the real seeded sidecar and an isolated worktree scratch workspace. After a
@@ -120,7 +120,7 @@ still-owed physical macOS recovery proof.
 
 ### High-value fixes
 
-1. **BYOK billing:** linked stations no longer require or debit StarNet credits for user-funded provider runs.
+1. **BYOK billing:** linked stations no longer require or debit Eyehold credits for user-funded provider runs.
 2. **Routines/cron:** one-shot truth, leases, cancellation, retry anchors, DST/midnight gaps, bad schedule
    inputs, clock shifts, zombie settlement, and sparse-date search performance.
 3. **Durability/recovery:** transactional or rollback-safe writes across saves, backups, checkpoints,
@@ -197,7 +197,7 @@ required artifact returns HTTP 200. The existing fleet feed is healthy before th
 
 ## Post-publish record (2026-09-03)
 
-`v0.10.13` was published as Latest on `androoAGI/starnet-releases` at 04:41Z with signed Windows and
+`v0.10.13` was published as Latest on `Eyehold/eyehold-releases` at 04:41Z with signed Windows and
 both notarized macOS legs; hosted T0 and G1 passed against the staged draft first. Two rows in the cut
 sequence above were NOT satisfied at Publish time and the record must say so:
 

@@ -82,7 +82,7 @@ const SCREEN = `(() => [...document.querySelectorAll('.term')].filter(w => w.isC
   z: parseInt(w.style.zIndex, 10) || 0, hidden: w.hidden || getComputedStyle(w).display === 'none',
   active: [...w.querySelectorAll('[aria-selected="true"]')].map(x => x.textContent.replace(/\\s+/g, ' ').trim()).filter(Boolean) })))()`;
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-show-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-show-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');
@@ -158,7 +158,7 @@ try {
   const cleared = ((await evalJS(cdp, SCREEN)) || []).length;
   mock.results = []; mock.phase = MARK + '-UNWATCHED';
   mock.script = [{ name: 'tool_search', args: { query: 'open a window to show the Commander' } }, { name: 'station_show', args: { place: 'settings' } }];
-  const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base };
+  const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base };
   const res = await fetch(base + '/api/run', { method: 'POST', headers, body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: MARK + '-UNWATCHED open my settings' }] }) });
   await res.text();
   check('unwatched run: the model was told the screen was left alone', /^REFUSED: the Commander is not looking at this conversation/.test(mock.results[1] || ''), (mock.results[1] || '').slice(0, 200));

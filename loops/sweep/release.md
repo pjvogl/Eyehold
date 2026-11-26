@@ -41,7 +41,7 @@ here and a false green is the worst outcome in the entire repo.
 ## Two traps
 
 - **`RELEASE_NOTES.md` on trunk is the LAST cut's copy**, and `release:bump` overwrites it.
-- **A branch push deploys NOTHING** — starnetos.com is a Cloudflare direct-upload. Do not infer
+- **A branch push deploys NOTHING** — eyehold.com is a Cloudflare direct-upload. Do not infer
   a deploy from a push.
 
 ## Done means

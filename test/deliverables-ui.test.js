@@ -12,7 +12,7 @@ A.ok(csv.indexOf('<table') >= 0 && csv.indexOf('two, too') >= 0, 'quoted CSV cel
 A.ok(csv.indexOf('<td>3</td>') < 0 && csv.indexOf('<td>4</td>') < 0, 'CSV preview obeys row and column bounds');
 
 // open URLs carry a SCOPED TICKET, never the launch token (2026-09-25 — these reach OS-browser history/Referer)
-global.window = { __STARNET_API_TOKEN__: 'secret', crypto: require('node:crypto').webcrypto };
+global.window = { __EYEHOLD_API_TOKEN__: 'secret', crypto: require('node:crypto').webcrypto };
 global.ApiTicket = require('../frontend/app/apiticket.js');
 const runOpen = D.openUrl('/workshop-run/a/r/index.html');
 const runSplit = Tickets.splitRunTicket(runOpen);

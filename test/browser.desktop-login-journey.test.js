@@ -41,8 +41,8 @@ function makeDriverSeam() {
 function desktopBrowser(seam, lease, prompts) {
   return makeBrowserTools({
     // This models the packaged desktop host after src-tauri starts the sidecar: there is
-    // deliberately no desktop-wide STARNET_BROWSER_HEADLESS pin.
-    env: { STARNET_DESKTOP_SHELL: '1', STARNET_USER_CONTROL_MODE: 'preserve' },
+    // deliberately no desktop-wide EYEHOLD_BROWSER_HEADLESS pin.
+    env: { EYEHOLD_DESKTOP_SHELL: '1', EYEHOLD_USER_CONTROL_MODE: 'preserve' },
     forceHeadless: true,
     syntheticInputOnly: true,
     profileDir: 'C:\\temp\\ephemeral-browser-profile',
@@ -58,7 +58,7 @@ function desktopBrowser(seam, lease, prompts) {
 }
 
 (async () => {
-  const stationProfile = 'C:\\Users\\Commander\\AppData\\Roaming\\StarNet\\browser-profile';
+  const stationProfile = 'C:\\Users\\Commander\\AppData\\Roaming\\Eyehold\\browser-profile';
   const lease = makeLease(stationProfile);
   const seam = makeDriverSeam();
   const prompts = [];

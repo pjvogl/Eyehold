@@ -125,7 +125,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   for (let i = 0; i < 60 && boot.indexOf(HOST) < 0; i++) await sleep(500);
   const { bootToken } = require(path.join(REPO, 'test', '_httpToken.js'));
   const tok = await bootToken(HOST, HOST);
-  const H = { 'Content-Type': 'application/json', 'X-StarNet-Token': tok, Origin: HOST };
+  const H = { 'Content-Type': 'application/json', 'X-Eyehold-Token': tok, Origin: HOST };
   const post = (p, body) => fetch(HOST + p, { method: 'POST', headers: H, body: JSON.stringify(body) });
 
   await post('/api/autonomy/posture', { posture: { initiative: 'free', reach: 'sandbox' } });

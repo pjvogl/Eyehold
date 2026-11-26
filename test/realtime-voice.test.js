@@ -25,8 +25,8 @@ const {
   assert.equal(normalizeVoice('CEDAR'), 'cedar');
   assert.equal(normalizeVoice('not-a-voice'), '');
   assert.ok(VOICES.length > 1, 'a single hardcoded voice is what made this feel unchangeable');
-  assert.ok(config.tools.some(tool => tool.name === 'start_starnet_task'));
-  assert.ok(config.tools.some(tool => tool.name === 'interrupt_starnet_task'));
+  assert.ok(config.tools.some(tool => tool.name === 'start_eyehold_task'));
+  assert.ok(config.tools.some(tool => tool.name === 'interrupt_eyehold_task'));
 
   const a = safetyIdentifier('same-install');
   const b = safetyIdentifier('same-install');

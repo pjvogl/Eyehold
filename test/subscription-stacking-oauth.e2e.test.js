@@ -87,7 +87,7 @@ function boot(port, env, attemptsLeft) {
 
 (async () => {
   const mock = await startMock();
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-stacking-oauth-'));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-stacking-oauth-'));
   fs.mkdirSync(path.join(workspace, 'codex'), { recursive: true });
   fs.writeFileSync(path.join(workspace, 'codex', 'tokens.json'), JSON.stringify({ access_token: PRIMARY, refresh_token: 'fixture-a', token_type: 'Bearer' }));
   const acctDir = path.join(workspace, '.secrets', 'accounts', 'codex', ACCT);
@@ -107,7 +107,7 @@ function boot(port, env, attemptsLeft) {
   const B = () => `http://${HOST}:${port}`;
   try {
     let token = await bootToken(B(), B());
-    const H = () => ({ 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B() });
+    const H = () => ({ 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B() });
     const get = async (p) => (await fetch(B() + p, { headers: H() })).json();
     const post = async (p, body) => (await fetch(B() + p, { method: 'POST', headers: H(), body: JSON.stringify(body || {}) })).json();
     const run = async (marker) => {

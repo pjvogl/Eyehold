@@ -5,10 +5,10 @@ const assert = require('node:assert/strict');
 const base = 'http://127.0.0.1:19427';
 (async () => {
   const html = await (await fetch(base)).text();
-  const token = html.match(/window\.__STARNET_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
-  const get = async url => (await fetch(base + url, { headers: { 'X-StarNet-Token': token } })).json();
+  const token = html.match(/window\.__EYEHOLD_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
+  const get = async url => (await fetch(base + url, { headers: { 'X-Eyehold-Token': token } })).json();
   const post = async (url, data) => {
-    const r = await fetch(base + url, { method: 'POST', headers: { 'X-StarNet-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    const r = await fetch(base + url, { method: 'POST', headers: { 'X-Eyehold-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     return { status: r.status, body: await r.json() };
   };
   const j = await get('/api/cron');

@@ -50,7 +50,7 @@
     },
     {
       "id": "tag-release",
-      "label": "no release v0.11.2 on androoAGI/starnet-releases",
+      "label": "no release v0.11.2 on Eyehold/eyehold-releases",
       "status": "PASS",
       "detail": "",
       "fix": ""
@@ -81,7 +81,7 @@
       "label": "test:http green at HEAD",
       "status": "WARN",
       "detail": "not proven at HEAD",
-      "fix": "required when sidecar/ship/route code changed since the last cut (starnet-backend-law): `npm run test:http 2>&1 | tee gate-http.log` → --gates-proven-by gate-http.log"
+      "fix": "required when sidecar/ship/route code changed since the last cut (eyehold-backend-law): `npm run test:http 2>&1 | tee gate-http.log` → --gates-proven-by gate-http.log"
     },
     {
       "id": "t0",

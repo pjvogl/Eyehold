@@ -1,5 +1,5 @@
 # Keep the source repository's Releases sidebar aligned with the dedicated updater repository.
-# Publishing on androoAGI/starnet-releases remains the human ship gate. This workflow observes
+# Publishing on Eyehold/eyehold-releases remains the human ship gate. This workflow observes
 # only its latest published stable release, mirrors the human installers byte-for-byte, and
 # creates the source release draft-first so a failed copy can never expose a partial release.
 name: sync-source-release
@@ -37,7 +37,7 @@ jobs:
           # repository is public, so read it anonymously instead of broadening credentials.
           curl --fail --silent --show-error --location \
             --header 'Accept: application/vnd.github+json' \
-            --header 'User-Agent: starnet-source-release-mirror' \
+            --header 'User-Agent: eyehold-source-release-mirror' \
             "https://api.github.com/repos/$DISTRIBUTION_REPO/releases/latest" \
             --output "$RUNNER_TEMP/distribution-release.json"
           jq '{tag_name, name, draft, prerelease, assets: [.assets[] | {name, size, state, digest, browser_download_url}]}' \

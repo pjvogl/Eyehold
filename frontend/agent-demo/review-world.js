@@ -1,4 +1,4 @@
-/* STARNET — world.js : the LIVE station the agent lives inside.
+/* EYEHOLD — world.js : the LIVE station the agent lives inside.
 
    Renders the player-built WorldModel station (multi-room) with the generalized
    procedural bake (stationbake.js), under a pan/zoom camera. The agent has a
@@ -1214,7 +1214,7 @@ const World = (() => {
     // element), so without this guard each new agent stacked another full set of listeners and SSE streams.
     if (listenersBound) return;
     listenersBound = true;
-    // THE STARNET FONT, ON CANVAS. `font-display: block` (style.css) governs the DOM only —
+    // THE EYEHOLD FONT, ON CANVAS. `font-display: block` (style.css) governs the DOM only —
     // canvas has no equivalent: `ctx.font` resolves against whatever is loaded AT DRAW TIME and
     // silently falls through to the next family in the stack when VT323 has not landed yet.
     // The live frame redraws continuously so it heals itself, but StationBake paints its layers
@@ -1585,7 +1585,7 @@ const World = (() => {
   let skinReview = null;
   let workPoseReview = null;
   function showWorkPoseReview(enabled, id, skin) {
-    if (!window.__STARNET_DEV__ || !geo || !agent || !cache) return false;
+    if (!window.__EYEHOLD_DEV__ || !geo || !agent || !cache) return false;
     workPoseReview = null;
     if (!enabled) return true;
     const desk = deskPropFor(id) || (geo.props || []).find(p => isWorkstationProp(p.t));
@@ -1601,7 +1601,7 @@ const World = (() => {
   }
   const demoMotionEvidence={},demoWalkEvidence={};let demoMotionEvidenceAt=0;
   function showSkinReview(enabled, zoom, id='secretagent') {
-    if (!window.__STARNET_DEV__ || !geo || !agent || !cache) return false;
+    if (!window.__EYEHOLD_DEV__ || !geo || !agent || !cache) return false;
     if (!enabled) { skinReview = null; return true; }
     const deskRef = (geo.props || []).find(p => p.t === 'desk') || {x:tileOf(agent.px,agent.py).x,y:tileOf(agent.px,agent.py).y,w:2,h:1};
     let spot = null;
@@ -7019,7 +7019,7 @@ const World = (() => {
       // A genuine load failure still clears `loading` and gets the honest fallback on the next frame.
       if (!geom && !(typeof SPRITES !== 'undefined' && SPRITES.loading)) drawFallback(now, who);
       // Expose observed render frames/positions for development verification only.
-      if(geom && window.__STARNET_DEV__){
+      if(geom && window.__EYEHOLD_DEV__){
         // A review skin change starts fresh evidence; frames from the previous skin aren't coverage.
         if(demoWalkEvidence[who.id]?.skin!==who.skin)demoWalkEvidence[who.id]={skin:who.skin,frames:new Set(),poses:new Set(),origin:null,distance:0};
         const evidence=demoWalkEvidence[who.id];
@@ -8055,12 +8055,12 @@ const World = (() => {
   // after a DISCONNECT they kept polling /api/connectors every 5s and the EventSource self-reconnected forever
   // from the title screen. Hoisted here so pauseBridge() (on disconnect) can release them and resumeBridge()
   // (on re-entry) can re-arm them. The U.bus.on(...) subscriptions stay put (idempotent under `bridged`).
-  // E6f — API base consistency: the SSE bridge already prefixes window.__STARNET_API__ (the sidecar's loopback
+  // E6f — API base consistency: the SSE bridge already prefixes window.__EYEHOLD_API__ (the sidecar's loopback
   // origin) so it resolves in the desktop build, where the page origin is the Tauri asset host, NOT the sidecar.
   // Bare /api/* fetches (routing POST, connectors poll) skipped that prefix and would hit the wrong origin there.
   // apiUrl() is the single source of truth so all three use the same base. (Auth token is attached by harness.js's
   // window.fetch monkey-patch for /api/ URLs; the SSE path can't send a header so it presents a single-use ApiTicket.sseUrl ticket.)
-  function apiBase() { return (typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : ''; }
+  function apiBase() { return (typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : ''; }
   function apiUrl(path) { return apiBase() + path; }
   let chanES = null, connPollTimer = null, connPollFn = null, connOpenFn = null, bridgePaused = false;
   let bridgeCursor = '', bridgeRecovering = false;

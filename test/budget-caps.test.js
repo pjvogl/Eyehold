@@ -75,7 +75,7 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
 
 // ---------- 3. PERSISTENCE round-trip through the host's {version,caps} envelope ----------
 {
-  const tmp = path.join(require('os').tmpdir(), 'starnet-budget-test-' + process.pid + '.json');
+  const tmp = path.join(require('os').tmpdir(), 'eyehold-budget-test-' + process.pid + '.json');
   try {
     // host writes: saveResilient(BUDGET_FILE, { version: 1, caps: budgetOverrides })
     const saved = bc.validateOverridesPatch({ perRun: 2.5, global: 0 }, {}).overrides;
@@ -150,7 +150,7 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   A.ok(/environment default/.test(station), 'the panel badges an unsaved cap as the default, so $25 never reads as something the user set');
 }
 
-// ---- issue #53: a StarNet-credit run never reserves the whole wallet by default ------------------------------
+// ---- issue #53: a Eyehold-credit run never reserves the whole wallet by default ------------------------------
 // Before: no per-run cap in force -> admission reserved the ENTIRE balance, which is also the loop's per-run
 // ceiling, so one prompt could spend a fresh $10 top-up. Now: min(managed default, balance); a positive cap the
 // user (or a delegating caller) chose is honoured verbatim. The live proof is test/managed-run-cap.e2e.test.js.
@@ -178,7 +178,7 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   A.ok(/const avail = \(snap && typeof snap\.balanceUsd === 'number' && isFinite\(snap\.balanceUsd\)\) \? snap\.balanceUsd : NaN;/.test(idx), 'admission reads only a REPORTED balance; null stays unknown');
   A.ok(!/runCapUsd = \(isFinite\(avail\) && avail > 0\) \? avail : 0/.test(idx), 'the reserve-the-whole-wallet line is gone');
   A.ok(/MANAGED_PER_RUN_DEFAULT = num\(ENV\('BUDGET_MANAGED_PER_RUN'\), budgetCaps\.DEFAULT_MANAGED_PER_RUN_USD\)/.test(idx), 'the default is env-tunable (SKYNET_BUDGET_MANAGED_PER_RUN)');
-  // truthful UI: "0 = no cap" must not be the whole story on StarNet credits, and a run stop never says "remove"
+  // truthful UI: "0 = no cap" must not be the whole story on Eyehold credits, and a run stop never says "remove"
   const station = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
   A.ok(/id="bg-managed-hint"/.test(station) && /st\.managedRunDefaultUsd/.test(station), 'the Budget panel paints the managed default from /api/budget/status');
   const chat = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'chat.js'), 'utf8');

@@ -30,7 +30,7 @@ const port = arg('--port', '8971'), cdpPort = Number(arg('--cdp', '9371')), size
 const secs = Number(arg('--secs', '8')), settle = Number(arg('--settle', '20')), soak = Number(arg('--soak', '0'));
 const phases = arg('--phases', 'baseline,no-backdrop,no-css-anim,world-stopped,blurred').split(',');
 const station = resolve(arg('--station', join(repo, 'dev/fixtures/seed-workspace')));
-const OUT = join(tmpdir(), 'starnet-perf-cost');
+const OUT = join(tmpdir(), 'eyehold-perf-cost');
 const scratch = join(OUT, '_ws-' + port), profile = join(OUT, '_profile-' + cdpPort);
 for (const d of [scratch, profile]) try { rmSync(d, { recursive: true, force: true }); } catch {}
 mkdirSync(scratch, { recursive: true });
@@ -68,7 +68,7 @@ try {
   await cdp.send('Emulation.setFocusEmulationEnabled', { enabled: true });
   await cdp.send('Page.navigate', { url: APP_URL });
   if (!(await waitDevReady(cdp, evalJS, { tries: 60, url: APP_URL }))) throw new Error('never reached the floor');
-  const info = await evalJS(cdp, `({ vw: innerWidth, vh: innerHeight, dpr: devicePixelRatio, ver: (document.querySelector('meta[name=starnet-version]')||{}).content || null,
+  const info = await evalJS(cdp, `({ vw: innerWidth, vh: innerHeight, dpr: devicePixelRatio, ver: (document.querySelector('meta[name=eyehold-version]')||{}).content || null,
     canvases: [...document.querySelectorAll('canvas')].filter(c => c.width * c.height > 4096).map(c => (c.id || c.className || 'canvas') + ' ' + c.width + 'x' + c.height + (c.offsetParent ? '' : ' (hidden)')),
     backdrop: [...document.querySelectorAll('*')].filter(e => { const s = getComputedStyle(e); return (s.backdropFilter && s.backdropFilter !== 'none') && e.offsetParent !== null; }).map(e => { const r = e.getBoundingClientRect(); return (e.id ? '#' + e.id : e.tagName.toLowerCase() + '.' + String(e.className).split(/\\s+/)[0]) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height) + ' ' + getComputedStyle(e).backdropFilter; }) })`);
   console.log('repo', repo, '\nstation', station, '\n' + JSON.stringify(info, null, 1));

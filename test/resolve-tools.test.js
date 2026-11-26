@@ -14,7 +14,7 @@ const { EventEmitter } = require('node:events');
 const R = require('../sidecar/tools/builtin/resolve.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-resolve-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-resolve-test-' + process.pid);
 A.rejects = async (fn, msg) => { let threw = false; try { await fn(); } catch (e) { threw = true; } A.ok(threw, msg); };
 
 // scripted spawn: handler(cmd, args) -> { code, stdout, stderr } | { error }

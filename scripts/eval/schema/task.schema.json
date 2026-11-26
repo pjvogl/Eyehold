@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://starnet.local/schemas/eval-task-v1.json",
-  "title": "StarNet agent evaluation task v1",
+  "$id": "https://eyehold.local/schemas/eval-task-v1.json",
+  "title": "Eyehold agent evaluation task v1",
   "type": "object",
   "additionalProperties": true,
   "required": ["schemaVersion", "id", "status"],
   "properties": {
-    "schemaVersion": { "const": "starnet.eval.task.v1" },
+    "schemaVersion": { "const": "eyehold.eval.task.v1" },
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
     "status": { "enum": ["active", "pending"] },
     "description": { "type": "string" },

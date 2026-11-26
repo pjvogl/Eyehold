@@ -1,4 +1,4 @@
-# StarNet: first-use confusion journal
+# Eyehold: first-use confusion journal
 
 Date: 2026-09-04. Direction: improve the existing station dashboard and its existing categories. The separate My Work hub was the wrong response to the user's request: it duplicates destinations and adds another place to understand. This audit does not propose a replacement dashboard.
 
@@ -14,7 +14,7 @@ The journal records visible behavior and copy. Proposed remedies and predicted b
 
 ## Main diagnosis
 
-StarNet asks the user to assemble its operating model from scattered explanations. A single useful workflow crosses several conceptual boundaries: conversation versus workflow entry, bay versus agent, physical gear versus effective access, saved versus enabled automation, completed execution versus accepted output. Each screen explains part of that model, sometimes using different terms or rules.
+Eyehold asks the user to assemble its operating model from scattered explanations. A single useful workflow crosses several conceptual boundaries: conversation versus workflow entry, bay versus agent, physical gear versus effective access, saved versus enabled automation, completed execution versus accepted output. Each screen explains part of that model, sometimes using different terms or rules.
 
 The station can teach these relationships directly through the selected object, the current action, and visible work. Adding more destinations and long explanatory panels increases the work of understanding it.
 
@@ -125,6 +125,6 @@ Ask an actual beginner to perform these tasks without explanation from the devel
 4. Identify why a saved automation will or will not execute and fix its first blocking requirement.
 5. Connect a service through its supported setup, understand its scope, and return to the original task.
 6. Find an answer/file, identify whether work needs review, and mark it complete without fear of accidental publishing.
-7. Explain what StarNet knows about them, correct one belief, and understand why a suggestion appeared.
+7. Explain what Eyehold knows about them, correct one belief, and understand why a suggestion appeared.
 
 Separately verify narrow and wide layouts, keyboard navigation, fresh onboarding, normal restricted authority, Full Access, real connector authorization, and real background runs. This walkthrough did not complete those coverage areas.

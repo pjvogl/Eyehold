@@ -155,7 +155,7 @@ const K = require('../sidecar/servicekeys.js');
 
 // ---- H. watched-only integrations cannot silently acquire unattended authority ----
 {
-  const reason = 'StarNet does not yet manage Etsy OAuth refresh.';
+  const reason = 'Eyehold does not yet manage Etsy OAuth refresh.';
   const add = K.upsert([], {
     name: 'Etsy', key: 'etsy-key', unattendedSupported: false, unattendedReason: reason
   }, 1);

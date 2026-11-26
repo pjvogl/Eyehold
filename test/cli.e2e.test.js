@@ -1,19 +1,19 @@
-/* node test/cli.e2e.test.js — the `starnet` command, end to end, against a REAL sidecar.
+/* node test/cli.e2e.test.js — the `eyehold` command, end to end, against a REAL sidecar.
 
    test/cli.test.js proves the decisions against fakes. This is the proof the surface exists: it boots the real
    sidecar (test/helpers/sidecar-fixture.js — hermetic profile, so no real station is ever seen or touched),
-   points its OpenRouter adapter at a content-driven mock (ZERO spend), and spawns bin/starnet.js exactly the
+   points its OpenRouter adapter at a content-driven mock (ZERO spend), and spawns bin/eyehold.js exactly the
    way a shell does. Nothing on either side of the pipe is stubbed.
 
    What it locks:
-     1. ATTACH: `starnet -p … --port N` drives a real /api/run on the running station; the model's text streams
+     1. ATTACH: `eyehold -p … --port N` drives a real /api/run on the running station; the model's text streams
         to stdout, the receipt line goes to stderr, exit 0 on agent.run.end{done};
      2. --json emits one receipt object whose runId/text/reason are the station's own;
      3. tool calls show as terse stderr lines; the consent gate is real — --yes approves and the write LANDS,
         the non-interactive default DENIES and the write never happens;
      4. status / doctor read the station (providers by name only, never a key);
      5. a NAMED dead port (--port) is an error (exit 3), never a spawn; status never boots a station;
-     6. SPAWN: with no station, `starnet --spawn --workspace <fresh dir> -p …` bootstraps a full-power agent,
+     6. SPAWN: with no station, `eyehold --spawn --workspace <fresh dir> -p …` bootstraps a full-power agent,
         boots a private sidecar, runs, and tears it down — and the workspace it leaves behind is one the DESKTOP
         resumes (a real sidecar booted on it afterwards serves the save + roster). Part of test:http. */
 'use strict';
@@ -27,7 +27,7 @@ const { spawn } = require('child_process');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 
 const HOST = '127.0.0.1';
-const BIN = path.resolve(__dirname, '..', 'bin', 'starnet.js');
+const BIN = path.resolve(__dirname, '..', 'bin', 'eyehold.js');
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -88,7 +88,7 @@ function cli(args, env, timeoutMs) {
 // the hermetic profile the sidecar fixture uses — the CLI's OWN desktop discovery must look at the same empty
 // scratch roots, so it can never find (or boot into) the developer's real station.
 function hermetic(profile) {
-  const h = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile, STARNET_PORT: '', SKYNET_PORT: '', STARNET_WORKSPACES: '', SKYNET_WORKSPACES: '', STARNET_TOKEN: '', STARNET_API_TOKEN: '', SKYNET_API_TOKEN: '' };
+  const h = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile, EYEHOLD_PORT: '', SKYNET_PORT: '', EYEHOLD_WORKSPACES: '', SKYNET_WORKSPACES: '', EYEHOLD_TOKEN: '', EYEHOLD_API_TOKEN: '', SKYNET_API_TOKEN: '' };
   if (process.platform !== 'win32') h.HOME = profile;
   return h;
 }
@@ -96,13 +96,13 @@ function hermetic(profile) {
 (async () => {
   const mock = await startMockOpenRouter([
     { when: 'say hello', text: 'Hello from the station.' },
-    { when: 'write the notes file', tool: { name: 'fs.write', args: { path: 'cli-notes.md', content: 'written through the starnet CLI' } } },
+    { when: 'write the notes file', tool: { name: 'fs.write', args: { path: 'cli-notes.md', content: 'written through the eyehold CLI' } } },
     { when: 'write the secret file', tool: { name: 'fs.write', args: { path: 'cli-denied.md', content: 'must never exist' } } }
   ]);
   const providerEnv = {
-    SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-cli-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-cli-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model'
+    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-cli-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-cli-fake',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
 
   /* ================= ATTACH: a running station ================= */
@@ -138,7 +138,7 @@ function hermetic(profile) {
       A.ok(j.turns === 1 && Array.isArray(j.toolCalls) && j.toolCalls.length === 0, 'turns + no tool calls');
       A.ok(!/Hello from the station/.test(r.err), 'the answer is not duplicated on stderr');
       // truthfulness: the station's OWN run history holds this runId
-      const runs = await fetch(fixture.baseUrl + '/api/runs?limit=3', { headers: { 'X-StarNet-Token': fixture.token, Origin: fixture.baseUrl } });
+      const runs = await fetch(fixture.baseUrl + '/api/runs?limit=3', { headers: { 'X-Eyehold-Token': fixture.token, Origin: fixture.baseUrl } });
       const hist = await runs.json();
       A.ok((hist.runs || []).some(x => x.runId === j.runId && x.reason === 'done'), 'the receipt\'s runId is in the station\'s run history with the same reason');
     }
@@ -160,7 +160,7 @@ function hermetic(profile) {
       A.ok(/↳ ok/.test(ok.err), 'the approved call is reported ok');
       const written = path.join(ws, 'agent', 'cli-notes.md');
       A.ok(fs.existsSync(written), 'the APPROVED write really landed at ' + written);
-      A.ok(fs.readFileSync(written, 'utf8').indexOf('written through the starnet CLI') >= 0, 'with the content the agent sent');
+      A.ok(fs.readFileSync(written, 'utf8').indexOf('written through the eyehold CLI') >= 0, 'with the content the agent sent');
       A.eq(ok.code, 0, 'exit 0');
       const j = JSON.parse((await cli(['-p', 'write the notes file', '--port', String(port), '--yes', '--json'], attachEnv)).out.trim());
       A.ok(j.toolCalls.length >= 1 && j.toolCalls[0].name === 'fs.write' && j.toolCalls[0].ok === true, 'the JSON receipt lists the tool call with its real outcome');
@@ -180,7 +180,7 @@ function hermetic(profile) {
 
       const d = await cli(['doctor', '--port', String(port)], attachEnv);
       A.eq(d.code, 0, 'doctor exits 0');
-      A.ok(/StarNet diagnostics/.test(d.out) && /Credential:\s+configured/.test(d.out), 'doctor prints the static diagnostics report');
+      A.ok(/Eyehold diagnostics/.test(d.out) && /Credential:\s+configured/.test(d.out), 'doctor prints the static diagnostics report');
       A.ok(d.out.indexOf('sk-or-v1') < 0, 'doctor never prints a key');
     }
 
@@ -220,10 +220,10 @@ function hermetic(profile) {
       const roster = JSON.parse(fs.readFileSync(path.join(ws2, 'agent.roster.json'), 'utf8'));
       A.eq(roster.agents[0].agentId + ':' + roster.agents[0].name + ':' + roster.agents[0].approvalMode, 'agent:ATLAS:full', 'the roster on disk holds the full-power agent');
       const save = JSON.parse(fs.readFileSync(path.join(ws2, 'agent.save.json'), 'utf8'));
-      A.eq(save.doc.schema + ':' + save.doc.agent.name, 'starnet.save:ATLAS', 'the save on disk is the desktop-resumable shape');
+      A.eq(save.doc.schema + ':' + save.doc.agent.name, 'eyehold.save:ATLAS', 'the save on disk is the desktop-resumable shape');
       A.ok(fs.existsSync(path.join(ws2, 'runs.jsonl')), 'the run was recorded durably by the private station');
       await sleep(300);
-      A.ok(!fs.existsSync(path.join(ws2, '.starnet-workspace-owner.json')), 'the private station released its workspace owner claim on exit');
+      A.ok(!fs.existsSync(path.join(ws2, '.eyehold-workspace-owner.json')), 'the private station released its workspace owner claim on exit');
 
       // second run on the SAME workspace: nothing re-bootstrapped, the persisted agent runs again
       const before = fs.readFileSync(path.join(ws2, 'agent.roster.json'), 'utf8');
@@ -240,9 +240,9 @@ function hermetic(profile) {
       again.workspace = ws2;
       await again.start();
       try {
-        const h = { 'X-StarNet-Token': again.token, Origin: again.baseUrl };
+        const h = { 'X-Eyehold-Token': again.token, Origin: again.baseUrl };
         const sv = await (await fetch(again.baseUrl + '/api/save?agent=agent', { headers: h })).json();
-        A.ok(sv.save && sv.save.agent && sv.save.agent.name === 'ATLAS' && sv.save.schema === 'starnet.save', 'GET /api/save serves the bootstrapped agent — the desktop\'s boot path takes the RESUME branch, never the first-run ceremony');
+        A.ok(sv.save && sv.save.agent && sv.save.agent.name === 'ATLAS' && sv.save.schema === 'eyehold.save', 'GET /api/save serves the bootstrapped agent — the desktop\'s boot path takes the RESUME branch, never the first-run ceremony');
         A.ok(!sv.recovery, 'no quarantine/recovery marker was raised by the bootstrap files');
         const rt = await (await fetch(again.baseUrl + '/api/runtime/agent', { headers: h })).json();
         A.ok(rt.agents.some(a => a.agentId === 'agent' && a.name === 'ATLAS' && a.model === 'test/model'), 'the roster the sidecar loaded lists ATLAS with its model');

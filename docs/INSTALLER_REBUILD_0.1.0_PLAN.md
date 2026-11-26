@@ -1,4 +1,4 @@
-# Plan: Rebuild the StarNet desktop installer so it carries all of yesterday's work
+# Plan: Rebuild the Eyehold desktop installer so it carries all of yesterday's work
 
 **Audience:** Codex (executing agent). This doc is self-contained — assume no memory of the
 conversation that produced it.
@@ -10,10 +10,10 @@ DECISION 2 = version bump) — resolve them before the build step.
 
 ## 1. Context — what happened and what this fixes
 
-StarNet is a downloadable Tauri desktop app: a Rust shell that loads a static web frontend and
+Eyehold is a downloadable Tauri desktop app: a Rust shell that loads a static web frontend and
 spawns a bundled Node sidecar. The user runs the **installed** build, not a dev server.
 
-- The user's running app is the **installed copy** at `C:\Users\<you>\AppData\Local\StarNet\`,
+- The user's running app is the **installed copy** at `C:\Users\<you>\AppData\Local\Eyehold\`,
   reporting itself as **version 0.1.0**.
 - That install's `.exe` was built **2026-06-27 03:23:54 -0400**. Everything committed to the
   source trunk *after* that timestamp (an entire day of feature work — see §3) **never made it
@@ -25,7 +25,7 @@ spawns a bundled Node sidecar. The user runs the **installed** build, not a dev 
 **Already done (a hotfix, NOT this task):** the source `frontend/` was mirrored directly into
 the live install's resource dir via `robocopy`, so after an app restart the *running* install is
 already current. A pre-sync backup sits at
-`C:\Users\<you>\AppData\Local\StarNet\frontend.bak-20260628-pre-sync`.
+`C:\Users\<you>\AppData\Local\Eyehold\frontend.bak-20260628-pre-sync`.
 
 **This task:** produce a *properly rebuilt 0.1.0 installer* so the distributable artifact itself
 carries all the work — for clean reinstalls and (if pursued) updater delivery. The hot-sync was a
@@ -115,7 +115,7 @@ To regenerate the exact list:
    **only the `.exe` and no `.sig`**, so the signing key is likely NOT wired on this machine.
    Choose one:
    - **(A) Have the key** → export the env vars, build normally, get signed updater artifacts
-     (`.nsis.zip` + `.sig`) suitable for the `updates.starnet.app` endpoint.
+     (`.nsis.zip` + `.sig`) suitable for the `updates.eyehold.app` endpoint.
    - **(B) Don't have the key / local-only rebuild** → temporarily set
      `bundle.createUpdaterArtifacts: false` in `tauri.conf.json`, build to get just the NSIS
      installer, then **revert the edit**. Do this only for a local reinstall, never for public
@@ -146,7 +146,7 @@ npm run desktop:build
 ```
 
 Expected primary artifact:
-`src-tauri/target/release/bundle/nsis/StarNet_<version>_x64-setup.exe`
+`src-tauri/target/release/bundle/nsis/Eyehold_<version>_x64-setup.exe`
 Plus, if DECISION 1 = (A): `…_x64-setup.nsis.zip` and `…_x64-setup.nsis.zip.sig` (updater artifacts).
 
 ---
@@ -189,11 +189,11 @@ grep -n "good looks like" src-tauri/target/release/frontend/app/onboarding.js
 ## 8. Install / deliver
 
 1. **Close the running app first** — the installed `skynet-desktop.exe` (was PID 33048) locks its
-   own binary; the installer can't replace a running exe. Fully quit StarNet.
-2. Run the new installer: `src-tauri/target/release/bundle/nsis/StarNet_<version>_x64-setup.exe`
-   (NSIS, `installMode: passive`). It installs to `C:\Users\<you>\AppData\Local\StarNet\`.
+   own binary; the installer can't replace a running exe. Fully quit Eyehold.
+2. Run the new installer: `src-tauri/target/release/bundle/nsis/Eyehold_<version>_x64-setup.exe`
+   (NSIS, `installMode: passive`). It installs to `C:\Users\<you>\AppData\Local\Eyehold\`.
 3. If pursuing updater delivery (DECISION 1 = A, DECISION 2 = bump): publish the new
-   `latest.json` + signed `.nsis.zip`/`.sig` to `https://updates.starnet.app/desktop/latest.json`.
+   `latest.json` + signed `.nsis.zip`/`.sig` to `https://updates.eyehold.app/desktop/latest.json`.
    (Out of scope for a local rebuild; note it as a follow-up.)
 
 ---
@@ -201,24 +201,24 @@ grep -n "good looks like" src-tauri/target/release/frontend/app/onboarding.js
 ## 9. Post-install verification
 
 ```bash
-INST="C:/Users/<you>/AppData/Local/StarNet"
+INST="C:/Users/<you>/AppData/Local/Eyehold"
 ls "$INST/frontend/app/pitch.js" "$INST/frontend/app/quests.js"   # new modules present
 grep -n "good looks like" "$INST/frontend/app/onboarding.js"      # expect no output
 ```
-Then launch StarNet and confirm: app boots with no console errors, the awakening shows the
+Then launch Eyehold and confirm: app boots with no console errors, the awakening shows the
 corrected context beat, and the pitch / quests / seeds / autonomy features are present.
 
 ---
 
 ## 10. Gotchas / notes
 
-- **Running exe locks itself** — always close StarNet before reinstalling (see §8.1).
+- **Running exe locks itself** — always close Eyehold before reinstalling (see §8.1).
 - **`index.html` + the 11 new JS files are a unit** — shipping one without the other 404s or
   no-ops the new features. A full rebuild handles this automatically; just don't hand-pick files.
 - **Don't ship `sidecar/workspaces*`** — those are runtime data dirs, not code.
 - **Hot-sync already applied to the live machine** — the user's running install is already current
   after a restart; this rebuild is for a clean distributable, not to un-break the live machine.
-- **Backup exists** at `C:\Users\<you>\AppData\Local\StarNet\frontend.bak-20260628-pre-sync` if a
+- **Backup exists** at `C:\Users\<you>\AppData\Local\Eyehold\frontend.bak-20260628-pre-sync` if a
   rollback of the hot-sync is ever needed.
 - **package.json version (0.0.0) is cosmetic** for the installer; `tauri.conf.json` is the source
   of truth for the bundled version.

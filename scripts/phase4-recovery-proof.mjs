@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { runBoundedCommand } from './lib/run-command.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = resolve(process.env.STARNET_PHASE4_RECOVERY_DIR || join(ROOT, '.dogfood', 'phase4-recovery-proof'));
+const OUT = resolve(process.env.EYEHOLD_PHASE4_RECOVERY_DIR || join(ROOT, '.dogfood', 'phase4-recovery-proof'));
 const attendedFile = join(ROOT, '.dogfood', 'phase4-attended-evidence.json');
 const nodeCmd = process.execPath;
 

@@ -5,9 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { launchChrome, connectCDP, evalJS, sleep } from '../lib/cdp.mjs';
 
-const url = process.env.STARNET_URL || 'http://127.0.0.1:9074';
-const cdpPort = Number(process.env.STARNET_CDP_PORT || 9474);
-const profileDir = mkdtempSync(join(tmpdir(), 'starnet-window-position-'));
+const url = process.env.EYEHOLD_URL || 'http://127.0.0.1:9074';
+const cdpPort = Number(process.env.EYEHOLD_CDP_PORT || 9474);
+const profileDir = mkdtempSync(join(tmpdir(), 'eyehold-window-position-'));
 const { proc } = launchChrome({ cdpPort, win: '1440,900', profileDir });
 let cdp;
 
@@ -33,7 +33,7 @@ async function probe(label) {
     const close = w && w.querySelector('.term-x');
     if (!w || !head || !close) return { label: ${JSON.stringify(label)}, ok: false, reason: 'missing terminal chrome' };
     const wr = w.getBoundingClientRect(), hr = head.getBoundingClientRect(), xr = close.getBoundingClientRect();
-    const saved = JSON.parse(localStorage.getItem('starnet.station.v1') || '{}').termPos?.settings;
+    const saved = JSON.parse(localStorage.getItem('eyehold.station.v1') || '{}').termPos?.settings;
     const ok = hr.bottom > 0 && hr.top < innerHeight && xr.left >= 0 && xr.right <= innerWidth && xr.top >= 0 && xr.bottom <= innerHeight;
     return { label: ${JSON.stringify(label)}, ok, viewport: [innerWidth, innerHeight], window: [wr.left, wr.top, wr.width, wr.height], close: [xr.left, xr.top, xr.right, xr.bottom], saved };
   })()`);
@@ -49,7 +49,7 @@ try {
   await cdp.send('Page.navigate', { url });
   await waitFor("typeof StationUI === 'object' && typeof StationUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'station floor');
   await evalJS(cdp, `(() => {
-    const key = 'starnet.station.v1';
+    const key = 'eyehold.station.v1';
     const state = JSON.parse(localStorage.getItem(key) || '{"v":1}');
     state.v = 1; state.termPos = state.termPos || {}; state.termPos.settings = { left: -996, top: -40 };
     localStorage.setItem(key, JSON.stringify(state));

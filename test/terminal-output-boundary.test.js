@@ -9,9 +9,9 @@ const A = require('./_assert.js');
 
 const source = fs.readFileSync(path.join(__dirname, '../frontend/app/harness.js'), 'utf8');
 const storage = new Map([
-  ['starnet.byok.model', 'fixture/model'],
-  ['starnet.byok.prov', 'openrouter'],
-  ['starnet.byok.key', 'fixture-key']
+  ['eyehold.byok.model', 'fixture/model'],
+  ['eyehold.byok.prov', 'openrouter'],
+  ['eyehold.byok.key', 'fixture-key']
 ]);
 const ndjson = [
   { name: 'agent.run.start', payload: { runId: 'run-terminal', agentId: 'agent', model: 'fixture/model' } },
@@ -33,7 +33,7 @@ const sandbox = {
   U: { bus: A.makeBus() }
 };
 sandbox.window = sandbox;
-sandbox.__STARNET_API_TOKEN__ = 'fixture-token';
+sandbox.__EYEHOLD_API_TOKEN__ = 'fixture-token';
 sandbox.fetch = async url => {
   if (String(url) !== '/api/run') throw new Error('unexpected fetch ' + url);
   return new Response(ndjson, { headers: { 'Content-Type': 'application/x-ndjson' } });

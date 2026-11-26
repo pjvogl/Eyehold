@@ -114,7 +114,7 @@
     function base(aid, scope) {
       return ['--git-dir', gitDirFor(aid, scope), '--work-tree', workTreeFor(aid, scope),
         '-c', 'core.autocrlf=false', '-c', 'core.safecrlf=false',
-        '-c', 'user.email=starnet@local', '-c', 'user.name=starnet'];
+        '-c', 'user.email=eyehold@local', '-c', 'user.name=eyehold'];
     }
     const git = (aid, scope, args) => runGit(base(aid, scope).concat(args), { cwd: workTreeFor(aid, scope) });
 
@@ -315,7 +315,7 @@
         fs.mkdirSync(fresh, { recursive: true });
         const gitAt = (dir, args) => runGit(['--git-dir', dir, '--work-tree', workTreeFor(aid, scope),
           '-c', 'core.autocrlf=false', '-c', 'core.safecrlf=false',
-          '-c', 'user.email=starnet@local', '-c', 'user.name=starnet'].concat(args), { cwd: workTreeFor(aid, scope) });
+          '-c', 'user.email=eyehold@local', '-c', 'user.name=eyehold'].concat(args), { cwd: workTreeFor(aid, scope) });
         if ((await gitAt(fresh, ['init', '-q'])).code !== 0) { cleanup(); return false; }
         if ((await gitAt(fresh, ['add', '-A'])).code !== 0) { cleanup(); return false; }
         const com = await gitAt(fresh, ['commit', '-q', '--allow-empty', '-m', 'baseline (repo re-init: size ceiling)']);

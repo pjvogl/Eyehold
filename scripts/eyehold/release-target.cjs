@@ -8,8 +8,8 @@ function validateTarget({sourceRepo,targetRepo,config,review}={}){
  if(!repo.test(sourceRepo||''))reasons.push('source-repository-required');
  if(!repo.test(targetRepo||''))reasons.push('owned-release-repository-required');
  else if((targetRepo.split('/')[0]||'').toLowerCase()!==(String(sourceRepo||'').split('/')[0]||'').toLowerCase())reasons.push('release-repository-must-have-source-owner');
- if(String(targetRepo||'').toLowerCase()==='androoagi/starnet-releases')reasons.push('upstream-release-destination-forbidden');
- if(!config?.bundle?.publisher||config.bundle.publisher==='Andrew Sims')reasons.push('owned-publisher-identity-required');
+ if(String(targetRepo||'').toLowerCase()==='androoagi/eyehold-releases')reasons.push('upstream-release-destination-forbidden');
+ if(!config?.bundle?.publisher||config.bundle.publisher==='Eyehold')reasons.push('owned-publisher-identity-required');
  if(config?.bundle?.createUpdaterArtifacts!==true)reasons.push('signed-updater-configuration-required');
  const expected='https://github.com/'+String(targetRepo||'')+'/releases/latest/download/latest.json';
  if(!config?.plugins?.updater?.endpoints?.includes(expected))reasons.push('updater-must-use-owned-release-repository');

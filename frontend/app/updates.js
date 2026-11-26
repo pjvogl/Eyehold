@@ -1,9 +1,9 @@
-/* STARNET updates.js
+/* EYEHOLD updates.js
    Desktop Update Center: autonomous check loop + native Tauri updater bridge. */
 'use strict';
 
 const Updates = (() => {
-  const KEY = 'starnet.updates.v1';
+  const KEY = 'eyehold.updates.v1';
   // Human-browsable releases page — the GUARANTEED manual-update fallback when the in-app
   // updater can't complete (Gatekeeper on an unsigned mac build, a network/permission/disk
   // failure, an unsupported install layout). Reinstalling the latest build over the top keeps
@@ -91,7 +91,7 @@ const Updates = (() => {
       return snapshot();
     }
     try {
-      const r = await invoke('starnet_update_status');
+      const r = await invoke('eyehold_update_status');
       state.desktop = !!r.desktop;
       state.currentVersion = r.currentVersion || '';
       state.target = r.target || '';
@@ -152,7 +152,7 @@ const Updates = (() => {
     state.confirmRuns = 0;
     emit();
     try {
-      const r = await invoke('starnet_update_check');
+      const r = await invoke('eyehold_update_check');
       prefs = CORE.recordCheckResult(prefs, r, Date.now());
       state.lastCheckedAt = r.checkedAt || Date.now();
       if (r.available && r.update) {
@@ -209,7 +209,7 @@ const Updates = (() => {
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (!/^(?:starnet|skynet)\./i.test(String(key || ''))) continue;
+        if (!/^(?:eyehold|skynet)\./i.test(String(key || ''))) continue;
         const value = localStorage.getItem(key);
         if (value != null) out[key] = String(value);
       }
@@ -324,7 +324,7 @@ const Updates = (() => {
     emit();
     installing = true;   // from here a close-requested is the update restart — quit guard must allow it
     try {
-      await invoke('starnet_update_install', { onEvent });
+      await invoke('eyehold_update_install', { onEvent });
       state.phase = 'restarting';
       notify('Eyehold update installed - restarting', 'good');
     } catch (e) {

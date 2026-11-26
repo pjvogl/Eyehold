@@ -100,7 +100,7 @@ A.ok(QuestStateStore.stateOf('dim:goals').completedAt > 0, 'completedAt survives
 
 /* ---------- reset: the new-hero clean slate drops the key ---------- */
 QuestStateStore.reset();
-A.eq(global.localStorage.getItem('starnet.queststate.v1'), null, 'reset removes the self-persisted key');
+A.eq(global.localStorage.getItem('eyehold.queststate.v1'), null, 'reset removes the self-persisted key');
 A.eq(QuestStateStore.sync(), [], 'a reset store degrades to no-ops until the next init');
 QuestStateStore.init();
 A.eq(QuestStateStore.isDismissed('dim:stack'), false, 'after reset+init, no prior Commander history remains');

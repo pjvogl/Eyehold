@@ -23,7 +23,7 @@ function hardlineFloor(call) {
 }
 
 // Per-process root — a fixed name lets two concurrent gate runs rm -rf each other's fixtures.
-const ROOT = path.join(os.tmpdir(), 'starnet-b2-write-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-b2-write-test-' + process.pid);
 try { fs.rmSync(ROOT, { recursive: true, force: true }); } catch (_) {}
 fs.mkdirSync(ROOT, { recursive: true });
 

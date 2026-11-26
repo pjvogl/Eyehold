@@ -19,7 +19,7 @@ global.localStorage = {
   setItem: (k, v) => { mem[k] = String(v); },
   removeItem: k => { delete mem[k]; }
 };
-const KEY = 'starnet.threadturnin.v1';
+const KEY = 'eyehold.threadturnin.v1';
 
 // a controllable Harness: records every turn-in POST, serves a scripted proposals batch.
 let turninCalls = [];

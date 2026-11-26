@@ -13,7 +13,7 @@ const KEY = 'launch-token-' + 'x'.repeat(40);
 const NOW = 1.9e12;
 
 // ---- the page minter, loaded against a fake window (sync mint, real CSPRNG, fixed clock) ----
-global.window = { __STARNET_API_TOKEN__: KEY, __STARNET_API__: '', crypto: crypto.webcrypto };
+global.window = { __EYEHOLD_API_TOKEN__: KEY, __EYEHOLD_API__: '', crypto: crypto.webcrypto };
 const realNow = Date.now;
 Date.now = () => NOW;
 delete require.cache[require.resolve('../frontend/app/apiticket.js')];
@@ -116,11 +116,11 @@ A.ok(ok(T.splitRunTicket(sr).ticket, 'run', T.scopeRun('ag', 'r 1')), 'sign() ru
 A.eq(T.splitRunTicket(sr).rest, 'ag/r%201/dir/index.html', 'sign() keeps the path encoding');
 A.eq(P.sign('https://example.com/x'), 'https://example.com/x', 'sign() never touches a foreign URL');
 // desktop: absolute loopback base
-window.__STARNET_API__ = 'http://127.0.0.1:4321';
+window.__EYEHOLD_API__ = 'http://127.0.0.1:4321';
 A.ok(P.fileUrl('ag', 'a').indexOf('http://127.0.0.1:4321/api/file?') === 0, 'desktop fileUrl is absolute (Tauri origin)');
 A.ok(P.runUrl('ag', 'r', 'i.html').indexOf('http://127.0.0.1:4321/workshop-run/~t/') === 0, 'desktop runUrl is absolute');
 // no token loaded: no URL credential at all (never a guess)
-window.__STARNET_API_TOKEN__ = '';
+window.__EYEHOLD_API_TOKEN__ = '';
 A.ok(!/ticket=/.test(P.fileUrl('ag', 'a')), 'no launch token → no ticket (the request is refused, nothing leaks)');
 A.eq(P.runUrl('ag', 'r', 'i.html'), '', 'no launch token → no run URL');
 

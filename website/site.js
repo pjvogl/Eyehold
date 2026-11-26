@@ -1,4 +1,4 @@
-/* StarNet site — boot sequence, platform detect, live release links, motion */
+/* Eyehold site — boot sequence, platform detect, live release links, motion */
 (function(){
   'use strict';
 
@@ -21,7 +21,7 @@
 
   var RELEASES_REPO = '';
 
-  // StarNet Credits (managed plans). The owner approved Eyehold live billing.
+  // Eyehold Credits (managed plans). The owner approved Eyehold live billing.
   // Buy buttons point at the Eyehold account host. Auto-update stays off elsewhere.
   var CREDITS = {
     live: true,
@@ -49,7 +49,7 @@
 
   /* ---------- boot sequence (once per session) ---------- */
   var bootLines = [
-    '> STARNET TERMLINK',
+    '> EYEHOLD TERMLINK',
     '> ESTABLISHING UPLINK ........... OK',
     '> STATION MANIFEST LOADED ....... OK',
     '> RENDERING TERMINAL'

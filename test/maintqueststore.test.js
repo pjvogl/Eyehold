@@ -113,10 +113,10 @@ ring = [diag('error', 'errored out', 'top it up'), diag('error', 'errored out', 
 MaintQuestStore.sync();
 A.ok(MaintQuestStore.quests().some(q => q.id === 'mq:slag:error' && q.status === 'open'), 'three errored runs mint the fix-it quest');
 rerenders.length = 0;
-const savesBefore = global.localStorage.getItem('starnet.maintquests.v1');
+const savesBefore = global.localStorage.getItem('eyehold.maintquests.v1');
 MaintQuestStore.sync(); MaintQuestStore.sync(); MaintQuestStore.sync();
 A.eq(rerenders.length, 0, 'an idle sync with the same recurring cause pokes NO rerender (was: one per sync, forever)');
-A.eq(global.localStorage.getItem('starnet.maintquests.v1'), savesBefore, 'an idle sync writes nothing new');
+A.eq(global.localStorage.getItem('eyehold.maintquests.v1'), savesBefore, 'an idle sync writes nothing new');
 ring.push(diag('error', 'errored out', 'top it up'));
 MaintQuestStore.sync();
 A.ok(rerenders.length === 1 && /4 runs/.test(MaintQuestStore.quests().find(q => q.id === 'mq:slag:error').title), 'a REAL change (a 4th failure) still pokes once');
@@ -141,7 +141,7 @@ A.eq(MaintQuestStore.quests().find(q => q.id === 'mq:slag:max_iters').status, 'o
 
 /* ---------- reset: the new-hero clean slate ---------- */
 MaintQuestStore.reset();
-A.eq(global.localStorage.getItem('starnet.maintquests.v1'), null, 'reset removes the self-persisted key');
+A.eq(global.localStorage.getItem('eyehold.maintquests.v1'), null, 'reset removes the self-persisted key');
 A.eq(MaintQuestStore.jammedJobs().length, 0, 'reset drops the in-memory jam tally');
 
 /* ---------- source-level locks: the browser wiring ---------- */

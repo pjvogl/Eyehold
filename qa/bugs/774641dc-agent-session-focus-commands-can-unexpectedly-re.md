@@ -9,7 +9,7 @@ found: 2026-09-09
 lane: typing-focus-0916-c7a2
 fix: 86b33ace3
 origin: customer
-report: User-relayed report on 2026-09-09: StarNet randomly changes sessions and the next message goes to the wrong session
+report: User-relayed report on 2026-09-09: Eyehold randomly changes sessions and the next message goes to the wrong session
 affected: Reporter build/platform unknown; reproduced in seeded browser on source 41253b0bd, version 0.11.0
 family: session-focus
 installer: unverified
@@ -20,7 +20,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-A user reports that StarNet changes the selected session while they are not looking, so their next message lands in another conversation. Their build, platform, voice usage, and run logs were not supplied.
+A user reports that Eyehold changes the selected session while they are not looking, so their next message lands in another conversation. Their build, platform, voice usage, and run logs were not supplied.
 
 ## Repro
 
@@ -84,7 +84,7 @@ After: scripts/qa/session-focus-live.cjs passes in the real seeded app with eigh
 
 Focused gates: session-focus-safety, station-commands (135 assertions), station-tools (67 assertions), voice-live-ui, and voice-flow passed. Full repair-candidate gates passed: npm run test:fast (734/734), npm run test:http (106/106), and npm run qa:customer-journeys (33/33). The original loop/git HTTP fixture had transient load-sensitive failures, then passed unchanged both alone and in the complete HTTP rerun. After syncing trunk 32a1e304e, live proof passed again and candidate 0d99faf75 passed the complete fast (734/734) and HTTP (107/107) gates. A later conflict-free sync of independent image-intent work was checked with its changed tests plus session-focus regressions; these incremental checks are separate from the full-gate receipt. Do not infer installer or customer recovery from source tests.
 
-Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isolated dev/seed.js --keep instance only, using STARNET_PLAYWRIGHT_MODULE and STARNET_CHROME when the browser runtime is bundled externally. Captured output: qa/evidence/session-focus-0909.json.
+Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isolated dev/seed.js --keep instance only, using EYEHOLD_PLAYWRIGHT_MODULE and EYEHOLD_CHROME when the browser runtime is bundled externally. Captured output: qa/evidence/session-focus-0909.json.
 
 ## Sibling coverage
 

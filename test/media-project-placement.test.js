@@ -20,7 +20,7 @@ const { makeVoiceTools } = require('../sidecar/tools/builtin/voice.js');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 const { makePathTrust } = require('../sidecar/pathtrust.js');
 
-const BASE = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-issue77-media-'));
+const BASE = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-issue77-media-'));
 const WORKSPACES = path.join(BASE, 'workspaces');
 const PROJECT = path.join(BASE, 'YoutubeService');
 const PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
@@ -90,7 +90,7 @@ const imageFetch = async (url) => ({
   A.ok(exported.content.indexOf('&project=') >= 0, 'and the viewer opens it through the project');
 
   // ---- F. still project-scoped, never whole-computer ----
-  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-issue77-untrusted-'));
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-issue77-untrusted-'));
   let denied = null;
   try { await image.generateTool.run({ prompt: 'x', path: path.join(outside, 'leak.png') }, { agentId: 'designer' }); } catch (e) { denied = e; }
   A.ok(denied && !fs.existsSync(path.join(outside, 'leak.png')), 'an absolute path in an UNtrusted folder is refused (no whole-computer access): ' + (denied && denied.message));

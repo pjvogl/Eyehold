@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// phase3.mjs - StarNet beta-replacement Phase 3 steering runner.
+// phase3.mjs - Eyehold beta-replacement Phase 3 steering runner.
 //
 // Phase 3 is not a single feature. It is a loop system for 3.1-3.7:
 // dogfood proof, soak, fs.patch, MCP stdio, browser automation, computer-use,
@@ -16,14 +16,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_PHASE3_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_PHASE3_LOOPS || 3) || 3) : 1;
 const REQUIRE_GREEN = argSet.has('--require-green');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE3_DIR || join(ROOT, '.dogfood', 'phase3-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE3_DIR || join(ROOT, '.dogfood', 'phase3-' + STAMP));
 const LATEST = join(ROOT, '.dogfood', 'phase3-latest');
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
-const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.STARNET_PHASE3_STEP_TIMEOUT_MS || 900000);
+const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.EYEHOLD_PHASE3_STEP_TIMEOUT_MS || 900000);
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function mdEscape(s) {
@@ -297,7 +297,7 @@ function writeSummary(allResults, loopCount) {
   };
   writeFileSync(join(OUT, 'phase3-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Phase 3 Evidence\n\n';
+  let md = '# Eyehold Phase 3 Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + verdict + '`\n';
   md += '- Loops run: `' + loopCount + '`\n';
@@ -314,7 +314,7 @@ function writeSummary(allResults, loopCount) {
   md += 'Run `npm.cmd run phase3:loop` after each fix. The loop stops when the verdict is green, red, or blocked with no state change; it does not spin on missing keys, missing Cargo, or unimplemented parity surfaces.\n\n';
   md += '## Next Action\n\n';
   const next = latestResults.find(r => r.status === 'fail' || r.status === 'blocked');
-  if (!next) md += 'All Phase 3 gates are green. StarNet is at beta replacement parity for this plan.\n';
+  if (!next) md += 'All Phase 3 gates are green. Eyehold is at beta replacement parity for this plan.\n';
   else md += 'Work the first non-pass item: `' + next.id + '` - ' + (next.reason || next.title) + '\n';
   writeFileSync(join(OUT, 'summary.md'), md);
 

@@ -1,10 +1,10 @@
-# StarNet 0.11.0 replacement owner-test candidate
+# Eyehold 0.11.0 replacement owner-test candidate
 
 The owner authorized fixing four issues from the first installer test and packaging another unpublished 0.11.0 installer. Publication waits for the owner's retest and release decision. The 48-hour soak duration waiver remains limited to duration.
 
 ## Artifact
 
-- Installer: `release/StarNet_0.11.0_x64-setup.exe` in the release-0110 worktree; Windows x64, version **0.11.0**.
+- Installer: `release/Eyehold_0.11.0_x64-setup.exe` in the release-0110 worktree; Windows x64, version **0.11.0**.
 - Size: **126520301 bytes**.
 - SHA-256: `989d45d3d791fba0333b9e50864d747bd81366343760a81cb5825639a325bf0e`.
 - Exact packaged source: `d611e156a314a8f8a8475a74a471fff0be33769d`; tree `9d34c0ea0d235da150df3a40f758826216a3a535`.

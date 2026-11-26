@@ -4,7 +4,7 @@
    everything the Commander or their agents authored. Now:
      A. an authored skill exports as a standard Agent Skills package (spec name, description, metadata.title,
         setup + body, support files)
-     B. it round-trips into another StarNet as a COMMUNITY install under its display title, scanned again
+     B. it round-trips into another Eyehold as a COMMUNITY install under its display title, scanned again
      C. an edited install exports fresh, keeping license/author and naming what it derived from
      D. an untouched install still exports its exact source bytes (unchanged behavior)
      E. a skill the guard BLOCKED is never packaged for someone else
@@ -48,7 +48,7 @@ function skillMdOf(exported) { return packageFormat.fileBuffer(JSON.parse(export
     A.ok(md.indexOf('## Setup\nNode 20 and a clean tree.') >= 0 && md.indexOf('3. npm run deploy') >= 0, 'setup notes and body are below the frontmatter');
     const pkg = JSON.parse(exported.envelope);
     A.eq(pkg.files.map(f => f.path), ['SKILL.md', 'references/checklist.md'], 'support files ride at their own paths');
-    A.eq(exported.filename, 'deploy-the-site-prod.starnet-skill.json', 'a filename from the spec name');
+    A.eq(exported.filename, 'deploy-the-site-prod.eyehold-skill.json', 'a filename from the spec name');
     A.eq(exported.digest, packageFormat.fromEnvelope(pkg).digest, 'the digest names exactly these bytes');
 
     // ---- B. round-trip into another station as a community install ----

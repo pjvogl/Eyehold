@@ -188,7 +188,7 @@ const redact = (t) => String(t).replace(/sk-[A-Za-z0-9]{8,}/g, '[redacted]');
 
 // ---- K. package-backed skills: SKILL.md, support files, setup/platform metadata, guard scan ----
 {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-skills-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-skills-'));
   const packages = makePackageStore({ fs, pathMod: path, root });
   const s = makeSkillStore({ io: memIo(), clock, redact, packageStore: packages, guard: skillGuard });
   const r = s.manage({
@@ -319,7 +319,7 @@ const redact = (t) => String(t).replace(/sk-[A-Za-z0-9]{8,}/g, '[redacted]');
 // of a body that already had one — unbounded growth in RAM, in skills.jsonl and on disk, and a moving
 // contentDigest that invalidated the Commander's approval forever.
 {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-skills-fp-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-skills-fp-'));
   const packages = makePackageStore({ fs, pathMod: path, root });
   const skillGate = require('../sidecar/skills/gate.js');
   const s = makeSkillStore({ io: memIo(), clock, redact, guard: skillGuard, digest: skillGate.digestOf, packageStore: packages });

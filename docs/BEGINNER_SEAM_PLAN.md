@@ -1,7 +1,7 @@
 # Beginner seam plan — "connect my world" (2026-08-22)
 
 **Trigger:** Joshua G (Permaculture Kernow) — vision interview worked, then stalled at
-"integrating my emails, website, online course." Diagnosis: StarNet front-loads
+"integrating my emails, website, online course." Diagnosis: Eyehold front-loads
 capability breadth and makes *connection* a side-quest; a missing connector surfaces
 as a bare tool-error string the model narrates (`sidecar/mcp/manager.js:467`), and the
 tutorial ends on a generic nudge (`frontend/app/tutorial.js:662`), never on wiring.

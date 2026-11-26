@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Marketing Plan"
   category: "Marketing"
-  author: "StarNet"
+  author: "Eyehold"
   version: "1.0.0"
 ---
 

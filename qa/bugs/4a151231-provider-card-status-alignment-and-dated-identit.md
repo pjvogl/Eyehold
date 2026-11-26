@@ -32,7 +32,7 @@ Owner screenshot shows provider statuses offset beside actions, generic dots ins
 
 Anchors: frontend/app/stationui.js:4342; test/provider-connections-ui.test.js; test/settings-codex-row.test.js.
 
-Live seeded app on :18917, branch agent/providers-polish-0910: DOM receipt `{logos:18, alignment:true, animation:"ov-orbit", overflow:false}`. Reduced motion receipt `none`; narrow viewport overflow check `true` (all cards fit). Add-key editor opened; invalid credential was rejected by validation. A disposable saved-key fixture through Harness.setKey rendered `KEY SAVED · NOT VERIFIED`, grid column 2, then was cleared. StarNet action opened Store. Local evidence: dev/providers-proof.log, dev/providers-desktop.png. Focused existing contracts passed 54 and 26 assertions.
+Live seeded app on :18917, branch agent/providers-polish-0910: DOM receipt `{logos:18, alignment:true, animation:"ov-orbit", overflow:false}`. Reduced motion receipt `none`; narrow viewport overflow check `true` (all cards fit). Add-key editor opened; invalid credential was rejected by validation. A disposable saved-key fixture through Harness.setKey rendered `KEY SAVED · NOT VERIFIED`, grid column 2, then was cleared. Eyehold action opened Store. Local evidence: dev/providers-proof.log, dev/providers-desktop.png. Focused existing contracts passed 54 and 26 assertions.
 
 ## Verdict
 

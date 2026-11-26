@@ -17,7 +17,7 @@ const PORT = process.env.SKYNET_SHOT_PORT || '8964';
 const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9364);
 const URL = `http://127.0.0.1:${PORT}/`;
 
-// verbatim from C:\Users\andro\AppData\Local\StarNet\workspaces\agent.save.json
+// verbatim from C:\Users\andro\AppData\Local\Eyehold\workspaces\agent.save.json
 const ROOMS = [
   [0, 0, 17, 10], [-5, 2, -1, 8], [18, 2, 22, 8], [4, -3, 13, -1], [4, 11, 13, 13],
   [23, 3, 25, 7], [-8, 3, -6, 6], [6, 14, 11, 16], [6, -6, 11, -4]

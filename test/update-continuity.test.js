@@ -54,7 +54,7 @@ const { spawnSync } = require('node:child_process');
   const receipt = C.buildReceipt({
     before: snapshot, after: snapshot,
     beforeVersion: '1.2.3', targetVersion: '1.2.4', afterVersion: '1.2.4',
-    installerArtifact: 'StarNet_1.2.4_setup.exe', installerArtifactSha256: 'a'.repeat(64), installerGone: true,
+    installerArtifact: 'Eyehold_1.2.4_setup.exe', installerArtifactSha256: 'a'.repeat(64), installerGone: true,
     relaunched: true, installedExeSha256: 'b'.repeat(64)
   });
   A.eq(receipt.state.equal, true, 'timestamps are excluded while semantic state remains equal');
@@ -69,10 +69,10 @@ const { spawnSync } = require('node:child_process');
   noRelaunch.relaunch.observed = false;
   A.eq(C.validateReceipt(noRelaunch).ok, false, 'missing relaunch fails closed');
 
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-promotion-'));
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-promotion-'));
   try {
     const dist = path.join(temp, 'dist'); fs.mkdirSync(dist);
-    const artifact = path.join(dist, 'StarNet_1.2.4_setup.exe'); fs.writeFileSync(artifact, 'exact-installer');
+    const artifact = path.join(dist, 'Eyehold_1.2.4_setup.exe'); fs.writeFileSync(artifact, 'exact-installer');
     const artifactHash = crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     const make = updatePath => C.buildReceipt({
       path: updatePath, before: snapshot, after: snapshot,

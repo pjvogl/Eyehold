@@ -66,7 +66,7 @@ const PDF_B64 = Buffer.from('%PDF-1.4\n% fake').toString('base64');
 
   // ---- 2. browser.pdf — the file lands in the jail, content-addressed, with a deliverable ----
   {
-    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-pie-'));
+    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-pie-'));
     try {
       const events = [];
       const B = makeBrowserTools({ driver: fakeDriver({ pdf: async () => PDF_B64 }), fsp, pathMod: path, root: ws });

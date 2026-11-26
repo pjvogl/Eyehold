@@ -1,4 +1,4 @@
-/* STARNET — systems.js : STATION SYSTEMS ONLINE — the dock grows with the station.
+/* EYEHOLD — systems.js : STATION SYSTEMS ONLINE — the dock grows with the station.
 
    A fresh station opens with the dock buttons a newcomer needs on day one. Every other dock button is a
    station SYSTEM that comes online the first time it matters (a finished job, a second crew member, an agent
@@ -20,7 +20,7 @@
    This file never emits a bus event; it only listens (agent.run.end, agent.token). */
 'use strict';
 const Systems = (() => {
-  const KEY = 'starnet.systems.v1';
+  const KEY = 'eyehold.systems.v1';
 
   /* The dock, in dock order. sel = the dock button; terms = window keys whose opening brings it online (door
      law); words = capitalised names an agent may use for it in a reply; start = online on a fresh station;

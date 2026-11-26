@@ -117,7 +117,7 @@ function workshopTurns(text) {
 function scenarioFor(messages) {
   /* Match the CURRENT ask — the LAST user turn — exactly, never by keyword and never the first turn.
 
-     Two things made earlier versions of this pick the wrong script, and both are real StarNet behaviour:
+     Two things made earlier versions of this pick the wrong script, and both are real Eyehold behaviour:
        1. a BACKGROUND SKILL REVIEW fork runs after each completed run through this same mock, and its prompt
           EMBEDS the run it reviews, so keyword matching hit the fork too;
        2. two runs sharing a streamId make the sidecar REPLAY the stream's earlier turns into the request, so
@@ -181,7 +181,7 @@ function startMock() {
 
 const api = (p, body) => new Promise((resolve, reject) => {
   const data = body == null ? null : Buffer.from(JSON.stringify(body));
-  const req = http.request({ host: '127.0.0.1', port: Number(PORT), path: p, method: data ? 'POST' : 'GET', headers: Object.assign({ 'x-starnet-token': TOKEN }, data ? { 'Content-Type': 'application/json', 'Content-Length': data.length } : {}) },
+  const req = http.request({ host: '127.0.0.1', port: Number(PORT), path: p, method: data ? 'POST' : 'GET', headers: Object.assign({ 'x-eyehold-token': TOKEN }, data ? { 'Content-Type': 'application/json', 'Content-Length': data.length } : {}) },
     res => { let s = ''; res.on('data', d => s += d); res.on('end', () => { try { resolve(JSON.parse(s)); } catch (_) { resolve({ raw: s.slice(0, 400), status: res.statusCode }); } }); });
   req.on('error', reject);
   if (data) req.write(data);
@@ -214,7 +214,7 @@ async function waitForBoot() {
     if (!sc.project) continue;
     // OUTSIDE the worktree on purpose: blessPath resolves a path UP to its enclosing git repo root, so a folder
     // inside this checkout would bless the whole repo and both demo projects would collapse into one root.
-    const dir = path.join(os.tmpdir(), 'starnet-deliverables-demo', sc.project);
+    const dir = path.join(os.tmpdir(), 'eyehold-deliverables-demo', sc.project);
     fs.mkdirSync(dir, { recursive: true });
     projectDir[sc.project] = dir;
   }

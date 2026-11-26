@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.hermes-browser-verification.v1",
+  "schema": "eyehold.hermes-browser-verification.v1",
   "testedCommit": "c9997b6b9ca35a99d01fa3802cf35ee42112b62e",
   "liveModel": false,
   "installedBuild": false,

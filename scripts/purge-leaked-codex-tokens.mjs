@@ -11,7 +11,7 @@
  *
  * SAFETY. It only ever deletes files named exactly `tokens.json` (and its `.bak`) sitting in a directory
  * named exactly `codex`, and only under the scan roots given — which default to the OS temp dir. It
- * REFUSES to touch anything under the real install root (%LOCALAPPDATA%\StarNet\workspaces or wherever
+ * REFUSES to touch anything under the real install root (%LOCALAPPDATA%\Eyehold\workspaces or wherever
  * defaultWorkspaces() resolves), because that is the copy the user actually signed in with: deleting it
  * would be [[secret-durability-escape]] — destroying the last copy — which is the opposite failure.
  *
@@ -22,7 +22,7 @@
  *   node scripts/purge-leaked-codex-tokens.mjs --root D:\scratch --confirm
  *
  * ROTATE AFTERWARDS. Purging deletes the copies; it cannot un-expose a credential that sat readable in an
- * unencrypted directory. Sign out of ChatGPT everywhere and reconnect StarNet.
+ * unencrypted directory. Sign out of ChatGPT everywhere and reconnect Eyehold.
  */
 import { readdirSync, statSync, rmSync, readFileSync } from 'node:fs';
 import { join, basename, dirname, resolve, sep } from 'node:path';
@@ -49,12 +49,12 @@ function protectedRoots() {
   const roots = [];
   for (const base of bases) {
     roots.push(
-      join(base, 'StarNet', 'workspaces'),
+      join(base, 'Eyehold', 'workspaces'),
       join(base, 'Skynet', 'workspaces'),
       join(base, 'ai.skynet.harness', 'workspaces')
     );
   }
-  for (const configured of [process.env.STARNET_WORKSPACES, process.env.SKYNET_WORKSPACES]) {
+  for (const configured of [process.env.EYEHOLD_WORKSPACES, process.env.SKYNET_WORKSPACES]) {
     if (configured) roots.push(configured);
   }
   return Array.from(new Set(roots.map(p => resolve(p).toLowerCase())));
@@ -110,4 +110,4 @@ for (const d of new Set(found.map(f => dirname(f.path)))) {
 }
 console.log('\ndeleted: ' + removed + (failed ? ('  (failed: ' + failed + ' — likely in use or locked)') : ''));
 console.log('NOW ROTATE: purging removes the copies, it cannot un-expose a credential that was readable on disk.');
-console.log('Sign out of ChatGPT everywhere, then reconnect StarNet.');
+console.log('Sign out of ChatGPT everywhere, then reconnect Eyehold.');

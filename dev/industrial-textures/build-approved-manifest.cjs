@@ -38,7 +38,7 @@ const surfaces=JSON.parse(fs.readFileSync('docs/station-remaster/approved-sheet/
    props[id].views[face]=result;
   }
  }
- const manifest={version:1,artSet:'owner-approved-160-sheet',source:'../complete-sheet/starnet-props-full-sheet.png',props};
+ const manifest={version:1,artSet:'owner-approved-160-sheet',source:'../complete-sheet/eyehold-props-full-sheet.png',props};
  fs.writeFileSync(root+'/manifest.json',JSON.stringify(manifest,null,2)+'\n');
  console.log(JSON.stringify({props:Object.keys(props).length,views:Object.values(props).reduce((n,p)=>n+Object.keys(p.views).length,0)}));
 })();

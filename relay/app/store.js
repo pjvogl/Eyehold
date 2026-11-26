@@ -1,4 +1,4 @@
-/* StarNet Remote — what this phone remembers about its station, in IndexedDB.
+/* Eyehold Remote — what this phone remembers about its station, in IndexedDB.
 
    The device private key is a NON-EXTRACTABLE CryptoKey. IndexedDB stores it as an opaque object: the page can
    use it to prove it is this phone, but no script (ours included) can read the key's bytes back out.
@@ -10,7 +10,7 @@
                                                           (shown with its true age until a fresh one arrives) */
 (function (root) {
   'use strict';
-  const DB = 'starnet-remote', OS = 'kv', K = 'pairing';
+  const DB = 'eyehold-remote', OS = 'kv', K = 'pairing';
 
   function db() {
     return new Promise((resolve, reject) => {

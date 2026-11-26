@@ -145,22 +145,22 @@ function jsonAt(p){ try { return JSON.parse(fs.readFileSync(p,'utf8')); } catch 
 function backlogOf(v){ if(!v||typeof v!=='object') return null; if(Array.isArray(v.backlog)) return v.backlog; for(const x of Object.values(v)){ const b=backlogOf(x); if(b) return b; } return null; }
 fs.renameSync = function(src,dst){
   const target=String(dst), data=(()=>{try{return fs.readFileSync(src,'utf8')}catch(_){return ''}})(); let fail=false;
-  if(!fired && process.env.STARNET_IMPL_FAULT==='stamp' && target.endsWith('deliverable.json') && data.includes('\\"implementOf\\"')) fail=true;
+  if(!fired && process.env.EYEHOLD_IMPL_FAULT==='stamp' && target.endsWith('deliverable.json') && data.includes('\\"implementOf\\"')) fail=true;
   if(!fired && /builder\\.workshop\\.json$/.test(target)) { const b=backlogOf(jsonAt(src))||[]; const built=b.filter(x=>x&&x.builtRunId); const impl=b.filter(x=>x&&String(x.id||'').startsWith('impl-'));
-    if(process.env.STARNET_IMPL_FAULT==='registration' && built.length>=2 && impl.some(x=>x.builtRunId)) fail=true;
-    if(process.env.STARNET_IMPL_FAULT==='retirement' && b.length===1 && impl.length===1 && impl[0].builtRunId) fail=true;
+    if(process.env.EYEHOLD_IMPL_FAULT==='registration' && built.length>=2 && impl.some(x=>x.builtRunId)) fail=true;
+    if(process.env.EYEHOLD_IMPL_FAULT==='retirement' && b.length===1 && impl.length===1 && impl[0].builtRunId) fail=true;
   }
-  if(fail){ fired=true; const e=new Error('INJECT_IMPLEMENT_'+process.env.STARNET_IMPL_FAULT.toUpperCase()); e.code='ENOSPC'; throw e; }
+  if(fail){ fired=true; const e=new Error('INJECT_IMPLEMENT_'+process.env.EYEHOLD_IMPL_FAULT.toUpperCase()); e.code='ENOSPC'; throw e; }
   return original(src,dst);
 };`;
   const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model', STARNET_IMPL_FAULT: mode,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_IMPL_FAULT: mode,
     NODE_OPTIONS: '--import=data:text/javascript,' + encodeURIComponent(hook) };
   const live = await boot(9050 + (process.pid % 25) + seq * 30, env, 20);
   const B = 'http://' + HOST + ':' + live.port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const post = (p, b) => fetch(B + p, { method: 'POST', headers, body: JSON.stringify(b) });
     await post('/api/workshop/grant', { agentId: 'builder', on: true });
     await post('/api/workshop/queue', { agentId: 'builder', id: 'item-plan-' + mode, title: 'Durability plan ' + mode });
@@ -197,7 +197,7 @@ fs.renameSync = function(src,dst){
   const B = 'http://' + HOST + ':' + firstBoot.port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const post = (p, b) => fetch(B + p, { method: 'POST', headers, body: JSON.stringify(b) });
 
     // 1. build the PLAN — the deliverable shape that used to make Implement a pure file copy.

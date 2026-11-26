@@ -1,8 +1,8 @@
 /* node test/skill-uploads-pull.test.js — Skill Market uploads reach the catalog only through the PC (2026-10-06).
 
-   Authors upload on account.starnetos.com; the operator approves there; scripts/pull-skill-submissions.mjs brings
+   Authors upload on account.eyehold.com; the operator approves there; scripts/pull-skill-submissions.mjs brings
    approved packages here, where the catalog is built and SIGNED. This pins what the pull refuses and what it writes:
-     - a name a StarNet Original or another source already uses, or another author's upload holds, is never taken
+     - a name a Eyehold Original or another source already uses, or another author's upload holds, is never taken
      - a package that differs from what was approved, lists a file the market does not allow, or that the skill
        guard rates dangerous is skipped (nothing written)
      - the author's own update bumps the minor version; the catalog entry is marked uploaded and needs no upstream
@@ -58,9 +58,9 @@ function sub(over) {
 
   // ---- refusals ----
   const why = (s, metas) => (P.planPull([s], ctx(metas)).skipped[0] || {}).why || '';
-  A.ok(/StarNet Original/.test(why(sub({ slug: 'daily-briefing', files: sub({ slug: 'daily-briefing' }).files }))), 'a bundled original\'s name is refused');
+  A.ok(/Eyehold Original/.test(why(sub({ slug: 'daily-briefing', files: sub({ slug: 'daily-briefing' }).files }))), 'a bundled original\'s name is refused');
   A.ok(/another author's upload/.test(why(sub(), { 'meeting-recap-writer': { version: '1.0.0', submission: { owner: OTHER } } })), 'another author\'s name is refused');
-  A.ok(/StarNet publishes already/.test(why(sub(), { 'meeting-recap-writer': { version: '1.0.0', upstream: { url: 'https://x' } } })), 'an adapted pick\'s name is refused');
+  A.ok(/Eyehold publishes already/.test(why(sub(), { 'meeting-recap-writer': { version: '1.0.0', upstream: { url: 'https://x' } } })), 'an adapted pick\'s name is refused');
   A.ok(/digest the reviewer approved/.test(why(sub({ digest: 'f'.repeat(64) }))), 'a package that is not the approved one is refused');
   const withScript = sub().files.concat([{ path: 'references/run.sh', content: 'echo hi' }]);
   A.ok(/not a file the market allows/.test(why(sub({ files: withScript }))), 'a script file is refused');
@@ -76,7 +76,7 @@ function sub(over) {
   // ---- NOTICE.md ----
   const notice = fs.readFileSync(path.join(ROOT, 'NOTICE.md'), 'utf8');
   const once = P.creditNotice(notice, [{ slug: 'meeting-recap-writer', credit: 'Test Author', license: 'MIT' }]);
-  A.ok(once.indexOf('### Shared by StarNet users') > once.indexOf('## Skill Market (skills-catalog/)') && once.indexOf('### Shared by StarNet users') < once.indexOf('## Bundled fonts'), 'uploads are credited inside the Skill Market section');
+  A.ok(once.indexOf('### Shared by Eyehold users') > once.indexOf('## Skill Market (skills-catalog/)') && once.indexOf('### Shared by Eyehold users') < once.indexOf('## Bundled fonts'), 'uploads are credited inside the Skill Market section');
   A.ok(once.indexOf('| `meeting-recap-writer` | Test Author | MIT |') >= 0, 'one row per upload');
   const twice = P.creditNotice(once, [{ slug: 'meeting-recap-writer', credit: '[Evil](https://x.example) | b', license: 'CC-BY-4.0' }, { slug: 'second-skill', credit: 'Bo', license: 'MIT' }]);
   A.eq((twice.match(/\| `meeting-recap-writer` \|/g) || []).length, 1, 'an update replaces its row');
@@ -95,7 +95,7 @@ function sub(over) {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const url = 'http://127.0.0.1:' + server.address().port;
   const run = (env) => new Promise((resolve) => {
-    const c = spawn(process.execPath, [path.join(ROOT, 'scripts', 'pull-skill-submissions.mjs'), '--dry-run'], { cwd: ROOT, env: Object.assign({}, process.env, { STARNET_CLOUD_URL: url }, env) });
+    const c = spawn(process.execPath, [path.join(ROOT, 'scripts', 'pull-skill-submissions.mjs'), '--dry-run'], { cwd: ROOT, env: Object.assign({}, process.env, { EYEHOLD_CLOUD_URL: url }, env) });
     let out = ''; c.stdout.on('data', d => out += d); c.stderr.on('data', d => out += d);
     c.on('close', (code) => resolve({ code, out }));
   });

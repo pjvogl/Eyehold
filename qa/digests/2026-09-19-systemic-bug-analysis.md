@@ -1,4 +1,4 @@
-# StarNet systemic reliability audit — 2026-09-19
+# Eyehold systemic reliability audit — 2026-09-19
 
 The strongest recurring defect is loss of authority at a boundary: a transport response, cached projection, default value or late callback is treated as proof of current durable state. This audit reproduced and repaired eight additional manifestations across durable storage, permissions, routine creation, finite API requests, Recipe Bay and execution/messaging controls.
 
@@ -8,7 +8,7 @@ Source fixes: `8eb87b0d3`; source candidate locked at `ff8c5b709`. Work remains 
 
 Reviewed all 181 historical records present after synchronizing this branch with trunk, including the six records from the preceding end-to-end audit. The accompanying [report-patterns.json](../evidence/systemic-bugs-0919/report-patterns.json) maps every historical record to its symptom, recorded mechanism/disposition, source file hash and primary pattern. Eight reproduced findings and three newly imported unresolved reports bring the register to 192.
 
-Read the prior support intake, session-delivery handoff, ground-up audit, current known-issue suppressions and September 16 release intake. Refreshed all 14 accessible GitHub issues, including comments, and searched inbound Gmail for StarNet after September 16: nine messages in eight threads, with their conversation context. Older mail is represented by the durable register and dated intake documents, not a new complete mailbox census. Inline images and customer machines were not inspected. Private messages and account details are not copied into these artifacts. No customer messages, billing actions or issue closures were performed.
+Read the prior support intake, session-delivery handoff, ground-up audit, current known-issue suppressions and September 16 release intake. Refreshed all 14 accessible GitHub issues, including comments, and searched inbound Gmail for Eyehold after September 16: nine messages in eight threads, with their conversation context. Older mail is represented by the durable register and dated intake documents, not a new complete mailbox census. Inline images and customer machines were not inspected. Private messages and account details are not copied into these artifacts. No customer messages, billing actions or issue closures were performed.
 
 A shared pattern is a search lead, not proof that two customers had the same cause. Historical source fixes, released artifacts and actual customer recovery remain separate facts.
 

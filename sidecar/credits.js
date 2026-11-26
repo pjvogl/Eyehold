@@ -8,7 +8,7 @@
    cache immediately and POST the truth to the backend in the background. The backend ledger stays the
    source of truth; refresh() reconciles the cache to it.
 
-   HONESTY LAW: when STARNET_CREDITS_URL is unset, configured() is false and NOTHING here is live — no
+   HONESTY LAW: when EYEHOLD_CREDITS_URL is unset, configured() is false and NOTHING here is live — no
    payment client is built, beginRun/finishRun are inert pass-throughs, and the host renders no STORE UI
    and exposes no /api/credits surface. A managed-credit account only exists when the operator wires it.
 
@@ -358,7 +358,7 @@
       accountId() { return accountId; },
       purchaseUrl() { return purchaseUrl; },
       beginRun, finishRun, refresh, history,
-      // StarNet runs this station has in flight and what they reserve (only runs still working: an ended run's hold is
+      // Eyehold runs this station has in flight and what they reserve (only runs still working: an ended run's hold is
       // not counted, settled or not). `counted`: the backend books those reservations against the balance (see
       // holdsCounted), so a $0 it reports can be a hold.
       held() {

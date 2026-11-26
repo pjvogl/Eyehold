@@ -64,7 +64,7 @@ function healthyInput(samples, extra) {
 
   {
     const fs = require('node:fs'), os = require('node:os'), path = require('node:path');
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-soak-preservation-test-'));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-soak-preservation-test-'));
     try {
       const fixture = { workspace: path.join(root, 'workspace'), profile: path.join(root, 'profile') };
       for (const dir of Object.values(fixture)) fs.mkdirSync(dir);
@@ -218,7 +218,7 @@ function healthyInput(samples, extra) {
     A.eq(rec.verdict, 'PASS', 'receipt verdict');
     A.ok(/^\d{4}-\d{2}-\d{2}T/.test(rec.startedAt), 'ISO start');
     const md = M.renderSummary(rec);
-    A.ok(/# StarNet soak — PASS/.test(md), 'summary headline');
+    A.ok(/# Eyehold soak — PASS/.test(md), 'summary headline');
     for (const k of Object.keys(M.RULES)) A.ok(new RegExp('\\| ' + k + ' \\|').test(md), 'summary row for ' + k);
     A.ok(/does not replace the attended packaged-desktop soak/.test(md), 'summary never claims to replace the packaged soak');
   }

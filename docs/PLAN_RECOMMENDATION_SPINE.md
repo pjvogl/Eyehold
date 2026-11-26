@@ -1,7 +1,7 @@
 # PLAN — Recommendation Spine (one voice for every proactive offer)
 
 **Approved by Andrew 2026-08-03.** Lane: `agent/rec-spine`.
-Vision: StarNet's differentiator is its recommendation system. Today ~7+ engines each talk to
+Vision: Eyehold's differentiator is its recommendation system. Today ~7+ engines each talk to
 the user through their own card/beat on their own timer. This lane consolidates them behind
 ONE arbiter with ONE relevance bar and ONE gorgeous card grammar — deleting user-facing
 complexity, rebuilding nothing. Every engine survives byte-identical as a *source*.
@@ -113,7 +113,7 @@ New `frontend/tests/recommend.test.js` (node:test, match neighboring test style)
 - Rewrite the dead arbiter doc block `study.js:303-335` to point at recommend.js/beatcard.js.
 - Update `docs/BRAIN.md` subsystem note if it names the beat chain.
 
-## Verification (before claiming done — starnet-verify applies)
+## Verification (before claiming done — eyehold-verify applies)
 - `npm run test:fast` fully green (read the LOG, not the exit code).
 - Live: fresh port + own `SKYNET_WORKSPACES`, real boot, drive a run to the post-run beat and
   observe: exactly one card, correct winner by priority (not by arm-delay race), evidence

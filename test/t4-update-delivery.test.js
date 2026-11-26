@@ -16,10 +16,10 @@ const BUCKETS = ['save', 'notebook', 'todo', 'channels', 'ledger', 'runs', 'tran
 function cleanEnv(extra) {
   const env = Object.assign({}, process.env, extra || {});
   delete env.SKYNET_OPENROUTER_KEY;
-  delete env.STARNET_OPENROUTER_KEY;
+  delete env.EYEHOLD_OPENROUTER_KEY;
   delete env.OPENROUTER_API_KEY;
   delete env.SKYNET_AUDIT_LIVE_PROVIDER;
-  delete env.STARNET_T4_REQUIRE_LIVE;
+  delete env.EYEHOLD_T4_REQUIRE_LIVE;
   return env;
 }
 function run(args, env) {
@@ -52,7 +52,7 @@ function stateHashes() {
 function proof(hash, bytes, overrides) {
   const hashes = stateHashes();
   const doc = {
-    schema: 'starnet.t4-update-delivery-proof.v1',
+    schema: 'eyehold.t4-update-delivery-proof.v1',
     generatedAt: new Date().toISOString(),
     sourceMachine: { os: 'Windows 11 Test VM', machineKind: 'windows-sandbox' },
     installer: { sha256: hash, bytes },
@@ -60,8 +60,8 @@ function proof(hash, bytes, overrides) {
       mode: 'manual-nsis-reinstall',
       previousVersion: '0.1.0',
       targetVersion: '0.1.0',
-      existingInstallPath: 'C:\\Users\\test\\AppData\\Local\\Programs\\StarNet',
-      updatedInstallPath: 'C:\\Users\\test\\AppData\\Local\\Programs\\StarNet',
+      existingInstallPath: 'C:\\Users\\test\\AppData\\Local\\Programs\\Eyehold',
+      updatedInstallPath: 'C:\\Users\\test\\AppData\\Local\\Programs\\Eyehold',
       launchedBefore: true,
       launchedAfter: true,
       exitCode: 0,
@@ -97,7 +97,7 @@ function proof(hash, bytes, overrides) {
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 't4-update-delivery-'));
 try {
-  const installer = path.join(tmp, 'StarNet_0.1.0_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_0.1.0_x64-setup.exe');
   fs.writeFileSync(installer, 'fake installer');
   const hash = hashFile(installer);
   const bytes = fs.statSync(installer).size;
@@ -105,9 +105,9 @@ try {
   {
     const out = path.join(tmp, 'blocked-out');
     const res = run(['--loop=2'], {
-      STARNET_T4_INSTALLER_EXE: installer,
-      STARNET_T4_UPDATE_DELIVERY_DIR: out,
-      STARNET_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'blocked-latest')
+      EYEHOLD_T4_INSTALLER_EXE: installer,
+      EYEHOLD_T4_UPDATE_DELIVERY_DIR: out,
+      EYEHOLD_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'blocked-latest')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't4-update-delivery-status.json'), 'utf8'));
@@ -122,9 +122,9 @@ try {
     writeJson(bad, proof('00' + hash.slice(2), bytes));
     const out = path.join(tmp, 'red-out');
     const res = run(['--update-proof', bad], {
-      STARNET_T4_INSTALLER_EXE: installer,
-      STARNET_T4_UPDATE_DELIVERY_DIR: out,
-      STARNET_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'red-latest')
+      EYEHOLD_T4_INSTALLER_EXE: installer,
+      EYEHOLD_T4_UPDATE_DELIVERY_DIR: out,
+      EYEHOLD_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'red-latest')
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't4-update-delivery-status.json'), 'utf8'));
@@ -138,13 +138,13 @@ try {
     const out = path.join(tmp, 'green-out');
     const latest = path.join(tmp, 'green-latest');
     const res = run(['--loop=2', '--update-proof=' + good], {
-      STARNET_T4_INSTALLER_EXE: installer,
-      STARNET_T4_UPDATE_DELIVERY_DIR: out,
-      STARNET_T4_UPDATE_DELIVERY_LATEST_DIR: latest
+      EYEHOLD_T4_INSTALLER_EXE: installer,
+      EYEHOLD_T4_UPDATE_DELIVERY_DIR: out,
+      EYEHOLD_T4_UPDATE_DELIVERY_LATEST_DIR: latest
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't4-update-delivery-status.json'), 'utf8'));
-    assert.equal(status.schema, 'starnet.t4-update-delivery-status.v1');
+    assert.equal(status.schema, 'eyehold.t4-update-delivery-status.v1');
     assert.equal(status.verdict, 'green');
     assert.equal(status.updateDeliveryReady, true);
     assert.equal(status.nextAction, null);
@@ -163,9 +163,9 @@ try {
     }));
     const out = path.join(tmp, 'live-required-out');
     const res = run(['--require-live', '--update-proof', noPaid], {
-      STARNET_T4_INSTALLER_EXE: installer,
-      STARNET_T4_UPDATE_DELIVERY_DIR: out,
-      STARNET_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'live-required-latest')
+      EYEHOLD_T4_INSTALLER_EXE: installer,
+      EYEHOLD_T4_UPDATE_DELIVERY_DIR: out,
+      EYEHOLD_T4_UPDATE_DELIVERY_LATEST_DIR: path.join(tmp, 'live-required-latest')
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't4-update-delivery-status.json'), 'utf8'));

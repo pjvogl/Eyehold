@@ -6,7 +6,7 @@ import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { findChrome, connectCDP, evalJS, sleep } from './lib/cdp.mjs';
 import { materializeSeedWorkspace, bootSeededSidecar, isUp, waitUp, waitDevReady } from './lib/seed.mjs';
-const port = '8941', cdpPort = 9342, APP_URL = `http://127.0.0.1:${port}/`, OUT = join(tmpdir(), 'starnet-perf-comms');
+const port = '8941', cdpPort = 9342, APP_URL = `http://127.0.0.1:${port}/`, OUT = join(tmpdir(), 'eyehold-perf-comms');
 if (!(await isUp(APP_URL))) { const s = join(OUT, '_seed'); materializeSeedWorkspace(s); bootSeededSidecar({ port, scratchDir: s }); await waitUp(APP_URL); }
 const profile = join(OUT, '_profile-idle'); try { rmSync(profile, { recursive: true, force: true }); } catch {}
 const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--hide-scrollbars', '--mute-audio', '--enable-gpu', '--use-angle=d3d11', '--ignore-gpu-blocklist', `--remote-debugging-port=${cdpPort}`, '--window-size=1600,900', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });

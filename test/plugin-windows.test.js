@@ -1,6 +1,6 @@
 /* node test/plugin-windows.test.js — PLUGIN WINDOWS (plugin extensions phase 1, 2026-09-29).
 
-   A plugin's `screens` open as real StarNet windows around a sandboxed page the sidecar serves from /plugin-ui/.
+   A plugin's `screens` open as real Eyehold windows around a sandboxed page the sidecar serves from /plugin-ui/.
    These assertions pin what makes that safe and honest:
      - the manifest's screens are validated (an id keys a window, a title is rendered, an entry becomes a path);
      - a window-only plugin (screens, no code) is valid and never require()d;
@@ -24,7 +24,7 @@ const T = require('../sidecar/apitickets.js');
 const { MIME } = require('../sidecar/file-response.js');
 const { makeDurableJsonStore } = require('../sidecar/durable-store.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-plugin-windows-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-plugin-windows-' + process.pid);
 const PLUGINS = path.join(DIR, 'plugins');
 const ALLOW = path.join(DIR, 'plugins-allowed.json');
 const FRONTEND = path.resolve(__dirname, '..', 'frontend');
@@ -128,17 +128,17 @@ function serve(handler, url, method) {
     A.ok(!/allow-same-origin/.test(r.headers['Content-Security-Policy'] || ''), 'NEVER allow-same-origin (the page must not reach the token)');
     A.ok(!/allow-top-navigation/.test(SANDBOX), 'a plugin can never navigate the station away');
     A.ok(/frame-ancestors tauri:\/\/localhost http:\/\/127\.0\.0\.1:8787/.test(r.headers['Content-Security-Policy'] || ''), 'only the station may frame it');
-    A.ok(r.body.indexOf('<head><link rel="stylesheet" href="../_starnet/kit.css"><script src="../_starnet/kit.js"></script>') >= 0, 'the kit is injected first in <head>, relative to the page');
+    A.ok(r.body.indexOf('<head><link rel="stylesheet" href="../_eyehold/kit.css"><script src="../_eyehold/kit.js"></script>') >= 0, 'the kit is injected first in <head>, relative to the page');
     A.eq(r.headers['Referrer-Policy'], 'no-referrer', 'the ticketed URL never rides a Referer');
 
     r = await serve(server, url('ui-only', rec.digest, 'ui/app.js'));
     A.eq(r.code, 200, 'the page\'s own asset is served');
     A.eq(r.body, 'window.x = 1;', 'asset bytes are served untouched');
 
-    r = await serve(server, url('ui-only', rec.digest, '_starnet/kit.css'));
-    A.ok(r.code === 200 && /@layer starnet/.test(r.body), 'the kit stylesheet is served from the station, layered under the author');
-    r = await serve(server, url('ui-only', rec.digest, '_starnet/kit.js'));
-    A.ok(r.code === 200 && /window\.starnet = starnet/.test(r.body), 'the kit bridge is served');
+    r = await serve(server, url('ui-only', rec.digest, '_eyehold/kit.css'));
+    A.ok(r.code === 200 && /@layer eyehold/.test(r.body), 'the kit stylesheet is served from the station, layered under the author');
+    r = await serve(server, url('ui-only', rec.digest, '_eyehold/kit.js'));
+    A.ok(r.code === 200 && /window\.eyehold = eyehold/.test(r.body), 'the kit bridge is served');
 
     r = await serve(server, url('ui-only', rec.digest, 'ui/../plugin.json'));
     A.eq(r.code, 403, 'a path cannot climb out through ..');
@@ -187,7 +187,7 @@ function serve(handler, url, method) {
     A.eq(await loader.approvedRecord('ui-only'), null, 'and the plugin has no approved record until re-approved');
 
     // ---- 4. THE PAGE MINTER'S TICKET VERIFIES ON THE SIDECAR ----
-    global.window = { __STARNET_API_TOKEN__: KEY, __STARNET_API__: 'http://127.0.0.1:5555', crypto: crypto.webcrypto };
+    global.window = { __EYEHOLD_API_TOKEN__: KEY, __EYEHOLD_API__: 'http://127.0.0.1:5555', crypto: crypto.webcrypto };
     const realNow = Date.now; Date.now = () => 1.9e12;
     delete require.cache[require.resolve('../frontend/app/apiticket.js')];
     const P = require('../frontend/app/apiticket.js');
@@ -203,8 +203,8 @@ function serve(handler, url, method) {
     A.ok(!T.verify(KEY, split.ticket, 'plugin', T.scopePlugin('ui-only', rec.digest), { now: 1.9e12 + T.KINDS.plugin.maxTtlMs + 1 }).ok, 'it expires');
 
     // ---- 5. KIT INJECTION SHAPES ----
-    A.ok(injectKit('<html><body>x</body></html>', 'index.html').indexOf('<html><head><link rel="stylesheet" href="_starnet/kit.css">') === 0, 'no <head>: one is created inside <html>');
-    A.ok(injectKit('<p>bare</p>', 'a/b/c.html').indexOf('href="../../_starnet/kit.css"') >= 0, 'a page two folders deep climbs two levels to the kit');
+    A.ok(injectKit('<html><body>x</body></html>', 'index.html').indexOf('<html><head><link rel="stylesheet" href="_eyehold/kit.css">') === 0, 'no <head>: one is created inside <html>');
+    A.ok(injectKit('<p>bare</p>', 'a/b/c.html').indexOf('href="../../_eyehold/kit.css"') >= 0, 'a page two folders deep climbs two levels to the kit');
     A.ok(injectKit('<!DOCTYPE html><p>x</p>', 'p.html').indexOf('<!DOCTYPE html><head>') === 0, 'doctype stays first');
 
     // ---- 6. THE STARTER TEMPLATE IS A WORKING WINDOWED PLUGIN ----
@@ -216,7 +216,7 @@ function serve(handler, url, method) {
     A.eq(starter && starter.screens[0].entry, 'ui/index.html', 'its window is ui/index.html');
     A.eq(starter && starter.screens[0].title, 'MY STARTER', 'markup characters never reach the title');
     const tpl = await fsp.readFile(path.join(PLUGINS, 'starter', 'ui', 'index.html'), 'utf8');
-    A.ok(/starnet\.store\.set\('notes'/.test(tpl) && /sn-stats/.test(tpl), 'the starter window uses the kit and the store');
+    A.ok(/eyehold\.store\.set\('notes'/.test(tpl) && /sn-stats/.test(tpl), 'the starter window uses the kit and the store');
     A.ok(tpl.indexOf('<title>My &lt;Starter&gt;</title>') >= 0, 'the plugin name is escaped into the page');
 
     // ---- 7. THE PRIVATE STORE IS BOUNDED ----

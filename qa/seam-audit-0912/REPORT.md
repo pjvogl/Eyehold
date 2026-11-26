@@ -1,4 +1,4 @@
-# StarNet neglected seams audit
+# Eyehold neglected seams audit
 
 **Historical before-fix evidence.** Repairs were subsequently authorized; see [REPAIR.md](REPAIR.md) for implementation and verification. The original `probe.cjs` intentionally asserts old defects and must be run against the audited revision, not the repaired tree.
 
@@ -48,7 +48,7 @@ Repair: one cancellation/control operation for HTTP, model tools, E-STOP and rem
 
 Source: [routines.js](../../frontend/app/windows/routines.js) lines 106–107 and 639–654; [index.js](../../sidecar/index.js) lines 4824–4830 and 11904–11914.
 
-The UI permits “Keep in StarNet” plus “Allow follow-up in that conversation.” It sends `attachToSession:true` but only captures `origin` when the destination is `origin`. Create validation accepts the local combination. The scheduler's actual preflight refuses it with `missing-session-origin`.
+The UI permits “Keep in Eyehold” plus “Allow follow-up in that conversation.” It sends `attachToSession:true` but only captures `origin` when the destination is `origin`. Create validation accepts the local combination. The scheduler's actual preflight refuses it with `missing-session-origin`.
 
 Live receipt: the verified checked checkbox saved and cleared the name/prompt fields. GET `/api/cron` returned `deliver:"local", attachToSession:true, origin:null`. The same job survived a real seeded-sidecar restart. Running its actual preflight returned `ok:false` with the missing-session error. Scheduling remained deliberately off; this audit did not spend a model call proving a condition already rejected before dispatch.
 
@@ -119,7 +119,7 @@ Repair: add a bounded whole-response deadline for ordinary JSON reads, plus expl
 | Pause | Routines: “DISABLE”/enable with errors. Goal loops: “PAUSE”/resume without errors. Agent loop command uses weaker cancellation than the HTTP button. | Same action semantics, pending state and explicit failure. Separate pause from destructive stop. |
 | Schedule | Navigation says “Scheduled jobs”/“New schedule”; prose and errors say “Active Routines”/“Create Routine”; success says “routine.” | Choose a primary name and preserve it in navigation, help and errors. |
 | Agent settings | Routine picker chooses agent; provider comes from station; model can come from agent. | Show and execute one resolved agent configuration. |
-| Conversation delivery | “Keep in StarNet” still exposes follow-up “in that conversation”; no conversation identity is shown. | Bind and display the destination; reject impossible combinations before save. |
+| Conversation delivery | “Keep in Eyehold” still exposes follow-up “in that conversation”; no conversation identity is shown. | Bind and display the destination; reject impossible combinations before save. |
 | Script-only work | Backend accepts script without prompt; routine form requires a prompt regardless of “without a model.” | Script-only form validation should match execution requirements. |
 | Finished work | Outbox, Library, Deliverables and Agent Record overlap; files are run-owned, expanded history is session-owned. | Explicitly label output vs conversation history; keep all actions anchored to the same run. |
 | Failed reads | QuerySpine retains last-good/error state; Library names a failed load; Outbox silently omits files when its Library join fails. | Distinguish missing data, stale data and unavailable data, with retry. |
@@ -152,6 +152,6 @@ Additional investigation candidates: `windows/messaging.js:429–438` parses HTT
 
 Source probes passed, including re-reading the same saved routine after a real seeded-sidecar restart. Three UI reproductions and one negative control are recorded above. `npm run test:fast` exited 0: **772 steps green** on the unchanged audited product source. The updated bug register separately validated **143 records, no violations**. Audit scripts passed syntax checks. The full HTTP gate was not run because no product routes were changed. No product fixes have been implemented or merged.
 
-Temporary audit tabs and the owned seeded sidecar were closed after verification. The local proxy encountered a headers-already-sent error when its upstream restarted after the UI receipts; its error handler was corrected to support that teardown case. This was an audit-fixture issue, not a StarNet finding, and did not affect the recorded pre-restart UI reproductions.
+Temporary audit tabs and the owned seeded sidecar were closed after verification. The local proxy encountered a headers-already-sent error when its upstream restarted after the UI receipts; its error handler was corrected to support that teardown case. This was an audit-fixture issue, not a Eyehold finding, and did not affect the recorded pre-restart UI reproductions.
 
 To rerun the receipts: use an isolated worktree at the audited source, install locked dependencies, launch `dev/seed.js --keep` with `SKYNET_PORT=19427`, an empty provider key and a placeholder model. In the UI create a routine named `Audit follow-up enabled`, leave its destination local, and verify the follow-up checkbox is checked before saving. Run `node qa/seam-audit-0912/probe.cjs`. The remaining source cases need no model. For the loop UI cases, run `node qa/seam-audit-0912/fault-proxy.cjs` and open port 19428; it serves the unchanged application with a controlled candidate and refuses loop-control requests with HTTP 409. The synthetic candidate must never be confused with real model-produced work.

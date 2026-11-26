@@ -56,12 +56,12 @@ function binaryContains(file, needles) {
   if (absent.length) throw new Error('executable is missing embedded provenance: ' + absent.join(', '));
 }
 
-export function probeStarNetRuntimeNode(runtimeRoot, runtimeNode = '') {
+export function probeEyeholdRuntimeNode(runtimeRoot, runtimeNode = '') {
   const executablePath = resolve(runtimeNode || join(runtimeRoot, process.platform === 'win32' ? 'node.exe' : 'node'));
   const run = spawnSync(executablePath, ['--version'], { encoding: 'utf8', timeout: 30000, windowsHide: true });
   const output = (String(run.stdout || '') + String(run.stderr || '')).trim();
   if (run.status !== 0 || !/^v\d+\.\d+\.\d+(?:[-+].*)?$/.test(output)) {
-    throw new Error(`installed StarNet runtime Node probe failed (${executablePath}): ${output || run.error?.message || `exit ${run.status}`}`);
+    throw new Error(`installed Eyehold runtime Node probe failed (${executablePath}): ${output || run.error?.message || `exit ${run.status}`}`);
   }
   return { path: executablePath, version: output };
 }
@@ -74,16 +74,16 @@ async function healthProbe(url, expected) {
   return { url, status: response.status, version: body.version };
 }
 
-export async function bindStarNet(opts) {
+export async function bindEyehold(opts) {
   const source = sourceIdentity(opts.sourceDir, opts.commit);
   const describe = String(opts.describe || '');
   if (source.tree !== opts.tree) throw new Error(`source tree ${source.tree} != ${opts.tree}`);
   binaryContains(opts.executable, [source.commit, source.tree, describe]);
   const runtime = verifyRuntimeTree(source, opts.runtimeRoot, opts.runtimePaths || ['frontend', 'sidecar', 'shared']);
-  const runtimeNode = probeStarNetRuntimeNode(opts.runtimeRoot, opts.runtimeNode);
+  const runtimeNode = probeEyeholdRuntimeNode(opts.runtimeRoot, opts.runtimeNode);
   const probe = await healthProbe(opts.healthUrl, describe);
-  return { schemaVersion: 'starnet.eval.candidate-manifest.v1', subject: {
-    name: 'StarNet', version: opts.version, commit: source.commit,
+  return { schemaVersion: 'eyehold.eval.candidate-manifest.v1', subject: {
+    name: 'Eyehold', version: opts.version, commit: source.commit,
     sourceTree: { algorithm: 'git-tree', value: source.tree }, executable: executable(opts.executable),
     platform: { platform: process.platform, arch: process.arch, node: runtimeNode.version }, dirty: false,
     provenance: { verified: true, kind: 'embedded-build-and-runtime-tree', describe, runtime, runtimeNode, probe,
@@ -100,7 +100,7 @@ export function bindHermes(opts) {
   const run = spawnSync(resolve(opts.executable), args, { cwd: source.dir, env, encoding: 'utf8', timeout: 30000 });
   const output = String(run.stdout || '') + String(run.stderr || '');
   if (run.status !== 0 || !output.includes(`Hermes Agent v${opts.version}`)) throw new Error('Hermes version probe failed: ' + output.trim().slice(0, 300));
-  return { schemaVersion: 'starnet.eval.candidate-manifest.v1', subject: {
+  return { schemaVersion: 'eyehold.eval.candidate-manifest.v1', subject: {
     name: 'Hermes Agent', version: opts.version, commit: source.commit,
     sourceTree: { algorithm: 'git-tree', value: source.tree }, executable: executable(opts.executable),
     platform: { platform: process.platform, arch: process.arch, python: output.match(/Python:\s*([^\r\n]+)/)?.[1] || '' }, dirty: false,

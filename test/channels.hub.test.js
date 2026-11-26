@@ -475,7 +475,7 @@ async function run() {
     const runOnce = async (o) => {
       call++;
       o.emit('agent.run.start', { agentId: o.agentId, runId: o.runId, trigger: 'event', model: o.model });
-      o.emit('agent.run.error', { agentId: o.agentId, runId: o.runId, transient: true, message: 'Too many agents are working at once (limit 6). Wait for one to finish, or raise STARNET_MAX_CONCURRENT_AGENTS.' });
+      o.emit('agent.run.error', { agentId: o.agentId, runId: o.runId, transient: true, message: 'Too many agents are working at once (limit 6). Wait for one to finish, or raise EYEHOLD_MAX_CONCURRENT_AGENTS.' });
       o.emit('agent.run.end', { agentId: o.agentId, runId: o.runId, reason: 'error', turns: 0, usd: 0 });
     };
     const hub = makeChannelHub({

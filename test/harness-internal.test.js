@@ -97,8 +97,8 @@ A.ok(/VERIFY it took effect with a read-back tool/.test(sidecar), 'task doctrine
 A.ok(/never a description, a plan, or a promise of future action/.test(sidecar), 'task doctrine defines the deliverable as a proven outcome');
 A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired into the composed [HARNESS] prompt');
 
-/* ---------- EGRESS/TOKEN SAFETY (audit 0.6): X-StarNet-Token is SAME-ORIGIN ONLY ----------
-   The fetch monkey-patch attaches the PRIVATE local X-StarNet-Token to every request isApiUrl() accepts.
+/* ---------- EGRESS/TOKEN SAFETY (audit 0.6): X-Eyehold-Token is SAME-ORIGIN ONLY ----------
+   The fetch monkey-patch attaches the PRIVATE local X-Eyehold-Token to every request isApiUrl() accepts.
    A naive substring match on '/api/' would attach it to third-party URLs that merely contain '/api/' — most
    critically the OpenRouter fallback catalog (OR + '/models' = https://openrouter.ai/api/v1/models), leaking the
    local credential cross-origin AND forcing a CORS preflight OpenRouter rejects (so the fallback fails exactly
@@ -127,7 +127,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   // the tauri app origin hitting its OWN sidecar /api must still count (desktop build)
   const isApiUrlTauri = factory(
     { origin: 'https://tauri.localhost', href: 'https://tauri.localhost/' }, URL,
-    { __STARNET_API__: 'http://127.0.0.1:8964' }
+    { __EYEHOLD_API__: 'http://127.0.0.1:8964' }
   );
   A.ok(isApiUrlTauri('/api/run') === true, 'tauri app origin: its own /api/ is an API URL');
   A.ok(isApiUrlTauri('http://127.0.0.1:8964/api/routing') === true,
@@ -139,7 +139,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   A.ok(isApiUrlTauri('https://openrouter.ai/api/v1/models') === false, 'tauri app origin: OpenRouter is still NOT an API URL');
   const hostileConfig = factory(
     { origin: 'https://tauri.localhost', href: 'https://tauri.localhost/' }, URL,
-    { __STARNET_API__: 'https://evil.example' }
+    { __EYEHOLD_API__: 'https://evil.example' }
   );
   A.ok(hostileConfig('https://evil.example/api/steal') === false,
     'a configured non-loopback origin cannot opt itself into receiving the launch token');

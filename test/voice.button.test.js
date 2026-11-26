@@ -790,12 +790,12 @@ async function opensWithin(t, ms) {
     };
     const t = boot({ audio: true, Audio: AutoEndAudio, fetch: stableVoiceFetch });
     const timings=[];t.Voice.attachCoordinator({onTiming:value=>timings.push(value)});
-    t.sandbox.localStorage.setItem('starnet.liveVoice.localVoice.v1', 'am_onyx');
+    t.sandbox.localStorage.setItem('eyehold.liveVoice.localVoice.v1', 'am_onyx');
     t.Voice.setSpeakReplies(true);
     t.Voice.setLocalTts(true);
     t.Voice.speak('First sentence establishes the speaker.', 'agent');
     await until(() => requests.length >= 1 && !t.Voice.isSpeaking(), 1000);
-    t.sandbox.localStorage.setItem('starnet.liveVoice.localVoice.v1', 'af_nova');
+    t.sandbox.localStorage.setItem('eyehold.liveVoice.localVoice.v1', 'af_nova');
     t.Voice.speak('Second sentence must keep that same speaker.', 'agent');
     await until(() => requests.length >= 2, 1000);
     A.eq(requests[0].localVoice, 'am_onyx', 'Local Live snapshots the selected voice when the session begins');

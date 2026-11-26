@@ -55,11 +55,11 @@ A.eq(directOpenAI, { ok: true, provider: 'openai', protocol: 'openai-images', ke
 const borrowed = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', stationOpenRouterKey: 'station-or-key' });
 A.eq(borrowed.key, 'station-or-key', 'a non-OpenRouter run uses the separately connected station OpenRouter key');
 A.eq(borrowed.keySource, 'station', 'the route never relabels the configured provider key');
-const managedInput = { providerId: 'starnet', runKey: 'untrusted-request-key', providerBaseUrl: 'https://wrong.example/v1', managedKey: 'device-token', managedBaseUrl: 'https://account.starnetos.com/v1/' };
+const managedInput = { providerId: 'eyehold', runKey: 'untrusted-request-key', providerBaseUrl: 'https://wrong.example/v1', managedKey: 'device-token', managedBaseUrl: 'https://account.eyehold.com/v1/' };
 const managed = ImageTask.resolveRoute(managedInput);
-A.eq(managed, { ok: true, provider: 'starnet', protocol: 'openrouter-chat', key: 'device-token', baseUrl: 'https://account.starnetos.com/v1', keySource: 'managed' }, 'credits-only route keeps the linked credential and endpoint together');
+A.eq(managed, { ok: true, provider: 'eyehold', protocol: 'openrouter-chat', key: 'device-token', baseUrl: 'https://account.eyehold.com/v1', keySource: 'managed' }, 'credits-only route keeps the linked credential and endpoint together');
 for (const providerId of ['gemini', 'codex', 'custom', 'anthropic']) {
-  A.eq(ImageTask.resolveRoute({ ...managedInput, providerId }).provider, 'starnet', providerId + ' conversation can generate using linked credits');
+  A.eq(ImageTask.resolveRoute({ ...managedInput, providerId }).provider, 'eyehold', providerId + ' conversation can generate using linked credits');
 }
 A.eq(ImageTask.resolveRoute({ ...managedInput, managedBaseUrl: '', stationOpenRouterKey: 'byok' }).ok, false, 'missing managed endpoint cannot leak device token or silently spend BYOK');
 A.eq(ImageTask.resolveRoute({ ...managedInput, managedKey: '' }).ok, false, 'missing managed credential fails closed');
@@ -72,13 +72,13 @@ A.eq(borrowedOpenAI.provider, 'openai', 'a text run can use a separately connect
 A.eq(borrowedOpenAI.protocol, 'openai-images', 'the station OpenAI route selects the dedicated Images API');
 
 // The ChatGPT sign-in is a keyless STUDIO route: first for a run on the plan, last resort for any other text run,
-// never for a StarNet-credits run.
+// never for a Eyehold-credits run.
 const planRoute = { ok: true, provider: 'codex', protocol: 'codex-responses', key: '', baseUrl: '', keySource: 'plan' };
 A.eq(ImageTask.resolveRoute({ providerId: 'codex', codexSignedIn: true }), planRoute, 'a Codex run renders on its own ChatGPT plan');
 A.eq(ImageTask.resolveRoute({ ...managedInput, providerId: 'codex', codexSignedIn: true }).provider, 'codex', 'a Codex run uses the plan before spending linked credits');
 A.eq(ImageTask.resolveRoute({ providerId: 'anthropic', runKey: 'k', stationOpenRouterKey: 'or', codexSignedIn: true }).provider, 'openrouter', 'a connected OpenRouter key still wins for a non-Codex run');
 A.eq(ImageTask.resolveRoute({ providerId: 'anthropic', runKey: 'k', codexSignedIn: true }), planRoute, 'a keyless non-Codex run falls back to the ChatGPT sign-in');
-A.eq(ImageTask.resolveRoute({ providerId: 'starnet', codexSignedIn: true }).ok, false, 'a StarNet-credits run never moves onto the ChatGPT account');
+A.eq(ImageTask.resolveRoute({ providerId: 'eyehold', codexSignedIn: true }).ok, false, 'a Eyehold-credits run never moves onto the ChatGPT account');
 A.eq(ImageTask.resolveRoute({ providerId: 'codex', codexSignedIn: false }).code, 'media-route-required', 'a dead or missing sign-in is no route');
 A.ok(/sign in to ChatGPT/.test(ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, route: { ok: false }, providerId: 'codex', model: 'gpt-5.5' })), 'the blocker names the ChatGPT sign-in as a fix');
 
@@ -123,8 +123,8 @@ A.ok(/reason: taskQuestionAsked \? 'clarifying' : \(\(result && result\.reason\)
 
 
 const byokRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'custom', model: 'local-model', route: { ok: false } });
-A.ok(/OpenAI or OpenRouter API key/.test(byokRecovery) && /StarNet account/.test(byokRecovery), 'BYOK media recovery exposes all supported routes');
-const managedRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'starnet', route: { ok: false } });
+A.ok(/OpenAI or OpenRouter API key/.test(byokRecovery) && /Eyehold account/.test(byokRecovery), 'BYOK media recovery exposes all supported routes');
+const managedRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'eyehold', route: { ok: false } });
 A.ok(/relink/.test(managedRecovery) && !/OpenRouter/.test(managedRecovery), 'managed failure stays on the linked-account route');
 
 A.report('image-task.test');

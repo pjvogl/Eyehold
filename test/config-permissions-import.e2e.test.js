@@ -6,7 +6,7 @@ const A = require('./_assert.js');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 
 (async () => {
-  const fixture = SidecarFixture.create({ prefix: 'starnet-perm-import-', timeoutMs: 15000 });
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-perm-import-', timeoutMs: 15000 });
   const existing = 'path:C:/existing-project';
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({
@@ -15,7 +15,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     await fixture.start();
 
     // security audit 2026-09-25: a path:<root> grant in an imported file is machine authority and is dropped.
-    const envelope = { starnetExport: 1, sections: { permissions: { allow: ['cabinet:write', 'path:C:/imported-whole-drive'] } } };
+    const envelope = { eyeholdExport: 1, sections: { permissions: { allow: ['cabinet:write', 'path:C:/imported-whole-drive'] } } };
     const imported = await fixture.json('POST', '/api/config/import', { envelope, only: ['permissions'] });
     A.eq(imported.status, 200, 'permission-only config import succeeds');
     A.ok(imported.body.applied.includes('permissions'), 'response reports the permission section applied');

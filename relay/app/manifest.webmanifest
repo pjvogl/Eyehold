@@ -1,7 +1,7 @@
 {
-  "name": "StarNet Remote",
-  "short_name": "StarNet",
-  "description": "Your StarNet station, from your phone.",
+  "name": "Eyehold Remote",
+  "short_name": "Eyehold",
+  "description": "Your Eyehold station, from your phone.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

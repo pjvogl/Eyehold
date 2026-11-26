@@ -69,7 +69,7 @@ const Glossary = require('../frontend/app/glossary.js');
   A.eq(resetState.firstCommandDone, false, 'new-Commander reset re-arms the one-shot tour');
   A.eq(resetState.seen, {}, 'new-Commander reset clears inherited coachmark history');
   A.eq(resetState.brief, {}, 'new-Commander reset clears inherited FIRST STEPS progress');
-  A.eq(tutorialRemovals, 1, 'tutorial reset explicitly removes starnet.tutorial.v1');
+  A.eq(tutorialRemovals, 1, 'tutorial reset explicitly removes eyehold.tutorial.v1');
 
   // Release clarity regression: Genesis must route each editable choice to its real home, and the work
   // vocabulary must preserve the product's existing truth — deliberate tasks are board cards; every saved

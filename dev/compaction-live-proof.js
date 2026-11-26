@@ -2,14 +2,14 @@
 
    Drives the REAL sidecar (hermetic SidecarFixture) against a REAL model through a local forwarding proxy to
    OpenRouter whose only edit is the catalog's context_length (so the fold fires on a 30-file task), plus
-   STARNET_CONTEXT_LIMIT_OVERRIDE as the belt to that brace. The task reads 30 small files, each holding one
+   EYEHOLD_CONTEXT_LIMIT_OVERRIDE as the belt to that brace. The task reads 30 small files, each holding one
    unique token, then lists every token read. Proof = the FINAL answer (produced after >= 1 fold) names the
    tokens from the FIRST files, which on trunk were the ones the summarizer never saw; agent.compact events
    are captured with their chunk counts.
 
    Needs SKYNET_OPENROUTER_KEY (dev/.env.dev is read like dev/seed.js does). Optional: SKYNET_DEFAULT_MODEL,
    PROOF_RUNS (default 1), PROOF_WINDOW (default 60000 tokens — must exceed the real fixed prefix, ~30k with tool
-   schemas), STARNET_COMPACT_CHUNK_CHARS (default 6000 — 3000 overflows the 12-chunk cap on this task, live-seen), PROOF_MICRO=1 to leave the free elision tier on (the
+   schemas), EYEHOLD_COMPACT_CHUNK_CHARS (default 6000 — 3000 overflows the 12-chunk cap on this task, live-seen), PROOF_MICRO=1 to leave the free elision tier on (the
    default proof turns it off so the paid CHUNKED fold is the path under test). */
 'use strict';
 const fs = require('node:fs');
@@ -34,7 +34,7 @@ const KEY = String(process.env.SKYNET_OPENROUTER_KEY || '').trim();
 const MODEL = String(process.env.SKYNET_DEFAULT_MODEL || 'anthropic/claude-haiku-4.5').trim();
 const WINDOW = parseInt(process.env.PROOF_WINDOW || '60000', 10);
 const RUNS = parseInt(process.env.PROOF_RUNS || '1', 10);
-const CHUNK = process.env.STARNET_COMPACT_CHUNK_CHARS || '6000';
+const CHUNK = process.env.EYEHOLD_COMPACT_CHUNK_CHARS || '6000';
 const UPSTREAM = 'https://openrouter.ai/api/v1';
 if (!KEY) { console.error('no SKYNET_OPENROUTER_KEY'); process.exit(2); }
 
@@ -93,7 +93,7 @@ async function oneRun(idx) {
   const tokens = makeFiles(dir, 30);
   const fixture = SidecarFixture.create({
     prefix: 'compaction-proof-', timeoutMs: 20000,
-    env: { SKYNET_OPENROUTER_BASE: proxy.base, STARNET_COMPACT_CHUNK_CHARS: CHUNK, STARNET_CONTEXT_LIMIT_OVERRIDE: String(WINDOW), STARNET_COMPACT_MICRO: process.env.PROOF_MICRO || '0', SKYNET_FULL_ACCESS: '1', SKYNET_QUEST_REFRESH: '0', SKYNET_AUX_BUDGET: '0' }
+    env: { SKYNET_OPENROUTER_BASE: proxy.base, EYEHOLD_COMPACT_CHUNK_CHARS: CHUNK, EYEHOLD_CONTEXT_LIMIT_OVERRIDE: String(WINDOW), EYEHOLD_COMPACT_MICRO: process.env.PROOF_MICRO || '0', SKYNET_FULL_ACCESS: '1', SKYNET_QUEST_REFRESH: '0', SKYNET_AUX_BUDGET: '0' }
   });
   await fixture.start();
   const task = 'In the folder ' + dir + ' read start.txt with the file read tool. It names the next file to read; each file names the one after it, and each carries one line "secret token: TOKEN-NN-XXXXXX". Follow the chain to the end (30 files). The file names are unknown until you read the previous file, so read them one at a time. Do not stop early. Write NO text between tool calls (no narration, no running notes) — just make the next read. Only when you reach END OF CHAIN, reply with the complete list of every token you read, one per line, in order. Nothing else.';

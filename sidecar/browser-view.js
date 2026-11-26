@@ -22,7 +22,7 @@
    gives it up to another run (Andrew: it "constantly closes" — a browser closing under you is the bug): a run that
    loses to it browses on a temporary profile instead (index.js browserProfileLeaseFor → fallback). A VISIBLE station
    browser never idles out (the Commander may be using the window directly, which the station cannot see): it closes
-   when they close it. Only a headless one (STARNET_BROWSER_HEADLESS) closes after half an hour unused. If the window
+   when they close it. Only a headless one (EYEHOLD_BROWSER_HEADLESS) closes after half an hour unused. If the window
    is closed or Chrome dies, the next use starts it again on the same profile (browser.js reviveIfDead).
 
    LAWS
@@ -47,8 +47,8 @@ const SEARCH_URL = 'https://duckduckgo.com/?q=';
                what Hermes does: its agent drives a real browser window on its own profile, and people sign in, type
                and paste there natively). The BROWSER window follows it. Where no window can open (no screen, no
                Chromium-family browser installed, or a headless pin) the station browses built-in and says so;
-     builtin — hidden inside StarNet: the BROWSER window is the browser; nothing opens on the desktop;
-     chrome  — YOUR own Chrome with your logins, through the StarNet extension, asking per site. Not available
+     builtin — hidden inside Eyehold: the BROWSER window is the browser; nothing opens on the desktop;
+     chrome  — YOUR own Chrome with your logins, through the Eyehold extension, asking per site. Not available
                until the extension is paired; until then the station says so and browses built-in. */
 const BROWSER_MODES = ['builtin', 'window', 'chrome'];
 function normalizeMode(m) { return BROWSER_MODES.indexOf(String(m || '')) >= 0 ? String(m) : 'window'; }
@@ -358,7 +358,7 @@ function makeBrowserViews(deps) {
   async function front() {
     const s = station ? surfaceOf(station.session) : null;
     if (!s) return { ok: false, code: 'closed', error: 'the browser is not open' };
-    if (!s.visible || typeof s.front !== 'function') return { ok: false, error: 'the browser is running hidden on this station (STARNET_BROWSER_HEADLESS)' };
+    if (!s.visible || typeof s.front !== 'function') return { ok: false, error: 'the browser is running hidden on this station (EYEHOLD_BROWSER_HEADLESS)' };
     try { await s.front(); } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
     return { ok: true };
   }
@@ -457,8 +457,8 @@ function makeBrowserViews(deps) {
     const d = st && st.driver ? { agentId: st.driver.agentId, runId: st.driver.runId, signIn: !!st.signIn } : null;
     return { agents, settings: settings(), station: { available: !!makeSession, open: !!s, mode: st ? st.mode : effectiveMode(), visible: !!(s && s.visible), driver: d, handoff: !!(d && handoffLive(d.runId)), remembered: !!(s && s.remembered), profileNote: (s && s.profileNote) || '', setup: setupState() } };
   }
-  /* RESET STATION BROWSER (#61, Settings > BROWSER): close the station browser, then end any ORPHANED StarNet browser
-     on the durable profile (one an earlier StarNet process started and left behind, its proxy dead) and clear the
+  /* RESET STATION BROWSER (#61, Settings > BROWSER): close the station browser, then end any ORPHANED Eyehold browser
+     on the durable profile (one an earlier Eyehold process started and left behind, its proxy dead) and clear the
      profile's stale locks (deps.sweepStationProfile -> tools/builtin/browser-orphans.js). Refused while an agent is
      driving: STOP that run first. The receipt is what happened, never what was hoped. */
   async function reset() {

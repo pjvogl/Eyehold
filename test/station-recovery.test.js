@@ -15,7 +15,7 @@ const A = require('./_assert.js');
 const R = require('../sidecar/station-recovery.js');
 const Save = require('../frontend/app/save.js');
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-disaster-recovery-'));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-disaster-recovery-'));
 const source = path.join(tmp, 'source-profile', 'workspaces');
 const backups = path.join(tmp, 'backups');
 
@@ -29,7 +29,7 @@ function hashFile(file) { return crypto.createHash('sha256').update(fs.readFileS
 function seedCompleteStation() {
   fs.mkdirSync(source, { recursive: true });
   write('agent.roster.json', { version: 1, agents: [{ agentId: 'agent', name: 'NOVA', provider: 'openrouter', model: 'test/model' }, { agentId: 'scribe', name: 'SCRIBE', provider: 'openai', model: 'test/other' }] });
-  write('agent.save.json', { version: 1, agentId: 'agent', updatedAt: 100, savedAt: 100, doc: { schema: 'starnet.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: [{ id: 'command' }], props: [{ id: 'terminal-1', roomId: 'command' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'preserve this conversation' }] }] } });
+  write('agent.save.json', { version: 1, agentId: 'agent', updatedAt: 100, savedAt: 100, doc: { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: [{ id: 'command' }], props: [{ id: 'terminal-1', roomId: 'command' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'preserve this conversation' }] }] } });
   write('transcript.jsonl', JSON.stringify({ workstreamId: 'general', role: 'assistant', content: 'conversation survives', ts: 1 }) + '\n');
   write('channels/agent.history.json', { version: 1, messages: [{ role: 'user', content: 'telegram conversation', ts: 2 }] });
   write('agent.notebook.json', { entries: [{ id: 'memory-1', title: 'Remember', body: 'the station' }] });
@@ -60,11 +60,11 @@ function seedCompleteStation() {
 
 seedCompleteStation();
 const browserV1 = {
-  'starnet.save': JSON.stringify({ schema: 'starnet.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: [{ id: 'command' }], props: [{ id: 'terminal-1' }] } }),
-  'starnet.station.v1': JSON.stringify({ selectedRoom: 'command', camera: { x: 5, y: 7 } }),
-  'starnet.queststate.v1': JSON.stringify({ seen: ['quest-1'] }),
-  'starnet.byok.model': 'test/model',
-  'starnet.byok.key': 'BROWSER_SECRET',
+  'eyehold.save': JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: [{ id: 'command' }], props: [{ id: 'terminal-1' }] } }),
+  'eyehold.station.v1': JSON.stringify({ selectedRoom: 'command', camera: { x: 5, y: 7 } }),
+  'eyehold.queststate.v1': JSON.stringify({ seen: ['quest-1'] }),
+  'eyehold.byok.model': 'test/model',
+  'eyehold.byok.key': 'BROWSER_SECRET',
   'foreign.app': 'not ours'
 };
 
@@ -100,7 +100,7 @@ A.eq(R.validate(v1).ok, true, 'fresh bundle validates');
 
 // B. Atomic bundle creation and genuinely clean-profile restore preserve the semantic fingerprint.
 fs.mkdirSync(backups, { recursive: true });
-const v1File = path.join(backups, 'station-v1.starnet-recovery.json');
+const v1File = path.join(backups, 'station-v1.eyehold-recovery.json');
 const receipt = R.writeBundleAtomic({ bundle: v1, file: v1File, nonce: 'v1' });
 A.ok(receipt.ok && fs.existsSync(v1File), 'verified bundle commits atomically');
 const loadedV1 = R.readBundle(v1File);
@@ -110,8 +110,8 @@ const cleanBrowser = {};
 const restoredV1 = R.restore({ bundle: loadedV1, targetRoot: cleanTarget, browserSink: cleanBrowser, nonce: 'clean' });
 A.eq(restoredV1.ok, true, 'complete bundle restores onto a clean profile');
 A.eq(restoredV1.rollback, null, 'clean restore needs no rollback generation');
-A.eq(cleanBrowser['starnet.station.v1'], browserV1['starnet.station.v1'], 'browser-owned station layout state restores');
-A.eq(cleanBrowser['starnet.byok.key'], undefined, 'browser credential is not restored');
+A.eq(cleanBrowser['eyehold.station.v1'], browserV1['eyehold.station.v1'], 'browser-owned station layout state restores');
+A.eq(cleanBrowser['eyehold.byok.key'], undefined, 'browser credential is not restored');
 A.ok(read(cleanTarget, 'agent/workshop/run-1/report.md').includes('User-created deliverable bytes survive'), 'deliverable bytes restore');
 A.ok(!JSON.parse(read(cleanTarget, 'permissions.allow.json')).allow.includes('path:C:/Projects/demo'), 'clean profile never inherits machine-specific path authority');
 A.ok(JSON.parse(read(cleanTarget, 'permissions.allow.json')).allow.includes('fs.write:workspace'), 'portable non-path permissions are preserved');
@@ -175,7 +175,7 @@ A.eq(hashFile(stableFile), stableHash, 'disk-full failure preserves the previous
 // G. A newer station can roll back to a prior version while retaining the replaced generation.
 write('agent.todo.json', { items: [{ id: 'task-1', text: 'ship recovery', done: true }, { id: 'task-2', text: 'post-v1 mutation', done: false }] });
 write('.recovery-mutation.json', { lastCompletedMutation: 101 });
-const browserV2 = Object.assign({}, browserV1, { 'starnet.station.v1': JSON.stringify({ selectedRoom: 'lab', camera: { x: 9, y: 9 } }) });
+const browserV2 = Object.assign({}, browserV1, { 'eyehold.station.v1': JSON.stringify({ selectedRoom: 'lab', camera: { x: 9, y: 9 } }) });
 const v2 = R.capture({ workspaceRoot: source, browserStore: browserV2, now: 2000, appVersion: '0.9.1-test', lastCompletedMutation: 101 });
 const rollbackTarget = path.join(tmp, 'rollback-profile', 'workspaces');
 const rollbackBrowser = {};
@@ -185,7 +185,7 @@ const rollbackReceipt = R.restore({ bundle: v1, targetRoot: rollbackTarget, brow
 A.ok(rollbackReceipt.rollback && fs.existsSync(rollbackReceipt.rollback), 'replaced newer generation is retained');
 A.ok(!read(rollbackTarget, 'agent.todo.json').includes('task-2'), 'previous recovery point becomes active');
 A.ok(read(rollbackReceipt.rollback, 'agent.todo.json').includes('task-2'), 'newer generation remains recoverable after rollback');
-A.eq(rollbackBrowser['starnet.station.v1'], browserV1['starnet.station.v1'], 'browser-owned state rolls back with the workspace generation');
+A.eq(rollbackBrowser['eyehold.station.v1'], browserV1['eyehold.station.v1'], 'browser-owned state rolls back with the workspace generation');
 
 // H. Restore activation failure cannot displace a currently healthy generation.
 const beforeActivationHash = hashFile(path.join(rollbackTarget, 'agent.todo.json'));

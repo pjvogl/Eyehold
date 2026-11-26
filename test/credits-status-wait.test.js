@@ -6,7 +6,7 @@
    read in a 20s race, but Harness.api.get carries its OWN 15s default deadline, so the inner deadline always fired first
    and the 20s race never mattered — a funded, healing account still read "couldn't confirm". The STORE read had the same
    15s inner deadline. This RUNS the production code against a fake clock: harness.js requestJson (the real deadline),
-   app.js refreshStarnetGenesisStatus (WAKE) and stationui.js wireCredits (STORE), with a fetch that answers at 16s. */
+   app.js refreshEyeholdGenesisStatus (WAKE) and stationui.js wireCredits (STORE), with a fetch that answers at 16s. */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -20,7 +20,7 @@ const slice = (src, from, to) => {
   return src.slice(a, b);
 };
 const apiCode = slice(harnessSrc, '  async function requestJson(', '\n  // ONE fold point') + '\nthis.api = api;';
-const wakeCode = slice(appSrc, '  let starnetLinked = false;', '  // A station can be linked to a DIFFERENT StarNet login') + '\nthis.wake = { refreshStarnetGenesisStatus, revealStarnetGenesis };';
+const wakeCode = slice(appSrc, '  let eyeholdLinked = false;', '  // A station can be linked to a DIFFERENT Eyehold login') + '\nthis.wake = { refreshEyeholdGenesisStatus, revealEyeholdGenesis };';
 const storeCode = slice(stationuiSrc, '  let _creditsLinkPoll =', '  // BUDGET panel') + '\nthis.store = { wireCredits };';
 const provCode = slice(stationuiSrc, '  let creditsProv = {', '  // The rows CONNECTIONS should actually draw') + '\nthis.prov = { refreshCreditsProvider };';
 
@@ -64,20 +64,20 @@ function node() {
   return { textContent: '', innerHTML: '', className: '', onclick: null,
     classList: { add: c => classes.add(c), remove: c => classes.delete(c), toggle: (c, on) => (on ? classes.add(c) : classes.delete(c)), contains: c => classes.has(c) } };
 }
-const FUNDED = { configured: true, linked: true, linkSaved: true, linkStatus: 'linked', accountId: 'acct', balanceUsd: 79.24, purchaseUrl: 'https://starnetos.com/credits' };
+const FUNDED = { configured: true, linked: true, linkSaved: true, linkStatus: 'linked', accountId: 'acct', balanceUsd: 79.24, purchaseUrl: 'https://eyehold.com/credits' };
 
 async function wake(delayMs, opts) {
   const clock = makeClock(), { api, seen } = makeApi(clock, delayMs, FUNDED);
   const els = {}, chip = node();
   chip.classList.add('hidden');
-  const ctx = vm.createContext({ Harness: { api }, el: id => (els[id] = els[id] || node()), document: { querySelector: s => (/data-prov="starnet"/.test(s) ? chip : null) },
-    pickedProvider: (opts && opts.picked) || 'starnet', userPickedProvider: false, selectProviderUI() {}, SFX: { click() {} }, openExternalUrl() {},
+  const ctx = vm.createContext({ Harness: { api }, el: id => (els[id] = els[id] || node()), document: { querySelector: s => (/data-prov="eyehold"/.test(s) ? chip : null) },
+    pickedProvider: (opts && opts.picked) || 'eyehold', userPickedProvider: false, selectProviderUI() {}, SFX: { click() {} }, openExternalUrl() {},
     esc: s => String(s), setTimeout: clock.setTimeout, clearTimeout: clock.clearTimeout, setInterval: clock.setInterval, clearInterval: clock.clearInterval });
   vm.runInContext(wakeCode, ctx);
   let result = null;
-  (opts && opts.reveal ? ctx.wake.revealStarnetGenesis(false) : ctx.wake.refreshStarnetGenesisStatus()).then(r => { result = r; });
+  (opts && opts.reveal ? ctx.wake.revealEyeholdGenesis(false) : ctx.wake.refreshEyeholdGenesisStatus()).then(r => { result = r; });
   await clock.advanceTo(60000);
-  return { result, status: els['starnet-status'], chip, seen, timersLeft: clock.pending() };
+  return { result, status: els['eyehold-status'], chip, seen, timersLeft: clock.pending() };
 }
 async function providerCard(delayMs) {
   const clock = makeClock(), { api, seen } = makeApi(clock, delayMs, FUNDED);
@@ -141,17 +141,17 @@ const ok = (cond, msg) => { assert.ok(cond, msg); n++; };
     ok(s.painted.length === 1 && s.painted[0].what === 'unavailable', 'STORE: a read that never answers still ends in the honest "could not check" card');
     ok(s.seen.aborted === 1, 'STORE: the hung request is aborted');
   }
-  // 4. the genesis reveal (is there a STARNET chip at all?) reads the same path: a slow heal must not hide a linked account
+  // 4. the genesis reveal (is there a EYEHOLD chip at all?) reads the same path: a slow heal must not hide a linked account
   {
     const w = await wake(16000, { reveal: true, picked: 'openai' });
-    ok(w.result === true && !w.chip.classList.contains('hidden'), 'GENESIS: a 16s healing answer still reveals the STARNET chip for a linked station');
+    ok(w.result === true && !w.chip.classList.contains('hidden'), 'GENESIS: a 16s healing answer still reveals the EYEHOLD chip for a linked station');
     ok(w.seen.aborted === 0 && w.seen.routes[0] === '/api/credits?history=0', 'GENESIS: the reveal waited out the heal on the summary read');
   }
   // 5. the SETTINGS provider card: a slow heal paints LINKED with the real balance, never "not linked" / hidden
   {
     const p = await providerCard(16000);
     ok(p.state && p.state.state === 'linked' && p.state.balanceUsd === 79.24, 'PROVIDERS: a 16s healing answer paints the card LINKED (got ' + JSON.stringify(p.state) + ')');
-    ok(p.published.join() === 'starnet:true' && p.seen.aborted === 0, 'PROVIDERS: COMMS hears the definitive linked answer, and nothing was aborted');
+    ok(p.published.join() === 'eyehold:true' && p.seen.aborted === 0, 'PROVIDERS: COMMS hears the definitive linked answer, and nothing was aborted');
   }
   {
     const p = await providerCard(Infinity);

@@ -315,10 +315,10 @@ const IDENTITY_EXPRESSION = `(async () => {
   const out = { origin, mode: '', shell: null, version: null, apiBase: '', link: null };
   const allowed = new Set(['tauri://localhost','http://tauri.localhost','https://tauri.localhost','app://localhost']);
   out.mode = allowed.has(origin) ? 'desktop' : 'browser';
-  out.apiBase = String(window.__STARNET_API__ || '');
+  out.apiBase = String(window.__EYEHOLD_API__ || '');
   try {
     const core = window.__TAURI__ && window.__TAURI__.core;
-    if (core && typeof core.invoke === 'function') out.shell = await core.invoke('starnet_build_info');
+    if (core && typeof core.invoke === 'function') out.shell = await core.invoke('eyehold_build_info');
   } catch (_) {}
   try {
     const response = await fetch('/api/version', { cache: 'no-store' });
@@ -353,11 +353,11 @@ async function cycleProductBridge(cdp) {
 
 const PROCESS_SCRIPT = String.raw`
 $ErrorActionPreference = 'Stop'
-$mode = [string]$env:STARNET_QA_PROCESS_MODE
-$artifact = [IO.Path]::GetFullPath([string]$env:STARNET_QA_ARTIFACT_PATH)
-$port = [int]$env:STARNET_QA_API_PORT
-$expectedPid = [int]$env:STARNET_QA_EXPECTED_PID
-$expectedCreatedTicks = [string]$env:STARNET_QA_EXPECTED_CREATED_TICKS
+$mode = [string]$env:EYEHOLD_QA_PROCESS_MODE
+$artifact = [IO.Path]::GetFullPath([string]$env:EYEHOLD_QA_ARTIFACT_PATH)
+$port = [int]$env:EYEHOLD_QA_API_PORT
+$expectedPid = [int]$env:EYEHOLD_QA_EXPECTED_PID
+$expectedCreatedTicks = [string]$env:EYEHOLD_QA_EXPECTED_CREATED_TICKS
 $all = @(Get-CimInstance Win32_Process)
 $desktop = @($all | Where-Object { $_.ExecutablePath -and ([IO.Path]::GetFullPath([string]$_.ExecutablePath) -ieq $artifact) })
 if ($desktop.Count -ne 1) { @{ok=$false;code='desktop-process-count'} | ConvertTo-Json -Compress; exit 0 }
@@ -408,11 +408,11 @@ function processCommand(mode, artifact, port, expectedPid = 0, expectedCreatedTi
     if (Object.prototype.hasOwnProperty.call(process.env, name)) childEnv[name] = process.env[name];
   }
   Object.assign(childEnv, {
-    STARNET_QA_PROCESS_MODE: str(mode),
-    STARNET_QA_ARTIFACT_PATH: path.resolve(artifact),
-    STARNET_QA_API_PORT: String(port),
-    STARNET_QA_EXPECTED_PID: String(expectedPid),
-    STARNET_QA_EXPECTED_CREATED_TICKS: str(expectedCreatedTicks)
+    EYEHOLD_QA_PROCESS_MODE: str(mode),
+    EYEHOLD_QA_ARTIFACT_PATH: path.resolve(artifact),
+    EYEHOLD_QA_API_PORT: String(port),
+    EYEHOLD_QA_EXPECTED_PID: String(expectedPid),
+    EYEHOLD_QA_EXPECTED_CREATED_TICKS: str(expectedCreatedTicks)
   });
   const result = spawnSync(powershellExe(), ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', PROCESS_SCRIPT], {
     cwd: ROOT, env: childEnv, encoding: 'utf8', windowsHide: true, timeout: 30000, maxBuffer: 1024 * 1024
@@ -724,17 +724,17 @@ function atomicWriteJson(file, value) {
 }
 
 function ambientInvocation(env = process.env) {
-  const artifactInput = str(env.STARNET_FIRST_RUN_ARTIFACT);
+  const artifactInput = str(env.EYEHOLD_FIRST_RUN_ARTIFACT);
   const artifact = path.isAbsolute(artifactInput) ? fileIdentity(artifactInput) : null;
   const self = fileIdentity(fileURLToPath(import.meta.url));
   return {
-    challenge: str(env.STARNET_W1_LINK_CHALLENGE),
-    outputPath: str(env.STARNET_W1_LINK_OUTPUT),
-    candidateCommit: lower(env.STARNET_PRODUCT_PERFECT_CANDIDATE_SHA),
-    candidateTree: lower(env.STARNET_PRODUCT_PERFECT_CANDIDATE_TREE),
+    challenge: str(env.EYEHOLD_W1_LINK_CHALLENGE),
+    outputPath: str(env.EYEHOLD_W1_LINK_OUTPUT),
+    candidateCommit: lower(env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA),
+    candidateTree: lower(env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_TREE),
     artifact,
-    cdpPort: Number(env.STARNET_FIRST_RUN_CDP_PORT || env.STARNET_SMOKE_CDP_PORT),
-    probe: { path: PROBE_RELATIVE_PATH, expectedSha256: lower(env.STARNET_W1_LINK_PROBE_SHA256), actualSha256: lower(self && self.sha256) }
+    cdpPort: Number(env.EYEHOLD_FIRST_RUN_CDP_PORT || env.EYEHOLD_SMOKE_CDP_PORT),
+    probe: { path: PROBE_RELATIVE_PATH, expectedSha256: lower(env.EYEHOLD_W1_LINK_PROBE_SHA256), actualSha256: lower(self && self.sha256) }
   };
 }
 

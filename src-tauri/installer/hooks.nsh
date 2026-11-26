@@ -1,4 +1,4 @@
-; StarNet NSIS installer hooks.
+; Eyehold NSIS installer hooks.
 ;
 ; ── WHY THIS EXISTS ────────────────────────────────────────────────────────────────────────────
 ; The manual-installer path could not overwrite its own node.exe.
@@ -61,56 +61,56 @@
 ; .onGUIInit runs after Tauri's .onInit has selected the registry context but before any page is
 ; shown. For a strict upgrade (or an installed record whose version is unreadable), append the
 ; same /UPDATE /P /R flags and re-run .onInit so the stock template skips the uninstall page,
-; installs passively in place, and relaunches StarNet. The uninstall registry's InstallLocation is
+; installs passively in place, and relaunches Eyehold. The uninstall registry's InstallLocation is
 ; authoritative here: pre-0.10 releases could leave Tauri's separate manufacturer key pointing at
 ; the default directory after a custom /D install. Without restoring the uninstall location, the
 ; upgrade installs a second copy at that stale default and leaves the old sidecar running. Same-
 ; version maintenance and downgrades keep Tauri's normal UI. We intentionally use only NSIS
 ; registers here: this hooks file is included before the template declares its named variables and
 ; product/version defines.
-!define MUI_CUSTOMFUNCTION_GUIINIT StarNetManualUpgradeInit
-Function StarNetManualUpgradeInit
+!define MUI_CUSTOMFUNCTION_GUIINIT EyeholdManualUpgradeInit
+Function EyeholdManualUpgradeInit
   ClearErrors
   ${GetOptions} $CMDLINE "/UPDATE" $R9
   ${IfNot} ${Errors}
-    Goto starnet_manual_upgrade_done
+    Goto eyehold_manual_upgrade_done
   ${EndIf}
 
-  ReadRegStr $R8 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "UninstallString"
-  ReadRegStr $R9 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "DisplayVersion"
-  ReadRegStr $R1 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "InstallLocation"
+  ReadRegStr $R8 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "UninstallString"
+  ReadRegStr $R9 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "DisplayVersion"
+  ReadRegStr $R1 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "InstallLocation"
   ${If} $R8 == ""
-    ReadRegStr $R8 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "UninstallString"
-    ReadRegStr $R9 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "DisplayVersion"
-    ReadRegStr $R1 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet" "InstallLocation"
+    ReadRegStr $R8 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "UninstallString"
+    ReadRegStr $R9 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "DisplayVersion"
+    ReadRegStr $R1 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold" "InstallLocation"
   ${EndIf}
   ${If} $R8 == ""
-    Goto starnet_manual_upgrade_done
+    Goto eyehold_manual_upgrade_done
   ${EndIf}
   ${If} $R9 == ""
-    Goto starnet_manual_upgrade_force
+    Goto eyehold_manual_upgrade_force
   ${EndIf}
 
   ClearErrors
   GetDLLVersion "$EXEPATH" $R8 $R7
-  IfErrors starnet_manual_upgrade_done
+  IfErrors eyehold_manual_upgrade_done
   IntOp $R6 $R8 >> 16
   IntOp $R5 $R8 & 0xFFFF
   IntOp $R4 $R7 >> 16
   StrCpy $R3 "$R6.$R5.$R4"
   ${VersionCompare} "$R3" "$R9" $R2
   ${If} $R2 = 1
-    Goto starnet_manual_upgrade_force
+    Goto eyehold_manual_upgrade_force
   ${ElseIf} $R2 = 0
-    Goto starnet_manual_upgrade_done
+    Goto eyehold_manual_upgrade_done
   ${ElseIf} $R2 = 2
-    Goto starnet_manual_upgrade_done
+    Goto eyehold_manual_upgrade_done
   ${Else}
     ; A corrupt/legacy DisplayVersion must not route back through a possibly broken uninstaller.
-    Goto starnet_manual_upgrade_force
+    Goto eyehold_manual_upgrade_force
   ${EndIf}
 
-  starnet_manual_upgrade_force:
+  eyehold_manual_upgrade_force:
     ; Tauri stores InstallLocation with wrapping quotes. Strip them before assigning $INSTDIR.
     ; If a legacy record has no InstallLocation, retain Tauri's already-resolved fallback.
     ${If} $R1 != ""
@@ -126,10 +126,10 @@ Function StarNetManualUpgradeInit
     StrCpy $CMDLINE "$CMDLINE /UPDATE /P /R"
     Call .onInit
 
-  starnet_manual_upgrade_done:
+  eyehold_manual_upgrade_done:
 FunctionEnd
 
-!macro STARNET_STOP_INSTALL_PROCESSES
+!macro EYEHOLD_STOP_INSTALL_PROCESSES
   Push $0
   Push $1
   Push $R9
@@ -139,7 +139,7 @@ FunctionEnd
   IfFileExists "$R9" +2 0
     StrCpy $R9 "$SYSDIR\WindowsPowerShell\v1.0\powershell.exe"
 
-  DetailPrint "Stopping any StarNet processes running from $INSTDIR..."
+  DetailPrint "Stopping any Eyehold processes running from $INSTDIR..."
 
   ; 1. The shell first — it owns the guardian that would respawn the sidecar.
   nsExec::ExecToLog '"$R9" -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Get-Process -Name skynet-desktop -ErrorAction SilentlyContinue | Where-Object Path -eq $\'$INSTDIR\skynet-desktop.exe$\' | Stop-Process -Force -ErrorAction SilentlyContinue"'
@@ -157,12 +157,12 @@ FunctionEnd
 !macroend
 
 !macro NSIS_HOOK_PREINSTALL
-  !insertmacro STARNET_STOP_INSTALL_PROCESSES
+  !insertmacro EYEHOLD_STOP_INSTALL_PROCESSES
 !macroend
 
 ; Future uninstallers own the same process cleanup. This does not repair an already-corrupt old
 ; uninstaller (the in-place upgrade above makes that irrelevant), but it prevents a healthy future
 ; uninstall from failing merely because the shell or bundled sidecar is still running.
 !macro NSIS_HOOK_PREUNINSTALL
-  !insertmacro STARNET_STOP_INSTALL_PROCESSES
+  !insertmacro EYEHOLD_STOP_INSTALL_PROCESSES
 !macroend

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>{{NAME_HTML}}</title>
 <!-- This is the page your crew replaces with the real app. The station kit (sn-* classes, glass tokens, VT323 and
-     the `starnet` bridge) is added automatically. -->
+     the `eyehold` bridge) is added automatically. -->
 </head>
 <body>
 <div class="sn-stack">

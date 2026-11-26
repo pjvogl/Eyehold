@@ -44,7 +44,7 @@ try {
     const before=await evalJS(cdp,'World.stationDoc().meta.templateId||"default"');
     await evalJS(cdp,"document.querySelector('[data-use-build]').click()");
     await sleep(800);
-    const result=await evalJS(cdp,`({id:World.stationDoc().meta.templateId,rooms:Object.values(World.stationDoc().rooms).filter(r=>r.kind!=='corridor').length,owners:World.stationDoc().props.filter(p=>p.agentId).map(p=>p.agentId),backup:JSON.parse(localStorage.getItem('starnet.layoutBackup.'+World.stationDoc().meta.createdAt)).meta.templateId||'default'})`);
+    const result=await evalJS(cdp,`({id:World.stationDoc().meta.templateId,rooms:Object.values(World.stationDoc().rooms).filter(r=>r.kind!=='corridor').length,owners:World.stationDoc().props.filter(p=>p.agentId).map(p=>p.agentId),backup:JSON.parse(localStorage.getItem('eyehold.layoutBackup.'+World.stationDoc().meta.createdAt)).meta.templateId||'default'})`);
     assert.equal(result.id,id);assert.equal(result.rooms,count);assert.equal(result.backup,before);assert.deepEqual(result.owners,['agent']);
     receipt.builds.push(result);
     await evalJS(cdp,'Build.close();World.camPullBack()');await sleep(1200);

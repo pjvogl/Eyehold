@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.hermes-implementation.v1",
+  "schema": "eyehold.hermes-implementation.v1",
   "testedCommit": "61eeac2b40c9fd0e2e0a5d2b342f44de74119078",
   "integrated": false,
   "liveModel": false,

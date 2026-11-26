@@ -14,7 +14,7 @@ const PORT = Number(process.argv[2] || 8871), APP = process.argv[3] || 'focus-ti
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + name); if (!ok) failed++; };
 async function browser(port) {
-  const dir = mkdtempSync(join(tmpdir(), 'starnet-apps-detach-'));
+  const dir = mkdtempSync(join(tmpdir(), 'eyehold-apps-detach-'));
   const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--remote-debugging-port=' + port, '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
   const cdp = await connectCDP(port);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable');

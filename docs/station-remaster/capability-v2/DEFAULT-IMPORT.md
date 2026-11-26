@@ -1,7 +1,7 @@
 # Default-station texture import
 
 Imported from the committed `agent/prop-coordination-0914` snapshot `3545e946c`
-on 2026-09-15, following the update in **Create Starnet station textures**.
+on 2026-09-15, following the update in **Create Eyehold station textures**.
 
 The five capability-v2 images replace `war_intelcab`, `gigs_servercart`,
 `comms_dish`, `workbench`, and `studio` in the projection pack. Their manifest

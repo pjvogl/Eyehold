@@ -75,7 +75,7 @@ async function measureReach(rawUrl, options) {
   const found = options.chrome || Browser.findChrome();
   if (!found) throw new Error('Reach measurement requires an installed Chromium browser.');
   const chrome = typeof found === 'string' ? found : found.path;
-  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-reach-'));
+  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-reach-'));
   const driver = Browser.makeCdpDriver({
     chrome,
     forceHeadless: true,
@@ -93,7 +93,7 @@ async function measureReach(rawUrl, options) {
 }
 
 function cliOptions(argv, env) {
-  const options = { authorizedOrigins: String(env.STARNET_REACH_AUTHORIZED_ORIGINS || '').split(',').filter(Boolean) };
+  const options = { authorizedOrigins: String(env.EYEHOLD_REACH_AUTHORIZED_ORIGINS || '').split(',').filter(Boolean) };
   let url = '';
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--url') url = argv[++i] || '';

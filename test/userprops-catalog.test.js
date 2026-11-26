@@ -115,10 +115,10 @@ A.ok(calls.some((c) => c[0] === 'scale' && Math.abs(c[1] - 0.5) < 1e-9 && Math.a
   A.ok(/root\.Friendly = api/.test(fe) && !/root\.FriendlyError\b/.test(fe), 'the friendly-error module is the global Friendly');
   A.ok(!/FriendlyError/.test(src), 'build.js never reaches for a FriendlyError global (the door silently did nothing)');
   A.ok(/Friendly\.actionButton\(\{ action: 'store' \}\)/.test(src), 'the credits door opens PROVIDERS through Friendly.actionButton');
-  A.ok(/\/api\/credits\/linkable/.test(src) && /makeCredits\.linkable \? 'link' : ''/.test(src), 'GET STARNET CREDITS shows only when this build can link an account');
+  A.ok(/\/api\/credits\/linkable/.test(src) && /makeCredits\.linkable \? 'link' : ''/.test(src), 'GET EYEHOLD CREDITS shows only when this build can link an account');
   A.ok(/id="refit-makeprop-cta" hidden/.test(src), 'the card starts hidden: nothing is claimed before /api/credits answers');
   // (2026-10-07) a FAILED balance check (configured:true, balanceUsd:null) is unknown, never a $0 that says
-  // "You're out of StarNet credits" to a funded user
+  // "You're out of Eyehold credits" to a funded user
   A.ok(/makeCredits = \{ linked: j\.configured, balanceUsd: typeof j\.balanceUsd === 'number' && isFinite\(j\.balanceUsd\) \? j\.balanceUsd : null \}/.test(src),
     'the BUILD MODE credit read keeps a non-number balance unknown (null), not 0');
   const needSrc = (src.match(/const need = (!makeCredits \? [^;]+);/) || [])[1];

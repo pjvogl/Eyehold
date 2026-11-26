@@ -1,6 +1,6 @@
 /* node test/future-gate-update-door.test.js — the forward-version gate names a paused install and offers the full installer (#91).
 
-   The gate (app.js showFutureSaveGate) is a HARD STOP for a save written by a newer StarNet, and the Update Center is not
+   The gate (app.js showFutureSaveGate) is a HARD STOP for a save written by a newer Eyehold, and the Update Center is not
    reachable from it. Updates.install() pauses by RETURNING its snapshot (a failed pre-update recovery point, an unverified
    save, an agent still working) rather than throwing, so the gate kept reading "checking for an update…" forever while
    the only signal was a toast. The function is LIFTED out of app.js and run against fakes. */
@@ -45,7 +45,7 @@ function makeGate(updates) {
     A.ok(/Pre-update recovery point failed - ENOENT/.test(msg), 'it names why the install paused');
     A.ok(/keeps your station/.test(msg), 'and says the full installer keeps the station');
     const dl = g.nodes['btn-future-download'];
-    A.ok(!!dl && g.actions.children.indexOf(dl) >= 0, 'a DOWNLOAD LATEST door appears beside UPDATE STARNET');
+    A.ok(!!dl && g.actions.children.indexOf(dl) >= 0, 'a DOWNLOAD LATEST door appears beside UPDATE EYEHOLD');
     A.eq(dl && dl.className, 'btn-xl', 'in the gate\'s own button skin (no OS paint)');
     if (dl) await dl.onclick();
     A.eq(opened, 1, 'the door opens the public releases page through Updates.openReleasesPage');

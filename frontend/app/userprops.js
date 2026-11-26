@@ -2,10 +2,10 @@
    Boot: fetch the station's made props (GET /api/userprops), fetch each PNG with the API token (a blob URL, so
    the master token never rides in a URL), and register it: PropSprites.registerUserProp (catalog row) +
    PropRemaster.registerRuntime (raster art). Placed made props draw as a dim placeholder until their art is in.
-   Make: POST /api/userprops/generate {noun} starts a StarNet-credits job; watch() polls the station (which polls
+   Make: POST /api/userprops/generate {noun} starts a Eyehold-credits job; watch() polls the station (which polls
    the cloud and keeps the job on disk) until it settles, then loads the new prop. Every number shown to the
    player (cost, tries) is the job state the station reports, never a guess.
-   Fires window 'starnet:userprops-changed' whenever the made-prop catalog changes (build.js re-renders). */
+   Fires window 'eyehold:userprops-changed' whenever the made-prop catalog changes (build.js re-renders). */
 'use strict';
 const UserProps = (() => {
   const registered = new Set();
@@ -17,7 +17,7 @@ const UserProps = (() => {
   let props = [];
   let loading = null;
   const apiFetch = (url, init) => (typeof Harness !== 'undefined' && Harness.apiFetch) ? Harness.apiFetch(url, init) : fetch(url, init);
-  const changed = () => { try { window.dispatchEvent(new CustomEvent('starnet:userprops-changed', { detail: { count: props.length } })); } catch (_) {} };
+  const changed = () => { try { window.dispatchEvent(new CustomEvent('eyehold:userprops-changed', { detail: { count: props.length } })); } catch (_) {} };
 
   // A made prop's boxes at the player's SIZE. Height scales (floor: the 14px minimum, ceiling: the renderer's 192);
   // footprints scale and round to whole tiles (1..16). Pure: same entry + scale -> same boxes, everywhere.

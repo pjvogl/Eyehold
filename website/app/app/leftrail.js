@@ -1,4 +1,4 @@
-/* STARNET — leftrail.js : the CREW rail's own layout. Four things, in this order:
+/* EYEHOLD — leftrail.js : the CREW rail's own layout. Four things, in this order:
    (1) the ROSTER WINDOW — how many crew rows the rail shows whole before it scrolls;
    (2) the ROSTER SEAM — the horizontal handle between the WORKING/IDLE strip and SESSIONS, which
        lets the Commander choose that row count by dragging (up = a shorter roster, a taller
@@ -13,7 +13,7 @@
 'use strict';
 
 (() => {
-  const KEY = 'starnet.crewrail';
+  const KEY = 'eyehold.crewrail';
 
   /* ================= ROSTER WINDOW (2026-08-07) =================
      The roster used to be capped at a flat max-height:40% of the column, and a percentage is never
@@ -94,7 +94,7 @@
   // The dragged row count, or null for "measure it for me". Stored as a ROW COUNT and not as a
   // height on purpose: rows change height (a WORKING row opens its in-flight bar) and the roster
   // changes depth, so "show me 3 whole agents" survives both, where a stored px never would.
-  const RKEY = 'starnet.crewrail.rows';
+  const RKEY = 'eyehold.crewrail.rows';
   let wantRows = null;                                     // null = measure it; 0 = dragged shut
   try { const s = parseInt(localStorage.getItem(RKEY), 10); if (s >= 0) wantRows = s; } catch (_) {}
 
@@ -302,7 +302,7 @@
      the rail is NOT. The rail is a fixed-content column — a Commander widens it to read long
      session titles, not to hide the station — so it stops at WMAX, and never at a width that
      would leave the stage thinner than STAGE_MIN. */
-  const WKEY = 'starnet.crewrail.w';
+  const WKEY = 'eyehold.crewrail.w';
   const seam = document.getElementById('crew-resizer');
   const game = document.getElementById('screen-game');
   if (!seam || !game) return;

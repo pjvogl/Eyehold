@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "starnet.eval.gate-receipt.v1",
+  "schemaVersion": "eyehold.eval.gate-receipt.v1",
   "kind": "credential-free-eval-gate",
   "generatedAt": "2026-09-10T03:28:22.882Z",
   "git": {
@@ -60,7 +60,7 @@
   "grader": {
     "file": "scripts/eval/independent-grader.mjs",
     "sha256": "14123207502edb3d7ca83f4e8397c6af47e635808549bd59c31ab5dda79a76a1",
-    "gradeSchema": "starnet.eval.independent-grade.v1"
+    "gradeSchema": "eyehold.eval.independent-grade.v1"
   },
   "steps": [
     {
@@ -90,7 +90,7 @@
       },
       "summaryLines": [
         "[agent-eval] dimensions toolSelection=100 planning=100 completion=100 stopping=100 latency=100 cost=100 recovery=100",
-        "[agent-eval] benchmark=starnet-0.9.0-agent-quality-v1 suite=3ac1e7e65c9a baseline=23e64d37f87e"
+        "[agent-eval] benchmark=eyehold-0.9.0-agent-quality-v1 suite=3ac1e7e65c9a baseline=23e64d37f87e"
       ]
     },
     {

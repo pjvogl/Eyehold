@@ -1,12 +1,12 @@
 {
-  "schema": "starnet.packaged-lifecycle-receipt.v1",
+  "schema": "eyehold.packaged-lifecycle-receipt.v1",
   "generatedAt": "2026-09-11T06:27:20.670Z",
   "verdict": "PASS",
   "failedCases": [],
   "durationMs": 31353,
   "meta": {
-    "exe": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\skynet-desktop.exe",
-    "installDir": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet",
+    "exe": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\skynet-desktop.exe",
+    "installDir": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold",
     "appDataDir": "C:\\Users\\runneradmin\\AppData\\Roaming\\ai.skynet.harness",
     "tag": "v0.11.1",
     "runId": "34569801784",
@@ -41,14 +41,14 @@
           "shell": [
             {
               "pid": 7132,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\skynet-desktop.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\skynet-desktop.exe",
               "ppid": 728
             }
           ],
           "sidecar": [
             {
               "pid": 6804,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\node.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\node.exe",
               "ppid": 7132
             }
           ],
@@ -57,7 +57,7 @@
               "hwnd": 197144,
               "pid": 7132,
               "visible": true,
-              "title": "StarNet"
+              "title": "Eyehold"
             }
           ],
           "health": true,
@@ -87,14 +87,14 @@
           "shell": [
             {
               "pid": 6192,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\skynet-desktop.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\skynet-desktop.exe",
               "ppid": 728
             }
           ],
           "sidecar": [
             {
               "pid": 8968,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\node.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\node.exe",
               "ppid": 6192
             }
           ],
@@ -106,14 +106,14 @@
           "shell": [
             {
               "pid": 6192,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\skynet-desktop.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\skynet-desktop.exe",
               "ppid": 728
             }
           ],
           "sidecar": [
             {
               "pid": 8968,
-              "path": "C:\\Users\\runneradmin\\AppData\\Local\\StarNet\\node.exe",
+              "path": "C:\\Users\\runneradmin\\AppData\\Local\\Eyehold\\node.exe",
               "ppid": 6192
             }
           ],
@@ -122,7 +122,7 @@
               "hwnd": 524634,
               "pid": 6192,
               "visible": true,
-              "title": "StarNet"
+              "title": "Eyehold"
             }
           ],
           "health": null,

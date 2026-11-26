@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * release-preflight.mjs — ONE read-only, idempotent checklist for a StarNet release cut.
+ * release-preflight.mjs — ONE read-only, idempotent checklist for a Eyehold release cut.
  *
  *   npm run release:preflight -- --version 0.10.8
  *   npm run release:preflight -- --next patch|minor|major
@@ -253,7 +253,7 @@ export function runPreflight(ctx, io) {
       ? 'run `npm run test:fast 2>&1 | tee gate-fast.log` then `node scripts/release-ritual.mjs … --gates-proven-by gate-fast.log` — the ritual verifies the log\'s LAST LINE is the green summary and writes the receipt'
       : 'informational pre-bump: the BINDING gate runs AFTER the bump, BEFORE the tag (MISTAKES.md "Gate order" — v0.2.0/v0.2.1 were burned by skipping it)'));
     if (found.http) rows.push(row('gate-http', 'test:http green at HEAD', 'PASS', found.http.steps + ' step(s) green · ' + (found.http.at || '')));
-    else rows.push(row('gate-http', 'test:http green at HEAD', 'WARN', 'not proven at HEAD', 'required when sidecar/ship/route code changed since the last cut (starnet-backend-law): `npm run test:http 2>&1 | tee gate-http.log` → --gates-proven-by gate-http.log'));
+    else rows.push(row('gate-http', 'test:http green at HEAD', 'WARN', 'not proven at HEAD', 'required when sidecar/ship/route code changed since the last cut (eyehold-backend-law): `npm run test:http 2>&1 | tee gate-http.log` → --gates-proven-by gate-http.log'));
   }
 
   // ── T0 / G1 / soak receipts (post-draft gates — pre-tag they are OWED, never silently green) ──
@@ -325,14 +325,14 @@ export function runPreflight(ctx, io) {
   {
     const kf = ctx.keyFile;
     if (io.exists(kf)) rows.push(row('updater-key', 'updater signing key present', 'PASS', 'file exists (contents never read or printed)'));
-    else rows.push(row('updater-key', 'updater signing key present', 'FAIL', 'missing: ' + kf, 'restore ~/.tauri/starnet-updater.key from an OFFLINE backup (runbook §4). Without it no installed StarNet can ever update again. The train signs on CI with the TAURI_SIGNING_PRIVATE_KEY secret — local presence is your proof you still hold it'));
+    else rows.push(row('updater-key', 'updater signing key present', 'FAIL', 'missing: ' + kf, 'restore ~/.tauri/eyehold-updater.key from an OFFLINE backup (runbook §4). Without it no installed Eyehold can ever update again. The train signs on CI with the TAURI_SIGNING_PRIVATE_KEY secret — local presence is your proof you still hold it'));
     rows.push(row('updater-key-backup', 'updater key backed up offline (≥2 copies)', 'SKIP', 'unverifiable by machine — human attestation', 'runbook §4.1: confirm two offline copies exist before you push the tag'));
   }
 
   // ── release notes ──
   {
     const notes = io.readText('RELEASE_NOTES.md');
-    const header = notes == null ? null : (/^#\s*StarNet\s+v?(\S+)/m.exec(stripBom(notes)) || [])[1];
+    const header = notes == null ? null : (/^#\s*Eyehold\s+v?(\S+)/m.exec(stripBom(notes)) || [])[1];
     const todo = notes != null && /TODO: summarize/.test(notes);
     if (notes == null) rows.push(row('notes', 'RELEASE_NOTES.md for ' + (target ? 'v' + target : 'target'), 'FAIL', 'RELEASE_NOTES.md missing', 'release-bump scaffolds it; write the real user-facing notes'));
     else if (target && header === target && !todo) rows.push(row('notes', 'RELEASE_NOTES.md for v' + target, 'PASS', 'header matches, no TODO scaffold'));
@@ -403,11 +403,11 @@ export function parseArgs(argv) {
 const INVOKED_DIRECTLY = (() => { try { return process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href; } catch { return false; } })();
 
 if (INVOKED_DIRECTLY) {
-  const ROOT = process.env.STARNET_PREFLIGHT_ROOT ? resolve(process.env.STARNET_PREFLIGHT_ROOT) : resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  const ROOT = process.env.EYEHOLD_PREFLIGHT_ROOT ? resolve(process.env.EYEHOLD_PREFLIGHT_ROOT) : resolve(dirname(fileURLToPath(import.meta.url)), '..');
   const a = parseArgs(process.argv.slice(2));
   const ctx = {
     version: a.version, next: a.next, phase: a.phase, allowLane: a.allowLane,
-    keyFile: process.env.STARNET_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'starnet-updater.key')
+    keyFile: process.env.EYEHOLD_UPDATER_KEY_FILE || join(homedir(), '.tauri', 'eyehold-updater.key')
   };
   let result;
   try { result = runPreflight(ctx, makeIo(ROOT)); }

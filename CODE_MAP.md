@@ -1,6 +1,6 @@
 # CODE_MAP — what lives where (rebuilt 2026-07-06)
 
-Real structure of the StarNet harness, grounded against trunk. Numbers are approximate and
+Real structure of the Eyehold harness, grounded against trunk. Numbers are approximate and
 drift — trust `wc -l` over this file. Start at [docs/BRAIN.md](docs/BRAIN.md) if you're new.
 
 > The previous CODE_MAP.md was a June-era single-agent→multi-agent refactor plan for
@@ -62,7 +62,7 @@ catalog). Never rename/remove an event or field.
 ## src-tauri/ — desktop shell
 
 Tauri 2; version in `tauri.conf.json` + `Cargo.toml` (0.2.2). NSIS + dmg; embedded node
-binary; platform keyring; updater → GitHub Releases `androoAGI/starnet-releases`
+binary; platform keyring; updater → GitHub Releases `Eyehold/eyehold-releases`
 `latest.json`. Workspace data root: `%APPDATA%\Roaming\ai.skynet.harness\workspaces`.
 
 ## test/ (~409 files) + gates
@@ -74,7 +74,7 @@ binary; platform keyring; updater → GitHub Releases `androoAGI/starnet-release
   around the v7 engine files `frontend/js/map.js` + `frontend/js/data.js`, which no longer exist —
   so `npm test` had been failing at step 1. The current engine is covered by `worldmodel.test.js`,
   `crew-containment.test.js` and `station-authority.test.js` in the fast gate.)
-- `npm run sync:website` — regenerate the starnetos.com demo embed (`website/app`) from `frontend/`;
+- `npm run sync:website` — regenerate the eyehold.com demo embed (`website/app`) from `frontend/`;
   gated by `test/website-app-sync.test.js`, so never hand-edit `website/app`.
 - QA station: `npm run qa:guardian` (pinned-worktree trunk gate: test:fast→shoot→golden→audit),
   `qa:beginner`, `qa:janitor`, ledger at `scripts/qa/ledger.mjs`; dashboards in `qa/`.

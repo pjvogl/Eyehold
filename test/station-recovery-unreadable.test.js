@@ -19,7 +19,7 @@ const Save = require('../frontend/app/save.js');
 const { writeFileDurable } = require('../sidecar/durable-write.js');
 const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-recovery-unreadable-'));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-recovery-unreadable-'));
 const source = path.join(tmp, 'profile', 'workspaces');
 function write(rel, value) {
   const file = path.join(source, ...rel.split('/'));
@@ -32,7 +32,7 @@ const at = rel => norm(path.join(source, ...rel.split('/')));
 // Every required category present, plus a shadow-Git checkpoint repo and a live browser profile.
 write('agent.roster.json', { version: 1, agents: [{ agentId: 'auditor', name: 'AUDITOR' }] });
 write('agent.roster.json.bak', { version: 1, agents: [{ agentId: 'auditor', name: 'AUDITOR-LKG' }] });   // savestore's last-known-good generation
-write('auditor.save.json', { version: 1, agentId: 'auditor', updatedAt: 1, doc: { schema: 'starnet.save', version: Save.CURRENT, updatedAt: 1, agent: { id: 'auditor' } } });
+write('auditor.save.json', { version: 1, agentId: 'auditor', updatedAt: 1, doc: { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 1, agent: { id: 'auditor' } } });
 write('transcript.jsonl', JSON.stringify({ role: 'user', content: 'keep me', ts: 1 }) + '\n');
 write('auditor.notebook.json', { entries: [{ id: 'm1', body: 'remember' }] });
 write('cron.jobs.json', { version: 1, jobs: [] });
@@ -101,7 +101,7 @@ try {
     A.eq(paths.some(p => p === GHOST || p.indexOf('locked-pack') >= 0 || p.indexOf('/denied/') >= 0), false, 'no unreadable entry rides as a fake payload');
     A.eq(bundle.report.complete, true, 'an unreadable checkpoint object does not fake a missing semantic category');
     A.eq(R.validate(bundle).ok, true, 'the bundle with skipped entries still validates (every payload checksum-bound)');
-    const file = path.join(tmp, 'snap', 'unreadable.starnet-backup.json');
+    const file = path.join(tmp, 'snap', 'unreadable.eyehold-backup.json');
     R.writeBundleAtomic({ bundle, file });
     A.eq(R.readBundle(file).manifestSha256, bundle.manifestSha256, 'the bundle commits and reads back');
 

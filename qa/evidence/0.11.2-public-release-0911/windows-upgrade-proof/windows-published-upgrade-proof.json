@@ -1,9 +1,9 @@
 {
-  "schema": "starnet.windows-published-upgrade-proof.v1",
+  "schema": "eyehold.windows-published-upgrade-proof.v1",
   "generatedAt": "2026-09-11T19:53:39.4696154Z",
   "candidate": {
     "version": "0.11.2",
-    "installer": "StarNet_0.11.2_x64-setup.exe",
+    "installer": "Eyehold_0.11.2_x64-setup.exe",
     "sha256": "d3ecca65a517d0270ee9e20bd085cee56b02e3f15fe6470cf98c221ae1684f16"
   },
   "scenarios": [

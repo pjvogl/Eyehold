@@ -39,11 +39,11 @@ A.eq(pkg.scripts['website:stage'], 'node scripts/stage-website-deploy.mjs', 'sta
 const home = fs.readFileSync(path.join(root, 'website', 'index.html'), 'utf8');
 const pricingTags = home.match(/<[^>]+data-pricing-link[^>]*>/g) || [];
 A.ok(pricingTags.length > 0 && pricingTags.every(tag => /\shidden(?:\s|>)/.test(tag)), 'held-back pricing is hidden in raw HTML before JavaScript runs');
-A.ok(/rel="canonical" href="https:\/\/starnetos\.com\/"/.test(home), 'homepage publishes its canonical URL');
+A.ok(/rel="canonical" href="https:\/\/eyehold\.com\/"/.test(home), 'homepage publishes its canonical URL');
 A.ok(/og-card\.png\?v=\d+/.test(home), 'social card URL is cache-busted for share crawlers');
 A.ok(!/v0\.8\.5/.test(home), 'raw homepage no longer falls back to the obsolete 0.8.5 train');
 A.ok(/current source build/.test(home) && /Current stable version/.test(home), 'preview and stable release train are labeled separately');
-A.ok(/github\.com\/androoAGI\/starnet\/issues/.test(home), 'community support points at a real public destination');
+A.ok(/github\.com\/Eyehold\/eyehold\/issues/.test(home), 'community support points at a real public destination');
 A.eq(/data-social|discord\.gg|x\.com\/yourhandle/.test(home), false, 'homepage carries no dormant or invented social links');
 const site = fs.readFileSync(path.join(root, 'website', 'site.js'), 'utf8');
 A.ok(/el\.hidden = !PRICING_LIVE/.test(site), 'the release flag explicitly reveals or hides every pricing fragment');

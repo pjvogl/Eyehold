@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-const candidate = String(process.env.STARNET_PRODUCT_PERFECT_CANDIDATE_SHA || '').trim().toLowerCase();
+const candidate = String(process.env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA || '').trim().toLowerCase();
 
 function run(label, args, timeoutMs) {
   const result = spawnSync(process.execPath, args, {

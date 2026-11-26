@@ -239,7 +239,7 @@ export async function runOfflineParity({ tasksFile = DEFAULT_TASKS, fixturesFile
   const fixtureByTask = new Map(fixtures.map(fixture => [fixture.taskId, fixture]));
   const taskById = new Map(tasks.map(task => [task.id, task]));
   const server = await startFixtureMcpServer();
-  const workRoot = mkdtempSync(join(tmpdir(), 'starnet-parity-offline-'));
+  const workRoot = mkdtempSync(join(tmpdir(), 'eyehold-parity-offline-'));
   const rows = [];
   const probeResults = [];
   try {
@@ -279,7 +279,7 @@ export function makePlumbingReceipt(result, { tasksFile = DEFAULT_TASKS, fixture
   let commit = '';
   try { commit = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: resolve(HERE, '..', '..', '..'), encoding: 'utf8' }).trim(); } catch (_) {}
   return {
-    schemaVersion: 'starnet.eval.parity-offline-receipt.v1',
+    schemaVersion: 'eyehold.eval.parity-offline-receipt.v1',
     kind: 'parity-offline-plumbing',
     generatedAt: new Date().toISOString(),
     commit,
@@ -293,7 +293,7 @@ export function makePlumbingReceipt(result, { tasksFile = DEFAULT_TASKS, fixture
     evidence: {
       tasks: { path: resolve(tasksFile), sha256: sha(tasksFile) },
       fixtures: { path: resolve(fixturesFile), sha256: sha(fixturesFile) },
-      independentGrader: { path: GRADER_FILE, sha256: sha(GRADER_FILE), gradeSchema: 'starnet.eval.independent-grade.v1' }
+      independentGrader: { path: GRADER_FILE, sha256: sha(GRADER_FILE), gradeSchema: 'eyehold.eval.independent-grade.v1' }
     },
     scenarios: { scripted: result.coverage.scripted, total: result.coverage.total,
       graded: result.rows.length, failed: result.scenarioFailures },

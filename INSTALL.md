@@ -1,17 +1,17 @@
-# Installing StarNet (Desktop)
+# Installing Eyehold (Desktop)
 
-StarNet's public release train supports **Windows and macOS**:
+Eyehold's public release train supports **Windows and macOS**:
 
 | Platform | Download this asset |
 | --- | --- |
-| **Windows** (10/11, 64-bit) | `StarNet_<version>_x64-setup.exe` |
-| **macOS — Apple Silicon** (M1 or later) | `StarNet_<version>_aarch64.dmg` |
-| **macOS — Intel** | `StarNet_<version>_x64.dmg` |
+| **Windows** (10/11, 64-bit) | `Eyehold_<version>_x64-setup.exe` |
+| **macOS — Apple Silicon** (M1 or later) | `Eyehold_<version>_aarch64.dmg` |
+| **macOS — Intel** | `Eyehold_<version>_x64.dmg` |
 
 Linux packages may be produced by the manual/internal desktop-build workflow, but Linux is not
 part of the public release train and is not a supported release target.
 
-Download from the [StarNet releases page](https://github.com/androoAGI/starnet-releases/releases/latest).
+Download from the [Eyehold releases page](https://github.com/Eyehold/eyehold-releases/releases/latest).
 Use only an asset attached to the release you intend to install.
 
 ## What the public release train guarantees
@@ -37,10 +37,10 @@ release trust from a successful local build.
 
 ## Windows
 
-1. Run `StarNet_<version>_x64-setup.exe`.
+1. Run `Eyehold_<version>_x64-setup.exe`.
 2. Confirm Windows identifies the publisher expected by the release notes before approving the
    installer.
-3. Complete the installer, then launch StarNet from the Start menu.
+3. Complete the installer, then launch Eyehold from the Start menu.
 
 An Authenticode signature does not guarantee that SmartScreen is silent. A new certificate can
 still have limited reputation. If SmartScreen shows **Windows protected your PC**, inspect the
@@ -56,8 +56,8 @@ To uninstall, use **Settings → Apps → Installed apps**.
 
 1. Choose `aarch64.dmg` for Apple Silicon or `x64.dmg` for an Intel Mac. Check **Apple menu →
    About This Mac** if you are unsure.
-2. Open the DMG and drag **StarNet** into **Applications**.
-3. Launch StarNet from Applications.
+2. Open the DMG and drag **Eyehold** into **Applications**.
+3. Launch Eyehold from Applications.
 
 The public release train requires a Developer ID signature and a stapled Apple notarization
 ticket. A public DMG should therefore pass Gatekeeper normally. Do **not** clear quarantine with
@@ -65,13 +65,13 @@ ticket. A public DMG should therefore pass Gatekeeper normally. Do **not** clear
 damaged, from an unidentified developer, or cannot be checked for malicious software, stop and
 report the release tag, asset name, Mac architecture, and macOS version.
 
-To uninstall, quit StarNet and drag it from **Applications** to the Trash.
+To uninstall, quit Eyehold and drag it from **Applications** to the Trash.
 
 ## Run free with a local model
 
-StarNet does not require an API key or a StarNet account. Install [Ollama](https://ollama.com),
+Eyehold does not require an API key or a Eyehold account. Install [Ollama](https://ollama.com),
 pull a model (`ollama pull qwen3:8b`), and choose **OLLAMA** as the provider — on the first-run
-brain screen, or later under **SETTINGS → PROVIDERS**. StarNet reaches Ollama at `127.0.0.1:11434`
+brain screen, or later under **SETTINGS → PROVIDERS**. Eyehold reaches Ollama at `127.0.0.1:11434`
 and shows it as ready only after it has listed your local models. Choose a model that supports
 tools (`ollama show <model>` lists them): agents act through tool calls. Local models are smaller than
 cloud models: expect slower, rougher results on long tasks, and a task needs a large context window —
@@ -80,15 +80,15 @@ an 8B model takes about 10 GB of graphics memory while it works.
 ## Updates
 
 The public release train produces signed updater artifacts for Windows and both Mac
-architectures. StarNet's Update Center checks the public manifest and verifies a downloaded
+architectures. Eyehold's Update Center checks the public manifest and verifies a downloaded
 update against the updater public key embedded in the app before installation. Updater signing
 is separate from Authenticode, Developer ID signing, and Apple notarization; the public train
 requires all applicable layers.
 
-On Windows, current manual installers detect an older StarNet installation and use the same
+On Windows, current manual installers detect an older Eyehold installation and use the same
 in-place update mode as Update Center. They do not depend on the older installation's
 `uninstall.exe`, and the user's station data remains outside the application directory. If an
-older installer still shows an **Already Installed** page, quit StarNet from its tray icon,
+older installer still shows an **Already Installed** page, quit Eyehold from its tray icon,
 choose **Do not uninstall**, and continue. Do not delete `%APPDATA%\ai.skynet.harness` as an
 update workaround.
 

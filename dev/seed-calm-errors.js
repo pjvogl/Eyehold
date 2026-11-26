@@ -18,8 +18,8 @@ const FIXTURE = path.join(__dirname, 'fixtures', 'seed-workspace');
 const SCRATCH = path.join(__dirname, '.scratch-calm-errors');
 const SIDECAR = path.join(REPO, 'sidecar', 'index.js');
 const PORT = String(process.env.SKYNET_PORT || '8923');
-const DEAD_DOMAIN_URL = 'https://starnet-calm-probe.invalid/page';
-const DEAD_LINK_URL = 'https://example.com/starnet-calm-probe-definitely-404';
+const DEAD_DOMAIN_URL = 'https://eyehold-calm-probe.invalid/page';
+const DEAD_LINK_URL = 'https://example.com/eyehold-calm-probe-definitely-404';
 
 function sse(res, events) {
   res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' });
@@ -94,8 +94,8 @@ function startMock() {
         if (!st.props.some(p => p && p.t === 'comms_dish')) st.props.push({ id: 'p' + (++st._nid), t: 'comms_dish', x: 3, y: 3, w: 2, h: 2 });
       } else {
         w.doc.station = {
-          schema: 'starnet.station', version: 1, _nid: 4,
-          meta: { name: 'STARNET STATION', createdAt: 0, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
+          schema: 'eyehold.station', version: 1, _nid: 4,
+          meta: { name: 'EYEHOLD STATION', createdAt: 0, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
           rooms: { r1: { id: 'r1', kind: 'hab', name: 'HAB-01', rects: [{ x1: 0, y1: 0, x2: 17, y2: 10 }], floorStyle: 'hull', floorMat: null, wallStyle: null, wallMat: null, tier: 0, floorPaint: {} } },
           order: ['r1'],
           props: [

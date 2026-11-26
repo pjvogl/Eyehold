@@ -8,15 +8,15 @@ import {
   findVersionedNsisInstaller,
 } from '../scripts/lib/release-installer.mjs';
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-release-installer-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-release-installer-'));
 try {
   const nsis = join(root, 'src-tauri', 'target', 'release', 'bundle', 'nsis');
   mkdirSync(nsis, { recursive: true });
   mkdirSync(join(root, 'src-tauri'), { recursive: true });
   writeFileSync(join(root, 'src-tauri', 'tauri.conf.json'), JSON.stringify({ version: '0.10.5' }));
 
-  const stale = join(nsis, 'StarNet_0.8.0_x64-setup.exe');
-  const exact = join(nsis, 'StarNet_0.10.5_x64-setup.exe');
+  const stale = join(nsis, 'Eyehold_0.8.0_x64-setup.exe');
+  const exact = join(nsis, 'Eyehold_0.10.5_x64-setup.exe');
   writeFileSync(stale, 'stale');
   writeFileSync(exact, 'exact');
 

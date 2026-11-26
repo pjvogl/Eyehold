@@ -12,7 +12,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), CDP_PORT = 9497;
 const out = '.worldshots/apps-live';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-live-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-live-'));
 const report = { checks: [], facts: {}, exceptions: [], approvals: 0 };
 let chrome, cdp;
 const run = (s) => evalJS(cdp, s);
@@ -65,7 +65,7 @@ try {
   check('the form holds the name and what-it-does', /AI News Brief/.test(filled.name) && /24h/.test(filled.what));
   await run(`document.getElementById('app-create').click(), true`);
   await waitApproving(`!!document.querySelector('.term.plugin-app-win iframe.plugin-frame')`, 20000, 'the app window');
-  check('BUILD IT opens the app window at once (building page) and sends the build to COMMS', await run(`/Build my new StarNet app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
+  check('BUILD IT opens the app window at once (building page) and sends the build to COMMS', await run(`/Build my new Eyehold app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
   check('the build went to the OWN COMMS session of the app (not whatever was open)', await run(`(() => { const w = Workstreams.get(Workstreams.activeId()); return !!w && /^App · AI News Brief/.test(w.title || '') ; })()`));
   check('the APPS dock appeared with the first app', await run(`(() => { const g = document.querySelector('#bottombar .bb-group[data-group="apps"]'); return !!g && g.getClientRects().length > 0 && !!document.querySelector('#bb-apps-items .bb'); })()`));
   await sleep(800);
@@ -95,7 +95,7 @@ try {
   // ---- 3. vibe-code it from the bar ----
   const before = app.app.digest;
   await run(`(()=>{ const i=document.querySelector('.term.plugin-app-win .app-change'); i.value='make each headline a clickable row that opens its source, and add the date at the top'; document.querySelector('.term.plugin-app-win .app-bar').requestSubmit(); return true; })()`);
-  check('CHANGE sends the request to the app\'s own COMMS session', await run(`/Change my StarNet app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
+  check('CHANGE sends the request to the app\'s own COMMS session', await run(`/Change my Eyehold app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
   await waitApproving(`fetch('/api/apps').then(r=>r.json()).then(j=>{ const a=j.apps.find(a=>/^ai-news-brief/.test(a.id)); return !!(a && a.digest !== ${JSON.stringify(before)}); })`, 10 * 60 * 1000, 'the crew to rewrite the page');
   await waitApproving(`!(typeof Chat !== 'undefined' && Chat.isBusy && Chat.isBusy())`, 5 * 60 * 1000, 'the change run to finish');
   await sleep(2500);

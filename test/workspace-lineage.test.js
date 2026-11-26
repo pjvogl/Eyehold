@@ -6,13 +6,13 @@ const os = require('node:os');
 const path = require('node:path');
 const { inspectWorkspaceLineage } = require('../sidecar/workspace-lineage.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-lineage-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-lineage-'));
 const current = path.join(root, 'current', 'workspaces');
 const legacy = path.join(root, 'legacy', 'workspaces');
 const snapshots = path.join(root, 'current', 'update-snapshots');
 fs.mkdirSync(current, { recursive: true });
 try {
-  fs.writeFileSync(path.join(current, '.starnet-workspace-owner.json'), '{}');
+  fs.writeFileSync(path.join(current, '.eyehold-workspace-owner.json'), '{}');
   fs.writeFileSync(path.join(current, '.schema-version.json'), '{}');
   fs.writeFileSync(path.join(current, '.migrated'), '1');
   fs.writeFileSync(path.join(current, '.migration-receipt.json'), JSON.stringify({ version: 1, validated: true, sourceRoots: [], files: [] }));
@@ -52,7 +52,7 @@ try {
 
   fs.rmSync(legacy, { recursive: true, force: true });
   fs.mkdirSync(snapshots, { recursive: true });
-  fs.writeFileSync(path.join(snapshots, 'pre-2.0-1.starnet-backup.json'), '{}');
+  fs.writeFileSync(path.join(snapshots, 'pre-2.0-1.eyehold-backup.json'), '{}');
   v = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [], snapshotsRoot: snapshots, platform: process.platform });
   A.eq(v.evidence[0].kind, 'update-snapshot', 'verified update-snapshot presence blocks genesis');
 
@@ -95,7 +95,7 @@ try {
   fs.mkdirSync(legacy, { recursive: true });
   fs.writeFileSync(path.join(legacy, 'agent.save.json'), '{"version":5}');
   fs.mkdirSync(snapshots, { recursive: true });
-  fs.writeFileSync(path.join(snapshots, 'x.starnet-backup.json'), '{}');
+  fs.writeFileSync(path.join(snapshots, 'x.eyehold-backup.json'), '{}');
   let before = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [legacy], snapshotsRoot: snapshots, platform: process.platform });
   A.eq(before.priorInstallEvidence, true, 'fixture: the gate would fire');
   const fresh = startFresh({ fs, path, workspaceRoot: current, candidateRoots: [legacy], snapshotsRoot: snapshots, platform: process.platform, now: () => Date.UTC(2026, 7, 22, 12, 0, 0) });

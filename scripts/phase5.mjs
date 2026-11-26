@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// phase5.mjs - StarNet the reference harness replacement-readiness loop.
+// phase5.mjs - Eyehold the reference harness replacement-readiness loop.
 
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -11,16 +11,16 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_PHASE5_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_PHASE5_LOOPS || 3) || 3) : 1;
 const WANT_LIVE = argSet.has('--live');
 const REQUIRE_GREEN = argSet.has('--require-green');
 const REQUIRE_READY = argSet.has('--require-ready');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE5_DIR || join(ROOT, '.dogfood', 'phase5-' + STAMP));
-const LATEST = resolve(process.env.STARNET_PHASE5_LATEST_DIR || join(ROOT, '.dogfood', 'phase5-latest'));
+const OUT = resolve(process.env.EYEHOLD_PHASE5_DIR || join(ROOT, '.dogfood', 'phase5-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_PHASE5_LATEST_DIR || join(ROOT, '.dogfood', 'phase5-latest'));
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
-const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.STARNET_PHASE5_STEP_TIMEOUT_MS || 1200000);
+const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.EYEHOLD_PHASE5_STEP_TIMEOUT_MS || 1200000);
 
 const SURFACE_ALLOWED = new Set(['ref-proven', 'contract-green', 'accepted-deferral', 'blocked']);
 const DESKTOP_ALLOWED = new Set(['green', 'toolchain-blocked', 'accepted-deferral', 'blocked']);
@@ -169,7 +169,7 @@ async function commandStep(step, loop) {
 }
 
 function checkWorkloadBaseline(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_PHASE5_REF_WORKLOADS.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_PHASE5_REF_WORKLOADS.md');
   const text = readText(file).toLowerCase();
   const required = ['ready-to-replace', 'contract-green is not ref-proven', 'live model', 'browser', 'computer-use', 'desktop'];
   const missing = required.filter(term => text.indexOf(term) < 0);
@@ -328,7 +328,7 @@ function liveKeyBlockedStep(loop) {
     status: 'blocked',
     required: true,
     class: 'live-provider',
-    reason: 'No live key found. Set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY.'
+    reason: 'No live key found. Set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY.'
   };
 }
 
@@ -389,7 +389,7 @@ async function runOnce(loop) {
     const workload = await commandStep({
       id: '5.2-live-ui-workload',
       phase: '5.2',
-      title: 'Live StarNet UI ref-style workload',
+      title: 'Live Eyehold UI ref-style workload',
       cmd: npmCmd,
       args: ['run', 'phase5:workload'],
       env: liveProviderEnv(),
@@ -495,7 +495,7 @@ function writeSummary(allResults, loopsRun) {
   };
   writeFileSync(join(OUT, 'phase5-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Phase 5 Replacement Evidence\n\n';
+  let md = '# Eyehold Phase 5 Replacement Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + verdict + '`\n';
   md += '- Replacement ready: `' + replacementReady + '`\n';
@@ -516,7 +516,7 @@ function writeSummary(allResults, loopsRun) {
   md += '## Next Action\n\n';
   const next = latest.find(r => r.status === 'fail' || r.status === 'blocked');
   if (next) md += 'Work the first non-pass item: `' + next.id + '` - ' + (next.reason || next.title) + '\n';
-  else if (replacementReady) md += 'P5 is ready-to-replace green. StarNet can replace the reference harness as the main harness.\n';
+  else if (replacementReady) md += 'P5 is ready-to-replace green. Eyehold can replace the reference harness as the main harness.\n';
   else md += 'P5 evidence is green, but replacement readiness is still limited by the accepted gaps above.\n';
   writeFileSync(join(OUT, 'summary.md'), md);
   copyLatest();

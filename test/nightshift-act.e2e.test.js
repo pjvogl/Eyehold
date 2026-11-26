@@ -80,10 +80,10 @@ function startMockOpenRouter() {
             text([
               'JOB: Release checklist tool',
               'KIND: advance-goal',
-              'GROUNDS: ship the StarNet beta to 100 users',
+              'GROUNDS: ship the Eyehold beta to 100 users',
               'CONFIDENCE: high',
               'SPEC: a small script that helps ship the beta'
-            ].concat(keptBefore ? ['', 'JOB: Beta signup tracker', 'KIND: advance-goal', 'GROUNDS: ship the StarNet beta to 100 users', 'CONFIDENCE: high', 'SPEC: a tiny tracker of beta signups'] : []).join('\n'));
+            ].concat(keptBefore ? ['', 'JOB: Beta signup tracker', 'KIND: advance-goal', 'GROUNDS: ship the Eyehold beta to 100 users', 'CONFIDENCE: high', 'SPEC: a tiny tracker of beta signups'] : []).join('\n'));
           } else {
             text('ok');
           }
@@ -127,7 +127,7 @@ function hotBeliefs(now) {
   return {
     known: ['goals', 'pain', 'stack', 'ambition'],
     beliefs: {
-      goals: b('ship the StarNet beta to 100 users'),
+      goals: b('ship the Eyehold beta to 100 users'),
       pain: b('manual release notes eat my fridays'),
       stack: b('node and a pixel-art canvas'),
       ambition: b('a living agent station people watch')
@@ -166,7 +166,7 @@ async function recommendations(B, headers) {
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const now = Date.now();
     const beliefs = hotBeliefs(now);
 

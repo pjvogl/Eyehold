@@ -2,7 +2,7 @@
 
 The first-run setup now fills the screen and uses the shared glass material throughout name entry, personality selection, working style, provider connection, model selection and reasoning controls. Character search is removed; the full character gallery remains available. Appearance and entered connection details survive back navigation.
 
-The primary account action uses the real StarNet wordmark, a prominent START WITH label and the concise subtitle “Subscribe and start. No API keys.” Its light trail runs only around the border and respects reduced motion. Clicking it opens the account connection window directly; automatic provider selection does not. Alternative providers use bundled local logos.
+The primary account action uses the real Eyehold wordmark, a prominent START WITH label and the concise subtitle “Subscribe and start. No API keys.” Its light trail runs only around the border and respects reduced motion. Clicking it opens the account connection window directly; automatic provider selection does not. Alternative providers use bundled local logos.
 
 The six canonical personalities from the personality upgrade are integrated: Composed, Warm, Blunt, Dry, Unhinged and Upbeat. Equal-width controls become a three-column grid at narrower sizes. Unhinged retains the two-press confirmation, with an accessible explanation below the selector rather than a label that stretches the row. Detailed tuning stays in the Overseer’s settings. Mobile sections size to their content so the character area cannot overlap the identity fields.
 

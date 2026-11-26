@@ -20,7 +20,7 @@ global.fetch = (url, init) => {
 };
 
 const CloudSave = require('../frontend/app/cloudsave.js');
-const doc = (updatedAt) => ({ schema: 'starnet.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
+const doc = (updatedAt) => ({ schema: 'eyehold.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
 
 (async () => {
   for (const body of [null, {}, { error: 'unavailable' }, { save: { broken: true } }, { save: null, ok: false }]) {

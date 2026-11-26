@@ -35,7 +35,7 @@
   const { note: failNote } = (typeof require === 'function') ? require('../failopen.js') : { note: function (tag, e) { console.warn('[failopen] ' + tag + ':', (e && e.message) || e); } };
 
   const JSONRPC = '2.0';
-  const LOCAL_ERROR = Symbol.for('starnet.mcp.localTransportError');   // set by transport.http/stdio failTo
+  const LOCAL_ERROR = Symbol.for('eyehold.mcp.localTransportError');   // set by transport.http/stdio failTo
   const DEFAULT_PROTOCOL = '2025-06-18';   // MCP revision; the server's echoed version wins after initialize
   const MAX_PAGES = 100;                   // a misbehaving server that always returns a cursor can't spin forever
 
@@ -58,7 +58,7 @@
     const transport = deps.transport;
     if (!transport || typeof transport.send !== 'function') throw new Error('makeMcpClient: transport.send is required');
     const timeoutMs = deps.timeoutMs || 0;
-    const clientInfo = deps.clientInfo || { name: 'starnet-harness', version: '0' };
+    const clientInfo = deps.clientInfo || { name: 'eyehold-harness', version: '0' };
     const capabilities = deps.capabilities || {};
     const onError = typeof deps.onError === 'function' ? deps.onError : function () {};
     let protocolVersion = deps.protocolVersion || DEFAULT_PROTOCOL;
@@ -129,7 +129,7 @@
           const onAbort = () => {
             if (!pending.has(id)) return;
             settle(id, p => p.reject(Object.assign(new Error('mcp request cancelled: ' + method), { cancelled: true, sent: true, effectUnknown: true })));
-            notify('notifications/cancelled', { requestId: id, reason: 'cancelled by the StarNet host (run stopped)' })
+            notify('notifications/cancelled', { requestId: id, reason: 'cancelled by the Eyehold host (run stopped)' })
               .catch(err => { failNote('mcp.client.cancelNotify', err); onError(err); });
           };
           signal.addEventListener('abort', onAbort, { once: true });
@@ -192,7 +192,7 @@
     }
 
     /* RESOURCES AND PROMPTS (2026-07-27). This client spoke `tools/list` and `tools/call` and nothing else,
-       which meant StarNet saw only a THIRD of what a connected MCP server actually offers. A server whose
+       which meant Eyehold saw only a THIRD of what a connected MCP server actually offers. A server whose
        whole point is exposing documents (resources) or reusable prompt templates (prompts) connected fine,
        reported zero tools, and looked broken. These are not extras — they are two of the protocol's three
        primitives, and the reference harness has spoken all three for a long time.

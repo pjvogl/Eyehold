@@ -1,4 +1,4 @@
-/* STARNET — pitchstore.js : the browser wiring around the pure First Pitch engine (pitch.js).
+/* EYEHOLD — pitchstore.js : the browser wiring around the pure First Pitch engine (pitch.js).
 
    The wiring half of "the agent that points you." It listens (read-only) for the agent finishing its first
    real task, then — once the station knows enough about the Commander — has the agent REASON OUT one tailored,
@@ -20,7 +20,7 @@
    the Dialogue beat, and routing "build it" into a real run with no dead gap. node-exportable for its test. */
 'use strict';
 const PitchStore = (() => {
-  const KEY = 'starnet.pitch.v1';
+  const KEY = 'eyehold.pitch.v1';
   let state = null;            // { v:1, pitched:bool } — the fire-once flag (self-persisted)
   let deps = {};               // accessors/actions injected by app.js (kept app-private otherwise)
   let firing = false;          // re-entrancy guard while a pitch is mid-flight (a new run.end can't double-fire)

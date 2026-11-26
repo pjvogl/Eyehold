@@ -31,7 +31,7 @@ On Windows run `node test/win32desktop.test.js` with the regression test and the
 
 ## Evidence
 
-Before the rename, the new regression exits 1 with `Cannot find path '...\\starnet-mouse-dispatch-...\\306' because it does not exist.` PowerShell's default `move` alias resolves to `Move-Item` ahead of the driver's `function Move`. After the helper and its call sites are renamed to `Set-StarNetCursorPosition`, the same real-PowerShell regression passes: `win32desktop.test: OK (19 assertions)`. Existing computer and desktop suites pass 46 and 38 assertions respectively.
+Before the rename, the new regression exits 1 with `Cannot find path '...\\eyehold-mouse-dispatch-...\\306' because it does not exist.` PowerShell's default `move` alias resolves to `Move-Item` ahead of the driver's `function Move`. After the helper and its call sites are renamed to `Set-EyeholdCursorPosition`, the same real-PowerShell regression passes: `win32desktop.test: OK (19 assertions)`. Existing computer and desktop suites pass 46 and 38 assertions respectively.
 
 ## Verdict
 

@@ -1,17 +1,17 @@
 {
-  "name": "starnet-harness",
+  "name": "eyehold-harness",
   "version": "0.13.2",
   "private": true,
   "description": "A local-first, gamified desktop harness for building and running real AI-agent teams.",
   "license": "MIT",
-  "author": "Andrew Sims",
+  "author": "Eyehold",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/androoAGI/starnet.git"
+    "url": "git+https://github.com/pjvogl/Eyehold.git"
   },
-  "homepage": "https://github.com/androoAGI/starnet#readme",
+  "homepage": "https://github.com/pjvogl/Eyehold#readme",
   "bugs": {
-    "url": "https://github.com/androoAGI/starnet/issues"
+    "url": "https://github.com/pjvogl/Eyehold/issues"
   },
   "keywords": [
     "ai-agents",
@@ -23,7 +23,7 @@
     "node": ">=18"
   },
   "bin": {
-    "starnet": "bin/starnet.js"
+    "eyehold": "bin/eyehold.js"
   },
   "scripts": {
     "validate:raw": "node test/validate_map.js",

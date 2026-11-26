@@ -1,4 +1,4 @@
-/* STARNET — util.js : helpers + event bus */
+/* EYEHOLD — util.js : helpers + event bus */
 'use strict';
 
 const U = {

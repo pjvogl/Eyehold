@@ -3,7 +3,7 @@
    the app actually serves and decodes, and that the skin is still a live, selectable body.
  *
  * Why this shape and not a screenshot: the world canvas is rAF-driven and screenshots of it time
- * out (starnet-verify, "the canvas gotcha"). So the check is a DOM/state round-trip — the page
+ * out (eyehold-verify, "the canvas gotcha"). So the check is a DOM/state round-trip — the page
  * fetches its OWN manifest, decodes its OWN served PNGs through the same origin the floor engine
  * loads them from, and reports pixel measurements back. A stale mirror, an unsynced website copy
  * or a cached asset would all show up here as a failure; editing files on disk would not prove it.

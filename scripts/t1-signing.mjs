@@ -12,11 +12,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const argSet = new Set(rawArgs);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T1_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T1_LOOPS || 3) || 3) : 1;
 const REQUIRE_PUBLIC = argSet.has('--public') || argSet.has('--require-public');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T1_SIGNING_DIR || join(ROOT, '.dogfood', 't1-signing-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T1_SIGNING_LATEST_DIR || join(ROOT, '.dogfood', 't1-signing-latest'));
+const OUT = resolve(process.env.EYEHOLD_T1_SIGNING_DIR || join(ROOT, '.dogfood', 't1-signing-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T1_SIGNING_LATEST_DIR || join(ROOT, '.dogfood', 't1-signing-latest'));
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function nowIso() { return new Date().toISOString(); }
@@ -64,8 +64,8 @@ function tauriVersion() {
 }
 function artifacts() {
   const release = join(ROOT, 'src-tauri', 'target', 'release');
-  const app = process.env.STARNET_T1_APP_EXE || join(release, 'skynet-desktop.exe');
-  const installer = process.env.STARNET_T1_INSTALLER_EXE || findCurrentNsisInstaller(ROOT);
+  const app = process.env.EYEHOLD_T1_APP_EXE || join(release, 'skynet-desktop.exe');
+  const installer = process.env.EYEHOLD_T1_INSTALLER_EXE || findCurrentNsisInstaller(ROOT);
   return {
     app: app ? resolve(app) : '',
     installer: installer ? resolve(installer) : '',
@@ -76,7 +76,7 @@ function encodedPowerShell(command) {
   return Buffer.from(command, 'utf16le').toString('base64');
 }
 async function authenticode(paths) {
-  if (process.env.STARNET_T1_AUTHENTICODE_MOCK) return JSON.parse(process.env.STARNET_T1_AUTHENTICODE_MOCK);
+  if (process.env.EYEHOLD_T1_AUTHENTICODE_MOCK) return JSON.parse(process.env.EYEHOLD_T1_AUTHENTICODE_MOCK);
   if (process.platform !== 'win32') {
     return paths.map(p => ({ path: p, status: 'UnsupportedPlatform', statusMessage: 'Authenticode check runs on Windows.', signerSubject: '', signerThumbprint: '' }));
   }
@@ -159,7 +159,7 @@ function updaterStatus(installer) {
   };
 }
 function procurementStatus() {
-  const raw = String(process.env.STARNET_AUTHENTICODE_CERT_STATUS || '').trim().toLowerCase();
+  const raw = String(process.env.EYEHOLD_AUTHENTICODE_CERT_STATUS || '').trim().toLowerCase();
   const allowed = new Set(['started', 'ordered', 'validation', 'issued', 'available']);
   return allowed.has(raw) ? raw : 'not-started';
 }
@@ -180,7 +180,7 @@ function acceptedOrBlocked(publicStatus, reason) {
     : { status: 'accepted-deferral', reason: reason + ' Accepted for invited beta only; public release remains blocked.' };
 }
 function checkPlan(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_T1_SIGNING_LOOP.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_T1_SIGNING_LOOP.md');
   const text = readText(file).toLowerCase();
   const required = ['authenticode', 'invited beta', 'public release', 'ov', 'ev', 'smartscreen', 'tauri_signing_private_key'];
   const missing = required.filter(term => text.indexOf(term) < 0);
@@ -222,7 +222,7 @@ async function runOnce(loop) {
     results.push(step('t1.4-cert-procurement', 'T1.4', 'Authenticode certificate procurement is tracked', 'pass', sig.ready ? 'Signing certificate is already evidenced by valid signatures.' : 'Certificate procurement status: ' + cert + '.', { loop, procurement: { status: cert } }));
   } else {
     const s = acceptedOrBlocked(REQUIRE_PUBLIC, 'Authenticode certificate procurement has not been marked started.');
-    results.push(step('t1.4-cert-procurement', 'T1.4', 'Authenticode certificate procurement is tracked', s.status, s.reason, { loop, procurement: { status: cert, expectedEnv: 'STARNET_AUTHENTICODE_CERT_STATUS=started|ordered|validation|issued|available' } }));
+    results.push(step('t1.4-cert-procurement', 'T1.4', 'Authenticode certificate procurement is tracked', s.status, s.reason, { loop, procurement: { status: cert, expectedEnv: 'EYEHOLD_AUTHENTICODE_CERT_STATUS=started|ordered|validation|issued|available' } }));
   }
 
   return results;
@@ -280,7 +280,7 @@ function writeSummary(allResults, loopsRun) {
   };
   writeJson(join(OUT, 't1-signing-status.json'), json);
 
-  let md = '# StarNet T1 Signing Lead-Time Evidence\n\n';
+  let md = '# Eyehold T1 Signing Lead-Time Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Mode: `' + json.mode + '`\n';
   md += '- Verdict: `' + json.verdict + '`\n';

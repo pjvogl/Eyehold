@@ -1,7 +1,7 @@
 # Orchestrator control lane (`agent/orchestrator-control`)
 
-Goal: agents that (a) **understand StarNet** so they can help a stuck Commander, and (b) let the
-**orchestrator actually control StarNet live** — summon/equip crew and hand them work, exactly as
+Goal: agents that (a) **understand Eyehold** so they can help a stuck Commander, and (b) let the
+**orchestrator actually control Eyehold live** — summon/equip crew and hand them work, exactly as
 the Commander would. Locked decisions: APPROVAL-mode-gated authority; orchestrator/lead-only actuates;
 all agents get the knowledge.
 

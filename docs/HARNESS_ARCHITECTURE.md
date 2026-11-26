@@ -1,4 +1,4 @@
-# STARNET Harness — Architecture Reference
+# EYEHOLD Harness — Architecture Reference
 
 > Engineering reference for the agent-harness backend. The *roadmap* (what to build when) lives in
 > `archive/INCREMENTAL_ROADMAP.md` (historical) and the approved plan; this doc is the *target shape* (modules, interfaces,

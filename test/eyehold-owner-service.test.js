@@ -16,7 +16,7 @@ async function run(){
  assert(!fs.readFileSync(authFile(fixture.workspace),'utf8').includes(key),'only hash stored');
  assert.throws(()=>provision(fixture.workspace),{code:'EEXIST'},'existing owner cannot be replaced');
  await fixture.start();
- assert.equal((await fixture.request(endpoint,{headers:{'X-StarNet-Token':''}})).status,403,'existing host gate remains');
+ assert.equal((await fixture.request(endpoint,{headers:{'X-Eyehold-Token':''}})).status,403,'existing host gate remains');
  assert.equal((await fixture.json('GET',endpoint+'?runId=review-run')).status,422,'a current business goal is required');
  await fixture.json('POST','/api/goals',{goal:{id:'g1',text:'Prepare a verifiable release readiness pilot',milestones:[]}});
  let packet=(await fixture.json('GET',endpoint+'?runId=review-run')).body;

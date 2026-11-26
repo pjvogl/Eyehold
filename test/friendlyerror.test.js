@@ -8,7 +8,7 @@ const { friendlyError, actionButton, KINDS, CAP_INFO } = require('../frontend/ap
 /* ---- THE SIDECAR'S OUTBOUND CALL FAILED => name the PROVIDER, not the local service ----
    From a real 0.7.0 user report (2026-07-29): their diagnostics showed a healthy local engine serving the report
    itself, with five `fetch failed` entries — the sidecar could not reach chatgpt.com/api.openai.com — while the
-   app told them "Can't reach StarNet's local service, restart it". They lost a day to it.
+   app told them "Can't reach Eyehold's local service, restart it". They lost a day to it.
    The discriminator is word order and it is decisive: NODE/undici says "fetch failed", a BROWSER says "Failed to
    fetch". So `fetch failed` can only have been produced inside the sidecar and forwarded, i.e. the broken hop is
    sidecar -> provider. These assertions lock BOTH directions, because the whole defect was one string being
@@ -30,7 +30,7 @@ for (const raw of [
   A.ok(/running fine/i.test(v.userMessage), raw + ' reassures the user their install is healthy');
 }
 // …and the browser-side wordings must NOT be captured by the upstream bucket (they really are local transport).
-for (const raw of ['Failed to fetch', 'cannot reach the STARNET sidecar', 'terminated', 'Load failed']) {
+for (const raw of ['Failed to fetch', 'cannot reach the EYEHOLD sidecar', 'terminated', 'Load failed']) {
   A.eq(friendlyError(new Error(raw)).kind, 'network', raw + ' stays a LOCAL transport verdict');
 }
 
@@ -44,7 +44,7 @@ for (const raw of ['Failed to fetch', 'cannot reach the STARNET sidecar', 'termi
   A.eq(kindFromRaw('fetch failed', null), 'provider_unreachable', 'BROWSER ladder: "fetch failed" -> upstream');
   A.eq(kindFromRaw('getaddrinfo ENOTFOUND api.openai.com', null), 'provider_unreachable', 'BROWSER ladder: node DNS text -> upstream');
   A.eq(kindFromRaw('failed to fetch', null), 'network', 'BROWSER ladder: the browser word order stays LOCAL');
-  A.eq(kindFromRaw('cannot reach the starnet sidecar', null), 'network', 'BROWSER ladder: an explicit sidecar-unreachable stays LOCAL');
+  A.eq(kindFromRaw('cannot reach the eyehold sidecar', null), 'network', 'BROWSER ladder: an explicit sidecar-unreachable stays LOCAL');
   // precedence guard: isTransportLoss also matches `fetch failed`, so whichever test runs first owns the verdict.
   const { isTransportLoss, isUpstreamFetchFailure } = require('../frontend/app/friendlyerror.js')._internals;
   A.ok(isTransportLoss('fetch failed'), 'isTransportLoss still matches "fetch failed" (so ORDER is load-bearing)');
@@ -108,10 +108,10 @@ for (const raw of [
 }
 // ---- the service REFUSED the station's link: relink, never top up ----
 {
-  const v = friendlyError("Managed credits are unavailable — your StarNet account refused this station's link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → STARNET MANAGED (or use your own provider key).");
+  const v = friendlyError("Managed credits are unavailable — your Eyehold account refused this station's link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED (or use your own provider key).");
   A.eq(v.kind, 'managed_credit_link', 'a refused link is its own kind');
   A.ok(/relink/i.test(v.userMessage) && !/out of|top up/i.test(v.userMessage), 'it points at relinking, never at a top-up: ' + v.userMessage);
-  A.eq(v.action, 'store', 'the door is AI & MODELS, where the STARNET card relinks');
+  A.eq(v.action, 'store', 'the door is AI & MODELS, where the EYEHOLD card relinks');
   A.eq(v.retryable, false, 'a refused link does not fix itself on retry');
 }
 
@@ -188,7 +188,7 @@ for (const raw of [
   A.ok(!/undefined/.test(v.userMessage), 'the fallback copy never leaks "undefined"');
 }
 
-// ---- EL-11 FIX 2: sidecar 403 (stale X-StarNet-Token after crash+respawn) => the RELOAD door, never the key door ----
+// ---- EL-11 FIX 2: sidecar 403 (stale X-Eyehold-Token after crash+respawn) => the RELOAD door, never the key door ----
 {
   // the exact shape Harness.chat throws after the body-preserving fix (body: "forbidden token")
   const v = friendlyError(new Error('sidecar HTTP 403 — forbidden token'));
@@ -306,10 +306,10 @@ for (const raw of [
   A.eq(kindOf('sidecar HTTP 429 — rate limited, slow down').kind, 'rate_limit', 'BROWSER: a bare 429 is unchanged');
   A.eq(kindOf('sidecar HTTP 429 — openai: insufficient_quota').kind, 'billing',
     'BROWSER: an out-of-money account is billing, not a busy provider');
-  // StarNet's OWN spend-ledger errors name 'the spending limits you set'; they are not a provider out of credit
+  // Eyehold's OWN spend-ledger errors name 'the spending limits you set'; they are not a provider out of credit
   // (sidecar/loop.js stopForSpend, one line per cause: an interrupted run, a failed save, an unreadable record)
   for (const own of ['An earlier run was interrupted before its spend was recorded, so the spending limits you set can’t be checked. Settle it in SETTINGS › SPENDING LIMITS.',
-    'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart StarNet to recover it.',
+    'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart Eyehold to recover it.',
     'Spend history could not be read, so the spending limits you set can’t be checked. See SETTINGS › SPENDING LIMITS.']) {
     A.ok(kindOf(own).kind !== 'billing', 'BROWSER: a local spend-ledger error is not told to top up the provider: ' + own.slice(0, 40));
     // its own kind on BOTH paths: a truthful headline, the SPENDING LIMITS door, and no doomed RETRY chip
@@ -332,7 +332,7 @@ for (const raw of [
 /* ---- PROVIDER 5xx/OVERLOAD => name the PROVIDER's servers, never the local service (2026-07-30) ----
    The report wave behind this: users seeing "servers are unavailable out of the blue" during industry-wide
    provider load spikes, because every provider 500/529/"overloaded" landed on the server_error copy that says
-   "The LOCAL StarNet service hit an error". A message naming a component owes proof it is at fault. The
+   "The LOCAL Eyehold service hit an error". A message naming a component owes proof it is at fault. The
    discriminator is EVIDENCE in the raw: provider phrasing or a provider name → provider; a "sidecar HTTP 5xx"
    with neither → the one case where our own route demonstrably answered, and only THAT keeps the local copy. */
 {
@@ -348,7 +348,7 @@ for (const raw of [
     A.eq(v.kind, 'provider_server_error', raw + ' is the PROVIDER\'s server fault (delegate path)');
     A.eq(kindFromRaw(raw.toLowerCase(), null), 'provider_server_error', raw + ' — BROWSER ladder agrees');
     A.eq(v.retryable, true, raw + ' is retryable (load spikes pass)');
-    A.ok(!/local .*service|starnet service/i.test(v.userMessage) || /StarNet itself is fine/i.test(v.userMessage),
+    A.ok(!/local .*service|eyehold service/i.test(v.userMessage) || /Eyehold itself is fine/i.test(v.userMessage),
       raw + ' must NEVER blame the local service');
     A.ok(/provider/i.test(v.userMessage), raw + ' names the provider\'s servers');
     A.ok(/fine/i.test(v.userMessage), raw + ' reassures the user their install is healthy');
@@ -361,7 +361,7 @@ for (const raw of [
     'BROWSER: a bare sidecar 500 keeps the local-service copy');
   A.eq(friendlyError(Object.assign(new Error('sidecar HTTP 500 — internal error'), { status: 500 })).kind,
     'server_error', 'DELEGATE: a bare sidecar 500 keeps the local-service copy');
-  A.ok(/local starnet service/i.test(KINDS.server_error.msg), 'the local copy still exists for the proven-local case');
+  A.ok(/local eyehold service/i.test(KINDS.server_error.msg), 'the local copy still exists for the proven-local case');
   // the two ladders must agree on the flagship shape, or the halves drift again
   A.eq(kindFromRaw('anthropic http 529 - overloaded', null),
     friendlyError(new Error('Anthropic http 529 - Overloaded')).kind,
@@ -426,15 +426,15 @@ for (const raw of [
     'the refresh path\'s allowlist sentence routes there too');
 }
 
-// ---- spend_unknown: StarNet's own spend ledger refused the run (failureCode spend_history_unavailable) ----
+// ---- spend_unknown: Eyehold's own spend ledger refused the run (failureCode spend_history_unavailable) ----
 // A customer saw "Something went wrong on that turn — try again." + a RETRY that hit the same refusal every time.
 {
   const interrupted = friendlyError('An earlier run was interrupted before its spend was recorded, so the spending limits you set can’t be checked. Settle it in SETTINGS › SPENDING LIMITS.');
   A.eq(interrupted.kind, 'spend_unknown', 'the interrupted-run refusal is spend_unknown');
-  A.ok(/earlier run stopped before StarNet recorded what it spent/.test(interrupted.userMessage) && /Settle that run in SETTINGS › SPENDING LIMITS/.test(interrupted.userMessage),
+  A.ok(/earlier run stopped before Eyehold recorded what it spent/.test(interrupted.userMessage) && /Settle that run in SETTINGS › SPENDING LIMITS/.test(interrupted.userMessage),
     'the interrupted cause names the run and the SETTLE fix (got: ' + interrupted.userMessage + ')');
-  const unsaved = friendlyError('Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart StarNet to recover it.');
-  A.ok(/Restart StarNet/.test(unsaved.userMessage) && !/Settle/.test(unsaved.userMessage), 'a failed save says restart, never settle (got: ' + unsaved.userMessage + ')');
+  const unsaved = friendlyError('Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart Eyehold to recover it.');
+  A.ok(/Restart Eyehold/.test(unsaved.userMessage) && !/Settle/.test(unsaved.userMessage), 'a failed save says restart, never settle (got: ' + unsaved.userMessage + ')');
   const unread = friendlyError('Spend history could not be read, so the spending limits you set can’t be checked. See SETTINGS › SPENDING LIMITS.');
   A.eq(unread.userMessage, KINDS.spend_unknown.msg, 'an unreadable record gets the cause-neutral headline');
   A.ok(/spend history is unknown/.test(KINDS.spend_unknown.msg), 'the fallback headline says spend history is unknown');
@@ -451,7 +451,7 @@ for (const raw of [
   A.eq(JSON.stringify(opened), JSON.stringify([['settings', 'budget']]), 'the door opens SETTINGS › SPENDING LIMITS (section budget)');
   // not swallowed: provider billing and the generic unknown stay what they were
   A.eq(friendlyError(Object.assign(new Error('openai http 429 - insufficient_quota'), { status: 429 })).kind, 'billing', 'provider billing is untouched');
-  A.eq(friendlyError('the spending limit on your OpenAI account was reached').kind !== 'spend_unknown', true, 'a provider spending-limit sentence is not StarNet\'s ledger');
+  A.eq(friendlyError('the spending limit on your OpenAI account was reached').kind !== 'spend_unknown', true, 'a provider spending-limit sentence is not Eyehold\'s ledger');
 }
 
 A.report('friendlyerror.test');

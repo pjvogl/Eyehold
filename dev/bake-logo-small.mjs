@@ -1,6 +1,6 @@
-// dev/bake-logo-small.mjs — bake the topbar-size STARNET wordmark from the master art.
+// dev/bake-logo-small.mjs — bake the topbar-size EYEHOLD wordmark from the master art.
 //
-// WHY this exists: the brand master (frontend/assets/brand/starnet-logo.png, 2041×384) is an
+// WHY this exists: the brand master (frontend/assets/brand/eyehold-logo.png, 2041×384) is an
 // ASCII-digit mosaic — thin glowing strokes on transparency. The topbar shows it 30px tall, a
 // ~6.6× minification, and the browser's sRGB-space filtering averages those thin strokes into
 // dim gray speckle (the "placed PNG" look). A redrawn vector mark was tried and REVERTED
@@ -10,7 +10,7 @@
 //   → alpha-gain curve (re-solidifies partial-coverage strokes) → slight value/sat lift
 //   → unsharp on alpha (edge crispness lives in coverage; the colour is flat amber).
 //
-// Output: frontend/assets/brand/starnet-logo-small.png (@2× of the 30px topbar height).
+// Output: frontend/assets/brand/eyehold-logo-small.png (@2× of the 30px topbar height).
 // Deterministic — rerun after any change to the master.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
@@ -19,8 +19,8 @@ import path from 'node:path';
 import { decodePNG } from '../scripts/lib/png.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SRC = path.join(REPO, 'frontend/assets/brand/starnet-logo.png');
-const OUT = path.join(REPO, 'frontend/assets/brand/starnet-logo-small.png');
+const SRC = path.join(REPO, 'frontend/assets/brand/eyehold-logo.png');
+const OUT = path.join(REPO, 'frontend/assets/brand/eyehold-logo-small.png');
 
 const TARGET_H = 60;        // 2× the 30px CSS height (covers DPR up to 2)
 const ALPHA_GAMMA = 0.45;   // <1 pulls partial coverage toward solid

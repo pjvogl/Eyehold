@@ -1,6 +1,6 @@
 /* node test/website-app-sync.test.js — website/app must stay a real copy of frontend/.
  *
- * website/app is the live demo embedded on starnetos.com, and demo-boot.js + live-preview.js both
+ * website/app is the live demo embedded on eyehold.com, and demo-boot.js + live-preview.js both
  * describe it as "a verbatim copy of the app frontend". On 2026-07-24 it was not: 59 files differed
  * and 394 were missing, so the public embed advertised retired copy (an "IMPORT AGENT" button the
  * app had renamed to "RESTORE BACKUP", a provider picker with no grok/kimi). A marketing surface

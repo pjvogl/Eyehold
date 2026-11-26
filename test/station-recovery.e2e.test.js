@@ -20,21 +20,21 @@ function write(root, rel, value) {
 function quietEnv() {
   return {
     SKYNET_DEV: '1', SKYNET_CRON_ENABLED: '0', SKYNET_LOOP_ENABLED: '0', SKYNET_EDGE_TTS: '0',
-    OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '',
-    OPENAI_API_KEY: '', SKYNET_OPENAI_API_KEY: '', STARNET_OPENAI_API_KEY: '',
-    STARNET_DEFAULT_MODEL: 'test/replay', SKYNET_DEFAULT_MODEL: 'test/replay'
+    OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    OPENAI_API_KEY: '', SKYNET_OPENAI_API_KEY: '', EYEHOLD_OPENAI_API_KEY: '',
+    EYEHOLD_DEFAULT_MODEL: 'test/replay', SKYNET_DEFAULT_MODEL: 'test/replay'
   };
 }
 
 (async () => {
-  const source = SidecarFixture.create({ prefix: 'starnet-recovery-source-', env: quietEnv(), timeoutMs: 15000 });
-  const target = SidecarFixture.create({ prefix: 'starnet-recovery-target-', env: quietEnv(), timeoutMs: 15000 });
+  const source = SidecarFixture.create({ prefix: 'eyehold-recovery-source-', env: quietEnv(), timeoutMs: 15000 });
+  const target = SidecarFixture.create({ prefix: 'eyehold-recovery-target-', env: quietEnv(), timeoutMs: 15000 });
   let rollbackDir = null;
   try {
     const ws = source.workspace;
     const projectRoot = path.join(ws, 'agent', 'project');
     fs.mkdirSync(projectRoot, { recursive: true });
-    const saveDoc = { schema: 'starnet.save', version: Save.CURRENT, updatedAt: 1000, agent: { id: 'agent', name: 'NOVA', model: 'test/replay', provider: 'replay' }, station: { rooms: [{ id: 'command' }, { id: 'lab' }], props: [{ id: 'terminal', roomId: 'command' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'live recovery proof' }] }], activeId: 'general', generalId: 'general' };
+    const saveDoc = { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 1000, agent: { id: 'agent', name: 'NOVA', model: 'test/replay', provider: 'replay' }, station: { rooms: [{ id: 'command' }, { id: 'lab' }], props: [{ id: 'terminal', roomId: 'command' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'live recovery proof' }] }], activeId: 'general', generalId: 'general' };
     write(ws, 'agent.save.json', { version: 1, agentId: 'agent', updatedAt: 1000, savedAt: 1000, doc: saveDoc });
     write(ws, 'agent.roster.json', { version: 1, updatedAt: 1000, agents: [{ agentId: 'agent', name: 'NOVA', model: 'test/replay', provider: 'replay', system: 'recovery test' }] });
     write(ws, 'transcript.jsonl', JSON.stringify({ workstreamId: 'general', role: 'assistant', content: 'durable transcript', ts: 1 }) + '\n');
@@ -61,7 +61,7 @@ function quietEnv() {
     A.ok(Array.isArray(srcLoops.body.loops) && srcLoops.body.loops.some(x => x.name === 'Recovery loop'), 'source loop reads back live');
     await source.stop();
 
-    const browserStore = { 'starnet.save': JSON.stringify(saveDoc), 'starnet.station.v1': JSON.stringify({ selectedRoom: 'lab' }), 'starnet.byok.key': 'SYNTHETIC_BROWSER_SECRET' };
+    const browserStore = { 'eyehold.save': JSON.stringify(saveDoc), 'eyehold.station.v1': JSON.stringify({ selectedRoom: 'lab' }), 'eyehold.byok.key': 'SYNTHETIC_BROWSER_SECRET' };
     const bundle = Recovery.capture({ workspaceRoot: ws, browserStore, now: 2000, appVersion: '0.9.0-e2e', lastCompletedMutation: 3 });
     A.eq(bundle.report.complete, true, 'live source produces a complete recovery bundle');
     A.ok(JSON.stringify(bundle).indexOf('SYNTHETIC_SECRET') < 0 && JSON.stringify(bundle).indexOf('SYNTHETIC_BROWSER_SECRET') < 0, 'live bundle excludes credential bytes');
@@ -72,10 +72,10 @@ function quietEnv() {
     const restoredBrowser = {};
     const receipt = Recovery.restore({ bundle, targetRoot: restoredRoot, browserSink: restoredBrowser, nonce: 'e2e-clean' });
     A.eq(receipt.ok, true, 'bundle restores to the genuinely absent target root');
-    A.eq(restoredBrowser['starnet.station.v1'], JSON.stringify({ selectedRoom: 'lab' }), 'browser-owned state is recovered');
-    A.eq(restoredBrowser['starnet.byok.key'], undefined, 'browser credential is not recovered');
+    A.eq(restoredBrowser['eyehold.station.v1'], JSON.stringify({ selectedRoom: 'lab' }), 'browser-owned state is recovered');
+    A.eq(restoredBrowser['eyehold.byok.key'], undefined, 'browser credential is not recovered');
 
-    const boot2 = SidecarFixture.create({ prefix: 'starnet-recovery-boot2-', env: quietEnv(), timeoutMs: 15000 });
+    const boot2 = SidecarFixture.create({ prefix: 'eyehold-recovery-boot2-', env: quietEnv(), timeoutMs: 15000 });
     const unusedBoot2Root = boot2.workspace;
     fs.rmSync(unusedBoot2Root, { recursive: true, force: true });
     boot2.workspace = restoredRoot;

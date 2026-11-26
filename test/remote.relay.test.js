@@ -1,4 +1,4 @@
-/* node test/remote.relay.test.js — StarNet Remote over the RELAY (phase 3), in one process, on 127.0.0.1.
+/* node test/remote.relay.test.js — Eyehold Remote over the RELAY (phase 3), in one process, on 127.0.0.1.
 
    The real relay (relay/server.js + its dependency-free WebSocket server), the real station side
    (sidecar/remote/relay-client.js over Node's built-in WebSocket, with the real devices/sessions/approvals/
@@ -94,7 +94,7 @@ function wsClose(url) {
         A.ok(!!etag, 'it carries an ETag');
         A.eq((await fetch(abase + '/app.js', { headers: { 'If-None-Match': etag } })).status, 304, 'a phone that has it already gets a 304, not the bytes again');
         const sw = await fetch(abase + '/sw.js').then(r => r.text());
-        A.ok(/const CACHE = 'starnet-remote-[A-Za-z0-9_-]{12}'/.test(sw) && sw.indexOf('%SHELL%') < 0, 'the service worker is served with a fingerprint of the shell in its cache name');
+        A.ok(/const CACHE = 'eyehold-remote-[A-Za-z0-9_-]{12}'/.test(sw) && sw.indexOf('%SHELL%') < 0, 'the service worker is served with a fingerprint of the shell in its cache name');
         const sw2 = await fetch(abase + '/sw.js').then(r => r.text());
         A.eq(sw2, sw, 'the same shell gives the same name (no needless re-install)');
       }

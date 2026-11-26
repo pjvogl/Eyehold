@@ -8,11 +8,11 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$releaseRepo = 'androoAGI/starnet-releases'
+$releaseRepo = 'Eyehold/eyehold-releases'
 $tempRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')
-$proofRoot = [IO.Path]::GetFullPath((Join-Path $tempRoot 'starnet-published-upgrade-proof'))
-$uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\StarNet'
-$productKey = 'HKCU:\Software\Andrew Sims\StarNet'
+$proofRoot = [IO.Path]::GetFullPath((Join-Path $tempRoot 'eyehold-published-upgrade-proof'))
+$uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Eyehold'
+$productKey = 'HKCU:\Software\Eyehold\Eyehold'
 $candidate = [IO.Path]::GetFullPath($CandidateInstaller)
 $targetVersion = [version]$CandidateVersion
 $appDataWorkspaces = [IO.Path]::GetFullPath((Join-Path $env:APPDATA 'ai.skynet.harness\workspaces'))
@@ -57,7 +57,7 @@ function Remove-ProofState {
   $resolved = [IO.Path]::GetFullPath($Path)
   $prefix = $appDataWorkspaces.TrimEnd('\') + '\.upgrade-proof-'
   if (-not $resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
-    throw "refusing to remove non-proof StarNet state: $resolved"
+    throw "refusing to remove non-proof Eyehold state: $resolved"
   }
   if (Test-Path -LiteralPath $resolved) {
     Remove-Item -LiteralPath $resolved -Recurse -Force
@@ -83,7 +83,7 @@ function Stop-ExactProcesses {
     Start-Sleep -Milliseconds 250
   }
   if (@(Get-ExactProcesses $Paths).Count -gt 0) {
-    throw "owned StarNet process did not stop: $($Paths -join ', ')"
+    throw "owned Eyehold process did not stop: $($Paths -join ', ')"
   }
 }
 
@@ -114,7 +114,7 @@ function Wait-ForExactProcessesStopped {
   }
   if ($remaining.Count -gt 0) {
     $details = ($remaining | ForEach-Object { "$($_.Id):$($_.Path)" }) -join ', '
-    throw "$Label left an owned StarNet process alive after ${Seconds}s: $details"
+    throw "$Label left an owned Eyehold process alive after ${Seconds}s: $details"
   }
 }
 
@@ -142,11 +142,11 @@ function Reset-ProofInstall {
   if ($null -ne $registered) {
     $location = [string]$registered.InstallLocation
     if (-not $location) {
-      throw 'refusing to remove a StarNet registry record without a verifiable InstallLocation'
+      throw 'refusing to remove a Eyehold registry record without a verifiable InstallLocation'
     }
     $resolvedLocation = [IO.Path]::GetFullPath($location.Trim('"'))
     if (-not $resolvedLocation.StartsWith($tempRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
-      throw "refusing to remove a non-proof StarNet registry record: $resolvedLocation"
+      throw "refusing to remove a non-proof Eyehold registry record: $resolvedLocation"
     }
     Remove-Item -LiteralPath $uninstallKey -Recurse -Force
   }
@@ -179,7 +179,7 @@ New-Item -ItemType Directory -Path $proofRoot | Out-Null
 
 $headers = @{
   Accept = 'application/vnd.github+json'
-  'User-Agent' = 'starnet-published-upgrade-proof'
+  'User-Agent' = 'eyehold-published-upgrade-proof'
 }
 # PowerShell 7 preserves a top-level JSON array as one pipeline object when Invoke-RestMethod
 # is called directly inside @(...). Assign first, then array-wrap the value so each release is
@@ -191,7 +191,7 @@ $sources = @($releases | Where-Object {
   try { return ([version]$_.tag_name.TrimStart('v')) -lt $targetVersion } catch { return $false }
 } | ForEach-Object {
   $release = $_
-  $asset = @($release.assets | Where-Object { $_.name -like 'StarNet_*_x64-setup.exe' }) | Select-Object -First 1
+  $asset = @($release.assets | Where-Object { $_.name -like 'Eyehold_*_x64-setup.exe' }) | Select-Object -First 1
   if ($null -ne $asset) {
     [pscustomobject]@{ tag = [string]$release.tag_name; version = [string]$release.tag_name.TrimStart('v'); asset = $asset }
   }
@@ -214,7 +214,7 @@ try {
     Reset-ProofInstall $installRoot
     Remove-ProofState $markerRoot
     New-Item -ItemType Directory -Path $installRoot,$markerRoot | Out-Null
-    [IO.File]::WriteAllText($marker, "{`"schema`":`"starnet.upgrade-sentinel.v1`",`"source`":`"$($source.tag)`"}`n")
+    [IO.File]::WriteAllText($marker, "{`"schema`":`"eyehold.upgrade-sentinel.v1`",`"source`":`"$($source.tag)`"}`n")
     $markerHash = (Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash.ToLowerInvariant()
 
     Invoke-WebRequest -Headers $headers -Uri $source.asset.browser_download_url -OutFile $download
@@ -241,7 +241,7 @@ try {
     Wait-ForExactProcess -Path $app
     Wait-ForExactProcess -Path $node
 
-    # Reproduce the field failure exactly: the registry says StarNet is installed, but the old
+    # Reproduce the field failure exactly: the registry says Eyehold is installed, but the old
     # uninstaller cannot be invoked. The candidate must never depend on that file for an upgrade.
     Remove-Item -LiteralPath $oldUninstaller -Force
     $upgrade = Start-Process -FilePath $candidate -PassThru
@@ -298,7 +298,7 @@ try {
 }
 
 $receipt = [ordered]@{
-  schema = 'starnet.windows-published-upgrade-proof.v1'
+  schema = 'eyehold.windows-published-upgrade-proof.v1'
   generatedAt = [DateTime]::UtcNow.ToString('o')
   proofHarness = [ordered]@{
     commit = $HarnessCommit

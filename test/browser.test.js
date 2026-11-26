@@ -111,7 +111,7 @@ function fakeDriver() {
       A.eq(picked.headless, false, 'the preferred browser retains the full browser surface');
     }
     const pwFull = T.CHROME_CANDIDATES.find(c => !c.headless && /ms-playwright/.test(c.path));
-    const installed = T.CHROME_CANDIDATES.find(c => !c.headless && !/ms-playwright|STARNET|SKYNET/.test(c.path) && T.CHROME_CANDIDATES.indexOf(c) > T.CHROME_CANDIDATES.indexOf(pwFull));
+    const installed = T.CHROME_CANDIDATES.find(c => !c.headless && !/ms-playwright|EYEHOLD|SKYNET/.test(c.path) && T.CHROME_CANDIDATES.indexOf(c) > T.CHROME_CANDIDATES.indexOf(pwFull));
     if (pwFull && installed) {
       const both = p => p === pwFull.path || p === installed.path;
       A.eq(T.resolveChrome(true, both).path, installed.path, 'a WINDOW the Commander uses is their installed Chrome/Edge, not a Playwright test build');
@@ -508,7 +508,7 @@ function fakeDriver() {
     A.ok(sent.some(m => m.method === 'Page.navigate' && m.params.url === 'about:blank'), 'failed isolation navigates away from the unshimmed page');
     await refused.close();
 
-    const privateProfile = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-cdp-owner-'));
+    const privateProfile = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-cdp-owner-'));
     const fetched = [], privateLaunches = [];
     isolationReady = true; currentUrl = 'about:blank'; sent.length = 0;
     const privatePort = T.makeCdpDriver({
@@ -1585,7 +1585,7 @@ function fakeDriver() {
   // upload posts must come through the SAME jail as fs.* - an upload is an exfiltration primitive
   // if it can reach outside the agent's workspace.
   {
-    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-upload-'));
+    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-upload-'));
     try {
       const fsp = require('node:fs/promises');
       fs.mkdirSync(path.join(ws, 'ag'), { recursive: true });
@@ -1630,7 +1630,7 @@ function fakeDriver() {
   // screenshot() had exactly ONE consumer - vision() - which handed the base64 to a model and
   // returned a BYTE COUNT. The user could never see what the agent saw, and the frame was dropped.
   {
-    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-shots-'));
+    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-shots-'));
     try {
       const fsp = require('node:fs/promises');
       const emitted = [];
@@ -1811,7 +1811,7 @@ function fakeDriver() {
     // 2. ENV-PINNED HEADLESS REFUSES before any consent ask or window.
     {
       const seam = mkSeam();
-      const B2 = makeBrowserTools({ makeDriver: seam.makeDriver, env: { STARNET_BROWSER_HEADLESS: '1' }, attendedLogin: { prompt: async () => 'once' } });
+      const B2 = makeBrowserTools({ makeDriver: seam.makeDriver, env: { EYEHOLD_BROWSER_HEADLESS: '1' }, attendedLogin: { prompt: async () => 'once' } });
       await rejects(B2.tools.find(t => t.name === 'browser.login').run({ url: 'https://erank.com' }, {}),
         /pins the browser headless/i, 'env headless pin refuses a login window');
       A.eq(seam.made.length, 0, 'env-pinned headless never launches a headed browser');

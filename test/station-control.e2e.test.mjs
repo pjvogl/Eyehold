@@ -76,7 +76,7 @@ function startMock() {
 }
 // answer(prompt) -> decision: every permission.prompt on the run's own stream is answered through /api/consent, the way the desk card does
 async function leadRun(base, token, prompt, answer) {
-  const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base };
+  const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base };
   const res = await fetch(base + '/api/run', { method: 'POST', headers,
     body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: MARK + ' ' + prompt }] }) });
   const events = [], prompts = [];
@@ -103,12 +103,12 @@ async function leadRun(base, token, prompt, answer) {
   return { status: res.status, events, prompts };
 }
 const api = async (base, token, method, path, body) => {
-  const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base }, body: body ? JSON.stringify(body) : undefined });
   let j = null; try { j = await r.json(); } catch (_) {}
   return { status: r.status, json: j };
 };
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-control-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-control-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');

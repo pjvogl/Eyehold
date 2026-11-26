@@ -1,4 +1,4 @@
-// SELF-DRIVING — a real model drives StarNet from plain words (2026-10-08).
+// SELF-DRIVING — a real model drives Eyehold from plain words (2026-10-08).
 //   node dev/self-driving-proof.mjs [port] [--estop]        against a RUNNING station with a real model
 // Each ask goes into a FRESH COMMS session in the Commander's own words — no tool names — and every check reads the
 // harness's truth (the caps route, the halt route, the page's own state), never the agent's reply. Close every other tab
@@ -16,7 +16,7 @@ const ESTOP = process.argv.includes('--estop');
 let failed = 0;
 let last = null;   // the latest ask's run: a FAIL prints its tool rows, so it can be diagnosed without a re-run
 const check = (name, ok, detail) => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (detail ? '  — ' + detail : '')); if (!ok) { failed++; if (last) for (const t of last.tools.slice(0, 14)) console.log('      ' + t.slice(0, 160)); } };
-const dir = mkdtempSync(join(tmpdir(), 'starnet-self-driving-'));
+const dir = mkdtempSync(join(tmpdir(), 'eyehold-self-driving-'));
 const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--window-size=1440,900', '--remote-debugging-port=9497', '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
 try {
   const cdp = await connectCDP(9497);
@@ -76,7 +76,7 @@ try {
   check('"pin this chat to the top of my sessions list" pins THIS session', pinned, stamp(r));
 
   // 6 · knowledge, from the manual
-  r = await ask("What's a conveyor in StarNet and where do I build one? Two sentences.");
+  r = await ask("What's a conveyor in Eyehold and where do I build one? Two sentences.");
   const reply = await run(`((Workstreams.get(${JSON.stringify(r.ws)}).history || []).filter(m => m.role === 'assistant').pop() || {}).content || ''`);
   check('"what is a conveyor" knows it is a line', /line/i.test(reply) && !/not a (standard|known) term/i.test(reply), stamp(r));
 

@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
-const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 (async () => {
- const browser = await chromium.launch({headless:true, ...(process.env.STARNET_CHROME ? {executablePath:process.env.STARNET_CHROME} : {})});
+ const browser = await chromium.launch({headless:true, ...(process.env.EYEHOLD_CHROME ? {executablePath:process.env.EYEHOLD_CHROME} : {})});
  const proof = {url:process.argv[2] || 'http://127.0.0.1:8968/', checks:[], errors:[]};
  try {
   const page=await browser.newPage({viewport:{width:1280,height:800}});

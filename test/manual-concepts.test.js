@@ -1,5 +1,5 @@
 // node test/manual-concepts.test.js — the agent's manual knows EVERYTHING, and none of it can drift (2026-10-05, self-driving
-// lane 2: "the agents [should] understand EVERYTHING about starnet … so it can basically use itself").
+// lane 2: "the agents [should] understand EVERYTHING about eyehold … so it can basically use itself").
 //   A. CONCEPTS names only real places ([id] = a station.show place), real tools and real station.control actions;
 //   B. NAVIGATION's EVERY PLACE list is generated from frontend/app/places.js — every place, once, in the UI's words;
 //   C. every "MENU › TAB" path anywhere in the manual is a real place (or a real group label, checked in its source file);
@@ -17,7 +17,7 @@ const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 
 const concepts = M.manualSection('concepts');
 const nav = M.manualSection('navigation');
-const full = M.starnetManual();
+const full = M.eyeholdManual();
 
 // ---- A. CONCEPTS: real places, real tools, real actions ----
 A.ok(concepts && concepts.length > 4000, 'concepts is a real section (' + (concepts || '').length + ' chars)');
@@ -64,13 +64,13 @@ for (const p of paths) {
 }
 
 // ---- D. the owner on a chat app: a pointer, not the index ----
-const ptr = M.starnetManualPointer();
-A.ok(ptr.length < 600, 'the pointer is short (' + ptr.length + ' chars) — the index is ' + M.starnetManualIndex().length);
+const ptr = M.eyeholdManualPointer();
+A.ok(ptr.length < 600, 'the pointer is short (' + ptr.length + ' chars) — the index is ' + M.eyeholdManualIndex().length);
 for (const s of M.MANUAL_SECTIONS.filter(x => x.kind === 'reference')) A.ok(ptr.indexOf(s.id) >= 0, 'the pointer names section ' + s.id);
 A.ok(/manual\.read/.test(ptr) && /never answer that from memory/.test(ptr) && /station\.show cannot open/.test(ptr), 'the pointer says: call manual.read, never memory, cannot open places');
 const ix = read('sidecar/index.js');
-A.ok(/\(isTask && ownerTrusted && coreNames\.indexOf\('manual\.read'\) >= 0\) \? starnetManualPointer\(\) : ''/.test(ix), 'index.js: an owner-trusted task turn with manual.read on the wire gets the pointer');
-A.ok(/\(isTask && surface === 'interactive'\) \? \(coreNames\.indexOf\('manual\.read'\) >= 0 \? starnetManualIndex\(\) : starnetManual\(\)\)/.test(ix), 'index.js: the watched station still gets the inline index');
+A.ok(/\(isTask && ownerTrusted && coreNames\.indexOf\('manual\.read'\) >= 0\) \? eyeholdManualPointer\(\) : ''/.test(ix), 'index.js: an owner-trusted task turn with manual.read on the wire gets the pointer');
+A.ok(/\(isTask && surface === 'interactive'\) \? \(coreNames\.indexOf\('manual\.read'\) >= 0 \? eyeholdManualIndex\(\) : eyeholdManual\(\)\)/.test(ix), 'index.js: the watched station still gets the inline index');
 
 // ---- E. nothing that is gone ----
 for (const gone of [/SKILLS tab/, /APPROVALS hotspot/, /Alt\+A/]) A.ok(!gone.test(full), 'the manual never names ' + gone);

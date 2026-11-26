@@ -27,8 +27,8 @@ async function run(){
  // Test browser cannot send prompts to a provider even if a boot regression tries.
  await page.route('**/*',route=>route.request().url().startsWith(base+'/')?route.continue():route.abort());
  await page.route('**/api/run',route=>{errors.push('Unexpected model run requested');return route.abort();});
- const seed={schema:'starnet.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE',createdAt:Date.now(),onboarded:true,role:'orchestrator',purpose:'Offline UI fixture; no model calls',provider:'ollama',model:'ui-fixture',specialtyId:'eyehold-keep'},station:buildEyeholdStation().doc,workstreams:[]};
- await page.addInitScript(doc=>{if(!localStorage.getItem('starnet.save'))localStorage.setItem('starnet.save',JSON.stringify(doc));},seed);
+ const seed={schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE',createdAt:Date.now(),onboarded:true,role:'orchestrator',purpose:'Offline UI fixture; no model calls',provider:'ollama',model:'ui-fixture',specialtyId:'eyehold-keep'},station:buildEyeholdStation().doc,workstreams:[]};
+ await page.addInitScript(doc=>{if(!localStorage.getItem('eyehold.save'))localStorage.setItem('eyehold.save',JSON.stringify(doc));},seed);
  page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/');await page.waitForFunction(()=>typeof App!=='undefined'&&!!App.station?.(),null,{timeout:30000});
  await page.getByRole('button',{name:'WORK BOARD',exact:true}).click();

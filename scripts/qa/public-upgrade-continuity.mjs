@@ -23,7 +23,7 @@ const targetVersion = automatic ? required('TARGET_VERSION') : null;
 const exe = required('EXE');
 const profile = path.join(required('APPDATA'), 'ai.skynet.harness');
 const sha = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const receipt = { schema: 'starnet.public-upgrade-continuity.v1', at: new Date().toISOString(), mode: 'manual-nsis-reinstall', candidateSource: expected, baselineVersion, baselineInstallerSha256: sha(baseline), candidateInstallerSha256: sha(candidate), checks: {}, outcome: 'FAIL' };
+const receipt = { schema: 'eyehold.public-upgrade-continuity.v1', at: new Date().toISOString(), mode: 'manual-nsis-reinstall', candidateSource: expected, baselineVersion, baselineInstallerSha256: sha(baseline), candidateInstallerSha256: sha(candidate), checks: {}, outcome: 'FAIL' };
 if (automatic) receipt.mode = 'public-in-app-updater';
 let cdp;
 function ps(script, extra = {}) {
@@ -78,7 +78,7 @@ async function snapshot() {
         drained=await CloudSave.flushForUpdate();drains.push(drained);
       }
       const r=await fetch('/api/save?agent=agent');if(!r.ok)throw Error('Save read failed');
-      return {drained,drains,writes,health:CloudSave.health(),local:JSON.parse(localStorage.getItem('starnet.save')||'null'),durable:(await r.json()).save,sentinel:JSON.parse(localStorage.getItem('starnet.canary.continuity')||'null')};
+      return {drained,drains,writes,health:CloudSave.health(),local:JSON.parse(localStorage.getItem('eyehold.save')||'null'),durable:(await r.json()).save,sentinel:JSON.parse(localStorage.getItem('eyehold.canary.continuity')||'null')};
     }finally{window.fetch=original;}
   })()`);
   if (!snap.drained.ok) { receipt.failedSnapshot = snap; throw new Error('Save drain not confirmed; see failedSnapshot responses'); }
@@ -128,7 +128,7 @@ async function installFromPublicUpdater() {
   for (let n = 0; n < 100; n++) {
     await sleep(3000);
     observed = JSON.parse(ps(`$apps=@(Get-CimInstance Win32_Process | Where-Object {$_.ExecutablePath -eq $env:PROOF_EXE})
-$setup=@(Get-Process -ErrorAction SilentlyContinue | Where-Object {$_.Name -match '(?i)starnet.*setup|^Au_$' -or $_.MainWindowTitle -like '*StarNet*Setup*'})
+$setup=@(Get-Process -ErrorAction SilentlyContinue | Where-Object {$_.Name -match '(?i)eyehold.*setup|^Au_$' -or $_.MainWindowTitle -like '*Eyehold*Setup*'})
 @{version=(Get-Item $env:PROOF_EXE).VersionInfo.ProductVersion;appPids=@($apps | ForEach-Object {$_.ProcessId});installerPids=@($setup | ForEach-Object {$_.Id})}|ConvertTo-Json -Compress`));
     if (String(observed.version).split('.').slice(0,3).join('.') === targetVersion && observed.appPids.length === 1 && observed.appPids[0] !== priorPid && observed.installerPids.length === 0) break;
     try {
@@ -151,10 +151,10 @@ $window=Get-Process -Id $app.ProcessId
 $node=@(Get-CimInstance Win32_Process | Where-Object {$_.ParentProcessId -eq $app.ProcessId -and $_.ExecutablePath -eq (Join-Path (Split-Path $env:PROOF_EXE) 'node.exe')})
 $ports=@($node | ForEach-Object {Get-NetTCPConnection -State Listen -OwningProcess $_.ProcessId -ErrorAction SilentlyContinue} | Where-Object {$_.LocalAddress -eq '127.0.0.1'})
 @{pid=$app.ProcessId;responding=$window.Responding;window=$window.MainWindowHandle.ToInt64();title=$window.MainWindowTitle;ports=@($ports | ForEach-Object {$_.LocalPort})}|ConvertTo-Json -Compress`));
-    if (live.pid === observed.appPids[0] && live.responding && live.window && live.title === 'StarNet' && live.ports.length === 1) {
+    if (live.pid === observed.appPids[0] && live.responding && live.window && live.title === 'Eyehold' && live.ports.length === 1) {
       const base = 'http://127.0.0.1:' + live.ports[0];
       const token = await bootToken(base, base);
-      const response = await fetch(base + '/api/version', { headers: { Origin: base, 'X-StarNet-Token': token } });
+      const response = await fetch(base + '/api/version', { headers: { Origin: base, 'X-Eyehold-Token': token } });
       const version = await response.json();
       if (response.ok && version.app === targetVersion && version.buildSha === expected) { automaticHealth = { ...live, version: version.app, source: version.buildSha }; break; }
     }
@@ -178,7 +178,7 @@ if(Get-Process -Id $p.Id -ErrorAction SilentlyContinue){throw 'Updated app did n
 }
 try {
   install(baseline); await launch();
-  receipt.beforeBuild = await evalJS(cdp, "__TAURI__.core.invoke('starnet_build_info')");
+  receipt.beforeBuild = await evalJS(cdp, "__TAURI__.core.invoke('eyehold_build_info')");
   if (receipt.beforeBuild.version !== baselineVersion) throw new Error('Historical public version mismatch');
   receipt.checks.historicalPublicBoot = true;
   // A fresh hosted profile has no credential, so a populated OpenRouter save correctly
@@ -194,7 +194,7 @@ try {
     save._saveRevision=Number(prior.save&&prior.save._saveRevision)||0;
     const r=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(save)});const b=await r.json();if(!r.ok||!b.ok)throw Error('Fixture save refused');
     save._saveRevision=b.revision;save._saveDirty=false;save.updatedAt=b.updatedAt;
-    localStorage.setItem('starnet.save',JSON.stringify(save));localStorage.setItem('starnet.canary.continuity',JSON.stringify({nonce:save.agent.canaryNonce}));
+    localStorage.setItem('eyehold.save',JSON.stringify(save));localStorage.setItem('eyehold.canary.continuity',JSON.stringify({nonce:save.agent.canaryNonce}));
   })()`);
   stop(); await launch(true);
   const before = await snapshot();
@@ -206,7 +206,7 @@ try {
   receipt.checks.populatedPublicRestart = true;
   if (automatic) await installFromPublicUpdater();
   else { install(candidate); await launch(true); }
-  receipt.afterBuild = await evalJS(cdp, "__TAURI__.core.invoke('starnet_build_info')");
+  receipt.afterBuild = await evalJS(cdp, "__TAURI__.core.invoke('eyehold_build_info')");
   if (receipt.afterBuild.sha !== expected || receipt.afterBuild.dirty) throw new Error('Candidate identity mismatch');
   if (receipt.beforeBuild.sha === receipt.afterBuild.sha) throw new Error('Installer did not replace the public source build');
   receipt.checks.exactCandidateInstalled = true;
@@ -224,7 +224,7 @@ try {
     if (receipt.staticDefault.value !== '100' || receipt.staticDefault.multiplier !== 1) throw new Error('Historical station did not retain the default CRT appearance');
     receipt.staticLevels = [];
     for (const value of [0, 200, 45]) {
-      const observed = await evalJS(cdp, `(()=>{const input=document.querySelector('#set-static');input.value=${value};input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));return {value:input.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('starnet.station.v1')).settings.staticLevel};})()`);
+      const observed = await evalJS(cdp, `(()=>{const input=document.querySelector('#set-static');input.value=${value};input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));return {value:input.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.station.v1')).settings.staticLevel};})()`);
       if (observed.saved !== value || observed.multiplier !== value / 100) throw new Error('Installed static setting did not apply and save');
       receipt.staticLevels.push(observed);
     }
@@ -248,7 +248,7 @@ try {
   if (process.env.PROOF_STATIC_LEVEL === 'true') {
     await evalJS(cdp, "StationUI.openTerm('settings','appearance')");
     await sleep(250);
-    receipt.staticRestarted = await evalJS(cdp, "({value:document.querySelector('#set-static')?.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('starnet.station.v1')).settings.staticLevel})");
+    receipt.staticRestarted = await evalJS(cdp, "({value:document.querySelector('#set-static')?.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.station.v1')).settings.staticLevel})");
     if (receipt.staticRestarted.value !== '45' || receipt.staticRestarted.multiplier !== .45 || receipt.staticRestarted.saved !== 45) throw new Error('Installed static setting did not survive normal restart');
     await evalJS(cdp, "StationUI.closeTerm('settings')");
     receipt.checks.staticLevelSurvivesRestart = true;
@@ -256,7 +256,7 @@ try {
   // Run the normal installed-WebView smoke against these exact signed executable bytes.
   receipt.installedSmokeLog = execFileSync(process.execPath, ['scripts/qa/installed-smoke.mjs'], {
     encoding: 'utf8', windowsHide: true, timeout: 120000,
-    env: { ...process.env, STARNET_SMOKE_CDP_PORT: '19373', STARNET_SMOKE_EXPECTED_HEAD: expected, STARNET_SMOKE_ARTIFACT: exe }
+    env: { ...process.env, EYEHOLD_SMOKE_CDP_PORT: '19373', EYEHOLD_SMOKE_EXPECTED_HEAD: expected, EYEHOLD_SMOKE_ARTIFACT: exe }
   });
   receipt.checks.installedSmoke = true;
   receipt.projectionSha256 = createHash('sha256').update(projection).digest('hex');

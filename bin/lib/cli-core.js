@@ -1,6 +1,6 @@
-/* bin/lib/cli-core.js — the PURE decisions behind the `starnet` command-line surface.
+/* bin/lib/cli-core.js — the PURE decisions behind the `eyehold` command-line surface.
 
-   `bin/starnet.js` is the composition root (argv, env, sockets, child processes, stdout/stderr). Everything
+   `bin/eyehold.js` is the composition root (argv, env, sockets, child processes, stdout/stderr). Everything
    that can be decided without ambient I/O lives here so it is unit-testable in isolation (test/cli.test.js):
    argument parsing, the attach-vs-spawn choice, the run-event reducer that decides what the CLI is allowed to
    claim, exit codes, the desktop port-discovery parsers, and the non-interactive bootstrap documents.
@@ -35,15 +35,15 @@ const DEFAULT_AGENT_ID = 'agent';
 
 // ---- argv --------------------------------------------------------------------------------------
 const USAGE = [
-  'starnet — run StarNet agents from a terminal (no station UI required)',
+  'eyehold — run Eyehold agents from a terminal (no station UI required)',
   '',
   'Usage:',
-  '  starnet -p "<prompt>"                run one task and stream the answer to stdout',
-  '  starnet run "<prompt>"               same as -p',
-  '  starnet -p -                         read the prompt from stdin',
-  '  starnet status                       is a station reachable? version, workspace, providers (names only)',
-  '  starnet doctor                       the station\'s static diagnostics report (no live probes)',
-  '  starnet init                         create the default workspace + one full-power agent (no run)',
+  '  eyehold -p "<prompt>"                run one task and stream the answer to stdout',
+  '  eyehold run "<prompt>"               same as -p',
+  '  eyehold -p -                         read the prompt from stdin',
+  '  eyehold status                       is a station reachable? version, workspace, providers (names only)',
+  '  eyehold doctor                       the station\'s static diagnostics report (no live probes)',
+  '  eyehold init                         create the default workspace + one full-power agent (no run)',
   '',
   'Run options:',
   '  --agent <id>       roster agent to run (default: "agent", else the first roster entry)',
@@ -55,10 +55,10 @@ const USAGE = [
   '  --yes              approve consent prompts automatically (non-interactive default is DENY)',
   '',
   'Station options:',
-  '  --port <n>         attach to a station on this port (env STARNET_PORT)',
+  '  --port <n>         attach to a station on this port (env EYEHOLD_PORT)',
   '  --host <h>         station host (default 127.0.0.1)',
-  '  --token <t>        station API token (env STARNET_TOKEN); otherwise read from the served page',
-  '  --workspace <dir>  workspace to boot when no station is reachable (env STARNET_WORKSPACES)',
+  '  --token <t>        station API token (env EYEHOLD_TOKEN); otherwise read from the served page',
+  '  --workspace <dir>  workspace to boot when no station is reachable (env EYEHOLD_WORKSPACES)',
   '  --name <NAME>      agent name used by a first-time bootstrap (default OVERSEER)',
   '  --no-spawn         never boot a station; fail (exit 3) if none is reachable',
   '  --spawn            always boot a private station for this run (never attach to a running one)',
@@ -66,7 +66,7 @@ const USAGE = [
   'Exit codes: 0 done · 1 run failed · 2 usage · 3 no station / not configured · 4 cancelled · 5 stopped early',
   '',
   'Credentials are never taken on the command line. A spawned station reads them from the environment',
-  '(STARNET_OPENROUTER_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, …) or from a ChatGPT/Codex sign-in already',
+  '(EYEHOLD_OPENROUTER_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, …) or from a ChatGPT/Codex sign-in already',
   'stored in the workspace; an attached station uses whatever it already has.'
 ].join('\n');
 
@@ -136,16 +136,16 @@ function parseArgs(argv, env) {
     throw new Error('unexpected argument ' + JSON.stringify(a));
   }
   if (!out.cmd && !out.help && !out.version) out.help = true;
-  if (out.cmd === 'run' && !out.prompt && !out.promptFromStdin) throw new Error('run needs a prompt (starnet -p "…")');
+  if (out.cmd === 'run' && !out.prompt && !out.promptFromStdin) throw new Error('run needs a prompt (eyehold -p "…")');
   if (out.spawn && out.noSpawn) throw new Error('--spawn and --no-spawn contradict each other');
   // env fallbacks (flags win)
   if (!out.port) {
-    const ep = String(e.STARNET_PORT || e.SKYNET_PORT || '').trim();
+    const ep = String(e.EYEHOLD_PORT || e.SKYNET_PORT || '').trim();
     if (/^\d+$/.test(ep)) out.port = Number(ep);
   }
-  if (!out.host) out.host = String(e.STARNET_HOST || e.SKYNET_HOST || '127.0.0.1');
-  if (!out.token) out.token = String(e.STARNET_TOKEN || e.STARNET_API_TOKEN || e.SKYNET_API_TOKEN || '');
-  if (!out.workspace) out.workspace = String(e.STARNET_WORKSPACES || e.SKYNET_WORKSPACES || '');
+  if (!out.host) out.host = String(e.EYEHOLD_HOST || e.SKYNET_HOST || '127.0.0.1');
+  if (!out.token) out.token = String(e.EYEHOLD_TOKEN || e.EYEHOLD_API_TOKEN || e.SKYNET_API_TOKEN || '');
+  if (!out.workspace) out.workspace = String(e.EYEHOLD_WORKSPACES || e.SKYNET_WORKSPACES || '');
   if (!out.name) out.name = 'OVERSEER';
   out.name = String(out.name).slice(0, 40);
   return out;
@@ -169,7 +169,7 @@ function chooseStation(input) {
   const hit = cands.find(c => c && c.reachable);
   if (hit) return { mode: 'attach', port: hit.port, source: hit.source };
   const named = cands.find(c => c && (c.source === 'flag' || c.source === 'env'));
-  if (named) return { mode: 'refuse', reason: 'no station is answering on port ' + named.port + ' (from ' + (named.source === 'flag' ? '--port' : 'STARNET_PORT') + ')' };
+  if (named) return { mode: 'refuse', reason: 'no station is answering on port ' + named.port + ' (from ' + (named.source === 'flag' ? '--port' : 'EYEHOLD_PORT') + ')' };
   const d = o.desktop || {};
   if (d.ownerAlive && !d.port && !o.workspaceOverride) {
     return { mode: 'refuse', reason: 'the desktop app owns the default workspace (pid ' + d.ownerPid + ') but its port could not be discovered — pass --port <n> to attach, or --workspace <dir> to boot a separate station' };
@@ -231,7 +231,7 @@ function pickAgent(runtime, want) {
   const agentId = rec ? rec.agentId : DEFAULT_AGENT_ID;
   const model = String(w.model || (rec && rec.model) || rt.model || '').trim();
   const provider = String(w.provider || (rec && rec.provider) || rt.provider || 'openrouter').trim();
-  if (!model) return { ok: false, error: 'no model to run: agent ' + JSON.stringify(agentId) + ' has none configured — pass --model <slug> (or set STARNET_DEFAULT_MODEL for a spawned station)' };
+  if (!model) return { ok: false, error: 'no model to run: agent ' + JSON.stringify(agentId) + ' has none configured — pass --model <slug> (or set EYEHOLD_DEFAULT_MODEL for a spawned station)' };
   return { ok: true, agentId, name: rec ? rec.name : agentId, model, provider };
 }
 
@@ -354,7 +354,7 @@ function exitCodeForReason(reason, opts) {
 
 // ---- non-interactive bootstrap -----------------------------------------------------------------
 /* A fresh workspace needs exactly what the desktop's onboarding would have written: a roster entry the sidecar
-   can run (agent.roster.json) and a save document the desktop can RESUME (agent.save.json, schema starnet.save
+   can run (agent.roster.json) and a save document the desktop can RESUME (agent.save.json, schema eyehold.save
    v5 — the same golden shape dev/fixtures/seed-workspace uses). The desktop's boot path sees a valid save and
    resumes it (or shows the RESUME connect screen when its keychain holds no key) — it never re-runs the
    first-run ceremony over it. approvalMode:'full' is the product law: full power from minute one.
@@ -367,7 +367,7 @@ function bootstrapDocs(input) {
   const name = String(o.name || 'OVERSEER').slice(0, 40);
   const model = String(o.model || '');
   const provider = String(o.provider || 'openrouter');
-  const identity = 'You are ' + name + ', the resident agent of a StarNet station driven from the command line. Sharp, concise, a little dry. Use your real tools (web, files, shell, memory) when a task needs them and report what they actually returned — never what you assume they would.';
+  const identity = 'You are ' + name + ', the resident agent of a Eyehold station driven from the command line. Sharp, concise, a little dry. Use your real tools (web, files, shell, memory) when a task needs them and report what they actually returned — never what you assume they would.';
   const purpose = 'Be the always-ready general agent for this station: take a task from the terminal, do the real work with real tools, and answer plainly.';
   const roster = {
     version: 1,
@@ -381,13 +381,13 @@ function bootstrapDocs(input) {
   const save = {
     version: 1, agentId, updatedAt: now, savedAt: now,
     doc: {
-      schema: 'starnet.save', version: 5, updatedAt: now,
+      schema: 'eyehold.save', version: 5, updatedAt: now,
       agent: {
         id: agentId, name, color: '#5ad0ff', model, personaId: 'worker-homie', purpose, specialtyId: null, createdAt: now,
         docs: {
           identity, purpose,
           manual: 'Keep replies brief. Use your real tools when a task needs them and report what they actually returned. Say plainly when something is broken or out of reach.',
-          context: 'This station was bootstrapped headlessly by the starnet CLI. The desktop app can open it at any time; the layout and crew grow from there.'
+          context: 'This station was bootstrapped headlessly by the eyehold CLI. The desktop app can open it at any time; the layout and crew grow from there.'
         },
         stats: { xp: 0, level: 1, lifetimeXp: 0, confidence: 50, samples: 0, counters: {}, milestones: [] }
       },
@@ -405,14 +405,14 @@ function bootstrapDocs(input) {
 }
 
 /* Which provider can a SPAWNED station run headlessly, from the environment alone? Mirrors the sidecar's own
-   envFirst() (bare name, STARNET_<name>, SKYNET_<name>) over the registry's keyEnv lists. `codexTokensPresent`
+   envFirst() (bare name, EYEHOLD_<name>, SKYNET_<name>) over the registry's keyEnv lists. `codexTokensPresent`
    is the workspace's codex/tokens.json (a ChatGPT sign-in the desktop stored), checked by the caller. */
 function inferProvider(input) {
   const o = input || {};
   const env = o.env || {};
   const profiles = Array.isArray(o.profiles) ? o.profiles : [];
   const has = (name) => {
-    for (const k of [name, 'STARNET_' + name, 'SKYNET_' + name]) { if (env[k] != null && String(env[k]).trim()) return true; }
+    for (const k of [name, 'EYEHOLD_' + name, 'SKYNET_' + name]) { if (env[k] != null && String(env[k]).trim()) return true; }
     return false;
   };
   if (o.explicit) return { provider: String(o.explicit), source: 'flag' };

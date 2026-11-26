@@ -51,4 +51,4 @@ The installed Windows/macOS builds, customer-specific GPU/DPI cases and authenti
 
 ## Evidence
 
-Tracked gate counts, log hashes and release limits: `qa/evidence/glass-merge-checks-0909.json`. Tracked interaction details: `qa/evidence/glass-interactions-0909.json`. Repro runner: `scripts/qa/glass-interactions-live.cjs`. Local full reports: `.uijourneys/journeys-report.json`, `.uiaudit/audit-report.json`, `.bugloops/beginner-2026-09-09T23-01-33/timings.json`. Final gate logs use `%TEMP%/starnet-glass-final-*.log`.
+Tracked gate counts, log hashes and release limits: `qa/evidence/glass-merge-checks-0909.json`. Tracked interaction details: `qa/evidence/glass-interactions-0909.json`. Repro runner: `scripts/qa/glass-interactions-live.cjs`. Local full reports: `.uijourneys/journeys-report.json`, `.uiaudit/audit-report.json`, `.bugloops/beginner-2026-09-09T23-01-33/timings.json`. Final gate logs use `%TEMP%/eyehold-glass-final-*.log`.

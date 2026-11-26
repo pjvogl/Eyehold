@@ -5,9 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { launchChrome, connectCDP, evalJS, sleep } from '../lib/cdp.mjs';
 
-const url = process.env.STARNET_URL || 'http://127.0.0.1:9084';
-const cdpPort = Number(process.env.STARNET_CDP_PORT || 9484);
-const profileDir = mkdtempSync(join(tmpdir(), 'starnet-terminal-resize-'));
+const url = process.env.EYEHOLD_URL || 'http://127.0.0.1:9084';
+const cdpPort = Number(process.env.EYEHOLD_CDP_PORT || 9484);
+const profileDir = mkdtempSync(join(tmpdir(), 'eyehold-terminal-resize-'));
 const { proc } = launchChrome({ cdpPort, win: '1440,900', profileDir });
 let cdp;
 
@@ -77,7 +77,7 @@ async function probe(item, label) {
     const box = e => { const r=e.getBoundingClientRect(); return [r.left,r.top,r.right,r.bottom,r.width,r.height]; };
     const wr=box(w), hr=box(head), xr=box(close), gr=box(grip), br=box(body), sr=box(scroller);
     const inView = r => r[0] >= -0.5 && r[1] >= -0.5 && r[2] <= innerWidth + 0.5 && r[3] <= innerHeight + 0.5;
-    const saved = JSON.parse(localStorage.getItem('starnet.station.v1') || '{}');
+    const saved = JSON.parse(localStorage.getItem('eyehold.station.v1') || '{}');
     const overflow = getComputedStyle(scroller).overflowY;
     const ok = inView(xr) && inView(gr) && hr[3] > 0 && hr[1] < innerHeight &&
       br[5] > 0 && br[3] <= wr[3] + 0.5 && sr[5] > 0 && sr[3] <= wr[3] + 0.5 &&
@@ -105,7 +105,7 @@ try {
   await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url });
   await waitFor("typeof StationUI === 'object' && typeof StationUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'active station');
-  await evalJS(cdp, "localStorage.removeItem('starnet.station.v1')");
+  await evalJS(cdp, "localStorage.removeItem('eyehold.station.v1')");
   await cdp.send('Page.reload');
   await sleep(700);
   await waitFor("typeof StationUI === 'object' && !!document.querySelector('#screen-game.active')", 'clean station');

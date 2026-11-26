@@ -1,4 +1,4 @@
-/* STARNET — bottlestore.js : R5 "BOTTLE A RUN" — save what actually worked as a reusable recipe.
+/* EYEHOLD — bottlestore.js : R5 "BOTTLE A RUN" — save what actually worked as a reusable recipe.
 
    The marketplace grows from real successes: when an INTERACTIVE run went well — the Commander rated the hero's
    work 👍 — and that run was NOT itself launched from a recipe, the station offers, once, to bottle the directive
@@ -21,7 +21,7 @@
    the beat + the persisted denylist. Its pure halves (shouldOffer / decisions) are node-exported for the test. */
 'use strict';
 const BottleStore = (() => {
-  const KEY = 'starnet.bottle.v1';        // the per-run decision denylist (bottled/dismissed) — self-persisted
+  const KEY = 'eyehold.bottle.v1';        // the per-run decision denylist (bottled/dismissed) — self-persisted
   const RETRY_MS = 7000;                  // blocked-offer retry cadence (bounded), cloned from confbeats/away-digest
   const SETTLE_MS = 900;                  // let the rate control vanish before the offer slots in (confbeats SETTLE)
   const MAX_DECIDED = 200;               // cap the persisted ledger (FIFO) so a long-lived station can't grow it forever

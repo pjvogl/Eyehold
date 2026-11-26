@@ -1,4 +1,4 @@
-/* STARNET hudmode.js — HUD MODE: StarNet as a small always-on-top panel.
+/* EYEHOLD hudmode.js — HUD MODE: Eyehold as a small always-on-top panel.
    For the Commander who is gaming or doing something else on the PC and wants every piece of work the
    station is doing one glance away, with a hand on each of them, without the whole station on screen.
 
@@ -28,7 +28,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (root) {
   'use strict';
 
-  const PREF_KEY = 'starnet.hud';          // { pinned, rect } — per machine, a convenience only
+  const PREF_KEY = 'eyehold.hud';          // { pinned, rect } — per machine, a convenience only
   const POLL_MS = 4000;                    // live cadence while the HUD is up (local sidecar, tiny JSON)
   const HISTORY_MS = 12000;                // finished-work cadence (run history + worker ledger)
   const START_GRACE_MS = 8000;             // an event-only run the snapshot has not caught up with yet
@@ -37,7 +37,7 @@
   const LIVE_MAX = 5;                      // (summary model) live rows before "+N MORE"
   const FINISHED_WINDOW_MS = 12 * 60 * 60 * 1000;   // finished work shown: the last 12 hours…
   const FINISHED_MAX = 10;                 // …at most this many cards
-  const TAURI_EVENT = 'starnet-hud';       // hud_mode.rs emits { active } from the tray menu
+  const TAURI_EVENT = 'eyehold-hud';       // hud_mode.rs emits { active } from the tray menu
 
   /* ---------------- pure feed model (unit-tested in test/hudmode.test.js) ---------------- */
 
@@ -679,7 +679,7 @@
     open.setAttribute('aria-label', 'Open activity'); open.title = 'Click to open activity · drag to move';
     const box = el('section', 'hud-widget');
     box.id = 'hud-widget';
-    box.setAttribute('aria-label', 'StarNet HUD: your agents at work');
+    box.setAttribute('aria-label', 'Eyehold HUD: your agents at work');
     box.setAttribute('data-tauri-drag-region', '');
     const rows = el('div', 'hud-wrows'); rows.setAttribute('data-tauri-drag-region', '');
     const more = el('button', 'hud-wmore'); more.type = 'button'; more.hidden = true;
@@ -764,7 +764,7 @@
     if (!z) return Promise.resolve(null);
     S.widgetFit = z;
     S.fitQuietUntil = now() + 900;   // the resize this request causes is ours, not the Commander's
-    return invoke('starnet_hud_fold', { folded: true, height: z.h, width: z.w });
+    return invoke('eyehold_hud_fold', { folded: true, height: z.h, width: z.w });
   }
   // default-sized: follow the rows (an agent starting or finishing adds or removes one); user-sized: hands off
   function fitWidget() {
@@ -930,7 +930,7 @@
     const h = activityHeight();
     if (!h || Math.abs(h - (S.foldedH || 0)) < 3) return;
     S.foldedH = h;
-    invoke('starnet_hud_fold', { folded: true, height: h });
+    invoke('eyehold_hud_fold', { folded: true, height: h });
   }
 
   function applyView() {
@@ -957,11 +957,11 @@
     if (S.view === 'chat') {
       try { const input = $('chat-input'); if (input) input.focus(); } catch (_) {}
       S.foldedH = 0;
-      return invoke('starnet_hud_fold', { folded: false, height: null }).then(() => true);
+      return invoke('eyehold_hud_fold', { folded: false, height: null }).then(() => true);
     }
     if (S.view === 'widget') return askWidgetSize(widgetSize()).then(() => true);
     S.foldedH = activityHeight();
-    return invoke('starnet_hud_fold', { folded: true, height: S.foldedH, width: null }).then(() => true);
+    return invoke('eyehold_hud_fold', { folded: true, height: S.foldedH, width: null }).then(() => true);
   }
 
   function enter() {
@@ -987,9 +987,9 @@
     S.histT = root.setInterval(pollHistory, HISTORY_MS);
     S.tickT = root.setInterval(render, 1000);   // clocks + "ago" words only; no data invented between polls
     announceLayout();
-    return invoke('starnet_hud_set', { active: true, pinned: S.pinned, rect: prefs.rect })
+    return invoke('eyehold_hud_set', { active: true, pinned: S.pinned, rect: prefs.rect })
       // a remembered rect the shell cannot take must never strand the HUD layout in a full-size window
-      .then(v => v || (prefs.rect && S.desktop ? invoke('starnet_hud_set', { active: true, pinned: S.pinned }) : v))
+      .then(v => v || (prefs.rect && S.desktop ? invoke('eyehold_hud_set', { active: true, pinned: S.pinned }) : v))
       .then(v => { if (v) { S.pinned = !!v.pinned; syncButtons(); } return true; })
       // the shell opened the HUD at its full rect: now hug the widget
       .then(ok => askWidgetSize(widgetSize()).then(() => ok))
@@ -1002,10 +1002,10 @@
       // the page is not in HUD mode, but the shell may still hold the small pinned window (a reload that never
       // reached the station): hand the window back so it is never stranded tiny and on top
       if (!tauriCore(root)) return Promise.resolve(false);
-      return invoke('starnet_hud_status').then(v => (v && v.active ? invoke('starnet_hud_set', { active: false }) : null)).then(() => false);
+      return invoke('eyehold_hud_status').then(v => (v && v.active ? invoke('eyehold_hud_set', { active: false }) : null)).then(() => false);
     }
     S.busy = true;
-    return invoke('starnet_hud_set', { active: false })
+    return invoke('eyehold_hud_set', { active: false })
       .then(v => {
         if (v && v.rect) { const prefs = readPrefs(root.localStorage); prefs.rect = v.rect; writePrefs(root.localStorage, prefs); }
       })
@@ -1030,7 +1030,7 @@
 
   function setPinned(pinned) {
     if (!S.active) return Promise.resolve(false);
-    return invoke('starnet_hud_pin', { pinned: !!pinned }).then(v => {
+    return invoke('eyehold_hud_pin', { pinned: !!pinned }).then(v => {
       if (v) S.pinned = !!v.pinned;   // the shell's read-back, never the request
       const prefs = readPrefs(root.localStorage); prefs.pinned = S.pinned; writePrefs(root.localStorage, prefs);
       syncButtons();
@@ -1058,7 +1058,7 @@
         toggle();
       }
     });
-    // The tray's HUD Mode / Open StarNet items (hud_mode.rs) ask the page to switch.
+    // The tray's HUD Mode / Open Eyehold items (hud_mode.rs) ask the page to switch.
     try {
       const ev = root.__TAURI__ && root.__TAURI__.event;
       if (ev && typeof ev.listen === 'function') {
@@ -1067,7 +1067,7 @@
     } catch (_) {}
     // A reload (or a WebView2 crash rebuild) inside HUD mode: the shell still holds the HUD window,
     // so the page puts its HUD layout back instead of drawing the full station into a tiny frame.
-    invoke('starnet_hud_status').then(v => {
+    invoke('eyehold_hud_status').then(v => {
       if (!v || !v.active) return;
       // the station may take a while to boot; if it never gets there, give the window back rather than strand it
       const tryEnter = (n) => { if (inGame()) enter(); else if (n > 0) root.setTimeout(() => tryEnter(n - 1), 500); else exit(); };

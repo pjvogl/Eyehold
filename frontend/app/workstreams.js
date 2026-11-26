@@ -1,4 +1,4 @@
-/* STARNET — workstreams.js : the unified unit-of-work record (session organization).
+/* EYEHOLD — workstreams.js : the unified unit-of-work record (session organization).
    A WORKSTREAM is one named conversation that simultaneously IS the Comms thread (its
    `history`), IS a kanban card (its `lane`), and OWNS its backend runs + deliverables +
    per-conversation cost. This module is the single owner of workstreams[] + activeId +
@@ -483,17 +483,17 @@
     const messages = visibleMessages(w).map(m => ({ role: m.role, content: scrubSecrets(m.content) }));
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || 'general';
     if (format === 'json') {
-      const doc = { schema: 'starnet.conversation', version: 1, exportedAt: opts.exportedAt != null ? opts.exportedAt : now(), title, messages, secretsIncluded: false };
-      return { format: 'json', mime: 'application/json', filename: 'starnet-' + slug + '.json', text: JSON.stringify(doc, null, 2), doc };
+      const doc = { schema: 'eyehold.conversation', version: 1, exportedAt: opts.exportedAt != null ? opts.exportedAt : now(), title, messages, secretsIncluded: false };
+      return { format: 'json', mime: 'application/json', filename: 'eyehold-' + slug + '.json', text: JSON.stringify(doc, null, 2), doc };
     }
-    const lines = ['# ' + title, '', '_Exported from StarNet. Hidden/system data and obvious credentials are excluded._', ''];
+    const lines = ['# ' + title, '', '_Exported from Eyehold. Hidden/system data and obvious credentials are excluded._', ''];
     for (const m of messages) lines.push('## ' + (m.role === 'user' ? 'Commander' : 'Agent'), '', m.content, '');
-    return { format: 'markdown', mime: 'text/markdown', filename: 'starnet-' + slug + '.md', text: lines.join('\n') };
+    return { format: 'markdown', mime: 'text/markdown', filename: 'eyehold-' + slug + '.md', text: lines.join('\n') };
   }
   function parseConversationExport(text) {
     let doc;
     try { doc = JSON.parse(String(text || '')); } catch (_) { return null; }
-    if (!doc || doc.schema !== 'starnet.conversation' || doc.version !== 1 || !Array.isArray(doc.messages)) return null;
+    if (!doc || doc.schema !== 'eyehold.conversation' || doc.version !== 1 || !Array.isArray(doc.messages)) return null;
     const messages = doc.messages.filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
       .map(m => ({ role: m.role, content: scrubSecrets(m.content) }));
     return { title: scrubSecrets(doc.title || 'General'), messages, secretsIncluded: false };
@@ -582,7 +582,7 @@
   }
 
   // ---------- migrations / imports (pure; save.js + stationui.js delegate here) ----------
-  // starnet.save v1 { agent, history, usage } -> the v2 workstreams slice. The entire legacy
+  // eyehold.save v1 { agent, history, usage } -> the v2 workstreams slice. The entire legacy
   // conversation becomes a single General stream; its cost is SEEDED from the existing lifetime
   // usage so the per-stream number matches reality (nothing invented). agent + lifetime usage stay
   // at the envelope root (save.js merges this slice in) — they remain the billing source of truth.

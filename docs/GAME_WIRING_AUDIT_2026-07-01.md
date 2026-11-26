@@ -83,7 +83,7 @@ Transport: one SSE stream (`/api/channels/events`, sidecar chanBus → `world.js
 
 ## 3. Addictiveness design — mapping gaps to hooks
 
-The Factorio pull is two loops StarNet currently half-has:
+The Factorio pull is two loops Eyehold currently half-has:
 watching the factory RUN (legibility) and coming back to see what it DID (return).
 Plus Clash-style collect rituals and monument pride. All can be built HONESTLY
 (truthful telemetry, no fake timers) — the real work is genuinely async, so the

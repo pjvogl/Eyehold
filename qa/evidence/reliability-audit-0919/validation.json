@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.reliability-audit.v1",
+  "schema": "eyehold.reliability-audit.v1",
   "createdAt": "2026-09-19T18:27:13.822Z",
   "sourceCandidate": "43a59104e3c2c472cb3405780d56e5ab46ca9e43",
   "branch": "agent/reliability-audit-0919",

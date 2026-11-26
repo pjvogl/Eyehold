@@ -68,7 +68,7 @@ const MEASURE = `(() => {
   // the handle is zero-height; what has to cover the gap is its ::before hit strip
   const hit = seam ? getComputedStyle(seam, '::before') : null;
   const seamR = seam ? seam.getBoundingClientRect() : null;
-  let stored = null; try { stored = localStorage.getItem('starnet.crewrail.rows'); } catch (_) {}
+  let stored = null; try { stored = localStorage.getItem('eyehold.crewrail.rows'); } catch (_) {}
   return {
     agents: rows.length,
     crewH: Math.round(ul.getBoundingClientRect().height * 10) / 10,
@@ -120,14 +120,14 @@ const HOVER = `(() => {
 
 const DBLCLICK = `(() => {
   document.getElementById('crew-vresizer').dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-  let stored = null; try { stored = localStorage.getItem('starnet.crewrail.rows'); } catch (_) {}
+  let stored = null; try { stored = localStorage.getItem('eyehold.crewrail.rows'); } catch (_) {}
   return { stored };
 })()`;
 
 // TEXT SIZE cannot be driven by writing body.style.zoom — applySettings re-derives it from the
 // store. Write the setting the app actually reads, then reload.
 const setScale = (v) => `(() => {
-  const KEY = 'starnet.station.v1';
+  const KEY = 'eyehold.station.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   localStorage.setItem(KEY, JSON.stringify(r));

@@ -103,7 +103,7 @@ A.ok(UnderstandingStore.read().dims.style.conf < styleBase, 'net counter-evidenc
 for (let i = 0; i < 20; i++) UnderstandingStore.noteRating('miss');
 A.eq(UnderstandingStore.noteRating('miss'), -6, 'corroboration clamps at ±6');
 // persisted: a reload (fresh require) rehydrates the signed count
-A.ok(lsMap['starnet.understanding.v1'] && lsMap['starnet.understanding.v1'].indexOf('style') >= 0, 'corroboration persists to its own key');
+A.ok(lsMap['eyehold.understanding.v1'] && lsMap['eyehold.understanding.v1'].indexOf('style') >= 0, 'corroboration persists to its own key');
 delete require.cache[require.resolve('../frontend/app/understandingstore.js')];
 const US2 = require('../frontend/app/understandingstore.js').UnderstandingStore;
 US2.init({ now: () => 6000 });
@@ -114,7 +114,7 @@ A.eq(US2.noteProbe('ambition', true), 1, 'an accepted probe corroborates its aim
 A.eq(US2.noteProbe('ambition', false), 0, 'a declined probe is counter-evidence');
 A.eq(US2.noteEvidence('nonsense', 1), null, 'an unknown dimension is rejected');
 US2.reset();
-A.eq(lsMap['starnet.understanding.v1'], undefined, 'reset clears the persisted corroboration (new-hero path)');
+A.eq(lsMap['eyehold.understanding.v1'], undefined, 'reset clears the persisted corroboration (new-hero path)');
 
 /* ---------- R3: probeTarget aims at a SAGGING north-star-critical belief ---------- */
 const DAY = 24 * 60 * 60 * 1000;

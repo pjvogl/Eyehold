@@ -4,7 +4,7 @@ The later signed candidate passes the candidate-bound READY gate. See [NATIVE_RE
 
 ---
 
-# StarNet 0.12.4 release-readiness audit
+# Eyehold 0.12.4 release-readiness audit
 
 Status: **BLOCKED — not approved for release**. No tag, push, release, publication, updater pointer change, or installed-app replacement was performed by this audit.
 

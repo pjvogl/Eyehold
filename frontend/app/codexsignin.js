@@ -1,4 +1,4 @@
-/* STARNET — codexsignin.js : the ONE device-code OAuth sign-in driver for keyless subscription providers.
+/* EYEHOLD — codexsignin.js : the ONE device-code OAuth sign-in driver for keyless subscription providers.
 
    Originally the ChatGPT (Codex) device-code flow extracted from app.js's connect-screen (start → show code →
    open page → poll → connected) so the Settings→PROVIDERS panel can offer RE-SIGN-IN without duplicating the
@@ -35,7 +35,7 @@
    (a per-browser convenience) and what the sidecar last reported for the stored sign-in. Default for a fresh
    sign-in: the stored sign-in's region when one is known, else Global. DOM-free. */
 const KimiRegion = (() => {
-  const KEY = 'starnet.kimi.region';
+  const KEY = 'eyehold.kimi.region';
   const OPTIONS = Object.freeze([
     Object.freeze({ id: 'global', label: 'GLOBAL', host: 'kimi.ai' }),
     Object.freeze({ id: 'cn', label: 'CHINA', host: 'kimi.com' })
@@ -189,7 +189,7 @@ const OAuthAccounts = {
 };
 
 /* ClaudeCliSignIn — SIGN IN WITH CLAUDE for surfaces outside the brain screen (Settings → PROVIDERS). Not a device
-   code: the sidecar runs the user's own `claude auth login` (it opens the browser and keeps the token; StarNet
+   code: the sidecar runs the user's own `claude auth login` (it opens the browser and keeps the token; Eyehold
    never sees it) and /api/auth/claude-cli/* reports what the CLI proved. DOM-free like the engine above.
      status(account?)       -> the sidecar's { installed, loggedIn, authMethod, email?, subscription?, signingIn } or null
      accounts()             -> { accounts: [{ account, label, primary, coolingUntil, installed, loggedIn, … }], max } or null

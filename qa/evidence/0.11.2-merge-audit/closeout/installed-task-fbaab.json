@@ -2,8 +2,8 @@
   "at": "2026-09-10T22:06:46.622Z",
   "context": {
     "startedAt": "2026-09-10T21:58:49.686Z",
-    "root": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC",
-    "file": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC\\index.html",
+    "root": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC",
+    "file": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC\\index.html",
     "stream": "ws_mtw2kgvjl70b",
     "before": {
       "usage": {
@@ -34,11 +34,11 @@
       "roomId": null,
       "lane": "active",
       "kind": "task",
-      "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC",
+      "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC",
       "history": [
         {
           "role": "user",
-          "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
+          "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
           "ts": 1789077529726,
           "sourceRunId": "22477b46-eb33-437c-8ca8-2715fbf61235"
         },
@@ -84,13 +84,13 @@
       "turns": 7,
       "tokens": 164544,
       "usd": 0.15844650000000002,
-      "title": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC\\index.html in this trusted project. It must",
+      "title": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC\\index.html in this trusted project. It must",
       "streamId": "ws_mtw2kgvjl70b",
       "sessionTitle": "",
       "deliveryPrompt": "",
       "deliveryText": "",
       "recipeId": "",
-      "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC",
+      "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC",
       "deliverable": {
         "title": "Release verification HTML page",
         "summary": "Standalone HTML page with a Verify button that sets the #result element text to RELEASE_0112_TOOL_OK on click.",
@@ -157,7 +157,7 @@
       "failureCode": "",
       "uncertainMutations": [],
       "completionEvidence": {
-        "schemaVersion": "starnet.completion-evidence.v1",
+        "schemaVersion": "eyehold.completion-evidence.v1",
         "completionVerdict": "not_assessed",
         "effectVerdict": "unverified_effects",
         "effects": [

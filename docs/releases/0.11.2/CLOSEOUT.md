@@ -30,4 +30,4 @@ The owner's instruction to finish and release establishes the intended outcome. 
 
 The exact candidate has complete Guardian, CI, signed build, hosted clean-install/upgrade/lifecycle and personal preservation receipts in [POINTER_CUT.md](POINTER_CUT.md). The signed Windows installer hash remains `8b39dab2818acac23097056c8796d1f48668b9a711f09c134f7d56b51e58f416`.
 
-A fresh read of the normally running personal installation again returned version 0.11.2, source `69baf91a5b2c22230f87e614da6a72882278bc6c`, 26 crew, 141 props, 73 conversations, zero active runs and one paused routine. The native StarNet window was responding. No reinstall was needed for this evidence-only closeout.
+A fresh read of the normally running personal installation again returned version 0.11.2, source `69baf91a5b2c22230f87e614da6a72882278bc6c`, 26 crew, 141 props, 73 conversations, zero active runs and one paused routine. The native Eyehold window was responding. No reinstall was needed for this evidence-only closeout.

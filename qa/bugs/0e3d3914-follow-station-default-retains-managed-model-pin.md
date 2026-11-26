@@ -10,7 +10,7 @@ lane: openrouter-delegation-0920
 fix: 13a83534b
 origin: customer
 report: User-supplied sanitized v0.12.4 report, 2026-09-20
-affected: StarNet desktop 0.12.4, Windows x64, source f00aa04df
+affected: Eyehold desktop 0.12.4, Windows x64, source f00aa04df
 family: execution-configuration
 installer: unverified
 recovery: unconfirmed
@@ -31,7 +31,7 @@ A Windows v0.12.4 station with working OpenRouter BYOK and zero managed balance 
 
 ## Evidence
 
-Live seeded app at f00aa04df reproduced the dropdown save retaining `{model: "fixture/managed", provider: "starnet"}`. Real delegated worker emitted `agent.run.error` with `reason: billing`, the reported credit message, and `agent.run.end` with `turns: 0`. Direct BYOK request reached the local OpenRouter wire fixture. Evidence: `scripts/qa/openrouter-delegation-live.cjs`, local `delegation-before.log`. The defective fallback is `const model = pick.model || advModel;` in `frontend/app/stationui.js`; the collapsed advanced fields still contained the prior pin.
+Live seeded app at f00aa04df reproduced the dropdown save retaining `{model: "fixture/managed", provider: "eyehold"}`. Real delegated worker emitted `agent.run.error` with `reason: billing`, the reported credit message, and `agent.run.end` with `turns: 0`. Direct BYOK request reached the local OpenRouter wire fixture. Evidence: `scripts/qa/openrouter-delegation-live.cjs`, local `delegation-before.log`. The defective fallback is `const model = pick.model || advModel;` in `frontend/app/stationui.js`; the collapsed advanced fields still contained the prior pin.
 
 ## Verdict
 

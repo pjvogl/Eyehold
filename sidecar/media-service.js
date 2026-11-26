@@ -133,7 +133,7 @@ function wavToMono16kFloat32(buf) {
 
 function sttMultipartBody(audioBuf, filename, contentType, fields, randomBytes) {
   const rand = typeof randomBytes === 'function' ? randomBytes : crypto.randomBytes;
-  const boundary = '----StarNetSTT' + rand(16).toString('hex');
+  const boundary = '----EyeholdSTT' + rand(16).toString('hex');
   const parts = [];
   for (const k of Object.keys(fields || {})) {
     parts.push(Buffer.from('--' + boundary + '\r\nContent-Disposition: form-data; name="' + k + '"\r\n\r\n' + String(fields[k]) + '\r\n', 'utf8'));
@@ -282,7 +282,7 @@ function makeMediaService(options) {
     try {
       response = await fetchFn('https://openrouter.ai/api/v1/audio/speech', voiceFetchOpts({
         method: 'POST',
-        headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://localhost', 'X-Title': 'STARNET' },
+        headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://localhost', 'X-Title': 'EYEHOLD' },
         body: JSON.stringify(payload)
       }, 60000));
     } catch (error) { return { ok: false, reason: 'network: ' + ((error && error.message) || error) }; }
@@ -545,7 +545,7 @@ function makeMediaService(options) {
         try {
           response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', voiceFetchOpts({
             method: 'POST',
-            headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://localhost', 'X-Title': 'STARNET' },
+            headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://localhost', 'X-Title': 'EYEHOLD' },
             body: JSON.stringify({ model, messages: [{ role: 'user', content: [
               { type: 'input_audio', input_audio: { data: audio, format } }, { type: 'text', text: STT_PROMPT }
             ] }] })

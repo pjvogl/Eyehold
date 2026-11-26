@@ -1,26 +1,26 @@
-/* starnet-kit.js — the `starnet` bridge for plugin windows (plugin extensions phase 1, 2026-09-29).
+/* eyehold-kit.js — the `eyehold` bridge for plugin windows (plugin extensions phase 1, 2026-09-29).
 
-   Injected first thing in every plugin page's <head> by the sidecar, so `window.starnet` exists before any of the
+   Injected first thing in every plugin page's <head> by the sidecar, so `window.eyehold` exists before any of the
    plugin's own scripts run. The page is a sandboxed frame with an OPAQUE origin: it cannot read the station, its
    token, or its API. Everything it may ask of the station goes through postMessage to the page host
    (frontend/app/pluginhost.js), which knows WHICH plugin this frame belongs to and answers only for that plugin.
 
-     await starnet.ready                    → { plugin: {id, name, version}, screen: {id, title} }
-     starnet.store.get(key) / set(key, v) / delete(key) / keys()      the plugin's own durable data (JSON values)
-     starnet.backend.call(name, args)                                   the plugin's own code: api.handle(name, fn)
-     starnet.ui.toast(text, 'ok'|'warn'|'bad')                          a station notification
-     starnet.ui.setTitle(text)                                          this window's title (plain text)
-     starnet.ui.open(screenId)                                          open another of THIS plugin's screens
-     starnet.ui.close()                                                 close this window
-     starnet.ui.openLink(url)                                           an https:// link in the real browser
-     starnet.ui.setHeight(px) / starnet.ui.autoHeight(true|false)       the window follows content by default
-     starnet.theme.vars / starnet.theme.onChange(fn)                   the station's live look (already applied)
-     starnet.onData(fn)                                                 an APP: the crew just published new data
+     await eyehold.ready                    → { plugin: {id, name, version}, screen: {id, title} }
+     eyehold.store.get(key) / set(key, v) / delete(key) / keys()      the plugin's own durable data (JSON values)
+     eyehold.backend.call(name, args)                                   the plugin's own code: api.handle(name, fn)
+     eyehold.ui.toast(text, 'ok'|'warn'|'bad')                          a station notification
+     eyehold.ui.setTitle(text)                                          this window's title (plain text)
+     eyehold.ui.open(screenId)                                          open another of THIS plugin's screens
+     eyehold.ui.close()                                                 close this window
+     eyehold.ui.openLink(url)                                           an https:// link in the real browser
+     eyehold.ui.setHeight(px) / eyehold.ui.autoHeight(true|false)       the window follows content by default
+     eyehold.theme.vars / eyehold.theme.onChange(fn)                   the station's live look (already applied)
+     eyehold.onData(fn)                                                 an APP: the crew just published new data
 
    Every call returns a Promise; a refused call rejects with an Error whose message says why. */
 (function () {
   'use strict';
-  if (window.starnet && window.starnet.__kit) return;
+  if (window.eyehold && window.eyehold.__kit) return;
   const parentWin = window.parent;
   const pending = new Map();
   let seq = 0;
@@ -36,7 +36,7 @@
   const TIMEOUT = { 'backend.call': 45000 };
 
   function call(method, args) {
-    if (!parentWin || parentWin === window) return Promise.reject(new Error('this page is not open in a StarNet window'));
+    if (!parentWin || parentWin === window) return Promise.reject(new Error('this page is not open in a Eyehold window'));
     const id = ++seq;
     return new Promise((resolve, reject) => {
       pending.set(id, { resolve, reject });
@@ -73,7 +73,7 @@
     }
   });
 
-  // ---- auto height: the window hugs the page (like every native StarNet window) until the page opts out ----
+  // ---- auto height: the window hugs the page (like every native Eyehold window) until the page opts out ----
   // A page sized FROM the viewport (min-height:100vh plus a margin) would grow every time the frame grows: after a
   // run of back-to-back growth the kit stops following and leaves the height where it is.
   let auto = true, lastH = 0, raf = 0, growRun = 0, growAt = 0;
@@ -120,7 +120,7 @@
     schedule();
   }
 
-  const starnet = {
+  const eyehold = {
     __kit: 1,
     ready,
     call,
@@ -149,7 +149,7 @@
       autoHeight: (on) => { auto = on !== false; lastH = 0; schedule(); }
     }
   };
-  window.starnet = starnet;
+  window.eyehold = eyehold;
 
   call('hello', {}).then((info) => {
     if (info && info.theme) applyTheme(info.theme);

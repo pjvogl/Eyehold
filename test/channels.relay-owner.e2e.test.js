@@ -93,7 +93,7 @@ function startMockTelegram() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -122,15 +122,15 @@ async function waitUntil(fn, ms, label) {
   const home = path.join(ws, 'home');
   fs.mkdirSync(home, { recursive: true });
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
+    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
     // never let a test sidecar see (or recover into) the real user profile
     HOME: home, USERPROFILE: home, APPDATA: path.join(home, 'AppData', 'Roaming'), LOCALAPPDATA: path.join(home, 'AppData', 'Local'), HERMES_HOME: path.join(home, '.hermes'),
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: 'TESTTOKEN', STARNET_TELEGRAM_TOKEN: 'TESTTOKEN',
-    SKYNET_TELEGRAM_API_BASE: tg.base, STARNET_TELEGRAM_API_BASE: tg.base,
-    STARNET_CHANNEL_WEBHOOK_SECRET: SECRET
+    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    SKYNET_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
+    SKYNET_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base,
+    EYEHOLD_CHANNEL_WEBHOOK_SECRET: SECRET
   };
   let child = null;
   try {
@@ -142,9 +142,9 @@ async function waitUntil(fn, ms, label) {
       const body = JSON.stringify({ message });
       const ts = String(Date.now()), nonce = 'nonce_' + crypto.randomBytes(12).toString('hex');
       const r = await fetch(B + '/api/channels/webhook/telegram', { method: 'POST', body, headers: {
-        'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B,
-        'x-starnet-timestamp': ts, 'x-starnet-nonce': nonce,
-        'x-starnet-signature': crypto.createHmac('sha256', SECRET).update(ts + '.' + nonce + '.' + body).digest('hex')
+        'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B,
+        'x-eyehold-timestamp': ts, 'x-eyehold-nonce': nonce,
+        'x-eyehold-signature': crypto.createHmac('sha256', SECRET).update(ts + '.' + nonce + '.' + body).digest('hex')
       } });
       let j = {}; try { j = await r.json(); } catch (_) {}
       return { status: r.status, j };
@@ -155,7 +155,7 @@ async function waitUntil(fn, ms, label) {
     const early = await relay({ chatId: '7777', userId: '7777', text: 'hello, I am the owner now', chatType: 'dm' });
     A.eq(early.status, 403, 'an UNPAIRED bot admits no relay DM (a relay cannot claim ownership)');
 
-    const pair = await (await fetch(B + '/api/channels/telegram/owner/pair', { method: 'POST', headers: { 'X-StarNet-Token': token, Origin: B, 'Content-Type': 'application/json' }, body: '{}' })).json();
+    const pair = await (await fetch(B + '/api/channels/telegram/owner/pair', { method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: B, 'Content-Type': 'application/json' }, body: '{}' })).json();
     A.ok(pair && /^[-A-Z0-9]{11}$/.test(String(pair.code || '')), 'local owner pairing issued a one-time code');
     tg.pushText(4242, 99, '/pair ' + pair.code);
     await waitUntil(() => tg.sends.some(s => String(s.chat_id) === '4242' && /Owner paired/i.test(String(s.text || ''))), 8000, 'owner-pair acknowledgement');

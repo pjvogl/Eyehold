@@ -22,7 +22,7 @@ assert.match(sidecar, /const CLOUD_LIVE = true;/);
 assert.match(sidecar, new RegExp("const CLOUD_URL_DEFAULT = '" + origin + "'"));
 assert.match(site, /var CREDITS = \{\s*live: true,/);
 assert.match(site, new RegExp("accountUrl: '" + origin + "'"));
-assert.doesNotMatch(host.baseDomain, /starnetos\.com|androoAGI|github\.com|babelbook-staging|^babelbook\.net$/);
+assert.doesNotMatch(host.baseDomain, /eyehold\.com|Eyehold|github\.com|babelbook-staging|^babelbook\.net$/);
 for (const rel of ['services/portal/wrangler.toml', 'services/billing/wrangler.toml']) {
   const toml = fs.readFileSync(path.join(root, rel), 'utf8');
   assert.match(toml, /name = "eyehold"/, rel);

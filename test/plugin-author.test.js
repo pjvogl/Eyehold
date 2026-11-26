@@ -18,7 +18,7 @@ const { parseScreens } = require('../sidecar/plugins.js');
 const { relPathOk } = require('../sidecar/plugin-surface.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-plugin-author-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-plugin-author-' + process.pid);
 const DRAFTS = path.join(DIR, 'plugin-drafts'), PLUGINS = path.join(DIR, 'plugins');
 const previews = [], installs = [];
 const author = makePluginAuthorTools({

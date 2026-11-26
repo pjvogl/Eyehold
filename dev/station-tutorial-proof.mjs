@@ -44,7 +44,7 @@ try {
   // final validated replacement path once more, then restore the default floor.
   await evalJS(cdp,"Build.open();document.querySelector('#refit-stations').click()");
   assert.equal(await evalJS(cdp,"document.querySelector('[data-restore-build]').disabled"),false);
-  const backupId=await evalJS(cdp,"JSON.parse(localStorage.getItem('starnet.layoutBackup.'+World.stationDoc().meta.createdAt)).meta.templateId");
+  const backupId=await evalJS(cdp,"JSON.parse(localStorage.getItem('eyehold.layoutBackup.'+World.stationDoc().meta.createdAt)).meta.templateId");
   await evalJS(cdp,"document.querySelector('[data-restore-build]').click()");
   assert.equal(await evalJS(cdp,'World.stationDoc().meta.templateId'),backupId);
   await evalJS(cdp,"document.querySelector('#refit-undo').click();Build.close()");

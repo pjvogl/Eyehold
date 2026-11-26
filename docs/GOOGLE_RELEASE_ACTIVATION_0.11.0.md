@@ -1,10 +1,10 @@
-# StarNet Google activation — prepared 2026-09-06
+# Eyehold Google activation — prepared 2026-09-06
 
 ## Update — owner-approved activation, 20:11 UTC
 
-The owner approved the prepared Google action and packaging a 0.11.0 installer for testing before public release. **StarNet Desktop** (Desktop app) was created in `starnet-505202`; the first attempt failed without saving a client, and the verified retry succeeded. The existing Web client was preserved.
+The owner approved the prepared Google action and packaging a 0.11.0 installer for testing before public release. **Eyehold Desktop** (Desktop app) was created in `eyehold-505202`; the first attempt failed without saving a client, and the verified retry succeeded. The existing Web client was preserved.
 
-The downloaded native registration passed `scripts/stage-google-client.mjs`, was stored as `STARNET_GOOGLE_DESKTOP_CLIENT_JSON` in `androoAGI/starnet` (secret metadata confirmed at 20:02:13 UTC), and is included in the local test package. Registration bytes were not committed or printed. The bundled staging copy matches the validated registration.
+The downloaded native registration passed `scripts/stage-google-client.mjs`, was stored as `EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON` in `Eyehold/eyehold` (secret metadata confirmed at 20:02:13 UTC), and is included in the local test package. Registration bytes were not committed or printed. The bundled staging copy matches the validated registration.
 
 All five exact Workspace APIs below were enabled, each confirmed by Google's Enabled state. The 11 unique implemented scopes (including OpenID and email) were saved in Data Access with factual usage explanations. Google's console confirmed **Data access changes saved!** No verification was submitted and no approval was claimed. Branding links, the final privacy/data-flow review, the required demonstration, and real-account lifecycle acceptance remain outstanding. This is no longer waiting for owner permission to create the client.
 
@@ -16,25 +16,25 @@ Console. No Google configuration or credentials were created or changed.
 
 ## Confirmed existing setup
 
-- Project: **StarNet**, `starnet-505202`.
-- One existing OAuth client: **StarNet Account**, type **Web application**.
+- Project: **Eyehold**, `eyehold-505202`.
+- One existing OAuth client: **Eyehold Account**, type **Web application**.
 - Audience: **External**, publishing status **In production**.
 - Data Access: all three declared-scope lists are empty.
 - Verification Center: no sensitive/restricted-scope verification required for the
   presently empty declaration; this does not approve the new Workspace scopes.
-- Branding: app name StarNet, authorized domain `starnetos.com`; home page, privacy
+- Branding: app name Eyehold, authorized domain `eyehold.com`; home page, privacy
   policy and terms links are empty. Branding is not verified/shown to users.
 - Enabled services: all 22 rows inspected. Gmail, Drive, Calendar, Docs and Sheets
   APIs are absent.
-- GitHub release secret `STARNET_GOOGLE_DESKTOP_CLIENT_JSON`: absent.
+- GitHub release secret `EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON`: absent.
 
 ## Concrete prepared action
 
 The browser form at
-https://console.cloud.google.com/auth/clients/create?project=starnet-505202
-has **Application type: Desktop app**, **Name: StarNet Desktop**. Create has not been
+https://console.cloud.google.com/auth/clients/create?project=eyehold-505202
+has **Application type: Desktop app**, **Name: Eyehold Desktop**. Create has not been
 clicked. Explicit approval was requested to create this client and store its native
-registration in `androoAGI/starnet` as `STARNET_GOOGLE_DESKTOP_CLIENT_JSON`.
+registration in `Eyehold/eyehold` as `EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON`.
 
 Preserve the existing Web client and its secret. The release staging script rejects
 Web registrations; a Desktop/native client is the architecture the merged code uses.
@@ -49,9 +49,9 @@ Creating this client alone will not complete public Workspace activation.
    `docs.googleapis.com`, and `sheets.googleapis.com` in this project, verifying each
    exact service in Google's library before activation.
 3. Complete branding links. Public pages currently resolve at:
-   - https://starnetos.com/
-   - https://starnetos.com/legal/privacy
-   - https://starnetos.com/legal/terms
+   - https://eyehold.com/
+   - https://eyehold.com/legal/privacy
+   - https://eyehold.com/legal/terms
 4. Review the privacy disclosure against the new integration before using it for
    verification. The existing policy enumerates outbound cases but does not describe
    Google Workspace API access. In particular, document which Google content may enter
@@ -80,7 +80,7 @@ Source: `sidecar/mcp/catalog.js` at `979099385` (each service is authorized sepa
 ## Draft privacy addition for review (not published)
 
 **Google Workspace — only when you connect an account.** If you authorize a Google
-service, StarNet's local connector calls that service's API using the permissions you
+service, Eyehold's local connector calls that service's API using the permissions you
 approve. Gmail tools can search and read messages and attachments, create drafts, and
 send approved drafts. Calendar tools read calendars, events and availability. Drive
 tools search/read/export files and manage permitted file metadata; Docs and Sheets
@@ -88,7 +88,7 @@ tools can read, create and edit documents or spreadsheets. Each service is conne
 independently.
 
 **Data used in agent work.** Google content returned by a tool can become part of the
-agent's conversation and requests to your selected model provider. On the StarNet
+agent's conversation and requests to your selected model provider. On the Eyehold
 Credits path those model requests pass through the credits gateway. Local transcript,
 artifact and memory retention and deletion behavior must be explained alongside the
 connector's account-token handling. Disconnecting an account must not be described
@@ -100,12 +100,12 @@ This draft intentionally does not invent a blanket compliance or no-training pro
 
 ## Sources checked
 
-- [Existing public privacy policy](https://starnetos.com/legal/privacy)
-- [Existing public terms](https://starnetos.com/legal/terms)
+- [Existing public privacy policy](https://eyehold.com/legal/privacy)
+- [Existing public terms](https://eyehold.com/legal/terms)
 - [Google restricted-scope verification](https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification)
 - [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy)
 
 Google's verification guidance calls for accurate scope declarations and privacy
 disclosures about access, use, storage and sharing. Restricted data passing through
 third-party servers can require additional security assessment. These requirements
-must be assessed against StarNet's actual model-provider and credits-relay paths.
+must be assessed against Eyehold's actual model-provider and credits-relay paths.

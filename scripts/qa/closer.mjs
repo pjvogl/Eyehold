@@ -522,7 +522,7 @@ if (INVOKED_DIRECTLY) {
    * The referee resets a shared checkout and binds the 8970s. Two concurrent judgements would
    * corrupt each other exactly the way two Guardian cycles did (finding 90fe0bcc). isLockStale is
    * imported, never re-implemented. */
-  const LOCK_FILE = process.env.SKYNET_CLOSER_LOCK || path.join(os.tmpdir(), 'starnet-qa-closer.lock');
+  const LOCK_FILE = process.env.SKYNET_CLOSER_LOCK || path.join(os.tmpdir(), 'eyehold-qa-closer.lock');
   const LOCK_HEARTBEAT_MS = coerceTimeoutMs(process.env.SKYNET_CLOSER_LOCK_HEARTBEAT_MS || 30000, 30000);
   const LOCK_STALE_MS = coerceTimeoutMs(process.env.SKYNET_CLOSER_LOCK_STALE_MS || 120000, 120000);
   let __lockRec = null, __heartbeatTimer = null;

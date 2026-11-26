@@ -196,9 +196,9 @@ function fakeFs(files) {
     A.ok(err && /could not load www\.etsy\.com: net::ERR_PROXY_CONNECTION_FAILED/.test(err.message), 'the message names the host and the real network error: ' + (err && err.message));
     A.ok(err && !/unsafe redirect|only http\(s\)/.test(err.message), 'and it is NOT reported as an unsafe redirect');
     A.ok(!d.alive(), 'a browser whose proxy is down reads as dead, so the session starts a fresh browser + proxy');
-    A.ok(err && !err.revealTools, 'StarNet restarts its own browser itself, so nothing is pointed at browser.reset');
+    A.ok(err && !err.revealTools, 'Eyehold restarts its own browser itself, so nothing is pointed at browser.reset');
     await d.close();
-    // a browser started by an EARLIER StarNet session is the one case told to run browser.reset - which is deferred,
+    // a browser started by an EARLIER Eyehold session is the one case told to run browser.reset - which is deferred,
     // so the error must also make it callable (the registry carries revealTools onto the error result)
     const earlier = T.makeCdpDriver({
       attachPort: 9373, syntheticInputOnly: false, timeoutMs: 400,

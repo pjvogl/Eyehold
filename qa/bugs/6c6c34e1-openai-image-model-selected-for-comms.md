@@ -10,7 +10,7 @@ lane: release-0120-prep-0915
 fix: 7a9349aa071c8fd97f04b520333d37d821f55c69
 origin: customer
 report: support-2026-09-12-openai-image-model-comms
-affected: StarNet 0.11.2 macOS arm64; gpt-image-2 selected while using COMMS/provider setup
+affected: Eyehold 0.11.2 macOS arm64; gpt-image-2 selected while using COMMS/provider setup
 family: image-versus-chat-routing
 installer: unverified
 recovery: unconfirmed

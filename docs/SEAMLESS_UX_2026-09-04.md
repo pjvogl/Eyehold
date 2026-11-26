@@ -1,4 +1,4 @@
-# StarNet: whole-product friction audit and implemented improvements
+# Eyehold: whole-product friction audit and implemented improvements
 
 Baseline: `292dc7b41`. Scope: starting work, setup excursions, service connections, agent access, visual workflows, results, recurring work, navigation, and learning. Source-grounded audit plus live checks of the changed journeys; this is not an observed study of independent beginners or installed-desktop certification.
 

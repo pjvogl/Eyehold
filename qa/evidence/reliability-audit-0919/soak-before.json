@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.soak-receipt.v1",
+  "schema": "eyehold.soak-receipt.v1",
   "verdict": "FAIL",
   "failedRules": [
     "accounting"

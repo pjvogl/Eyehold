@@ -20,7 +20,7 @@ The lead works two ways, mixed freely (Andrew 10-01: "the AI model should have t
 … full customization from the model to place and change it how it wants"):
 - **its own design** (REFIT, below): every Refit mode tool on exact tiles. The design decisions are the model's; the only
   rules are the world's own, the same checks a person meets in Refit mode (walls, doorways, what stands on what).
-- **shortcuts** (the forms): it fills a menu and StarNet does the placing with the same code Build mode uses. Quick,
+- **shortcuts** (the forms): it fills a menu and Eyehold does the placing with the same code Build mode uses. Quick,
   and what a weak model falls back on.
 
 Either way a plan is built on a copy, shown on a card, and lands as one change that one UNDO removes. A weak model's
@@ -71,7 +71,7 @@ rest. `station.map` shows the floor, `station.plan` plans, `station.build` build
 ## Station layouts: a whole station, composed
 
 Added 2026-09-30. Andrew saw two stations laid out by hand in the real renderer ("this is so much better, can the agent
-reliably do this?"); this is those two layouts as patterns StarNet computes. `station.plan` with
+reliably do this?"); this is those two layouts as patterns Eyehold computes. `station.plan` with
 `{ layout: { pattern, rooms: [ { name, style, size, lines } ] }, replace }`:
 
 - `diamond` (was `ring`; `ring` still means it): every room on an EVEN GRID round the hub, the bridge's size (18 × 11), a
@@ -130,7 +130,7 @@ model still never sends a tile. It **looks**, then says where things go in words
 | --- | --- |
 | `name` | A new room's name. Left out, a room with a whole-room `style` is named for it (LOUNGE, OFFICE, CONVEYOR HALL), else for what fills it first, else `ROOM n`. |
 | `size` | `small` (12 × 8), `medium` (18 × 11, an empty room's default), `large` (24 × 14), `giant` (36 × 20), or `{ w: 6-44, h: 5-26 }`. Left out, a room with zones or lines is sized for them and grows until they fit. |
-| `beside` | The room it joins, by name. "bridge", "main" or "hub" mean the main room. A room earlier in the same list works. Left out (and no `side`), the room takes the **next free place of the station's grid**, the same place a diamond layout would give it, at its own size (a small room centred on its cell's inner edge, a big one on a wing); so rooms asked one at a time grow the same diamond as one laid out at once (tested), and its hallway is a station corridor like a layout's (the corridor deck, planters and floor lights), never a bare run of floor. Only when the grid has no place left does StarNet take the spot that keeps the station most compact. |
+| `beside` | The room it joins, by name. "bridge", "main" or "hub" mean the main room. A room earlier in the same list works. Left out (and no `side`), the room takes the **next free place of the station's grid**, the same place a diamond layout would give it, at its own size (a small room centred on its cell's inner edge, a big one on a wing); so rooms asked one at a time grow the same diamond as one laid out at once (tested), and its hallway is a station corridor like a layout's (the corridor deck, planters and floor lights), never a bare run of floor. Only when the grid has no place left does Eyehold take the spot that keeps the station most compact. |
 | `side` | north, south, east or west of that room (also left, right, top, below). Left out, the most compact side. |
 | `hallway` | `true` (the default: a hallway 3 tiles long, as wide as the presets' own), `false` (the rooms touch and open onto each other), or a length from 2 to 8. |
 | `align` | center, start or end along the shared wall. Left out, centred, sliding along the wall to find clear floor. |
@@ -307,15 +307,15 @@ the line runs unattended, within its budget.
 | `{ line, webhook: true, job }` | a webhook trigger. Its key is minted, hashed and dropped: the lead never sees one, and the Commander takes a key from the line's Workflow panel (NEW KEY). |
 | `{ line, off: a trigger id }` | turns a trigger off. A schedule is a routine, and `routine.manage` pauses it. |
 
-## Making new props (StarNet credits)
+## Making new props (Eyehold credits)
 
-Added 2026-10-01 ("if the user has StarNet credits… the agent should be able to use that and create props on its own
+Added 2026-10-01 ("if the user has Eyehold credits… the agent should be able to use that and create props on its own
 using our system"). `station.make_prop { describe, sideView }` is a fourth deferred builder tool (revealed with the
 rest by `tool_search "station builder"`). It runs the station's OWN prop maker, the one REFIT's MAKE A PROP uses
-(`deps.userProps`: `start(noun)` → StarNet's prop pipeline → the job lands in `WORKSPACES/.userprops`), so it needs
-the station linked to StarNet credits and refuses with the link/top-up door otherwise ("Making props uses StarNet
-credits. Link this station under SETTINGS → PROVIDERS first."). It costs StarNet credits, so it is consent-gated and
-taint-locked: the approval card says "Make a new prop with your StarNet credits: "a hot dog stand" (about $0.35, and
+(`deps.userProps`: `start(noun)` → Eyehold's prop pipeline → the job lands in `WORKSPACES/.userprops`), so it needs
+the station linked to Eyehold credits and refuses with the link/top-up door otherwise ("Making props uses Eyehold
+credits. Link this station under SETTINGS → PROVIDERS first."). It costs Eyehold credits, so it is consent-gated and
+taint-locked: the approval card says "Make a new prop with your Eyehold credits: "a hot dog stand" (about $0.35, and
 about $0.30 more for its side view)". It waits (up to six minutes, its own `timeoutMs`) for the prop to land, asks the
 page to load the MADE BY YOU library (`station.props_reload` → `UserProps.load()`), and answers the prop's name, id,
 footprint and real cost, with how to place it: `station.plan { add: { room, pieces: ["hot dog stand"] } }` or a REFIT
@@ -370,13 +370,13 @@ because the old placement only ever grew east and south. Routing facts are now c
   the back, bottom the front). Areas may not overlap.
 - `style`: one of 14 in `frontend/app/roomstyles.js` (cozy, lounge, library, desks, meeting, cafe, games, garden,
   quarters, storage, gym, lab, comms, workshop), also by name or word ("comfy"). Each is a few hand-arranged sets of the
-  presets' own furniture, largest first. StarNet seats the largest set that fits, against the room's outer walls, as
+  presets' own furniture, largest first. Eyehold seats the largest set that fits, against the room's outer walls, as
   arranged or mirrored, off every doorway's landing, with every piece reachable. The card lists the pieces really
   placed.
 - A line zone holds one line, laid out **inside the zone** by the Workflow panel's own layout engine
   (`LineLayout.layout`, written by `applyLineLayout`):
   - `line`: a shelf line, by id or name
-  - `purpose`: the Commander's words; StarNet picks the line, as `station.plan_line` does
+  - `purpose`: the Commander's words; Eyehold picks the line, as `station.plan_line` does
   - `shape`: a custom line, built through the panel's own graph edits (`LineEdit.OPS`). Its stages, in order: a role,
     `{ together: [roles] }` (each gets a copy), `{ turns: [roles] }`, `{ sort: { code: role, research: role } }`
     (everything else goes straight on), and `{ review: true, tries }` after a step
@@ -399,7 +399,7 @@ its side table, and what may stand on a table can. The tests install the same ru
 | --- | --- |
 | `line` | One of the Lines shelf's tested lines, by id or plain name (read from `WorldModel.BLUEPRINTS`) |
 | `shape` | Instead of `line`: a line the Commander DESCRIBED, as stages in order (a role, `{ together }`, `{ turns }`, `{ sort }`, `{ review, tries }`: see Vibe design). It is laid out whole by the layout engine in a new room sized for it, or in an existing room (`where`) around what already stands there. `name` is the line's name, `steps` staff it in run order. |
-| `purpose` | The Commander's own words for what the line is for. With no `line`, StarNet picks one with `WorkflowLine.suggestLineFor`, the reader behind FOR YOUR GOAL (the shape of the work: research then writing, a draft and a reviewer, code with tests or a review, two takes), and the card says why. Words with no such shape are refused with the menu. Every step's standard instructions end with `This line is for: "…"`. |
+| `purpose` | The Commander's own words for what the line is for. With no `line`, Eyehold picks one with `WorkflowLine.suggestLineFor`, the reader behind FOR YOUR GOAL (the shape of the work: research then writing, a draft and a reviewer, code with tests or a review, two takes), and the card says why. Words with no such shape are refused with the menu. Every step's standard instructions end with `This line is for: "…"`. |
 | `where` | `"new room"` (the default), or an existing room by name. In an existing room, every machine and belt must fit on clear floor **inside** it. |
 | `beside`, `side`, `hallway` | Where its new room goes, as in the spatial builder. |
 | `name` | What to call the line (on its Inbox), up to 48 characters |
@@ -428,7 +428,7 @@ card says so. If a recruit fails, nothing is built, and the refusal names any ag
 `station.plan_restyle`: `room` (its current name), plus `type`, `floorStyle`, `floorMat` or `name`. Nothing is added,
 moved or removed.
 
-Anything else is refused with the valid choices. For example, `x` gets: "StarNet chooses every position, belt and piece
+Anything else is refused with the valid choices. For example, `x` gets: "Eyehold chooses every position, belt and piece
 of furniture itself, so these fields are not accepted: x".
 
 ## Proof

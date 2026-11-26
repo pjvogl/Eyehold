@@ -120,7 +120,7 @@ function startMockTelegramMulti(bots) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -159,19 +159,19 @@ const STATION = 'STATIONTOKEN', TOK_A = 'TOKCHAIN';
   });
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-tg-botchain-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-botchain-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-botchain-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: STATION, STARNET_TELEGRAM_TOKEN: STATION,
-    SKYNET_TELEGRAM_API_BASE: tg.base, STARNET_TELEGRAM_API_BASE: tg.base
+    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-botchain-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-botchain-fake',
+    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    SKYNET_TELEGRAM_TOKEN: STATION, EYEHOLD_TELEGRAM_TOKEN: STATION,
+    SKYNET_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
   };
   const { child, port } = await boot(9170 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
     const api = (method, url, body) => fetch(B + url, {
-      method, headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+      method, headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: body === undefined ? undefined : JSON.stringify(body)
     }).then(async r => ({ status: r.status, j: await r.json().catch(() => ({})) }));
 

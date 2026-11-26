@@ -19,7 +19,7 @@ An installed canary reports 0.11.2 in native BuildInfo and the updater, but 0.11
 
 ## Repro
 
-Build and install a Tauri canary with the version overlay set to 0.11.2 while normal Cargo/version pins remain 0.11.1. Compare `starnet_build_info.version` with the live `/api/version` app field.
+Build and install a Tauri canary with the version overlay set to 0.11.2 while normal Cargo/version pins remain 0.11.1. Compare `eyehold_build_info.version` with the live `/api/version` app field.
 
 ## Evidence
 

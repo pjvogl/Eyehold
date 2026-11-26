@@ -12,7 +12,7 @@ async function run(){
  state=Jobs.finish(state,'job-bbbbbbbbbbbb',{status:'delivered',at:3,output:'Saved fixture output',usd:0.02,runs:[{runId:'fixture-r1',agentId:'raven',reason:'done',usd:0.01},{runId:'fixture-r2',agentId:'deepforge',reason:'done',usd:0.01}]}).state;
  fs.writeFileSync(path.join(f.workspace,'line-jobs.json'),JSON.stringify({version:1,jobs:state.jobs}));
  await f.start();
- assert.equal((await f.request('/api/line-jobs',{headers:{'X-StarNet-Token':''}})).status,403);
+ assert.equal((await f.request('/api/line-jobs',{headers:{'X-Eyehold-Token':''}})).status,403);
  const read=async id=>(await f.json('GET','/api/line-jobs/'+id)).body.job;
  let interrupted=await read('job-aaaaaaaaaaaa');
  assert.equal(interrupted.status,'interrupted');assert.match(interrupted.error,/station stopped/);

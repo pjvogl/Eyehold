@@ -7,7 +7,7 @@ const P = require('node:path');
 const { _internals: T } = require('../sidecar/tools/builtin/browser.js');
 
 (async () => {
-  const dir = FS.mkdtempSync(P.join(OS.tmpdir(), 'starnet-download-receipt-'));
+  const dir = FS.mkdtempSync(P.join(OS.tmpdir(), 'eyehold-download-receipt-'));
   try {
     const ledger = T.makeDownloadLedger(dir);
     const before = ledger.cursor();

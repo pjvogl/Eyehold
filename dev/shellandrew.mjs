@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // dev/shellandrew.mjs — ANDREW'S EXACT SAVED STATION, on a MAGENTA backdrop.
 //
-// The nine rooms verbatim from %LOCALAPPDATA%\StarNet\workspaces\agent.save.json. Magenta behind the
+// The nine rooms verbatim from %LOCALAPPDATA%\Eyehold\workspaces\agent.save.json. Magenta behind the
 // bake so any pixel the shell fails to paint screams instead of hiding against the starfield —
 // r13 (x4..13, y11..13, the wide shallow room under the big hab) is the one Andrew circled.
 //

@@ -9,13 +9,13 @@ found: 2026-09-11
 lane: release-0112-finalprep-0911
 fix: 44c6b4952cd1e468f7caaf4d7ead804dc280cc40
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/12
+report: https://github.com/Eyehold/eyehold/issues/12
 affected: 0.11.0 source on Windows
 family: provider-fallback
 installer: verified
 installerVersion: 0.11.1 private candidate 6e729e4cb
 installerSha256: 5baadbf8483e601db257f2b1ce8855fbc494add5db64493f501a3d93e717efeb
-installerEvidence: https://github.com/androoAGI/starnet/actions/runs/34569801784
+installerEvidence: https://github.com/Eyehold/eyehold/actions/runs/34569801784
 recovery: unconfirmed
 ---
 
@@ -31,13 +31,13 @@ Reported sequence: select Codex as primary, save OpenRouter model `z-ai/glm-5.3-
 
 ## Evidence
 
-[GitHub #12](https://github.com/androoAGI/starnet/issues/12), read September 11, 2026; open with no comments or recovery confirmation. Reported source starts `58dc520de`.
+[GitHub #12](https://github.com/Eyehold/eyehold/issues/12), read September 11, 2026; open with no comments or recovery confirmation. Reported source starts `58dc520de`.
 
 Current-source anchors: `frontend/app/stationui.js:5411` populates the fallback picker from the OpenRouter catalog and saves model strings; `sidecar/fallbackchain.js` validates string entries. `sidecar/index.js:16167` assembles model fallbacks using `fallbackModels.map(m => ({ provider, model: m }))`, retaining the primary provider instance. Explicit per-run provider fallbacks are a separate path and do not establish that Settings routes correctly.
 
 ## Verdict
 
-Source fixed in 44c6b4952. Saved catalog fallbacks now use OpenRouter's endpoint and credential when leaving Codex or another provider. StarNet keeps its existing managed route; explicit per-run models and environment chains keep their primary provider. Paid fallback limits, auxiliary routing and ledger classification follow the active provider. Fallbacks cannot cross managed-credit payer boundaries without admission. Installed execution passed on the signed candidate; actual customer account recovery remains unconfirmed.
+Source fixed in 44c6b4952. Saved catalog fallbacks now use OpenRouter's endpoint and credential when leaving Codex or another provider. Eyehold keeps its existing managed route; explicit per-run models and environment chains keep their primary provider. Paid fallback limits, auxiliary routing and ledger classification follow the active provider. Fallbacks cannot cross managed-credit payer boundaries without admission. Installed execution passed on the signed candidate; actual customer account recovery remains unconfirmed.
 
 ## Installed verification
 

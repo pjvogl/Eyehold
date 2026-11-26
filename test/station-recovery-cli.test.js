@@ -6,9 +6,9 @@ const path = require('path');
 const cp = require('child_process');
 const A = require('./_assert.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-recovery-cli-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-recovery-cli-'));
 const ws = path.join(root, 'old-machine', 'workspaces');
-const bundle = path.join(root, 'backup', 'station.starnet-recovery.json');
+const bundle = path.join(root, 'backup', 'station.eyehold-recovery.json');
 const target = path.join(root, 'new-machine', 'workspaces');
 const browserIn = path.join(root, 'browser-in.json');
 const browserOut = path.join(root, 'browser-out.json');
@@ -29,7 +29,7 @@ write('agent.deliverables.json', { records: [{ id: 'd' }] });
 write('agent/report.md', 'deliverable');
 write('permissions.allow.json', { allow: ['fs.write:workspace'] });
 write('connectors/state.json', { version: 2, configs: [{ id: 'notion', oauth: true }], oauth: { byId: { notion: { accessToken: 'SECRET' } }, clients: {} } });
-fs.writeFileSync(browserIn, JSON.stringify({ schema: 'starnet.backup', version: 1, store: { 'starnet.save': JSON.stringify({ agent: { id: 'agent' }, station: { rooms: ['r'], props: ['p'] } }), 'starnet.station.v1': '{"room":"r"}' } }));
+fs.writeFileSync(browserIn, JSON.stringify({ schema: 'eyehold.backup', version: 1, store: { 'eyehold.save': JSON.stringify({ agent: { id: 'agent' }, station: { rooms: ['r'], props: ['p'] } }), 'eyehold.station.v1': '{"room":"r"}' } }));
 
 const backup = run(['backup', '--workspace', ws, '--output', bundle, '--browser-state', browserIn, '--app-version', 'test', '--mutation', '7']);
 A.eq(backup.status, 0, 'backup CLI exits green: ' + backup.stderr);
@@ -50,8 +50,8 @@ A.eq(restore.status, 0, 'restore CLI exits green: ' + restore.stderr);
 A.eq(fs.readFileSync(path.join(target, 'agent', 'report.md'), 'utf8'), 'deliverable', 'restore CLI recovers deliverable bytes');
 A.ok(fs.existsSync(browserOut), 'restore CLI emits browser-state import file');
 const restoredBrowser = JSON.parse(fs.readFileSync(browserOut, 'utf8'));
-A.eq(restoredBrowser.schema, 'starnet.backup', 'browser restore artifact uses the existing UI import schema');
-A.eq(restoredBrowser.store['starnet.station.v1'], '{"room":"r"}', 'browser-owned layout survives the CLI round-trip');
+A.eq(restoredBrowser.schema, 'eyehold.backup', 'browser restore artifact uses the existing UI import schema');
+A.eq(restoredBrowser.store['eyehold.station.v1'], '{"room":"r"}', 'browser-owned layout survives the CLI round-trip');
 
 const second = run(['restore', '--bundle', bundle, '--target', target]);
 A.ok(second.status !== 0 && /not clean/.test(second.stderr), 'restore refuses an existing profile without explicit rollback authority');

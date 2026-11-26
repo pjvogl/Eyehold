@@ -5,12 +5,12 @@ const fn=A.fnBody(src,'async function onWakeAttempt(');
 async function attempt({stored=false,connected=true,typed='',provider='openai',wireOk=false,resume=false}={}){
  const elements={};for(const id of ['in-name','connect-msg','in-base-url','in-model','in-key'])elements[id]={value:id==='in-model'?'gpt-5.5':id==='in-key'?typed:id==='in-base-url'?'http://127.0.0.1:11434/v1':'',textContent:'',innerHTML:''};
  const seen={calls:0,provider:null,storedWrites:0,balanceChecks:0};
- const saved={prov:'starnet',agent:{id:'agent',model:'old-model',provider:'starnet',purpose:'Keep my mission',onboarded:true},agents:[{id:'worker',provider:'anthropic'}],station:{marker:'keep layout'}};
+ const saved={prov:'eyehold',agent:{id:'agent',model:'old-model',provider:'eyehold',purpose:'Keep my mission',onboarded:true},agents:[{id:'worker',provider:'anthropic'}],station:{marker:'keep layout'}};
  const Harness={configured:()=>true,hasStoredCredential:()=>stored,setModel:m=>{seen.model=m},getProv:()=>seen.provider,getModel:()=>seen.model,setTotals:()=>{},setBaseUrl:async b=>{seen.baseUrl=b},setProv:p=>{seen.provider=p},validateAndSetKey:async()=>{seen.storedWrites++}};
- const run=Function('Harness','elements','seen','connected','provider','wireOk','resume','saved',`const el=id=>elements[id],SFX={boot(){},open(){}},stopCodexPoll=()=>{},stopStarnetLinkPoll=()=>{},stopStarnetBalancePoll=()=>{},stopAllOAuthPolls=()=>{},providerNeedsBaseUrl=p=>p==='custom',isOAuthProviderId=()=>false,providerNeedsKey=()=>true,providerSignupUrl=()=> 'https://example.invalid',providerLabel=()=> 'OpenAI',esc=x=>x,wakeBtnBusy=()=>{};let pickedProvider=provider,codexConnected=connected,prefilledKey='',keyOverwriteConfirmed=false,resumingSaved=resume?saved:null;
+ const run=Function('Harness','elements','seen','connected','provider','wireOk','resume','saved',`const el=id=>elements[id],SFX={boot(){},open(){}},stopCodexPoll=()=>{},stopEyeholdLinkPoll=()=>{},stopEyeholdBalancePoll=()=>{},stopAllOAuthPolls=()=>{},providerNeedsBaseUrl=p=>p==='custom',isOAuthProviderId=()=>false,providerNeedsKey=()=>true,providerSignupUrl=()=> 'https://example.invalid',providerLabel=()=> 'OpenAI',esc=x=>x,wakeBtnBusy=()=>{};let pickedProvider=provider,codexConnected=connected,prefilledKey='',keyOverwriteConfirmed=false,resumingSaved=resume?saved:null;
  let agent,pendingStationDoc,pendingStationStats,pendingGrowthSyncAt,pendingRatingSyncAt,pendingProfile,pendingWorkSignal,pendingDossier;
  const agentDocs=()=>{},stripLegacyVoiceBlock=()=>{},stripLegacySoloClause=()=>{},composeSystemPrompt=()=>'',registerHero=()=>{},rehydrateRoster=()=>{},recomposeOrchestrators=()=>{},Workstreams={init(){}},enterGame=()=>{seen.entered=true},persist=()=>{seen.saved=structuredClone(saved)};
- const refreshStarnetGenesisStatus=async()=>{seen.balanceChecks++;return {answered:true,linked:true,balanceUsd:0}};
+ const refreshEyeholdGenesisStatus=async()=>{seen.balanceChecks++;return {answered:true,linked:true,balanceUsd:0}};
  ${A.fnBody(src,'function savedStationProv(')}
  ${A.fnBody(src,'function resumeInto(')}
  const preflightWire=async()=>{seen.calls++;return{ok:wireOk,why:'test transport sentinel'}};${fn}\nreturn onWakeAttempt();`);
@@ -43,10 +43,10 @@ async function attempt({stored=false,connected=true,typed='',provider='openai',w
  }
  r=await attempt({provider:'openrouter',connected:false,stored:true,resume:true});
  A.ok(!r.entered,'failed preflight does not enter the station');
- A.eq(r.original.prov,'starnet','failed preflight does not rewrite saved provider');
- A.eq(r.original.agent.provider,'starnet','failed preflight preserves hero pin');
- r=await attempt({provider:'starnet',wireOk:true,resume:true});
+ A.eq(r.original.prov,'eyehold','failed preflight does not rewrite saved provider');
+ A.eq(r.original.agent.provider,'eyehold','failed preflight preserves hero pin');
+ r=await attempt({provider:'eyehold',wireOk:true,resume:true});
  A.eq(r.calls,0,'actual managed resume with zero balance remains gated');
- A.eq(r.original.prov,'starnet','a denied managed resume leaves the save intact');
+ A.eq(r.original.prov,'eyehold','a denied managed resume leaves the save intact');
  A.report('genesis-wake-credential');
 })().catch(e=>{console.error(e);process.exitCode=1});

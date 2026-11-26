@@ -14,12 +14,12 @@ fix: 6afeb9ee
 
 ## Symptom
 
-A user whose save was written by a newer StarNet is held on the blocking SAVE FROM A NEWER STARNET screen. They click UPDATE STARNET. If the update check fails (offline, GitHub unreachable, 429, draft release) or if the boot-time auto-check is still in flight, the gate prints "no newer build is published yet — check back shortly." That is a flat assertion the harness never proved — and it is the ONLY exit from a screen that has already locked them out of their station. The screen's own HTML comment (frontend/index.html:266) promises "Truthful telemetry: the message states only what the harness proved".
+A user whose save was written by a newer Eyehold is held on the blocking SAVE FROM A NEWER EYEHOLD screen. They click UPDATE EYEHOLD. If the update check fails (offline, GitHub unreachable, 429, draft release) or if the boot-time auto-check is still in flight, the gate prints "no newer build is published yet — check back shortly." That is a flat assertion the harness never proved — and it is the ONLY exit from a screen that has already locked them out of their station. The screen's own HTML comment (frontend/index.html:266) promises "Truthful telemetry: the message states only what the harness proved".
 
 ## Repro
 
 Executed `frontend/app/updatecore.js` + `frontend/app/updates.js` in a node vm with a stubbed `window.__TAURI__.core.invoke`, then replayed the exact app.js:3771-3774 branch.
-Case A — invoke('starnet_update_check') throws 'Could not fetch a valid release JSON from the remote':
+Case A — invoke('eyehold_update_check') throws 'Could not fetch a valid release JSON from the remote':
   check() threw?           false
   returned snapshot.phase = "error"
   GATE MESSAGE SHOWN      = "no newer build is published yet - check back shortly."

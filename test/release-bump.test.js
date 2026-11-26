@@ -26,17 +26,17 @@ function makeFixture(dir, version, opts) {
   opts = opts || {};
   fs.mkdirSync(path.join(dir, 'src-tauri'), { recursive: true });
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
-    name: 'starnet-harness', version, private: true, license: 'MIT'
+    name: 'eyehold-harness', version, private: true, license: 'MIT'
   }, null, 2) + '\n');
   fs.writeFileSync(path.join(dir, 'package-lock.json'), JSON.stringify({
-    name: 'starnet-harness', version, lockfileVersion: 3, requires: true,
-    packages: { '': { name: 'starnet-harness', version } }
+    name: 'eyehold-harness', version, lockfileVersion: 3, requires: true,
+    packages: { '': { name: 'eyehold-harness', version } }
   }, null, 2) + '\n');
   const conf = {
-    $schema: 'x', productName: 'StarNet', version, identifier: 'ai.skynet.harness',
+    $schema: 'x', productName: 'Eyehold', version, identifier: 'ai.skynet.harness',
     // The published-floor check reads the releases repo slug from the updater endpoint.
     plugins: { updater: { endpoints: [
-      'https://github.com/acme/starnet-releases/releases/latest/download/latest.json'
+      'https://github.com/acme/eyehold-releases/releases/latest/download/latest.json'
     ] } }
   };
   fs.writeFileSync(
@@ -57,7 +57,7 @@ function makeFixture(dir, version, opts) {
   if (opts.notes) fs.writeFileSync(path.join(dir, 'RELEASE_NOTES.md'), opts.notes);
 }
 
-// Write a fake `gh` as a .mjs script. release-bump runs a .mjs STARNET_BUMP_GH via node, so
+// Write a fake `gh` as a .mjs script. release-bump runs a .mjs EYEHOLD_BUMP_GH via node, so
 // this exercises the real spawn+parse path offline and cross-platform (a bare exe/.cmd can't
 // be spawned without a shell on Windows). `mode` picks the behavior:
 //   'tags:v0.2.4,v0.2.3' -> prints that release list as gh --json tagName JSON, exit 0
@@ -85,7 +85,7 @@ function run(args, root, extraEnv) {
   return spawnSync(process.execPath, [script].concat(args), {
     cwd: ROOT,
     encoding: 'utf8',
-    env: Object.assign({}, process.env, { STARNET_BUMP_ROOT: root }, extraEnv || {})
+    env: Object.assign({}, process.env, { EYEHOLD_BUMP_ROOT: root }, extraEnv || {})
   });
 }
 
@@ -98,7 +98,7 @@ try {
     // Hermetic published-floor: pretend the releases repo has no releases yet so the in-tree
     // floor governs and no real network `gh` is invoked on CI machines that happen to have one.
     const gh = writeFakeGh(dir, 'gh', 'empty');
-    const res = run(['0.2.0', '--dry-run'], dir, { STARNET_BUMP_GH: gh });
+    const res = run(['0.2.0', '--dry-run'], dir, { EYEHOLD_BUMP_GH: gh });
     eq(res.status, 0, res.stderr || res.stdout);
     check(/0\.1\.9 -> 0\.2\.0/.test(res.stdout), 'dry-run shows version delta');
     check(/no files written/.test(res.stdout), 'dry-run says nothing written');
@@ -132,7 +132,7 @@ try {
   // ---- 4. Real bump inside a throwaway git repo: files edited, committed, tagged, no push ----
   {
     const dir = path.join(tmp, 'realgit');
-    makeFixture(dir, '0.1.9', { notes: '# StarNet v0.1.9\n\n- old notes\n', bom: true });
+    makeFixture(dir, '0.1.9', { notes: '# Eyehold v0.1.9\n\n- old notes\n', bom: true });
     // init a self-contained repo (no remote -> a push would fail loudly if attempted)
     const gitEnv = {
       GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 't@t'
@@ -151,7 +151,7 @@ try {
     // so the in-tree floor governs and no real network gh is invoked.
     const gh = writeFakeGh(tmp, 'gh-realgit', 'empty');
 
-    const res = run(['0.2.0'], dir, Object.assign({}, gitEnv, { STARNET_BUMP_GH: gh }));
+    const res = run(['0.2.0'], dir, Object.assign({}, gitEnv, { EYEHOLD_BUMP_GH: gh }));
     eq(res.status, 0, res.stderr || res.stdout);
 
     // Files actually updated in lockstep.
@@ -168,7 +168,7 @@ try {
     check(/name = "skynet-desktop"\nversion = "0\.2\.0"/.test(lock), 'Cargo.lock app pin bumped');
     check(/name = "serde"\nversion = "1\.0\.0"/.test(lock), 'Cargo.lock other pins untouched');
     const notes = fs.readFileSync(path.join(dir, 'RELEASE_NOTES.md'), 'utf8');
-    check(/^# StarNet v0\.2\.0/.test(notes), 'RELEASE_NOTES.md overwritten with new header');
+    check(/^# Eyehold v0\.2\.0/.test(notes), 'RELEASE_NOTES.md overwritten with new header');
     check(/TODO/.test(notes), 'RELEASE_NOTES.md has TODO bullet');
 
     // Commit exists with the right message.
@@ -201,7 +201,7 @@ try {
     spawnSync('git', ['add', '-A'], { cwd: dir });
     spawnSync('git', ['commit', '-qm', 'seed'], { cwd: dir, env: Object.assign({}, process.env, gitEnv) });
     const gh = writeFakeGh(tmp, 'gh-notag', 'empty');
-    const res = run(['0.3.0', '--no-tag'], dir, Object.assign({}, gitEnv, { STARNET_BUMP_GH: gh }));
+    const res = run(['0.3.0', '--no-tag'], dir, Object.assign({}, gitEnv, { EYEHOLD_BUMP_GH: gh }));
     eq(res.status, 0, res.stderr || res.stdout);
     const subject = spawnSync('git', ['log', '-1', '--pretty=%s'], { cwd: dir, encoding: 'utf8' }).stdout.trim();
     eq(subject, 'release: v0.3.0', '--no-tag still commits');
@@ -216,7 +216,7 @@ try {
     const dir = path.join(tmp, 'backwards-vs-published');
     makeFixture(dir, '0.2.2');
     const gh = writeFakeGh(dir, 'gh', 'tags:v0.2.4,v0.2.3,v0.2.2');
-    const res = run(['0.2.3', '--dry-run'], dir, { STARNET_BUMP_GH: gh });
+    const res = run(['0.2.3', '--dry-run'], dir, { EYEHOLD_BUMP_GH: gh });
     eq(res.status, 1, 'bump below highest published is rejected: ' + (res.stdout || ''));
     check(/highest PUBLISHED release 0\.2\.4/.test(res.stderr), 'names the published floor 0.2.4');
     check(/BACKWARDS/.test(res.stderr), 'explains it would flip the feed backwards');
@@ -230,7 +230,7 @@ try {
     const dir = path.join(tmp, 'equal-vs-published');
     makeFixture(dir, '0.2.2');
     const gh = writeFakeGh(dir, 'gh', 'tags:v0.2.4');
-    const res = run(['0.2.4', '--dry-run'], dir, { STARNET_BUMP_GH: gh });
+    const res = run(['0.2.4', '--dry-run'], dir, { EYEHOLD_BUMP_GH: gh });
     eq(res.status, 1, 'bump equal to highest published is rejected');
     check(/highest PUBLISHED release 0\.2\.4/.test(res.stderr), 'equal case names 0.2.4');
   }
@@ -241,7 +241,7 @@ try {
     makeFixture(dir, '0.2.2');
     // Point at a gh binary that does not exist -> spawn ENOENT -> "could not check".
     const missing = path.join(dir, 'no-such-gh-binary');
-    const res = run(['0.2.3', '--dry-run'], dir, { STARNET_BUMP_GH: missing });
+    const res = run(['0.2.3', '--dry-run'], dir, { EYEHOLD_BUMP_GH: missing });
     eq(res.status, 0, 'offline bump is not hard-failed: ' + (res.stderr || ''));
     check(/WARNING: could not check the published release floor/.test(res.stderr),
       'offline path warns loudly that the floor was not checked');
@@ -257,7 +257,7 @@ try {
     const dir = path.join(tmp, 'private-404');
     makeFixture(dir, '0.2.2');
     const gh = writeFakeGh(dir, 'gh', 'fail404');
-    const res = run(['0.2.3', '--dry-run'], dir, { STARNET_BUMP_GH: gh });
+    const res = run(['0.2.3', '--dry-run'], dir, { EYEHOLD_BUMP_GH: gh });
     eq(res.status, 0, '404 does not hard-fail (falls back to in-tree floor)');
     check(/WARNING: could not check the published release floor/.test(res.stderr),
       '404/auth-fail warns it could not check');
@@ -269,7 +269,7 @@ try {
     const dir = path.join(tmp, 'forward-vs-published');
     makeFixture(dir, '0.2.2');
     const gh = writeFakeGh(dir, 'gh', 'tags:v0.2.4,v0.2.3');
-    const res = run(['0.2.5', '--dry-run'], dir, { STARNET_BUMP_GH: gh });
+    const res = run(['0.2.5', '--dry-run'], dir, { EYEHOLD_BUMP_GH: gh });
     eq(res.status, 0, 'forward bump above published floor passes: ' + (res.stderr || ''));
     check(/published floor : 0\.2\.4/.test(res.stdout), 'reports the resolved published floor');
     check(/0\.2\.2 -> 0\.2\.5/.test(res.stdout), 'shows the version delta');

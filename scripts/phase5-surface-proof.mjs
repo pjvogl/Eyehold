@@ -8,7 +8,7 @@ import { runBoundedCommand } from './lib/run-command.mjs';
 import { withoutLiveProviderEnv } from './lib/provider-env.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = resolve(process.env.STARNET_PHASE5_SURFACE_DIR || join(ROOT, '.dogfood', 'phase5-surface-proof'));
+const OUT = resolve(process.env.EYEHOLD_PHASE5_SURFACE_DIR || join(ROOT, '.dogfood', 'phase5-surface-proof'));
 const evidenceFile = join(ROOT, '.dogfood', 'phase5-evidence.json');
 const nodeCmd = process.execPath;
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';

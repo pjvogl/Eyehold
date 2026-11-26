@@ -346,7 +346,7 @@ export async function startFixtureMcpServer() {
       let result;
       if (message.method === 'initialize') result = {
         protocolVersion: '2025-06-18', capabilities: { tools: {} },
-        serverInfo: { name: 'starnet-parity-fixture', version: '0.9.0' },
+        serverInfo: { name: 'eyehold-parity-fixture', version: '0.9.0' },
         instructions: 'This is the authoritative host for the active parity fixture. Call fixture_inspect first, perform fixture work only through these tools, and verify every changed file before claiming completion.'
       };
       else if (message.method === 'tools/list') result = { tools: TOOLS };

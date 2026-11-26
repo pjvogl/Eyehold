@@ -8,7 +8,7 @@ const { ensureLoginStation } = require('../dev/seed-mock-login.js');
   ensureLoginStation(save);
   const station = save.doc.station;
   const dish = station.props.find(prop => prop.t === 'comms_dish');
-  A.eq(station.schema, 'starnet.station', 'a null golden station becomes a valid persisted station document');
+  A.eq(station.schema, 'eyehold.station', 'a null golden station becomes a valid persisted station document');
   A.ok(station.rooms.r1 && station.order[0] === 'r1', 'the proof station carries the starter room topology');
   A.eq({ t: dish.t, w: dish.w, h: dish.h }, { t: 'comms_dish', w: 2, h: 2 }, 'the proof grants web with the real comms_dish prop');
 }

@@ -93,13 +93,13 @@ function startMock() {
   return new Promise(r => server.listen(0, '127.0.0.1', () => { mock.server = server; mock.base = 'http://127.0.0.1:' + server.address().port + '/api/v1'; r(mock); }));
 }
 async function leadRun(base, token, prompt) {
-  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base },
+  const res = await fetch(base + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base },
     body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: prompt }] }) });
   const text = await res.text();
   return { status: res.status, events: text.split('\n').map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean) };
 }
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-builder-e2e-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-builder-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');
@@ -187,11 +187,11 @@ try {
   let TJ = null; try { TJ = JSON.parse(tl.split('\n')[0]); } catch (_) { TJ = null; }
   check('station_test_line sends a real job down the line and reads every step back', runT.status === 200 && !!TJ && TJ.line === 'SHIP IT' && TJ.status === 'delivered' && TJ.steps.length >= 2 && TJ.steps.every(s => s.ended === 'done') && (mock.lineSteps || 0) - steps0 >= 2, tl.slice(0, 300));
   check('what the line delivered comes back fenced as data, not instructions', /\[BEGIN EXTERNAL WEB CONTENT — what the line SHIP IT delivered/.test(tl) && /LINE STEP DONE: hello/.test(tl), tl.slice(-240));
-  const jobs = await fetch(base + '/api/line-jobs', { headers: { 'X-StarNet-Token': token, Origin: base } }).then(r => r.json()).catch(() => null);
+  const jobs = await fetch(base + '/api/line-jobs', { headers: { 'X-Eyehold-Token': token, Origin: base } }).then(r => r.json()).catch(() => null);
   check('and the job is on record like any SEND A JOB', !!jobs && (jobs.jobs || []).some(j => j.name === 'SHIP IT' && j.status === 'delivered'), JSON.stringify(jobs || {}).slice(0, 240));
 
   // 4c. WHAT STARTS A LINE (10-01): a schedule and a webhook through the panel's own cores, and a trigger turned off
-  const api = (p, o) => fetch(base + p, Object.assign({ headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base } }, o || {})).then(r => r.json()).catch(() => null);
+  const api = (p, o) => fetch(base + p, Object.assign({ headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base } }, o || {})).then(r => r.json()).catch(() => null);
   mock.planTool = 'station_start_line'; mock.planArgs = { line: 'SHIP IT', schedule: 'weekdays at 8:30am', job: 'TEST JOB: the morning check' };
   let nS = mock.results.length;
   await leadRun(base, token, 'run the SHIP IT line every weekday morning');
@@ -219,7 +219,7 @@ try {
   check('one UNDO removes all of it', undone.ok && JSON.stringify(undone.rooms) === JSON.stringify(before.rooms) && !undone.line, JSON.stringify(undone));
   await evalJS(cdp, `(() => { if (WorkflowPanel.isOpen()) WorkflowPanel.close(); Build.close(); return true; })()`);
 
-  // 6. a furnished room kit: the lead picks LOUNGE from the menu, StarNet places every piece
+  // 6. a furnished room kit: the lead picks LOUNGE from the menu, Eyehold places every piece
   const kit = await evalJS(cdp, `(() => { const k = StationTemplates.kits().find(x => x.id === 'cozyLounge'); return { name: k.name, n: k.props.length, types: k.props.map(p => p[0]).sort() }; })()`);
   mock.planTool = 'station_plan'; mock.planArgs = { kit: kit.name };
   let at = mock.results.length;
@@ -266,7 +266,7 @@ try {
   check('one UNDO each takes back the removal, the refurnish, the restyle and the furnished room', undone2.ok && undone2.back && JSON.stringify(undone2.rooms) === JSON.stringify(before.rooms), JSON.stringify(undone2));
 
   // 9. the whole-station swap: backed up to Build mode's own slot, so its RESTORE PREVIOUS brings the old station back
-  const preSwap = await evalJS(cdp, `(() => { const st = App.station(); return { rooms: st.rooms().filter(r => r.kind !== 'corridor').map(r => r.name), props: st.props().length, key: 'starnet.layoutBackup.' + st.doc().meta.createdAt }; })()`);
+  const preSwap = await evalJS(cdp, `(() => { const st = App.station(); return { rooms: st.rooms().filter(r => r.kind !== 'corridor').map(r => r.name), props: st.props().length, key: 'eyehold.layoutBackup.' + st.doc().meta.createdAt }; })()`);
   await evalJS(cdp, `(() => { try { localStorage.removeItem(${JSON.stringify(preSwap.key)}); } catch (e) {} return true; })()`);
   mock.planTool = 'station_plan'; mock.planArgs = { preset: 'Research Station', replace: true };
   at = mock.results.length;
@@ -397,7 +397,7 @@ try {
   const lay = await evalJS(cdp, `(() => { const st = App.station(), g = st.projectGeometry(), ox = g.origin.tx, oy = g.origin.ty, rooms = st.rooms().filter(r => r.kind !== 'corridor'), home = rooms.find(r => r.name === 'HOME');
     const free = r => { const R = r.rects[0]; for (let y = R.y1; y <= R.y2; y++) for (let x = R.x1; x <= R.x2; x++) if (g.walkable(x - ox, y - oy)) return [x - ox, y - oy]; return null; };
     const a = free(home), inRoom = r => st.props().filter(p => st.roomAt(p.x, p.y) === r.id).length;
-    const key = 'starnet.layoutBackup.' + st.doc().meta.createdAt;
+    const key = 'eyehold.layoutBackup.' + st.doc().meta.createdAt;
     return { rooms: rooms.map(r => r.name).sort(), furnished: rooms.filter(r => r.name !== 'HOME' && r.name !== 'CONVEYOR HALL').map(inRoom), walk: rooms.every(r => { const b = free(r); return !!(a && b && g.path(a[0], a[1], b[0], b[1])); }),
       halls: st.rooms().filter(r => r.kind === 'corridor').length, backup: (() => { try { return localStorage.getItem(key); } catch (_) { return null; } })(), line: st.props().some(p => p.t === 'intake' && p.label === 'BUILD + TEST') }; })()`);
   check('the station is now the bridge and the six rooms, joined by corridors', JSON.stringify(lay.rooms) === JSON.stringify(['ARCADE', 'CONVEYOR HALL', 'GARDEN', 'HOME', 'LIBRARY', 'LOUNGE', 'QUARTERS']) && lay.halls >= 14, JSON.stringify(lay.rooms) + ' halls ' + lay.halls);
@@ -440,7 +440,7 @@ try {
   await Promise.all([stopChild(chrome, true), stopChild(sidecar)]);
   try { mock.server.close(); } catch {}
   const resolvedRoot = root.replace(/\\/g, '/');
-  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /starnet-builder-e2e-/.test(resolvedRoot)) {
+  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /eyehold-builder-e2e-/.test(resolvedRoot)) {
     for (let attempt = 0; attempt < 10; attempt++) {
       try { rmSync(root, { recursive: true, force: true }); break; }
       catch (error) { if (attempt === 9) console.log('(could not remove ' + root + ': ' + error.message + ')'); await sleep(300); }

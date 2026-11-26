@@ -1,5 +1,5 @@
 [package]
-name = "starnet-connector-keychain-acceptance"
+name = "eyehold-connector-keychain-acceptance"
 version = "0.1.0"
 edition = "2021"
 publish = false

@@ -12,7 +12,7 @@ and exact-candidate receipts win whenever they disagree with it.
 
 Andrew's release direction:
 
-1. v0.9.0 is the release where StarNet earns confidence as a harness in the same
+1. v0.9.0 is the release where Eyehold earns confidence as a harness in the same
    class as a mature reference such as Hermes Agent.
 2. Field experience says the model output is not the weak link. Extensive dogfood
    has produced exceptional outputs, and roughly 95% of reported problems have
@@ -46,7 +46,7 @@ Andrew's release direction:
 
 ### What is not yet proven
 
-- The eight active agent evaluations are deterministic StarNet scenarios. They
+- The eight active agent evaluations are deterministic Eyehold scenarios. They
   prove mechanisms, not comparative real-task outcomes.
 - No one frozen candidate has survived the entire fault, concurrency, integration,
   beginner, performance, installed-build, and soak campaign.
@@ -69,12 +69,12 @@ Andrew's release direction:
 
 Parity is an outcome contract, not identical topology.
 
-StarNet does NOT need every reference-harness channel, hosted deployment mode,
+Eyehold does NOT need every reference-harness channel, hosted deployment mode,
 password-manager integration, HPC backend, or CLI flag. Those are product breadth.
-They become release requirements only when StarNet advertises them or when a
+They become release requirements only when Eyehold advertises them or when a
 shared workload cannot succeed without them.
 
-StarNet DOES need mature behavior in these critical categories:
+Eyehold DOES need mature behavior in these critical categories:
 
 1. Agent loop and context continuity.
 2. Tool correctness, artifact integrity, and verification.
@@ -110,9 +110,9 @@ This blocks the rest. Without it, each lane proves a slightly different product.
 - Reference: Hermes Agent tag `v2026.7.30` (v0.19.1), never moving `main`.
 - Record the exact reference commit and installed/runtime version in every report.
 - Use the reference as a failure-class and shared-workload oracle, not as design
-  authority over StarNet's product decisions.
+  authority over Eyehold's product decisions.
 
-## 0.2 Freeze the StarNet scope
+## 0.2 Freeze the Eyehold scope
 
 Create one machine-readable v0.9 contract derived from the existing product-perfect
 claims ledger. Every material promise must be one of:
@@ -120,7 +120,7 @@ claims ledger. Every material promise must be one of:
 - `required` - blocks the release;
 - `experimental` - visibly labelled at its point of use and tested to fail safely;
 - `excluded` - not advertised and absent from the release comparison;
-- `differentiator` - StarNet-specific behavior tested on its own terms.
+- `differentiator` - Eyehold-specific behavior tested on its own terms.
 
 No vague `partial` claim may survive the candidate freeze.
 
@@ -128,7 +128,7 @@ No vague `partial` claim may survive the candidate freeze.
 
 Every behavioral receipt records:
 
-- StarNet commit, version, source-tree hash, executable hash, platform;
+- Eyehold commit, version, source-tree hash, executable hash, platform;
 - scenario id, seed, model/provider, run id, start/end timestamps;
 - requested outcome and machine-checkable grader result;
 - tool calls, turns, retries, tokens, reconciled cost, first-token time, wall time;
@@ -242,7 +242,7 @@ gauntlet emits one candidate-bound report consumed by the release gate.
 
 ---
 
-# Track 2 - Shared StarNet/reference workload comparison
+# Track 2 - Shared Eyehold/reference workload comparison
 
 This is deliberately smaller than the fault gauntlet because output quality is not
 the observed problem. It answers whether the harness can successfully carry the
@@ -273,21 +273,21 @@ same work with the same model.
 ## 2.3 Comparison gate
 
 - 100% pass on critical safety, mutation, recovery, and delivery scenarios.
-- At least 95% overall StarNet pass rate.
-- StarNet within 5 percentage points of the frozen reference on shared scenarios.
-- Zero StarNet-only false-done, wrong-destination, duplicate-mutation, or authority
+- At least 95% overall Eyehold pass rate.
+- Eyehold within 5 percentage points of the frozen reference on shared scenarios.
+- Zero Eyehold-only false-done, wrong-destination, duplicate-mutation, or authority
   escape events.
 - Every loss is explained and either fixed or turned into an explicit release
   exclusion. Statistical variance is rerun, not hand-waved.
 
 The comparison is a release input, not marketing copy. Public parity language is
-allowed only after the installed StarNet candidate reproduces the result.
+allowed only after the installed Eyehold candidate reproduces the result.
 
 ---
 
 # Track 3 - Performance and cost truth
 
-Hermes has made performance a product feature. StarNet needs its own measured bar.
+Hermes has made performance a product feature. Eyehold needs its own measured bar.
 
 ## 3.1 Measurements
 
@@ -306,7 +306,7 @@ Hermes has made performance a product feature. StarNet needs its own measured ba
 
 Set the exact numbers from a v0.8.5 baseline before optimizing. Until then:
 
-- no v0.9 regression greater than 10% on StarNet's median baseline without an
+- no v0.9 regression greater than 10% on Eyehold's median baseline without an
   explicit quality/reliability tradeoff;
 - no shared-workload wall-time or cost more than 25% worse than the reference
   without an explained product difference;
@@ -344,7 +344,7 @@ This is the surviving high-value portion of the earlier v0.9 plan.
 Every visible failure must state:
 
 - what failed;
-- what StarNet did and did not preserve;
+- what Eyehold did and did not preserve;
 - one concrete recovery action;
 - whether retry is safe;
 - where diagnostics/support live.
@@ -354,7 +354,7 @@ Every visible failure must state:
 On the exact installed candidate, five people unfamiliar with the current build
 must independently:
 
-- understand what StarNet is before supplying credentials;
+- understand what Eyehold is before supplying credentials;
 - connect a provider;
 - create or enter a station;
 - complete one real task and open its result in under ten minutes;

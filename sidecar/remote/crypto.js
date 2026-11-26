@@ -15,7 +15,7 @@
      phone  -> station : hello   { v, deviceId, eph: phoneEphPub, nonce: nP }
      station-> phone   : welcome { v, eph: stationEphPub, nonce: nS }
      ikm  = ECDH(eS, eP) || ECDH(sS, sP)                (ephemeral-ephemeral || static-static)
-     salt = SHA-256("starnet-remote/1" || stationPub || phonePub || ephS || ephP || nP || nS)
+     salt = SHA-256("eyehold-remote/1" || stationPub || phonePub || ephS || ephP || nP || nS)
      keys = HKDF(ikm, salt, "p2s") and HKDF(ikm, salt, "s2p")    one AES-256-GCM key per direction
    Only a holder of BOTH static keys can derive the static-static term, so a middle box that swaps the
    ephemerals derives nothing useful; the ephemeral term gives forward secrecy if a static key leaks later.
@@ -31,7 +31,7 @@
 const crypto = require('crypto');
 
 const VERSION = 1;
-const LABEL = 'starnet-remote/1';
+const LABEL = 'eyehold-remote/1';
 const CURVE = 'prime256v1';            // = WebCrypto "P-256"
 const RAW_PUB_LEN = 65;                 // uncompressed point: 0x04 || X(32) || Y(32)
 

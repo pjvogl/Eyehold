@@ -32,7 +32,7 @@ function git(cwd, args) { execFileSync('git', args, { cwd, stdio: 'ignore', wind
 
   const fixture = SidecarFixture.create({
     prefix: 'sk-discovery-',
-    env: { OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   await fixture.start();
@@ -40,7 +40,7 @@ function git(cwd, args) { execFileSync('git', args, { cwd, stdio: 'ignore', wind
   let apiToken = '';
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const r = await fetch(B + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };

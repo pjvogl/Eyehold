@@ -12,7 +12,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), CDP_PORT = 9495;
 const out = '.worldshots/apps-look';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-look-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-look-'));
 let chrome, cdp, failed = 0;
 const run = (s) => evalJS(cdp, s);
 const check = (name, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + name); if (!ok) failed++; };

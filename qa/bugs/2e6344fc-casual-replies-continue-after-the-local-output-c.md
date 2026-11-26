@@ -9,7 +9,7 @@ found: 2026-09-16
 lane: agent/response-audit-0915-7c2a
 fix: fc4c9e0f415251870778da1405086c421aff0670
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/17
+report: https://github.com/Eyehold/eyehold/issues/17
 affected: 0.11.2 Windows Ollama; related ceiling repair 5acf4640f
 family: response-latency
 installer: unverified

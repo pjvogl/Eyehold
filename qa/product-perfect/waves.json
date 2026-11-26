@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "campaign": "StarNet product perfection",
+  "campaign": "Eyehold product perfection",
   "terminalVerdict": "PRODUCT PERFECT",
   "policy": {
     "serialization": "first-non-pass",
@@ -109,7 +109,7 @@
       "goal": "Unify adaptation without inventing background hosting or another user-understanding silo.",
       "maxReceiptAgeMs": 86400000,
       "conditions": [
-        "All while-closed copy says while StarNet is running unless background hosting is independently proven on that platform.",
+        "All while-closed copy says while Eyehold is running unless background hosting is independently proven on that platform.",
         "Night Shift, routines, and interactive work use one server-owned Commander context composer rather than parallel understanding stores.",
         "Keep and decline reasons extend the unified composer, and declined ideas remain suppressed across restart.",
         "Learning claims are measurable, inspectable, interruptible, budget-bounded, and permission-gated."

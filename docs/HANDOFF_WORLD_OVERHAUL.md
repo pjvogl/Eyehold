@@ -7,8 +7,8 @@ Read `docs/BRAIN.md` + `CLAUDE.md` first; this file is the lane-specific truth.
 
 ## 1. What this branch is
 
-Andrew's ask (2026-09-03): *"make StarNet truly look like a $40 pixel-art gorgeous Steam game… without
-using too many resources."* Then, across ~15 review rounds: *keep StarNet as it is, immensely improve
+Andrew's ask (2026-09-03): *"make Eyehold truly look like a $40 pixel-art gorgeous Steam game… without
+using too many resources."* Then, across ~15 review rounds: *keep Eyehold as it is, immensely improve
 textures + lighting, Stardew-level; more depth and detail; the exterior must not glow against the void.*
 
 The branch FOLDS IN two older unmerged lanes first, so one verdict covers all three:
@@ -73,7 +73,7 @@ full-frame canvas draw look like 3 ms.
 1. `npm run test:fast` — last GREEN at `e5c93efab`; ~15 commits since. Run it (10 min, alone).
 2. Claims re-lock: `node scripts/qa/product-perfect/relock-surface.mjs` (clean tree) → commit → gate again.
 3. Goldens: `npm run golden` then `npm run golden:bless` (expect ingame + the two translucent panels to move).
-4. Andrew's verdict on §2's "not judged" rows, then `starnet-merge-ritual`. Merging this merges the
+4. Andrew's verdict on §2's "not judged" rows, then `eyehold-merge-ritual`. Merging this merges the
    09-02 glow-up too. The prop-gorgeous lane's art is NOT in here any more.
 
 ## 6. Recipes

@@ -266,7 +266,7 @@ const text = v => JSON.stringify(v);
     A.ok(provider.prepareWireMessages(undefined, 'chat') === undefined, 'a missing transcript passes through as it came');
   }
 
-  // ---- 6. StarNet bookkeeping keys never reach a Chat Completions body (user report 2026-10-05: Mistral 422
+  // ---- 6. Eyehold bookkeeping keys never reach a Chat Completions body (user report 2026-10-05: Mistral 422
   //      extra_forbidden on messages[1].user.streamId / agentId / ts — every run, even a new chat's first message) ----
   {
     const comms = [

@@ -1,4 +1,4 @@
-/* STARNET — workflowpanel.js : the DOCKED WORKFLOW PANEL of REFIT (2026-09-22, Andrew's rulings).
+/* EYEHOLD — workflowpanel.js : the DOCKED WORKFLOW PANEL of REFIT (2026-09-22, Andrew's rulings).
 
    One card for the whole line, docked to the side of build mode — NOT a modal. The floor stays visible
    and interactive: clicking the INBOX, any BAY or a LOOP/JOINER/MERGER/SPLITTER gate of a line (or the
@@ -38,7 +38,7 @@ const WorkflowPanel = (() => {
     .then(r => r.json().catch(() => null).then(j => ({ status: r.status, j })));
 
   /* ---------- tests: real step-test answers, remembered per station (a per-viewer convenience) ---------- */
-  const TKEY = () => 'starnet.refit.wftests.' + (H ? H.stationKey() : 'default');
+  const TKEY = () => 'eyehold.refit.wftests.' + (H ? H.stationKey() : 'default');
   let tests = null;
   function loadTests() {
     try { const o = JSON.parse(localStorage.getItem(TKEY()) || '{}'); tests = (o && typeof o === 'object') ? o : {}; } catch (e) { tests = {}; }
@@ -1089,7 +1089,7 @@ const WorkflowPanel = (() => {
       if (rv) html += '<div class="lt-reveal" role="status"><div class="trg-form-k">YOUR KEY — SHOWN ONCE</div>'
         + '<code class="lt-code lt-key">' + esc(rv.secret) + '</code>'
         + '<div class="wf-row"><button type="button" class="bb sm refit-primary" data-lt-copy="' + esc(rv.secret) + '">COPY KEY</button><button type="button" class="bb sm" id="lt-reveal-done">I SAVED IT</button></div>'
-        + '<p class="wf-help">Send it as the <b>X-StarNet-Hook-Key</b> header (or <b>Authorization: Bearer …</b>, or <b>?key=</b> on the URL). StarNet keeps only a fingerprint of it: once this box closes it cannot be shown again. Lost it? Make a new key.</p></div>';
+        + '<p class="wf-help">Send it as the <b>X-Eyehold-Hook-Key</b> header (or <b>Authorization: Bearer …</b>, or <b>?key=</b> on the URL). Eyehold keeps only a fingerprint of it: once this box closes it cannot be shown again. Lost it? Make a new key.</p></div>';
     }
     html += '<div class="wf-row lt-acts"><button type="button" class="bb sm" data-lt-act="toggle">' + (t.enabled ? 'PAUSE' : 'RESUME') + '</button>'
       + '<button type="button" class="bb sm" data-lt-act="edit">EDIT</button>'

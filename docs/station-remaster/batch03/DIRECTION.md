@@ -1,6 +1,6 @@
 # Illustrated station props
 
-User correction: many batch02 props are too realistic, especially the coffee maker and upholstered bench. Material diversity remains required. Wood should stay wood, fabric should stay fabric, and every object should fit the new StarNet art style.
+User correction: many batch02 props are too realistic, especially the coffee maker and upholstered bench. Material diversity remains required. Wood should stay wood, fabric should stay fabric, and every object should fit the new Eyehold art style.
 
 Use the accepted workstation and crate as rendering references, and the bridge for environmental coherence. Use previous object sources for identity and required silhouette only. Earlier prompts that requested fine realistic detail are superseded.
 

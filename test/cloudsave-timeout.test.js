@@ -20,7 +20,7 @@ const source = fs.readFileSync(path.join(__dirname, '../frontend/app/cloudsave.j
     };
     vm.runInNewContext(source, context);
     const client = context.module.exports;
-    client.push({ schema: 'starnet.save', version: 5, updatedAt: 1, agent: { id: 'agent' } });
+    client.push({ schema: 'eyehold.save', version: 5, updatedAt: 1, agent: { id: 'agent' } });
     const writing = client.flush({ force: true });
     await Promise.resolve(); await Promise.resolve();
     const deadline = [...timers.values()].find(t => t.delay === 15000);

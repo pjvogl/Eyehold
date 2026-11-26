@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { makeRunJournal, DISPATCH_BOUNDARY_MODEL } = require('../sidecar/run-journal.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-journal-boundary-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-journal-boundary-'));
 try {
   let tick = 0;
   const first = makeRunJournal({ dir: root, clock: { now: () => ++tick } });

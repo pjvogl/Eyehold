@@ -5,7 +5,7 @@ Status: **design only, nothing built.** Written 2026-07-28 alongside the `connec
 
 ## Where this came from
 
-Asked what StarNet lacks as a harness, an agent answered: *"StarNet has scheduled routines, but I don't
+Asked what Eyehold lacks as a harness, an agent answered: *"Eyehold has scheduled routines, but I don't
 have general webhook/event triggers like 'wake up when an email arrives, a GitHub issue opens, or a Stripe
 payment fails.'"* That gap is real. The proposed **shape** was wrong, and the difference matters enough to
 write down before anyone builds it.
@@ -22,7 +22,7 @@ The obvious build is `POST /api/hooks/<id>` with a signing secret. It is archite
 - **The one webhook-shaped thing we ship already avoids webhooks.** Telegram is a **long poll**:
   `sidecar/channels/telegram.transport.js` calls `getUpdates`, and `connect` even calls `deleteWebhook`
   first, because a webhook set by some earlier tutorial makes every poll fail with 409. Slack ingress is
-  the same story. Nothing in StarNet has ever accepted an unsolicited inbound request, and that is a
+  the same story. Nothing in Eyehold has ever accepted an unsolicited inbound request, and that is a
   property worth keeping.
 - **Local-first is the product.** A trigger that only works while a tunnel is up is a trigger that lies.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// uiplay.mjs — INTERACTIVE playthrough auditor for StarNet.
+// uiplay.mjs — INTERACTIVE playthrough auditor for Eyehold.
 //
 // Static screenshots (uishoot.mjs) catch how the UI LOOKS at rest. This catches what
 // breaks while you actually PLAY: send a chat directive, watch the live run, and detect
@@ -99,7 +99,7 @@ async function main() {
     await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
     await cdp.send('Page.navigate', { url: APP_URL });
     await sleep(9000);
-    console.log(`title=${await ev(cdp,'document.title')} dev=${await ev(cdp,'!!window.__STARNET_DEV__')}`);
+    console.log(`title=${await ev(cdp,'document.title')} dev=${await ev(cdp,'!!window.__EYEHOLD_DEV__')}`);
 
     // baseline stacking (before any interaction) + the resting frame
     await frame(cdp, '00-rest');

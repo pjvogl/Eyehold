@@ -1,4 +1,4 @@
-/* StarNet Remote — the phone app.
+/* Eyehold Remote — the phone app.
 
    Three places: STATION (the picture of your station, what needs you, your crew, your latest sessions),
    SESSIONS (every conversation, the same ones the desk shows) and FILES (what the crew delivered).
@@ -42,7 +42,7 @@
   const LIVE_VIEW_MS = 15000;   // a picture younger than this is "live"
 
   /* ---------- helpers ---------- */
-  const TARGET_KEY = 'starnet.remote.target';
+  const TARGET_KEY = 'eyehold.remote.target';
   function setTarget(id) { S.target = id; try { localStorage.setItem(TARGET_KEY, id); } catch (_) {} }
   function ago(ms) {
     const s = Math.max(0, Math.round(ms / 1000));
@@ -482,8 +482,8 @@
     const v = S.view;
     hero.frame.hidden = !v; hero.chip.hidden = !v; hero.expand.hidden = !v; hero.empty.hidden = !!v;
     if (!v) {
-      if (S.viewNone && S.deskOpen) { hero.eb.textContent = 'ALMOST THERE'; hero.es.textContent = 'StarNet is open on your computer but has not drawn your station yet. Bring its window to the front for a moment.'; }
-      else if (S.viewNone) { hero.eb.textContent = 'NO PICTURE YET'; hero.es.textContent = 'Open StarNet on your computer and your station appears here.'; }
+      if (S.viewNone && S.deskOpen) { hero.eb.textContent = 'ALMOST THERE'; hero.es.textContent = 'Eyehold is open on your computer but has not drawn your station yet. Bring its window to the front for a moment.'; }
+      else if (S.viewNone) { hero.eb.textContent = 'NO PICTURE YET'; hero.es.textContent = 'Open Eyehold on your computer and your station appears here.'; }
       else if (S.linkState === 'open') { hero.eb.textContent = 'LOADING YOUR STATION'; hero.es.textContent = ''; }
       else { hero.eb.textContent = 'STATION OFFLINE'; hero.es.textContent = 'The picture appears when your station is reachable.'; }
       return;
@@ -682,7 +682,7 @@
     } catch (e) { toast(e.message, true); }
     finally { S.push.busy = false; render(); }
   }
-  const nudgeKey = 'starnet.remote.pushNudge';
+  const nudgeKey = 'eyehold.remote.pushNudge';
   function nudgeDismissed() { try { return localStorage.getItem(nudgeKey) === '1'; } catch (_) { return false; } }
   function pushCard(compact) {
     const sup = pushSupport();
@@ -1264,7 +1264,7 @@
 
   async function pairFrom(blob) {
     let p; try { p = JSON.parse(b64uDecode(blob)); } catch (_) { throw new Error('That pairing link is damaged. Make a new one on the desktop.'); }
-    if (!p || p.v !== PhoneClient.VERSION || !p.s || !p.p || !p.c) throw new Error('That pairing link is from a different version of StarNet.');
+    if (!p || p.v !== PhoneClient.VERSION || !p.s || !p.p || !p.c) throw new Error('That pairing link is from a different version of Eyehold.');
     const relay = p.r || location.origin;
     showSetup(true);
     $('setup-fp').textContent = await PhoneClient.fingerprint(p.s);
@@ -1279,7 +1279,7 @@
   const looking = () => document.visibilityState === 'visible' && S.linkState === 'open';
   /* GETTING ONTO THE HOME SCREEN. On iPhone a Home Screen app gets its OWN storage, apart from Safari: a phone paired in
      Safari opens from the Home Screen unpaired, and its one-time code is already spent. So on an iPhone the pairing link
-     does NOT pair in Safari. It walks you through copying the link and adding StarNet to the Home Screen, and the Home
+     does NOT pair in Safari. It walks you through copying the link and adding Eyehold to the Home Screen, and the Home
      Screen app pairs from a single Paste. Everywhere else (Android, desktop) the link pairs straight away. */
   const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const PAIR_RE = /[#&]pair=([A-Za-z0-9_-]{20,})/;
@@ -1289,7 +1289,7 @@
     const link = location.origin + location.pathname + '#pair=' + blob;
     const copy = $('install-copy');
     copy.onclick = async () => {
-      try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied'; copy.classList.add('done'); toast('Link copied. Now add StarNet to your Home Screen.'); }
+      try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied'; copy.classList.add('done'); toast('Link copied. Now add Eyehold to your Home Screen.'); }
       catch (_) { toast('Could not copy here. Use it in Safari instead, or press PAIR A PHONE again.', true); }
     };
     $('install-here').onclick = () => pairAndStart(blob);
@@ -1309,7 +1309,7 @@
     let text = '';
     try { text = await navigator.clipboard.readText(); } catch (_) { text = ''; }
     const m = PAIR_RE.exec(text || '');
-    if (!m) { $('setup-howto').querySelector('details').open = true; toast(text ? 'That is not a StarNet pairing link' : 'Nothing to paste. Copy the pairing link first, or paste it below.', true); return; }
+    if (!m) { $('setup-howto').querySelector('details').open = true; toast(text ? 'That is not a Eyehold pairing link' : 'Nothing to paste. Copy the pairing link first, or paste it below.', true); return; }
     pairAndStart(m[1]);
   }
   async function boot() {

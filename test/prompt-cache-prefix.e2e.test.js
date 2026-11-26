@@ -19,14 +19,14 @@ const text = content => typeof content === 'string' ? content : (content || []).
   });
   await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
   const baseUrl = 'http://127.0.0.1:' + upstream.address().port + '/v1';
-  const fixture = new SidecarFixture({env:{SKYNET_FULL_ACCESS:'1',STARNET_FULL_ACCESS:'1',SKYNET_SKILL_REVIEW:'0',SKYNET_SKILL_CURATOR:'0',SKYNET_THREAD_MINE:'0',STARNET_CREDITS_URL:'',SKYNET_CREDITS_URL:''}});
+  const fixture = new SidecarFixture({env:{SKYNET_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',SKYNET_SKILL_REVIEW:'0',SKYNET_SKILL_CURATOR:'0',SKYNET_THREAD_MINE:'0',EYEHOLD_CREDITS_URL:'',SKYNET_CREDITS_URL:''}});
   try {
     await fixture.start();
     for (const provider of ['anthropic','openrouter','custom']) {
       bodies.length=0;
       const model=provider==='anthropic'?'claude-test':provider==='openrouter'?'anthropic/claude-test':'audit-model';
       for(let i=0;i<2;i++) {
-        const r=await fetch(fixture.baseUrl+'/api/run',{method:'POST',headers:{'Content-Type':'application/json','X-StarNet-Token':fixture.token,Origin:fixture.baseUrl},body:JSON.stringify({provider,baseUrl,key:'fixture-key',model,reasoningEffort:'low',agentId:'agent',streamId:'cache-'+provider,isTask:true,placed:[],system:'CACHE_PROOF_IDENTITY: Preserve all required checks.',messages:[{role:'user',content:'Please acknowledge this request.'}]})});
+        const r=await fetch(fixture.baseUrl+'/api/run',{method:'POST',headers:{'Content-Type':'application/json','X-Eyehold-Token':fixture.token,Origin:fixture.baseUrl},body:JSON.stringify({provider,baseUrl,key:'fixture-key',model,reasoningEffort:'low',agentId:'agent',streamId:'cache-'+provider,isTask:true,placed:[],system:'CACHE_PROOF_IDENTITY: Preserve all required checks.',messages:[{role:'user',content:'Please acknowledge this request.'}]})});
         assert.equal(r.status,200);
         const events=(await r.text()).trim().split('\n').map(l=>JSON.parse(l));
         assert.equal(events.findLast(e=>e.name==='agent.run.end')?.payload.reason,'done');

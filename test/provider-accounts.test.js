@@ -6,7 +6,7 @@ const os = require('os');
 const path = require('path');
 const { makeProviderAccounts, MAX_ACCOUNTS } = require('../sidecar/provider-accounts.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-accounts-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-accounts-'));
 try {
   let n = 0;
   const accts = makeProviderAccounts({ root, randomId: () => ['aaaaaaaa', 'bbbbbbbb', 'cccccccc', 'dddddddd', 'eeeeeeee', 'ffffffff', 'abababab', 'cdcdcdcd', 'efefefef'][n++] });

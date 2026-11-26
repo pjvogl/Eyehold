@@ -104,11 +104,11 @@ async function readNdjson(res) {
   const firstBoot = await boot(8930 + (process.pid % 30), env, 20);
   let child = firstBoot.child;
   const B = 'http://' + HOST + ':' + firstBoot.port;
-  const keepDir = path.join(os.tmpdir(), 'starnet-undo-keep-' + process.pid + '-' + Date.now());
+  const keepDir = path.join(os.tmpdir(), 'eyehold-undo-keep-' + process.pid + '-' + Date.now());
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // 1. grant + queue + build a real deliverable (two files, one in a subdir).
     await fetch(B + '/api/workshop/grant', { method: 'POST', headers, body: JSON.stringify({ agentId: 'builder', on: true }) });

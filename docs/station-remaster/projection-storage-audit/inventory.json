@@ -9,7 +9,7 @@
       "frontend/assets/industrial/projection-correction/chair.png"
     ],
     "description": "Accepted in-station anchors control projection: orthographic horizontal front edges, no diamond yaw, visible receding top planes, grounded contact. Do not invent a numeric pitch from a prompt. Native bounds specify the maximum standing envelope and footprint, not a license to stretch source art.",
-    "secondary": "frontend/assets/industrial/complete-sheet/starnet-props-full-sheet.png is material/style only"
+    "secondary": "frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png is material/style only"
   },
   "evidence": [
     "docs/station-remaster/STYLE_LOCK.md:5",

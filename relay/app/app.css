@@ -1,4 +1,4 @@
-/* StarNet Remote — the phone app. Built from the station's own glass recipes (frontend/css/glass-demo.css,
+/* Eyehold Remote — the phone app. Built from the station's own glass recipes (frontend/css/glass-demo.css,
    glass-comms.css) and the amber theme tokens (frontend/css/style.css). Matte: one hairline edge, one inner
    highlight, no glow. No browser-painted controls anywhere. */
 @font-face { font-family: 'VT323'; src: url('vt323.woff2') format('woff2'); font-display: block; }

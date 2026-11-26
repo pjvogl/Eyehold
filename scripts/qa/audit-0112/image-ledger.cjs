@@ -1,5 +1,5 @@
 'use strict';
-// Real sidecar, saved managed link, no OpenRouter key. Optional STARNET_TEST_CLOUD_ROOT
+// Real sidecar, saved managed link, no OpenRouter key. Optional EYEHOLD_TEST_CLOUD_ROOT
 // drives the same journey through the actual cloud app/ledger with a synthetic upstream.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -21,7 +21,7 @@ test('managed images: saved credits route generates, bills, survives restart and
     const image = body.modalities?.includes('image');
     calls.push({ url: String(url), body, image, authorization: opts.headers.authorization || opts.headers.Authorization });
     if (image) {
-      if (failure) return json({ error: { message: failure === 402 ? 'insufficient StarNet credits' : 'image provider unavailable' } }, failure);
+      if (failure) return json({ error: { message: failure === 402 ? 'insufficient Eyehold credits' : 'image provider unavailable' } }, failure);
       return json({ id: 'fixture-image-' + calls.length, choices: [{ message: noImage ? { content: 'No image was produced' } : { images: [{ image_url: { url: 'data:image/png;base64,' + PNG } }] } }], usage: { prompt_tokens: 4, completion_tokens: 2, cost: 0.02 } });
     }
     const result = (body.messages || []).some(m => m.role === 'tool');
@@ -47,14 +47,14 @@ test('managed images: saved credits route generates, bills, survives restart and
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const cloudUrl = 'http://127.0.0.1:' + server.address().port;
   fixture = new SidecarFixture({ prefix: 'managed-image-proof-', timeoutMs: 20000, env: {
-    STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    STARNET_CLOUD_URL: cloudUrl, SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0',
-    STARNET_OPENROUTER_BASE: cloudUrl + '/v1', STARNET_CUSTOM_OPENAI_BASE_URL: cloudUrl + '/v1'
+    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
+    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
+    EYEHOLD_CLOUD_URL: cloudUrl, SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0',
+    EYEHOLD_OPENROUTER_BASE: cloudUrl + '/v1', EYEHOLD_CUSTOM_OPENAI_BASE_URL: cloudUrl + '/v1'
   } });
   try {
-    if (process.env.STARNET_TEST_CLOUD_ROOT) {
-      const cloudRoot = path.resolve(process.env.STARNET_TEST_CLOUD_ROOT);
+    if (process.env.EYEHOLD_TEST_CLOUD_ROOT) {
+      const cloudRoot = path.resolve(process.env.EYEHOLD_TEST_CLOUD_ROOT);
       const { createApp } = await import(pathToFileURL(path.join(cloudRoot, 'src/app.js')));
       const { makeStore } = await import(pathToFileURL(path.join(cloudRoot, 'src/store.js')));
       store = makeStore(path.join(fixture.workspace, 'proof-cloud.db'));
@@ -70,7 +70,7 @@ test('managed images: saved credits route generates, bills, survives restart and
     fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
     fs.writeFileSync(path.join(fixture.workspace, '.secrets/credits.json'), JSON.stringify({ url: cloudUrl, deviceToken, accountId: account, linkedAt: Date.now() }));
     await fixture.start();
-    const run = async (agentId, provider = 'starnet') => {
+    const run = async (agentId, provider = 'eyehold') => {
       const r = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider, model: 'test/model', ...(provider === 'custom' ? { key: 'custom-conversation-key', baseUrl: cloudUrl + '/v1' } : {}), agentId, isTask: true, placed: ['studio'], messages: [{ role: 'user', content: 'Generate an image of a blue cube' }] }) });
       assert.equal(r.status, 200);
       return (await r.text()).split('\n').filter(Boolean).map(x => JSON.parse(x));
@@ -82,7 +82,7 @@ test('managed images: saved credits route generates, bills, survives restart and
         const saved = JSON.parse(fs.readFileSync(linkPath, 'utf8'));
         delete saved.deviceToken;
         fs.writeFileSync(linkPath, JSON.stringify(saved));
-        await fixture.restart({ STARNET_CREDITS_TOKEN: deviceToken });
+        await fixture.restart({ EYEHOLD_CREDITS_TOKEN: deviceToken });
       }
       const before = store ? store.balance(account) : balance;
       const events = await run('managed-image-' + round); fs.writeFileSync('qa/evidence/0.11.2-audit/audit-image-ledger-'+round+'.json', JSON.stringify({walletDebit:before-(store ? store.balance(account) : balance),costEvents:events.filter(e=>/cost|run.end/.test(e.name))},null,2));

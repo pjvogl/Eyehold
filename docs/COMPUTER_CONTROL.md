@@ -6,7 +6,7 @@ selection persists across restarts and applies to new runs. Changing it closes
 active CUA sessions. **Windows · Classic** keeps the existing desktop driver;
 **Off** removes native control from subsequent tool projections.
 
-CUA currently supports Windows x64 in StarNet. Browser and connector tools remain
+CUA currently supports Windows x64 in Eyehold. Browser and connector tools remain
 the preferred paths for websites and service APIs. Existing voice tasks use the
 same native tool when their agent has Full Power. This change does not introduce
 an always-listening microphone or change voice permissions.
@@ -24,7 +24,7 @@ older tokens; stale actions return a tool error. Window pixels and desktop pixel
 are distinct coordinate spaces. Background input is preferred; foreground input
 remains explicitly available when background input refuses or produces a verified
 no-op. Full Power retains whole-computer authority, including intentional control
-of StarNet itself. Restricted runs cannot launch the native driver.
+of Eyehold itself. Restricted runs cannot launch the native driver.
 
 Results retain CUA's effect, route, refusal and verification evidence. `confirmed`
 means the driver's particular check succeeded. `unverifiable` and `dispatched`
@@ -33,7 +33,7 @@ was accomplished. A successful tool call is not itself proof that a file saved.
 
 ## Installation and lifecycle
 
-StarNet downloads the official Windows x64 0.28.2 archive and checks SHA-256
+Eyehold downloads the official Windows x64 0.28.2 archive and checks SHA-256
 `1f4bfceeab64cb7f56be7aad774c3dc2d2910d1427e4be1d79939c706e8029ba` before
 extracting it. A staging directory becomes the installed version directory only
 after the executable's version and UIA helper are verified. No global PATH,
@@ -61,13 +61,13 @@ cleanup; graceful shutdown and run cancellation are the supported cleanup paths.
 
 Advanced direct-sidecar launch settings (the desktop host marker is still required):
 
-- `STARNET_COMPUTER_DRIVER=cua` pins CUA; `off` pins disabled.
+- `EYEHOLD_COMPUTER_DRIVER=cua` pins CUA; `off` pins disabled.
 - Existing `1`/`win32` selection remains the default until changed in Abilities.
-- `STARNET_CUA_BINARY` selects an explicit installation with its sibling UIA helper.
-  StarNet verifies its version; installation is then managed by the operator.
+- `EYEHOLD_CUA_BINARY` selects an explicit installation with its sibling UIA helper.
+  Eyehold verifies its version; installation is then managed by the operator.
 
 The CUA runtime's unrestricted flag is private implementation of the authority
-StarNet already granted. It is not exposed as a model argument or a new permission
+Eyehold already granted. It is not exposed as a model argument or a new permission
 switch. This runtime is not registered as an isolated third-party MCP connector.
 
 ## Reproducible verification

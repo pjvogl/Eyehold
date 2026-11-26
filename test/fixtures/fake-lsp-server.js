@@ -21,7 +21,7 @@ function publish(uri, text) {
     if (line.includes('OLD')) rows.push(diagnostic(i, line, 'OLD'));
     if (line.includes('BROKEN')) rows.push(diagnostic(i, line, 'BROKEN'));
   });
-  if (process.env.STARNET_TEST_SECRET) rows.push(diagnostic(0, 'secret', 'SECRET_LEAK'));
+  if (process.env.EYEHOLD_TEST_SECRET) rows.push(diagnostic(0, 'secret', 'SECRET_LEAK'));
   send({ jsonrpc: '2.0', method: 'textDocument/publishDiagnostics', params: { uri, diagnostics: rows } });
 }
 

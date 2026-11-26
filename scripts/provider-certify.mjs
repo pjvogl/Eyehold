@@ -25,11 +25,11 @@ const { makeCostEngine } = require('../sidecar/cost.js');
 
 const STEP_TIMEOUT_MS = 90000;
 const CHAT_PROMPT = 'Reply with exactly: OK';
-const TOOL_PROMPT = 'Call the starnet_ping tool now. Do not answer in prose.';
+const TOOL_PROMPT = 'Call the eyehold_ping tool now. Do not answer in prose.';
 const PING_TOOL = [{
   type: 'function',
   function: {
-    name: 'starnet_ping',
+    name: 'eyehold_ping',
     description: 'Reports harness readiness. When asked to ping, call this tool.',
     parameters: { type: 'object', properties: { note: { type: 'string' } }, required: [] }
   }

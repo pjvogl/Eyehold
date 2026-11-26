@@ -2,7 +2,7 @@
   "source": "6831ae22450ab9aa80e0188fc808963767cecafd",
   "outcome": "PASS",
   "scope": "dev-seeded source UI; no inference",
-  "copy": "Choose your primary model in COMMS. If it fails mid-run because of availability, authentication, billing, or rate limits, StarNet tries this list from top to bottom. Saved models use your OpenRouter connection, or your StarNet connection when StarNet is the primary provider. An empty list disables fallback. Model changes appear in COMMS and the logbook.",
+  "copy": "Choose your primary model in COMMS. If it fails mid-run because of availability, authentication, billing, or rate limits, Eyehold tries this list from top to bottom. Saved models use your OpenRouter connection, or your Eyehold connection when Eyehold is the primary provider. An empty list disables fallback. Model changes appear in COMMS and the logbook.",
   "model": "~anthropic/claude-fable-latest",
   "saved": {
     "chain": [

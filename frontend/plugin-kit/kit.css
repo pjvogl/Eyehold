@@ -1,12 +1,12 @@
-/* starnet-kit.css — the STATION LOOK for plugin windows (plugin extensions phase 1, 2026-09-29).
+/* eyehold-kit.css — the STATION LOOK for plugin windows (plugin extensions phase 1, 2026-09-29).
 
    Injected at the top of every plugin page by the sidecar (/plugin-ui/ route). Everything here is copied from the
    station's own GLASS recipes (frontend/css/glass-demo.css + style.css tokens) — a plugin built from these classes
-   looks like it shipped with StarNet, and repaints with the station when the Commander changes the phosphor.
+   looks like it shipped with Eyehold, and repaints with the station when the Commander changes the phosphor.
 
-   · Tokens: the defaults below are the amber reference build. starnet-kit.js overwrites them on :root with the
+   · Tokens: the defaults below are the amber reference build. eyehold-kit.js overwrites them on :root with the
      station's LIVE computed values the moment the window opens and on every theme change.
-   · Everything sits in `@layer starnet`, the lowest layer: any CSS the plugin author writes (unlayered) wins, with
+   · Everything sits in `@layer eyehold`, the lowest layer: any CSS the plugin author writes (unlayered) wins, with
      no !important and no specificity fights. The kit is the default, never a cage.
    · Matte glass, no glow. No control is ever left in the browser's own white paint (the station's standing law).
 
@@ -26,7 +26,7 @@
   src: url('vt323.woff2') format('woff2');
 }
 
-@layer starnet {
+@layer eyehold {
   :root {
     --ph: #ffaa33; --ph-bright: #ffd9a3; --ph-dim: #b9791c; --ph-faint: #1e1404; --ink: #190f02;
     --bg: #030201; --panel: rgba(5, 3, 1, 0.95); --panel2: #0c0704; --text: #eec88f; --gold: #ffd34a;

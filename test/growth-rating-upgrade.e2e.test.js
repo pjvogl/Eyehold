@@ -12,7 +12,7 @@ const resume = require('./_rating-resume.js');
 global.Xp = require('../frontend/app/xp.js');
 const {XpStore} = require('../frontend/app/xpstore.js');
 const root = path.resolve(__dirname,'..');
-const workspace = fs.mkdtempSync(path.join(os.tmpdir(),'starnet-rating-upgrade-'));
+const workspace = fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-rating-upgrade-'));
 let child, base, headers;
 const mock = http.createServer((req,res) => {
   if (req.url.includes('/models')) { res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify({data:[{id:'test/model',context_length:128000,pricing:{prompt:'0',completion:'0'},supported_parameters:['tools']}]})); }
@@ -28,7 +28,7 @@ async function boot() {
   base='http://127.0.0.1:'+port;
   child=spawn(process.execPath,['sidecar/index.js'],{cwd:root,env:{...process.env,SKYNET_WORKSPACES:workspace,SKYNET_PORT:String(port),SKYNET_OPENROUTER_BASE:'http://127.0.0.1:'+mock.address().port+'/api/v1',SKYNET_OPENROUTER_KEY:'sk-or-v1-rating-fixture',SKYNET_EDGE_TTS:'0'},stdio:['ignore','pipe','pipe']});
   await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>reject(new Error('rating server boot timeout: '+out.slice(-1200))),30000);const read=d=>{out+=d;if(out.includes('Open in your browser:')){clearTimeout(timer);resolve();}};child.stdout.on('data',read);child.stderr.on('data',read);child.once('exit',c=>{clearTimeout(timer);reject(new Error('boot exit '+c+out.slice(-1200)));});});
-  headers={'Content-Type':'application/json','X-StarNet-Token':await bootToken(base,base),Origin:base};
+  headers={'Content-Type':'application/json','X-Eyehold-Token':await bootToken(base,base),Origin:base};
 }
 async function stop(){ if(child&&child.exitCode===null){const exit=once(child,'exit');child.kill();await exit;} }
 async function api(url,body){const r=await fetch(base+url,{headers,method:body===undefined?'GET':'POST',body:body===undefined?undefined:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
@@ -45,7 +45,7 @@ async function run(agentId,extra={}){
   mock.listen(0,'127.0.0.1');await once(mock,'listening');
   try {
     await boot();
-    const legacy={schema:'starnet.save',version:6,updatedAt:Date.now()+1800000,agent:{id:'agent',name:'Legacy hero',onboarded:true,model:'test/model',stats:Xp.fresh()},agents:[{id:'scribe',name:'Scribe',createdAt:123,stats:Xp.fresh()}],stationStats:Xp.fresh()};
+    const legacy={schema:'eyehold.save',version:6,updatedAt:Date.now()+1800000,agent:{id:'agent',name:'Legacy hero',onboarded:true,model:'test/model',stats:Xp.fresh()},agents:[{id:'scribe',name:'Scribe',createdAt:123,stats:Xp.fresh()}],stationStats:Xp.fresh()};
     A.ok((await api('/api/save',legacy)).body.ok,'store the pre-update legacy save; future stamp models a held background sync');
     A.ok((await api('/api/roster',{agents:[{agentId:'agent',name:'Legacy hero',model:'test/model',provider:'openrouter'},{agentId:'scribe',name:'Scribe',model:'test/model',provider:'openrouter'}]})).body.ok,'persist the actual hero and specialist roster');
     const priorRun=await run('agent');

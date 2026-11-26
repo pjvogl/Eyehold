@@ -2,7 +2,7 @@
 
 Written 2026-08-08 by the outgoing session. Self-contained: everything you need is here or pointed
 at. Read `docs/BRAIN.md` for project orientation and `CLAUDE.md` for the multi-agent protocol first;
-the mandatory skills in `.claude/skills/` (start with `starnet-task-doctrine`) still apply to you.
+the mandatory skills in `.claude/skills/` (start with `eyehold-task-doctrine`) still apply to you.
 
 **Status: built, gate-green, UNMERGED. It is a taste call and Andrew is the judge.**
 
@@ -15,7 +15,7 @@ the mandatory skills in `.claude/skills/` (start with `starnet-task-doctrine`) s
 ## What the lane is for
 
 Andrew's ask, verbatim at the start: make the agent read as *"a curious character / sentient being
-living inside StarNet"* while **idle** — it should not stare at walls, it should be curious about
+living inside Eyehold"* while **idle** — it should not stare at walls, it should be curious about
 props, be able to leave its desk area, and appear to interact with other agents. **Working is
 explicitly out of scope and untouched** ("when an agent is working is currently perfect").
 
@@ -154,7 +154,7 @@ animation calls, but if you want a clean receipt, re-run it.
 
 1. Have Andrew live-test the current HEAD (the lounge round + gesture removal) and take his read.
 2. Decide the art question above; that is what unblocks "waving" and a true arcade interaction.
-3. Only then consider merging. Ritual: `starnet-merge-ritual` skill, rebase onto trunk first, gate,
+3. Only then consider merging. Ritual: `eyehold-merge-ritual` skill, rebase onto trunk first, gate,
    then `git merge agent/idle-life` from the integration tree with a hand-written merge message.
 
 Open, honestly stated: crew bodies still favour the couch heavily (one measured 9 of 12 visits);

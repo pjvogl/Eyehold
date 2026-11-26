@@ -1,5 +1,5 @@
 'use strict';
-// Public application identifier, registered by androoAGI. Device flow never ships a client secret.
+// Public application identifier, registered by Eyehold. Device flow never ships a client secret.
 const CLIENT_ID = 'Ov23livVcHfqh3CtI3wo';
 const TOKEN_ENDPOINT = 'https://github.com/login/oauth/access_token';
 const oauth = require('./oauth.js');
