@@ -14,6 +14,10 @@ Deployed with the owner's approval, Stripe live mode, Babelbook account `acct_1U
 
 The rest of this runbook is the original plan, kept for reference. Section 8 below is the live switch the owner approved.
 
+## Skill catalog signing key
+
+The Skill Market catalog is `eyehold-skill-registry/v1` at `https://eyehold.babelbook.net/.well-known/eyehold-skills.json`. The app trusts the public key `eyehold-market-2026-a` in `sidecar/skills/market-signing.js`. The matching private key is not in git. Keep the PEM outside the repository and point `EYEHOLD_SKILL_MARKET_KEY` at that file when rebuilding the catalog. A backup private key stays offline the same way. Do not put either PEM in a Worker var, a commit, or a log.
+
 ## Agent readiness
 
 The keep can walk a venture from research to a reviewed listing, a verified receipt, Crowns, and a capped reinvestment without an owner click. A local run of that loop used a mock Stripe and made no charge. These accounts are still required before an agent can do the real-world step. None of these values belong in git.

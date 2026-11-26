@@ -16,13 +16,13 @@
 
 const crypto = require('node:crypto');
 
-const SIG_FORMAT = 'starnet-signature/v1';
+const SIG_FORMAT = 'eyehold-signature/v1';
 const KEY_ID_RE = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
 // public keys as base64 SPKI DER (what publicKeyOf returns)
 const TRUSTED_KEYS = Object.freeze([
-  Object.freeze({ id: 'market-2026-a', publicKey: 'MCowBQYDK2VwAyEAAfLsd/480eFRM7LdmI7icZf/0QNg61d8d9iGJo+vUxU=' }),
-  Object.freeze({ id: 'market-backup-2026-a', publicKey: 'MCowBQYDK2VwAyEAMP197BVUfEfM98o4fdUB89HcHKolS48prfN253GXxAk=' })
+  Object.freeze({ id: 'eyehold-market-2026-a', publicKey: 'MCowBQYDK2VwAyEAhVLPK6ek86D1XIu8h18mYfJf0Eo2td3iXHTr2VKjfjo=' }),
+  Object.freeze({ id: 'eyehold-market-backup-2026-a', publicKey: 'MCowBQYDK2VwAyEA1t4I1lOv8z96rYSRcaRPnkkdrKs1A19MRobbTFD32bs=' })
 ]);
 
 function str(v) { return v == null ? '' : String(v); }

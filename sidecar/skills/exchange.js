@@ -277,7 +277,7 @@ function makeSkillExchange(deps) {
       },
       instructions: [
         'Extract the standard skill folder represented by the package and host it without changing bytes.',
-        'Set sourceUrl to the public HTTPS URL of SKILL.md and add the registry entry to a starnet-skill-registry/v1 index.',
+        'Set sourceUrl to the public HTTPS URL of SKILL.md and add the registry entry to an eyehold-skill-registry/v1 index.',
         'Inspect the hosted URL in StarNet and confirm its package SHA-256 is ' + exported.digest + ' before sharing.'
       ],
       uploaded: false

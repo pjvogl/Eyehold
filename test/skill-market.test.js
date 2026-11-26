@@ -27,8 +27,8 @@ const guard = require('../sidecar/skills/guard.js');
 
 const TEST_KEY = signing.generateKeyPair();
 const TEST_KEYS = [{ id: 'test-market', publicKey: TEST_KEY.publicKey }];
-const INDEX_URL = 'https://market.example/.well-known/starnet-skills.json';
-const REVOKED_URL = 'https://market.example/.well-known/starnet-skills-revoked.json';
+const INDEX_URL = 'https://market.example/.well-known/eyehold-skills.json';
+const REVOKED_URL = 'https://market.example/.well-known/eyehold-skills-revoked.json';
 
 const BUNDLED = catalog.parse('---\nname: Feed Watch\nslug: feed-watch\ndescription: Watch a source for change.\ncategory: Research\nrequires: [dish]\nlicense: MIT\nversion: 1.0.0\n---\n1. Fetch the source.\n2. Compare with the baseline.', 'feed-watch');
 const COMMUNITY_MD = '---\nname: grill-me\ndescription: "Question a plan hard before building it."\nlicense: MIT\nmetadata:\n  title: "Grill Me"\n  category: "Planning"\n  author: "Matt Pocock"\n---\n1. Ask one hard question at a time.\n2. Stop when the plan survives.';
@@ -266,7 +266,7 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     const store2 = new Map();
     const official = serve([GRILL], null, { serial: 5 });
     await client(official, tmp(), undefined, store2).listing({});
-    const OTHER = 'https://my-market.example/.well-known/starnet-skills.json';
+    const OTHER = 'https://my-market.example/.well-known/eyehold-skills.json';
     const mine = serve([GRILL], null, { serial: 1 });
     const other = { fetchDocument: async (u) => mine.fetchDocument(u.replace('https://my-market.example/', 'https://market.example/')) };
     A.eq((await client(other, tmp(), OTHER, store2).listing({})).catalog.serial, 1, 'a self-hosted catalog keeps its own serial, never refused because of another catalog\'s');
@@ -339,9 +339,9 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     const big = 'x'.repeat(300000);
     const fetchDoc = makeSkillDocumentFetcher({ fetchImpl: async () => ({ status: 200, ok: true, headers: { get: () => null }, arrayBuffer: async () => Buffer.from(big) }) });
     await A.rejects(() => fetchDoc('https://market.example/skills/a/1.0.0/SKILL.md'), /is larger than 256 KB/, 'a skill file keeps the 256 KB cap');
-    A.eq((await fetchDoc('https://market.example/.well-known/starnet-skills.json', { maxBytes: 2000000, label: 'the skill market catalog' })).bytes.length, 300000, 'the catalog index may be larger');
-    await A.rejects(() => fetchDoc('https://market.example/.well-known/starnet-skills.json', { maxBytes: 200000, label: 'the skill market catalog' }), /the skill market catalog is larger than 200 KB/, 'and an oversized one is named correctly');
-    A.eq(market.fileUrl('https://x.example/market/.well-known/starnet-skills.json', { slug: 'grill-me', version: '1.0.0' }, 'SKILL.md'), 'https://x.example/market/skills/grill-me/1.0.0/SKILL.md', 'a catalog under a subpath finds its files beside it');
+    A.eq((await fetchDoc('https://market.example/.well-known/eyehold-skills.json', { maxBytes: 2000000, label: 'the skill market catalog' })).bytes.length, 300000, 'the catalog index may be larger');
+    await A.rejects(() => fetchDoc('https://market.example/.well-known/eyehold-skills.json', { maxBytes: 200000, label: 'the skill market catalog' }), /the skill market catalog is larger than 200 KB/, 'and an oversized one is named correctly');
+    A.eq(market.fileUrl('https://x.example/market/.well-known/eyehold-skills.json', { slug: 'grill-me', version: '1.0.0' }, 'SKILL.md'), 'https://x.example/market/skills/grill-me/1.0.0/SKILL.md', 'a catalog under a subpath finds its files beside it');
   }
 
   A.report('skill-market.test');

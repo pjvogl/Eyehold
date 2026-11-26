@@ -2,7 +2,7 @@
    (scripts/build-skill-catalog.mjs, which writes the catalog into website/) and the app (skills/market.js, which
    reads it). One definition so the two can never disagree about slugs, versions, digests or the file manifest.
 
-   The index is the existing `starnet-skill-registry/v1` document (so the SKILL EXCHANGE registry reader can also
+   The index is the existing `eyehold-skill-registry/v1` document (so the SKILL EXCHANGE registry reader can also
    read it) with extra fields per entry: slug, shelf, category, tags, requires, librarySlug and `files`, the exact
    manifest the app downloads. `digest` is the open-agent-skill-package/v1 digest over those files; the app refuses
    an install whose downloaded bytes do not reproduce it. Every version lives in its own folder
@@ -13,16 +13,16 @@
 
    The index also carries a `serial` (bumped by every build that changes it; a keep never accepts a lower serial
    than one it has already seen) and `revoked`, the skills the market has pulled. The pulled list is published on
-   its own too (starnet-skill-revocations/v1, a few hundred bytes) so keeps with market skills installed can
+   its own too (eyehold-skill-revocations/v1, a few hundred bytes) so keeps with market skills installed can
    check it often. Both documents are signed (skills/market-signing.js). Pure: no network, no clock. */
 'use strict';
 
 const packageFormat = require('./package-format.js');
 const catalog = require('./catalog.js');
 
-const FORMAT = 'starnet-skill-registry/v1';
-const REVOKED_FORMAT = 'starnet-skill-revocations/v1';
-const MARKET_NAME = 'StarNet Skill Market';
+const FORMAT = 'eyehold-skill-registry/v1';
+const REVOKED_FORMAT = 'eyehold-skill-revocations/v1';
+const MARKET_NAME = 'Eyehold Skill Market';
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const VERSION_RE = /^\d+\.\d+\.\d+$/;
 const SHELVES = ['originals', 'community'];
@@ -202,10 +202,10 @@ function readCatalog(doc) {
 }
 
 // revokedUrl(indexUrl) -> the pulled-skills list published next to the index
-function revokedUrl(indexUrl) { return new URL('starnet-skills-revoked.json', indexUrl).href; }
+function revokedUrl(indexUrl) { return new URL('eyehold-skills-revoked.json', indexUrl).href; }
 
 // fileUrl(indexUrl, entry, path) -> the absolute URL of one package file
-//   Files live in skills/ BESIDE the site the index is published on: for https://host/.well-known/starnet-skills.json
+//   Files live in skills/ BESIDE the site the index is published on: for https://host/.well-known/eyehold-skills.json
 //   that is https://host/skills/…, and a catalog hosted under a subpath (https://host/market/.well-known/…) resolves
 //   to https://host/market/skills/… instead of the site root.
 function fileUrl(indexUrl, entry, path) {

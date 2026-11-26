@@ -7,8 +7,8 @@
      skills-catalog/skills/<slug>/       market-only skills: skill.json + SKILL.md (+ LICENSE, references/)
      skills-catalog/revoked.json         skills the market has PULLED: { "revoked": [{ slug, digest?, reason, at }] }
    Output (served by starnetos.com, Cloudflare Pages):
-     website/.well-known/starnet-skills.json          the index (starnet-skill-registry/v1 + market fields)
-     website/.well-known/starnet-skills-revoked.json  the pulled list on its own, for keeps to check often
+     website/.well-known/eyehold-skills.json          the index (eyehold-skill-registry/v1 + market fields)
+     website/.well-known/eyehold-skills-revoked.json  the pulled list on its own, for keeps to check often
      website/.well-known/*.sig                        an Ed25519 signature over each of the two, byte for byte
      website/skills/<slug>/<version>/<files>          one immutable folder per published version
 
@@ -49,10 +49,10 @@ const guard = require(join(ROOT, 'sidecar/skills/guard.js'));
 const LIB = join(ROOT, 'sidecar/skills/library');
 const SRC = join(ROOT, 'skills-catalog');
 const OUT = join(ROOT, 'website');
-const INDEX = join(OUT, '.well-known', 'starnet-skills.json');
-const REVOKED = join(OUT, '.well-known', 'starnet-skills-revoked.json');
+const INDEX = join(OUT, '.well-known', 'eyehold-skills.json');
+const REVOKED = join(OUT, '.well-known', 'eyehold-skills-revoked.json');
 const FLOOR = join(ROOT, 'sidecar', 'skills', 'market-floor.json');
-const SIGNING_KEY = process.env.STARNET_SKILL_MARKET_KEY || join(homedir(), '.starnet-keys', 'skill-market.key');
+const SIGNING_KEY = process.env.EYEHOLD_SKILL_MARKET_KEY || join(homedir(), '.eyehold-keys', 'skill-market.key');
 
 function lf(s) { return String(s).replace(/\r\n/g, '\n'); }
 function readText(p) { return lf(readFileSync(p, 'utf8')).replace(/^﻿/, ''); }
@@ -85,7 +85,7 @@ export function buildCatalog() {
     sources.push({
       slug, version, shelf: 'originals', category: recipe.category, requires: recipe.requires,
       tags: [recipe.category.toLowerCase()].concat(originals.skills[slug].tags || []), license: recipe.license || 'MIT',
-      authors: ['StarNet'], librarySlug: slug,
+      authors: ['Eyehold'], librarySlug: slug,
       files: [{ path: 'SKILL.md', content: market.libraryToSkillMd(recipe, { version }) }]
     });
   }
@@ -139,8 +139,10 @@ export function buildCatalog() {
   const entries = built.map(b => b.entry);
   const prior = existsSync(INDEX) ? JSON.parse(readFileSync(INDEX, 'utf8')) : null;
   const priorSerial = market.serialOf(prior);
+  const floorSerial = existsSync(FLOOR) ? Number(JSON.parse(readFileSync(FLOOR, 'utf8')).serial) || 0 : 0;
   const unchanged = priorSerial && bodyOf(prior) === bodyOf(market.catalogDocument(entries, { serial: priorSerial, revoked }));
-  const serial = !priorSerial ? 1 : unchanged ? priorSerial : priorSerial + 1;
+  let serial = !priorSerial ? Math.max(1, floorSerial) : unchanged ? priorSerial : Math.max(priorSerial + 1, floorSerial);
+  if (serial < floorSerial) serial = floorSerial;
   return { index: market.catalogDocument(entries, { serial, revoked }), revocations: market.revocationDocument({ serial, revoked }), packages: built };
 }
 
@@ -156,7 +158,7 @@ function planWrites(result) {
     }
     writes.push({ path: join(OUT, 'skills', entry.slug, entry.version, entry.download.path), bytes: zip, immutable: true, label: entry.slug + '@' + entry.version + '/' + entry.download.path });
   }
-  for (const [file, doc, label] of [[INDEX, result.index, '.well-known/starnet-skills.json'], [REVOKED, result.revocations, '.well-known/starnet-skills-revoked.json']]) {
+  for (const [file, doc, label] of [[INDEX, result.index, '.well-known/eyehold-skills.json'], [REVOKED, result.revocations, '.well-known/eyehold-skills-revoked.json']]) {
     const bytes = jsonBytes(doc);
     writes.push({ path: file, bytes, immutable: false, label });
     writes.push({ path: file + '.sig', signs: bytes, immutable: false, label: label + '.sig' });
@@ -173,7 +175,7 @@ function signatureHolds(file, bytes) {
 let signingKey = null;
 function signWith(bytes) {
   if (!signingKey) {
-    if (!existsSync(SIGNING_KEY)) throw new Error('the catalog changed, so it must be re-signed, and there is no signing key at ' + SIGNING_KEY + ' (set STARNET_SKILL_MARKET_KEY to its path)');
+    if (!existsSync(SIGNING_KEY)) throw new Error('the catalog changed, so it must be re-signed, and there is no signing key at ' + SIGNING_KEY + ' (set EYEHOLD_SKILL_MARKET_KEY to its path)');
     signingKey = readFileSync(SIGNING_KEY, 'utf8');
   }
   return Buffer.from(signing.sign(bytes, signingKey), 'utf8');

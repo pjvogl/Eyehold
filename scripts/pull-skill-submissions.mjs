@@ -34,8 +34,8 @@ const market = require(join(ROOT, 'sidecar/skills/market-format.js'));
 const catalog = require(join(ROOT, 'sidecar/skills/catalog.js'));
 const guard = require(join(ROOT, 'sidecar/skills/guard.js'));
 
-const CLOUD = String(process.env.EYEHOLD_CLOUD_URL || process.env.STARNET_CLOUD_URL || 'https://account.starnetos.com').replace(/\/+$/, '');
-const LIVE_INDEX = process.env.EYEHOLD_SKILL_MARKET_URL || process.env.STARNET_SKILL_MARKET_URL || 'https://starnetos.com/.well-known/starnet-skills.json';
+const CLOUD = String(process.env.EYEHOLD_CLOUD_URL || '').replace(/\/+$/, '');
+const LIVE_INDEX = process.env.EYEHOLD_SKILL_MARKET_URL || 'https://eyehold.babelbook.net/.well-known/eyehold-skills.json';
 const TOKEN_FILE = join(homedir(), '.starnet-keys', 'skill-review.token');
 const CATEGORIES = ['Communication', 'Creative', 'Engineering', 'Marketing', 'Planning', 'Productivity', 'Research', 'Writing'];
 const LICENSES = ['MIT', 'CC-BY-4.0'];
@@ -165,6 +165,10 @@ function restore(dir, snap) {
 }
 
 async function pull({ dryRun }) {
+  if (!CLOUD) {
+    console.error('pull-skill-submissions: skill uploads are not hosted yet. Set EYEHOLD_CLOUD_URL when the Eyehold account host can accept them.');
+    return 2;
+  }
   const token = reviewToken();
   const body = await getJson(CLOUD + '/v1/skill-submissions/approved', { headers: { authorization: 'Bearer ' + token } });
   const library = catalog.loadDir(join(ROOT, 'sidecar/skills/library'), { readdirSync, readFileSync }, { join });
@@ -202,7 +206,7 @@ async function markLive() {
   const token = reviewToken();
   const live = market.readCatalog(await getJson(LIVE_INDEX, {}));
   const bySlug = new Map(live.entries.map((e) => [e.slug, e]));
-  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'starnet-skills.json'), 'utf8'));
+  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'eyehold-skills.json'), 'utf8'));
   const localBySlug = new Map(local.skills.map((e) => [e.slug, e]));
   const published = [];
   for (const slug of existsSync(SKILLS_DIR) ? readdirSync(SKILLS_DIR) : []) {

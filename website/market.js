@@ -1,13 +1,13 @@
 /* website/market.js — the public Skill Market page (market.html).
 
-   Reads the SAME catalog every StarNet keep installs from (/.well-known/starnet-skills.json, built and signed by
+   Reads the SAME catalog every StarNet keep installs from (/.well-known/eyehold-skills.json, built and signed by
    scripts/build-skill-catalog.mjs) and lists it: StarNet Originals first, then credited community picks. "Read the
    skill" fetches that skill's published SKILL.md. Same-origin requests only (the site's CSP allows nothing else),
    and everything that comes from the catalog is inserted as text, never as HTML. No tracking, no storage. */
 (function () {
   'use strict';
 
-  var INDEX = '/.well-known/starnet-skills.json';
+  var INDEX = '/.well-known/eyehold-skills.json';
   // the app's own gear names (REFIT palette labels, the same ones the in-app SKILL LIBRARY and market show)
   var GEAR = { cabinet: 'INTEL CAB', dish: 'DISH', workbench: 'WORKBENCH', notebook: 'NOTEBOOK', studio: 'STUDIO', orchestrator: 'ORCHESTRATOR', computer: 'COMPUTER' };
   var SHELVES = [

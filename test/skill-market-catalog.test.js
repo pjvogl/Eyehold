@@ -20,7 +20,7 @@ const packageFormat = require('../sidecar/skills/package-format.js');
 const catalog = require('../sidecar/skills/catalog.js');
 
 const ROOT = path.join(__dirname, '..');
-const INDEX = path.join(ROOT, 'website', '.well-known', 'starnet-skills.json');
+const INDEX = path.join(ROOT, 'website', '.well-known', 'eyehold-skills.json');
 
 const check = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'build-skill-catalog.mjs'), '--check'], { encoding: 'utf8' });
 A.eq(check.status, 0, 'the committed catalog is exactly what the sources build: ' + (check.stderr || check.stdout).trim().slice(0, 400));
@@ -84,7 +84,7 @@ A.eq(uncredited, [], 'NOTICE.md credits every skill in the catalog');
 
 // ---- signatures ----
 const signing = require('../sidecar/skills/market-signing.js');
-const REVOKED = path.join(ROOT, 'website', '.well-known', 'starnet-skills-revoked.json');
+const REVOKED = path.join(ROOT, 'website', '.well-known', 'eyehold-skills-revoked.json');
 const signer = (file) => { try { return signing.verify(fs.readFileSync(file), fs.readFileSync(file + '.sig', 'utf8')); } catch (e) { return 'FAILED: ' + e.message; } };
 A.ok(signing.TRUSTED_KEYS.some(k => k.id === signer(INDEX)), 'the index signature verifies with a key the app ships (' + signer(INDEX) + ')');
 A.ok(signing.TRUSTED_KEYS.some(k => k.id === signer(REVOKED)), 'the pulled-list signature verifies with a key the app ships (' + signer(REVOKED) + ')');
@@ -93,7 +93,7 @@ const revokedDoc = market.readRevocations(JSON.parse(fs.readFileSync(REVOKED, 'u
 A.ok(read.serial >= 1 && revokedDoc.serial === read.serial, 'the index and the pulled list carry the same serial (' + read.serial + ')');
 A.eq(revokedDoc.revoked, market.readRevoked(index.revoked), 'and the same pulled rows');
 A.eq(new Set(signing.TRUSTED_KEYS.map(k => k.publicKey)).size, signing.TRUSTED_KEYS.length, 'the app trusts distinct keys (a working key and a separate backup)');
-const attr = spawnSync('git', ['check-attr', 'text', 'website/.well-known/starnet-skills.json', 'website/.well-known/starnet-skills.json.sig', 'website/skills/grill-me/1.0.0/SKILL.md'], { cwd: ROOT, encoding: 'utf8' });
+const attr = spawnSync('git', ['check-attr', 'text', 'website/.well-known/eyehold-skills.json', 'website/.well-known/eyehold-skills.json.sig', 'website/skills/grill-me/1.0.0/SKILL.md'], { cwd: ROOT, encoding: 'utf8' });
 A.eq((attr.stdout.match(/: text: unset/g) || []).length, 3, 'git never rewrites the signed and sha256-pinned files (.gitattributes -text)');
 // a real PEM block starts with this header on a line of its own (other files only mention it inside redaction patterns)
 const keyLeak = spawnSync('git', ['grep', '-l', '-I', '-E', '-e', '^-----BEGIN [A-Z ]*PRIVATE KEY-----$', '--', 'website', 'skills-catalog', 'sidecar/skills', 'scripts'], { cwd: ROOT, encoding: 'utf8' });

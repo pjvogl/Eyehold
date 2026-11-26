@@ -57,7 +57,7 @@ A.eq(shell.status, 0, 'the shared shell is stamped: ' + (shell.stdout || shell.s
 // ---- the script ----
 const fetches = [...js.matchAll(/fetch\(\s*([^,)]+)/g)].map(m => m[1].trim());
 A.eq(fetches.sort(), ['INDEX', 'path'], 'market.js makes exactly two kinds of request: the catalog and a package file');
-A.ok(/var INDEX = '\/\.well-known\/starnet-skills\.json';/.test(js), 'the catalog is the same-origin signed index keeps install from');
+A.ok(/var INDEX = '\/\.well-known\/eyehold-skills\.json';/.test(js), 'the catalog is the same-origin signed index keeps install from');
 A.ok(/function safePath\(p\) \{ return \/\^\\\/skills\\\//.test(js), 'package files are only requested under /skills/<slug>/<version>/');
 A.ok(!/innerHTML|insertAdjacentHTML|outerHTML|document\.write/.test(js), 'catalog text is never inserted as HTML');
 A.ok(/function safeHttps\(u\)/.test(js) && /a\.href = up;/.test(js), 'upstream links go through the https check');

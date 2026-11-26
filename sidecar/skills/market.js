@@ -34,7 +34,7 @@ const signing = require('./market-signing.js');
 const catalog = require('./catalog.js');
 const { note: failNote } = require('../failopen.js');   // a cleanup step that fails stays visible, never silent
 
-const DEFAULT_CATALOG_URL = 'https://starnetos.com/.well-known/starnet-skills.json';
+const DEFAULT_CATALOG_URL = 'https://eyehold.babelbook.net/.well-known/eyehold-skills.json';
 const CACHE_MS = 5 * 60 * 1000;
 const REFERENCE_CAP = 60000;       // references ride inline in the recipe body, bounded
 const INDEX_MAX_BYTES = 2000000;   // the catalog index (~1 KB per skill); SKILL.md files keep the fetcher's 256 KB cap
